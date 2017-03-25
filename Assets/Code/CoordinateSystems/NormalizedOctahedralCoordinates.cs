@@ -14,12 +14,6 @@ public struct NormalizedOctahedralCoordinates
         Normalize();
     }
 
-    public NormalizedOctahedralCoordinates(NormalizedCartesianCoordinates Cartesian)
-    {
-        data_ = Cartesian.data;
-        Normalize();
-    }
-
     public NormalizedOctahedralCoordinates(float x, float y, float z)
     {
         data_ = new Vector3(x, y, z);
@@ -30,6 +24,8 @@ public struct NormalizedOctahedralCoordinates
     {
         return new NormalizedCartesianCoordinates(octahedral.data);
     }
+
+    // implicit conversions: use to_Cartesian to make the other two functions!
 
     Vector3 data_;
 

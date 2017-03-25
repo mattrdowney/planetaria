@@ -14,12 +14,6 @@ public class NormalizedCartesianCoordinates
         Normalize(); 
     }
 
-    public NormalizedCartesianCoordinates(NormalizedOctahedralCoordinates octahedral)
-    {
-        data_ = octahedral.data;
-        Normalize();
-    }
-
     public NormalizedCartesianCoordinates(float x, float y, float z)
     {
         data_ = new Vector3(x, y, z);
@@ -29,6 +23,21 @@ public class NormalizedCartesianCoordinates
     public static implicit operator NormalizedOctahedralCoordinates(NormalizedCartesianCoordinates Cartesian)
     {
         return new NormalizedOctahedralCoordinates(Cartesian.data);
+    }
+
+    
+    public static implicit operator NormalizedSphericalCoordinates(NormalizedCartesianCoordinates Cartesian)
+    {
+        float inclination = Mathf.Acos(Cartesian.data.y);
+        float azimuth = Mathf.Atan2(Cartesian.data.z, Cartesian.data.x);
+        return new NormalizedSphericalCoordinates(inclination, azimuth);
+    }
+
+    public static implicit operator UVCoordinates(NormalizedCartesianCoordinates Cartesian)
+    {
+        float u = (0.5f + Mathf.Atan2(Cartesian.data.z, Cartesian.data.x)) / (2*Mathf.PI);
+        float v = 0.5f - Mathf.Asin(Cartesian.data.y) / Mathf.PI;
+        return new UVCoordinates(u, v);
     }
 
     Vector3 data_;

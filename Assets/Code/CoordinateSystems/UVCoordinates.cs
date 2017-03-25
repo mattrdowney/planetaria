@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class NormalizedSphericalCoordinates
+public class UVCoordinates
 {
 	public Vector2 data
     {
@@ -8,30 +8,25 @@ public class NormalizedSphericalCoordinates
         set { data_ = value; Normalize(); }
     }
 
-    public NormalizedSphericalCoordinates(float inclination, float azimuth)
+    public UVCoordinates(float u, float v)
     {
-        data_ = new Vector2(inclination, azimuth);
-        Normalize();
+        data_ = new Vector2(u, v);
+        Normalize(); 
     }
 
     // implicit conversions: implement to_Cartesian and use it to make the other two functions!
 
     Vector2 data_;
 
-    void Normalize() //TODO: Is this how phi/theta normalization works? (Is "normalization" even well-defined?)
+    void Normalize()
     {
-        if (Mathf.Abs(data_.x - Mathf.PI/2) > Mathf.PI/2)
+        if (Mathf.Abs(data_.x - 0.5f) > 0.5f)
         {
-            data_.x = Mathf.PingPong(data_.x, 2*Mathf.PI); //TODO: test that 1) Vector2 is properly assigned 2) PingPong works for negative numbers
-            if (data_.x > Mathf.PI)
-            {
-                data_.x -= Mathf.PI;
-                data_.y += Mathf.PI; // going through a pole changes the azimuth
-            }
+            data_.x = Mathf.PingPong(data_.x, 1f); //TODO: test that 1) Vector2 is properly assigned 2) PingPong works for negative numbers
         }
-        if (Mathf.Abs(data_.y - Mathf.PI) > Mathf.PI || data_.y == 2*Mathf.PI)
+        if (Mathf.Abs(data_.y - 0.5f) > 0.5f)
         {
-            data_.y = Mathf.PingPong(data_.y, 2*Mathf.PI);
+            data_.y = Mathf.PingPong(data_.y, 1f);
         }
     }
 }

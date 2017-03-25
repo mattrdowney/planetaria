@@ -49,6 +49,7 @@
      <Compile Include="Assets\Code\CoordinateSystems\NormalizedCartesianCoordinates.cs" />
      <Compile Include="Assets\Code\CoordinateSystems\NormalizedOctahedralCoordinates.cs" />
      <Compile Include="Assets\Code\CoordinateSystems\NormalizedSphericalCoordinates.cs" />
+     <Compile Include="Assets\Code\CoordinateSystems\UVCoordinates.cs" />
      <Compile Include="Assets\Code\Utility\Precision.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
