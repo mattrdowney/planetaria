@@ -1,33 +1,27 @@
 ﻿using UnityEngine;
 
-public class UVCoordinates
+public static class PlanetariaMath
 {
-	public Vector2 data
+    /// <summary>
+    /// The result of the modulo operation when using Euclidean division. 
+    /// </summary>
+    /// <param name="dividend">The element that will be used to calculate the remainder.</param>
+    /// <param name="divisor">The interval upon which the dividend will be divided.</param>
+    /// <returns></returns>
+    public static float EuclideanDivisionModulo(float dividend, float divisor)
     {
-        get { return data_; }
-        set { data_ = value; Normalize(); }
-    }
+        divisor = Mathf.Abs(divisor);
 
-    public UVCoordinates(float u, float v)
-    {
-        data_ = new Vector2(u, v);
-        Normalize(); 
-    }
+        float quotient = dividend / divisor;
 
-    // implicit conversions: implement to_Cartesian and use it to make the other two functions!
+        float result = dividend - divisor*Mathf.Floor(quotient);
 
-    Vector2 data_;
-
-    void Normalize()
-    {
-        if (Mathf.Abs(data_.x - 0.5f) > 0.5f)
+        if (result < 0f)
         {
-            data_.x = Mathf.PingPong(data_.x, 1f); //TODO: test that 1) Vector2 is properly assigned 2) PingPong works for negative numbers
+            Debug.Log("ERROR: PlanetariaMath: EuclideanDivisionModulo(): " + result);
         }
-        if (Mathf.Abs(data_.y - 0.5f) > 0.5f)
-        {
-            data_.y = Mathf.PingPong(data_.y, 1f);
-        }
+
+        return result;
     }
 }
 

@@ -8,40 +8,104 @@ public class NormalizedCartesianCoordinates
         set { data_ = value; Normalize(); }
     }
 
-    public NormalizedCartesianCoordinates(Vector3 vector)
+    /// <summary>
+    /// Constructor - Stores Cartesian coordinates in a wrapper class.
+    /// </summary>
+    /// <param name="vector">The Cartesian coordinates. Note: matches Unity's default Vector3 definition.</param>
+    public NormalizedCartesianCoordinates(Vector3 Cartesian)
     {
-        data_ = vector;
+        data_ = Cartesian;
         Normalize(); 
     }
 
+    /// <summary>
+    /// Constructor - Stores Cartesian coordinates in a wrapper class.
+    /// </summary>
+    /// <param name="x">The Cartesian x coordinate. Negative is left; positive is right.</param>
+    /// <param name="y">The Cartesian y coordinate. Negative is down; positive is up.</param>
+    /// <param name="z">The Cartesian z coordinate. Negative is backward; positive is forward.</param>
     public NormalizedCartesianCoordinates(float x, float y, float z)
     {
         data_ = new Vector3(x, y, z);
         Normalize(); 
     }
 
+    /// <summary>
+    /// Inspector - Converts Cartesian coordinates into octahedral coordinates.
+    /// </summary>
+    /// <param name="Cartesian">The coordinates in Cartesian space that will be converted</param>
+    /// <returns>The octahedral coordinates.</returns> 
     public static implicit operator NormalizedOctahedralCoordinates(NormalizedCartesianCoordinates Cartesian)
     {
         return new NormalizedOctahedralCoordinates(Cartesian.data);
     }
 
-    
+    /// <summary>
+    /// Inspector - Converts Cartesian coordinates into spherical coordinates.
+    /// </summary>
+    /// <param name="Cartesian">The coordinates in Cartesian space that will be converted</param>
+    /// <returns>The spherical coordinates.</returns> 
     public static implicit operator NormalizedSphericalCoordinates(NormalizedCartesianCoordinates Cartesian)
     {
-        float inclination = Mathf.Acos(Cartesian.data.y);
+        float elevation = Mathf.Acos(-Cartesian.data.y);
         float azimuth = Mathf.Atan2(Cartesian.data.z, Cartesian.data.x);
-        return new NormalizedSphericalCoordinates(inclination, azimuth);
+        return new NormalizedSphericalCoordinates(elevation, azimuth);
     }
 
-    public static implicit operator UVCoordinates(NormalizedCartesianCoordinates Cartesian)
+    /// <summary>
+    /// Inspector - Converts Cartesian coordinates into octahedron UV space.
+    /// </summary>
+    /// <param name="Cartesian">The coordinates in Cartesian space that will be converted</param>
+    /// <returns>The UV coordinates for a octahedron.</returns> 
+    public static implicit operator OctahedralUVCoordinates(NormalizedCartesianCoordinates Cartesian)
     {
-        float u = (0.5f + Mathf.Atan2(Cartesian.data.z, Cartesian.data.x)) / (2*Mathf.PI);
-        float v = 0.5f - Mathf.Asin(Cartesian.data.y) / Mathf.PI;
-        return new UVCoordinates(u, v);
+        Vector2 UV;
+        Vector2 xPivot, yPivot, zPivot;
+
+        NormalizedOctahedralCoordinates octahedral = Cartesian;
+
+        if (System.Math.Sign(octahedral.data.x) == +1) //FIXME: optimize this hardcoded stuff, Barycentric coordinate conversions are certainly capable of being elegant
+        {
+            if(System.Math.Sign(octahedral.data.z) == +1)
+            {
+                yPivot = new Vector2(1.0f, 1.0f);
+                zPivot = new Vector2(0.5f, 1.0f);
+            }
+            else
+            {
+                yPivot = new Vector2(1.0f, 0.0f);
+                zPivot = new Vector2(0.5f, 0.0f);
+            }
+            xPivot = new Vector2(1.0f, 0.5f);
+        }
+        else
+        {
+            if (System.Math.Sign(octahedral.data.z) == +1)
+            {
+                yPivot = new Vector2(0.0f, 1.0f);
+                zPivot = new Vector2(0.5f, 1.0f);
+            }
+            else
+            {
+                yPivot = new Vector2(0.0f, 0.0f);
+                zPivot = new Vector2(0.5f, 0.0f);
+            }
+            xPivot = new Vector2(0.0f, 0.5f);
+        }
+        if(System.Math.Sign(octahedral.data.y) == +1)
+        {
+            yPivot = new Vector2(0.5f, 0.5f);
+        }
+        UV = xPivot*Mathf.Abs(octahedral.data.x) + yPivot* Mathf.Abs(octahedral.data.y) + zPivot* Mathf.Abs(octahedral.data.z);
+        return new OctahedralUVCoordinates(UV.x, UV.y);
     }
 
     Vector3 data_;
 
+    /// <summary>
+    /// Inspector - Find the distance from the origin (i.e. magnitude) times itself.
+    /// </summary>
+    /// <returns>The magnitude squared, where the magnitude is the distance from the origin.</returns>
     float magnitude_squared()
     {
         return Mathf.Abs(data_.x) * Mathf.Abs(data_.x) +
@@ -49,6 +113,9 @@ public class NormalizedCartesianCoordinates
                 Mathf.Abs(data_.z) * Mathf.Abs(data_.z);
     }
 
+    /// <summary>
+    /// Mutator - Project the Cartesian coordinates onto a unit sphere.
+    /// </summary>
     void Normalize()
     {
         float approximate_length = magnitude_squared();
@@ -57,7 +124,7 @@ public class NormalizedCartesianCoordinates
         {
             return;
         }
-
+ 
         float length = (float) Mathf.Sqrt(approximate_length);
         data_ /= length;
     }

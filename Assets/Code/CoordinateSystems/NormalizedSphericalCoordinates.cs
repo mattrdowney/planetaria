@@ -8,17 +8,33 @@ public class NormalizedSphericalCoordinates
         set { data_ = value; Normalize(); }
     }
 
-    public NormalizedSphericalCoordinates(float inclination, float azimuth)
+    /// <summary>
+    /// Constructor - Stores a set of spherical coordinates on a unit sphere (i.e. rho=1) in a wrapper class.
+    /// </summary>
+    /// <param name="elevation">The angle in radians between the negative y-axis and the vector in Cartesian space.</param>
+    /// <param name="azimuth">The angle in radians between the positive x-axis and the vector in Cartian space measured counterclockwise around the y-axis (viewing angle is downward along y-axis).</param>
+    public NormalizedSphericalCoordinates(float elevation, float azimuth)
     {
-        data_ = new Vector2(inclination, azimuth);
+        data_ = new Vector2(elevation, azimuth);
         Normalize();
     }
 
-    // implicit conversions: implement to_Cartesian and use it to make the other two functions!
+    // implicit conversions: use to_Cartesian to make the other two functions!
+    public static implicit operator NormalizedCartesianCoordinates(NormalizedSphericalCoordinates octahedral)
+    {
+        Vector3 Cartesian = new Vector3();
+        Cartesian.x = -Mathf.Sin(octahedral.data.x) * Mathf.Cos(octahedral.data.y);
+        Cartesian.y = -Mathf.Cos(octahedral.data.x);
+        Cartesian.z = -Mathf.Sin(octahedral.data.x) * Mathf.Sin(octahedral.data.y);
+        return new NormalizedCartesianCoordinates(Cartesian);
+    }
 
     Vector2 data_;
 
-    void Normalize() //TODO: Is this how phi/theta normalization works? (Is "normalization" even well-defined?)
+    /// <summary>
+    /// Mutator - Wrap elevation and azimuth so they are within [0, PI] and [0, 2*PI) respectively. 
+    /// </summary>
+    void Normalize()
     {
         if (Mathf.Abs(data_.x - Mathf.PI/2) > Mathf.PI/2)
         {
@@ -31,7 +47,7 @@ public class NormalizedSphericalCoordinates
         }
         if (Mathf.Abs(data_.y - Mathf.PI) > Mathf.PI || data_.y == 2*Mathf.PI)
         {
-            data_.y = Mathf.PingPong(data_.y, 2*Mathf.PI);
+            data_.y = PlanetariaMath.EuclideanDivisionModulo(data_.y, 2*Mathf.PI);
         }
     }
 }
