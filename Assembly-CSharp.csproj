@@ -50,6 +50,8 @@
      <Compile Include="Assets\Code\CoordinateSystems\NormalizedOctahedralCoordinates.cs" />
      <Compile Include="Assets\Code\CoordinateSystems\NormalizedSphericalCoordinates.cs" />
      <Compile Include="Assets\Code\CoordinateSystems\OctahedralUVCoordinates.cs" />
+     <Compile Include="Assets\Code\CoordinateSystems\Octahedron.cs" />
+     <Compile Include="Assets\Code\Utility\Optional.cs" />
      <Compile Include="Assets\Code\Utility\PlanetariaMath.cs" />
      <Compile Include="Assets\Code\Utility\Precision.cs" />
  <Reference Include="UnityEngine.UI">

@@ -20,10 +20,122 @@ public class OctahedralUVCoordinates
     }
 
     // implicit conversions: implement to_Cartesian and use it to make the other two functions!
-    /*public static implicit operator NormalizedCartesianCoordinates(OctahedralUVCoordinates UV)
+    public static implicit operator NormalizedOctahedralCoordinates(OctahedralUVCoordinates UV)
     {
-        
-    }*/
+        Vector3[] pivots = new Vector3[3];
+        Vector2[] anchors = new Vector2[3];
+
+        // FIXME: use "data-driven" approach with Barycentric coordinates
+
+        if (System.Math.Abs(UV.data_.x) + System.Math.Abs(UV.data_.y) < 1f) // inner diamond
+        {
+            if (System.Math.Sign(UV.data_.x) == +1)
+            {
+                if (System.Math.Sign(UV.data_.y) == +1) // top right
+                {
+                    pivots[0] = new Vector3(+1.0f, -1.0f, +0.0f);
+                    pivots[1] = new Vector3(-1.0f, +0.0f, +1.0f);
+                    pivots[2] = new Vector3(+0.0f, +1.0f, -1.0f);
+
+                    anchors[0] = new Vector2(0.5f, 0.5f);
+                    anchors[1] = new Vector2(1.0f, 0.5f);
+                    anchors[2] = new Vector2(0.5f, 1.0f);
+                }
+                else // bottom right
+                {
+                    pivots[0] = new Vector3(+0.0f, -1.0f, -1.0f);
+                    pivots[1] = new Vector3(+1.0f, +0.0f, +1.0f);
+                    pivots[2] = new Vector3(-1.0f, +1.0f, +0.0f);
+                    
+                    anchors[0] = new Vector2(0.5f, 0.5f);
+                    anchors[1] = new Vector2(0.5f, 0.0f);
+                    anchors[2] = new Vector2(1.0f, 0.5f);
+                }
+            }
+            else
+            {
+                if (System.Math.Sign(UV.data_.y) == +1) // top left
+                {
+                    pivots[0] = new Vector3(+0.0f, -1.0f, +1.0f);
+                    pivots[1] = new Vector3(-1.0f, +0.0f, -1.0f);
+                    pivots[2] = new Vector3(+1.0f, +1.0f, +0.0f);
+                    
+                    anchors[0] = new Vector2(0.5f, 0.5f);
+                    anchors[1] = new Vector2(0.5f, 1.0f);
+                    anchors[2] = new Vector2(0.0f, 0.5f);
+                }
+                else // bottom left
+                {
+                    pivots[0] = new Vector3(-1.0f, -1.0f, +0.0f);
+                    pivots[1] = new Vector3(+1.0f, +0.0f, -1.0f);
+                    pivots[2] = new Vector3(+0.0f, +1.0f, +1.0f);
+                    
+                    anchors[0] = new Vector2(0.5f, 0.5f);
+                    anchors[1] = new Vector2(0.0f, 0.5f);
+                    anchors[2] = new Vector2(0.5f, 0.0f);
+                }
+            }
+        }
+        else // outer corners
+        {
+            if (System.Math.Sign(UV.data_.x) == +1)
+            {
+                if (System.Math.Sign(UV.data_.y) == +1) // top right
+                {
+                    pivots[0] = new Vector3(+0.0f, +1.0f, +1.0f);
+                    pivots[1] = new Vector3(+1.0f, +0.0f, -1.0f);
+                    pivots[2] = new Vector3(-1.0f, -1.0f, +0.0f);
+                    
+                    anchors[0] = new Vector2(1.0f, 1.0f);
+                    anchors[1] = new Vector2(0.5f, 1.0f);
+                    anchors[2] = new Vector2(1.0f, 0.5f);
+                }
+                else // bottom right
+                {
+                    pivots[0] = new Vector3(+1.0f, +1.0f, +0.0f);
+                    pivots[1] = new Vector3(-1.0f, +0.0f, -1.0f);
+                    pivots[2] = new Vector3(+0.0f, -1.0f, +1.0f);
+                    
+                    anchors[0] = new Vector2(1.0f, 0.0f);
+                    anchors[1] = new Vector2(1.0f, 0.5f);
+                    anchors[2] = new Vector2(0.5f, 0.0f);
+                }
+            }
+            else // top left
+            {
+                if (System.Math.Sign(UV.data_.y) == +1)
+                {
+                    pivots[0] = new Vector3(-1.0f, +1.0f, +0.0f);
+                    pivots[1] = new Vector3(+1.0f, +0.0f, +1.0f);
+                    pivots[2] = new Vector3(+0.0f, -1.0f, -1.0f);
+                    
+                    anchors[0] = new Vector2(0.0f, 1.0f);
+                    anchors[1] = new Vector2(0.0f, 0.5f);
+                    anchors[2] = new Vector2(0.5f, 1.0f);
+                }
+                else // bottom left
+                {
+                    pivots[0] = new Vector3(+0.0f, +1.0f, -1.0f);
+                    pivots[1] = new Vector3(-1.0f, +0.0f, +1.0f);
+                    pivots[2] = new Vector3(+1.0f, -1.0f, +0.0f);
+                    
+                    anchors[0] = new Vector2(0.0f, 0.0f);
+                    anchors[1] = new Vector2(0.5f, 0.0f);
+                    anchors[2] = new Vector2(0.0f, 0.5f);
+                }
+            }
+        }
+        Vector3 octahedral_vector = Vector3.zero;
+        for (int dimension = 0; dimension < 3; ++dimension)
+        {
+            Vector2 begin = anchors[dimension];
+            Vector2 end = anchors[(dimension + 1) % 3];
+
+            float dot_product = Vector2.Dot((UV.data_ - begin).normalized, (begin - end).normalized); 
+            octahedral_vector = octahedral_vector + pivots[dimension]*dot_product;
+        }
+        return new NormalizedOctahedralCoordinates(octahedral_vector);
+    }
 
     Vector2 data_;
 
