@@ -18,11 +18,6 @@
         set { exists_ = true; data_ = value; }
     }
 
-    public optional()
-    {
-        exists_ = false;
-    }
-
     public optional(Type original)
 	{
         exists_ = true;
