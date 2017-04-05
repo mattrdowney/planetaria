@@ -2,17 +2,116 @@
 
 public static class Octahedron
 {
+    /// <summary>
+    /// Singleton - Fetch the octahedron mesh.
+    /// </summary>
+    /// <returns>The Mesh for an octahedron.</returns>
+	public static Mesh OctahedronMesh()
+    {
+        if (octahedron.exists)
+        {
+            return octahedron.data;
+        }
+        else
+        {
+            octahedron = new Mesh();
+
+            octahedron.data.vertices = InitializeVertices();
+            octahedron.data.uv = InitializeUVs();
+            octahedron.data.triangles = InitializeTriangles();
+
+            octahedron.data.RecalculateBounds();
+            octahedron.data.RecalculateNormals();
+
+            return octahedron.data;
+        }
+	}
+
+    /// <summary>
+    /// Inspector - Use Barycentric coordinates to convert from octahedral coordinates to octahedral UV coordinates.
+    /// </summary>
+    /// <param name="octahedral">The octahedral coordinates.</param>
+    /// <returns>The UV coordinates of an octahedron.</returns>
+    public static Vector2 Cartesian_to_UV(Vector3 octahedral)
+    {
+        Vector2 result = Vector2.zero;
+
+        bool[] bSign = new bool[3];
+
+        bSign[0] = octahedral.x < 0;
+        bSign[1] = octahedral.y < 0;
+        bSign[2] = octahedral.z < 0;
+
+        int triangle_start_index = (bSign[0] ? 1 : 0) + (bSign[1] ? 2 : 0)  + (bSign[2] ? 4 : 0); // get value from 0-7 (x sign is 1s place, y sign is 2s place, z sign is 4s place)
+     
+        Mesh mesh = OctahedronMesh();
+
+        for (int vertex = 0; vertex < 3; ++vertex)
+        {
+            int begin_edge = mesh.triangles[triangle_start_index + vertex];
+            int end_edge = mesh.triangles[triangle_start_index + (vertex + 1) % 3];
+
+            Vector2 begin_UV = mesh.uv[begin_edge];
+            Vector2 end_UV = mesh.uv[end_edge];
+
+            Vector3 begin_Cartesian = mesh.vertices[begin_edge];
+            Vector3 end_Cartesian = mesh.vertices[end_edge];
+
+            float dot_product = Vector2.Dot((octahedral - begin_Cartesian).normalized, (end_Cartesian - begin_Cartesian).normalized);
+            Vector2 UV_vector = end_UV - begin_UV;
+            result += UV_vector*dot_product;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Inspector - Use Barycentric coordinates to convert from octahedral UV coordinates to octahedral coordinates.
+    /// </summary>
+    /// <param name="UV">The UV coordinates of the octahedron.</param>
+    /// <returns>The octahedral coordinates.</returns>
+    public static Vector3 UV_to_Cartesian(Vector2 UV)
+    {
+        Vector3 result = Vector3.zero;
+
+        bool[] bSign = new bool[3];
+
+        bSign[0] = UV.x < 0.5f; // x < 0?
+        bSign[1] = Mathf.Abs(UV.x) + Mathf.Abs(UV.y) > 1; // y < 0?
+        bSign[2] = UV.y < 0.5f; // z < 0?
+
+        int triangle_start_index = (bSign[0] ? 1 : 0) + (bSign[1] ? 2 : 0)  + (bSign[2] ? 4 : 0); // get value from 0-7 (x sign is 1s place, y sign is 2s place, z sign is 4s place)
+        
+        Mesh mesh = OctahedronMesh();
+
+        for (int vertex = 0; vertex < 3; ++vertex)
+        {
+            int begin_edge = mesh.triangles[triangle_start_index + vertex];
+            int end_edge = mesh.triangles[triangle_start_index + (vertex + 1) % 3];
+
+            Vector2 begin_UV = mesh.uv[begin_edge];
+            Vector2 end_UV = mesh.uv[end_edge];
+
+            Vector3 begin_Cartesian = mesh.vertices[begin_edge];
+            Vector3 end_Cartesian = mesh.vertices[end_edge];
+
+            float dot_product = Vector2.Dot((UV - begin_UV).normalized, (end_UV - begin_UV).normalized);
+            Vector3 Cartesian_vector = end_Cartesian - begin_Cartesian;
+            result += Cartesian_vector*dot_product;
+        }
+
+        return result;
+    }
+
     static optional<Mesh> octahedron;
 
-    static Vector3[] vertices;
-    static int[] triangles;
-    static Vector2[] UVs;
-    static Vector2[,,,] BarycentricUVs;
-    static Vector3[,,,] BarycentricCartesian;
-    
+    /// <summary>
+    /// Inspector - Set up the six mesh corners (vertices) of the octahedron.
+    /// </summary>
+    /// <returns>List of vertices for an octahedron.</returns>
     static Vector3[] InitializeVertices()
     {
-        vertices = new Vector3[9];
+        Vector3[] vertices = new Vector3[9];
 
         vertices[0] = Vector3.up;
         vertices[1] = Vector3.right;
@@ -27,9 +126,13 @@ public static class Octahedron
         return vertices;
     }
 
+    /// <summary>
+    /// Inspector - Set up the UVs for the six mesh corners (vertices) of the octahedron.
+    /// </summary>
+    /// <returns>List of UVs for an octahedron.</returns>
     static Vector2[] InitializeUVs()
     {
-        UVs = new Vector2[9];
+        Vector2[] UVs = new Vector2[9];
 
         UVs[0] = new Vector2(0.5f, 0.5f); // up
         UVs[1] = new Vector2(1.0f, 0.5f); // right
@@ -44,138 +147,25 @@ public static class Octahedron
         return UVs;
     }
 
+    /// <summary>
+    /// Inspector - Set up the triplet indices that define the triangles of the octahedron.
+    /// </summary>
+    /// <returns>A list of index triplets that define the triangles in the octahedron.</returns>
     static int[] InitializeTriangles()
     {
-        triangles = new int[3 * 8];
+        int[] triangles = new int[3 * 8];
 
         triangles[0]  = 0; triangles[1]  = 1; triangles[2]  = 2; //+x, +y, +z
         triangles[3]  = 0; triangles[4]  = 2; triangles[5]  = 3; //-x, +y, +z
-        triangles[6]  = 0; triangles[7]  = 3; triangles[8]  = 4; //-x, +y, -z
-        triangles[9]  = 0; triangles[10] = 4; triangles[11] = 1; //+x, +y, -z
-        triangles[12] = 5; triangles[13] = 2; triangles[14] = 1; //+x, -y, +z
-        triangles[15] = 6; triangles[16] = 3; triangles[17] = 2; //-x, -y, +z
-        triangles[18] = 7; triangles[19] = 4; triangles[20] = 3; //-x, -y, -z
-        triangles[21] = 8; triangles[22] = 1; triangles[23] = 4; //+x, -y, -z
+        triangles[6] = 5; triangles[7] = 2; triangles[8] = 1; //+x, -y, +z
+        triangles[9] = 6; triangles[10] = 3; triangles[11] = 2; //-x, -y, +z
+        triangles[12]  = 0; triangles[13] = 4; triangles[14] = 1; //+x, +y, -z
+        triangles[15]  = 0; triangles[16]  = 3; triangles[17]  = 4; //-x, +y, -z
+        triangles[18] = 8; triangles[19] = 1; triangles[20] = 4; //+x, -y, -z
+        triangles[21] = 7; triangles[22] = 4; triangles[23] = 3; //-x, -y, -z
 
         return triangles;
     }
-
-    static Vector2[,,,] InitializeBarycentricUVs()
-    {
-        BarycentricUVs = new Vector2[2,2,2,3];
-
-        // +x, +y, +z
-        BarycentricUVs[0,0,0,0] = new Vector2(1.0f, 1.0f);
-        BarycentricUVs[0,0,0,1] = new Vector2(0.5f, 1.0f);
-        BarycentricUVs[0,0,0,2] = new Vector2(1.0f, 0.5f);
-
-        // -x, +y, +z
-        BarycentricUVs[1,0,0,0] = new Vector2(0.0f, 1.0f);
-        BarycentricUVs[1,0,0,1] = new Vector2(0.0f, 0.5f);
-        BarycentricUVs[1,0,0,2] = new Vector2(0.5f, 1.0f);
-
-        // +x, -y, +z
-        BarycentricUVs[0,1,0,0] = new Vector2(0.5f, 0.5f);
-        BarycentricUVs[0,1,0,1] = new Vector2(1.0f, 0.5f);
-        BarycentricUVs[0,1,0,2] = new Vector2(0.5f, 1.0f);
-
-        // -x, -y, +z
-        BarycentricUVs[1,1,0,0] = new Vector2(0.5f, 0.5f);
-        BarycentricUVs[1,1,0,1] = new Vector2(0.5f, 1.0f);
-        BarycentricUVs[1,1,0,2] = new Vector2(0.0f, 0.5f);
-
-        // +x, +y, -z
-        BarycentricUVs[0,0,1,0] = new Vector2(1.0f, 0.0f);
-        BarycentricUVs[0,0,1,1] = new Vector2(1.0f, 0.5f);
-        BarycentricUVs[0,0,1,2] = new Vector2(0.5f, 0.0f);
-
-        // -x, +y, -z
-        BarycentricUVs[1,0,1,0] = new Vector2(0.0f, 0.0f);
-        BarycentricUVs[1,0,1,1] = new Vector2(0.5f, 0.0f);
-        BarycentricUVs[1,0,1,2] = new Vector2(0.0f, 0.5f);
-
-        // +x, -y, -z
-        BarycentricUVs[0,1,1,0] = new Vector2(0.5f, 0.5f);
-        BarycentricUVs[0,1,1,1] = new Vector2(0.5f, 0.0f);
-        BarycentricUVs[0,1,1,2] = new Vector2(1.0f, 0.5f);
-
-        // -x, -y, -z
-        BarycentricUVs[1,1,1,0] = new Vector2(0.5f, 0.5f);
-        BarycentricUVs[1,1,1,1] = new Vector2(0.0f, 0.5f);
-        BarycentricUVs[1,1,1,2] = new Vector2(0.5f, 0.0f);
-
-        return BarycentricUVs;
-    }
-
-    static Vector3[,,,] InitializeBarycentricCartesian()
-    {
-        BarycentricCartesian = new Vector3[2,2,2,3];
-
-        // +x, +y, +z
-        BarycentricCartesian[0,0,0,0] = new Vector3(+0.0f, +1.0f, +1.0f);
-        BarycentricCartesian[0,0,0,1] = new Vector3(+1.0f, +0.0f, -1.0f);
-        BarycentricCartesian[0,0,0,2] = new Vector3(-1.0f, -1.0f, +0.0f);
-
-        // -x, +y, +z
-        BarycentricCartesian[1,0,0,0] = new Vector3(-1.0f, +1.0f, +0.0f);
-        BarycentricCartesian[1,0,0,1] = new Vector3(+1.0f, +0.0f, +1.0f);
-        BarycentricCartesian[1,0,0,2] = new Vector3(+0.0f, -1.0f, -1.0f);
-
-        // +x, -y, +z
-        BarycentricCartesian[0,1,0,0] = new Vector3(+1.0f, -1.0f, +0.0f);
-        BarycentricCartesian[0,1,0,1] = new Vector3(-1.0f, +0.0f, +1.0f);
-        BarycentricCartesian[0,1,0,2] = new Vector3(+0.0f, +1.0f, -1.0f);
-        
-        // -x, -y, +z
-        BarycentricCartesian[1,1,0,0] = new Vector3(+0.0f, -1.0f, +1.0f);
-        BarycentricCartesian[1,1,0,1] = new Vector3(-1.0f, +0.0f, -1.0f);
-        BarycentricCartesian[1,1,0,2] = new Vector3(+1.0f, +1.0f, +0.0f);
-        
-        // +x, +y, -z
-        BarycentricCartesian[0,0,1,0] = new Vector3(+1.0f, +1.0f, +0.0f);
-        BarycentricCartesian[0,0,1,1] = new Vector3(-1.0f, +0.0f, -1.0f);
-        BarycentricCartesian[0,0,1,2] = new Vector3(+0.0f, -1.0f, +1.0f);
-        
-        // -x, +y, -z
-        BarycentricCartesian[1,0,1,0] = new Vector3(+0.0f, +1.0f, -1.0f);
-        BarycentricCartesian[1,0,1,1] = new Vector3(-1.0f, +0.0f, +1.0f);
-        BarycentricCartesian[1,0,1,2] = new Vector3(+1.0f, -1.0f, +0.0f);
-        
-        // +x, -y, -z
-        BarycentricCartesian[0,1,1,0] = new Vector3(+0.0f, -1.0f, -1.0f);
-        BarycentricCartesian[0,1,1,1] = new Vector3(+1.0f, +0.0f, +1.0f);
-        BarycentricCartesian[0,1,1,2] = new Vector3(-1.0f, +1.0f, +0.0f);
-        
-        // -x, -y, -z
-        BarycentricCartesian[1,1,1,0] = new Vector3(-1.0f, -1.0f, +0.0f);
-        BarycentricCartesian[1,1,1,1] = new Vector3(+1.0f, +0.0f, -1.0f);
-        BarycentricCartesian[1,1,1,2] = new Vector3(+0.0f, +1.0f, +1.0f);
-        
-        return BarycentricCartesian;
-    }
-
-	public static Mesh OctahedronMesh()
-    {
-        if (octahedron.exists)
-        {
-            return octahedron.data;
-        }
-        else
-        {
-            octahedron = new Mesh();
-
-            octahedron.data.vertices = InitializeVertices();
-            octahedron.data.uv = InitializeUVs();
-            octahedron.data.triangles = InitializeTriangles();
-            InitializeBarycentricUVs();
-            InitializeBarycentricCartesian();
-
-            octahedron.data.RecalculateBounds();
-            octahedron.data.RecalculateNormals();
-
-            return octahedron.data;
-        }
-	}
 }
 
 /*

@@ -19,7 +19,11 @@ public class NormalizedSphericalCoordinates
         Normalize();
     }
 
-    // implicit conversions: use to_Cartesian to make the other two functions!
+    /// <summary>
+    /// Inspector - Converts spherical coordinates into Cartesian coordinates.
+    /// </summary>
+    /// <param name="spherical">The spherical coordinates that will be converted</param>
+    /// <returns>The Cartesian coordinates.</returns> 
     public static implicit operator NormalizedCartesianCoordinates(NormalizedSphericalCoordinates octahedral)
     {
         Vector3 Cartesian = new Vector3();
@@ -27,6 +31,28 @@ public class NormalizedSphericalCoordinates
         Cartesian.y = -Mathf.Cos(octahedral.data.x);
         Cartesian.z = -Mathf.Sin(octahedral.data.x) * Mathf.Sin(octahedral.data.y);
         return new NormalizedCartesianCoordinates(Cartesian);
+    }
+
+    /// <summary>
+    /// Inspector - Converts spherical coordinates into octahedral coordinates.
+    /// </summary>
+    /// <param name="spherical">The spherical coordinates that will be converted</param>
+    /// <returns>The octahedral coordinates.</returns> 
+    public static implicit operator NormalizedOctahedralCoordinates(NormalizedSphericalCoordinates spherical)
+    {
+        NormalizedCartesianCoordinates Cartesian = spherical;
+        return Cartesian;
+    }
+
+    /// <summary>
+    /// Inspector - Converts spherical coordinates into octahedron UV space.
+    /// </summary>
+    /// <param name="spherical">The spherical coordinates that will be converted</param>
+    /// <returns>The UV coordinates for an octahedron.</returns> 
+    public static implicit operator OctahedralUVCoordinates(NormalizedSphericalCoordinates spherical)
+    {
+        NormalizedCartesianCoordinates Cartesian = spherical;
+        return Cartesian;
     }
 
     Vector2 data_;

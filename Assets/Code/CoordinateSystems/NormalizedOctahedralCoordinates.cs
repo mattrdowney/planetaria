@@ -8,35 +8,65 @@ public struct NormalizedOctahedralCoordinates
         set { data_ = value; Normalize(); }
     }
 
-    public NormalizedOctahedralCoordinates(Vector3 vector)
+    /// <summary>
+    /// Constructor - Stores octahedral coordinates in a wrapper class.
+    /// </summary>
+    /// <param name="octahedral">The octahedral coordinates. Note: matches Unity's default Vector3 definition.</param>
+    public NormalizedOctahedralCoordinates(Vector3 octahedral)
     {
-        data_ = vector;
+        data_ = octahedral;
         Normalize();
     }
 
-    public NormalizedOctahedralCoordinates(float x, float y, float z)
-    {
-        data_ = new Vector3(x, y, z);
-        Normalize();
-    }
-
+    /// <summary>
+    /// Inspector - Converts octahedral coordinates into Cartesian coordinates.
+    /// </summary>
+    /// <param name="octahedral">The octahedral that will be converted</param>
+    /// <returns>The Cartesian coordinates.</returns> 
     public static implicit operator NormalizedCartesianCoordinates(NormalizedOctahedralCoordinates octahedral)
     {
         return new NormalizedCartesianCoordinates(octahedral.data);
     }
 
-    // implicit conversions: use to_Cartesian to make the other two functions!
+    /// <summary>
+    /// Inspector - Converts octahedral coordinates into octahedron UV coordinates.
+    /// </summary>
+    /// <param name="octahedral">The octahedral that will be converted</param>
+    /// <returns>The UV coordinates of an octahedron.</returns> 
+    public static implicit operator OctahedralUVCoordinates(NormalizedOctahedralCoordinates octahedral)
+    {
+        Vector2 UV = Octahedron.Cartesian_to_UV(octahedral.data);
+        return new OctahedralUVCoordinates(UV.x, UV.y);
+    }
+    
+    /// <summary>
+    /// Inspector - Converts octahedral coordinates into spherical coordinates.
+    /// </summary>
+    /// <param name="octahedral">The octahedral that will be converted</param>
+    /// <returns>The spherical coordinates.</returns> 
+    public static implicit operator NormalizedSphericalCoordinates(NormalizedOctahedralCoordinates octahedral)
+    {
+        NormalizedCartesianCoordinates Cartesian = octahedral;
+        return Cartesian;
+    }
 
     Vector3 data_;
 
-    float magnitude()
+    /// <summary>
+    /// Inspector - finds the Manhattan distance between two points
+    /// </summary>
+    /// <returns>The Manhattan distance.</returns>
+    float Manhattan_distance()
     {
         return Mathf.Abs(data_.x) + Mathf.Abs(data_.x) + Mathf.Abs(data_.x);
     }
 
+    /// <summary>
+    /// Mutator - Normalizes Cartesian vector using Manhattan distance
+    /// </summary>
     void Normalize()
     {
-        float length = magnitude();
+        float length = Manhattan_distance();
         float absolute_error = Mathf.Abs(length-1);
         if (absolute_error < Precision.tolerance)
         {

@@ -11,22 +11,10 @@ public class NormalizedCartesianCoordinates
     /// <summary>
     /// Constructor - Stores Cartesian coordinates in a wrapper class.
     /// </summary>
-    /// <param name="vector">The Cartesian coordinates. Note: matches Unity's default Vector3 definition.</param>
+    /// <param name="Cartesian">The Cartesian coordinates. Note: matches Unity's default Vector3 definition.</param>
     public NormalizedCartesianCoordinates(Vector3 Cartesian)
     {
         data_ = Cartesian;
-        Normalize(); 
-    }
-
-    /// <summary>
-    /// Constructor - Stores Cartesian coordinates in a wrapper class.
-    /// </summary>
-    /// <param name="x">The Cartesian x coordinate. Negative is left; positive is right.</param>
-    /// <param name="y">The Cartesian y coordinate. Negative is down; positive is up.</param>
-    /// <param name="z">The Cartesian z coordinate. Negative is backward; positive is forward.</param>
-    public NormalizedCartesianCoordinates(float x, float y, float z)
-    {
-        data_ = new Vector3(x, y, z);
         Normalize(); 
     }
 
@@ -56,48 +44,11 @@ public class NormalizedCartesianCoordinates
     /// Inspector - Converts Cartesian coordinates into octahedron UV space.
     /// </summary>
     /// <param name="Cartesian">The coordinates in Cartesian space that will be converted</param>
-    /// <returns>The UV coordinates for a octahedron.</returns> 
+    /// <returns>The UV coordinates for an octahedron.</returns> 
     public static implicit operator OctahedralUVCoordinates(NormalizedCartesianCoordinates Cartesian)
     {
-        Vector2 UV;
-        Vector2 xPivot, yPivot, zPivot;
-
         NormalizedOctahedralCoordinates octahedral = Cartesian;
-
-        if (System.Math.Sign(octahedral.data.x) == +1) //FIXME: optimize this hardcoded stuff, Barycentric coordinate conversions are certainly capable of being elegant
-        {
-            if(System.Math.Sign(octahedral.data.z) == +1)
-            {
-                yPivot = new Vector2(1.0f, 1.0f);
-                zPivot = new Vector2(0.5f, 1.0f);
-            }
-            else
-            {
-                yPivot = new Vector2(1.0f, 0.0f);
-                zPivot = new Vector2(0.5f, 0.0f);
-            }
-            xPivot = new Vector2(1.0f, 0.5f);
-        }
-        else
-        {
-            if (System.Math.Sign(octahedral.data.z) == +1)
-            {
-                yPivot = new Vector2(0.0f, 1.0f);
-                zPivot = new Vector2(0.5f, 1.0f);
-            }
-            else
-            {
-                yPivot = new Vector2(0.0f, 0.0f);
-                zPivot = new Vector2(0.5f, 0.0f);
-            }
-            xPivot = new Vector2(0.0f, 0.5f);
-        }
-        if(System.Math.Sign(octahedral.data.y) == +1)
-        {
-            yPivot = new Vector2(0.5f, 0.5f);
-        }
-        UV = xPivot*Mathf.Abs(octahedral.data.x) + yPivot* Mathf.Abs(octahedral.data.y) + zPivot* Mathf.Abs(octahedral.data.z);
-        return new OctahedralUVCoordinates(UV.x, UV.y);
+        return octahedral;
     }
 
     Vector3 data_;
