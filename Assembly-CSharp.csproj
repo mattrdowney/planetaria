@@ -52,6 +52,7 @@
      <Compile Include="Assets\Code\CoordinateSystems\OctahedralUVCoordinates.cs" />
      <Compile Include="Assets\Code\CoordinateSystems\Octahedron.cs" />
      <Compile Include="Assets\Code\Utility\Optional.cs" />
+     <Compile Include="Assets\Code\Utility\PlanetariaIntersection.cs" />
      <Compile Include="Assets\Code\Utility\PlanetariaMath.cs" />
      <Compile Include="Assets\Code\Utility\Precision.cs" />
  <Reference Include="UnityEngine.UI">

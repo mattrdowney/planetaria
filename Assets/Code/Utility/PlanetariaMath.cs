@@ -3,11 +3,11 @@
 public static class PlanetariaMath
 {
     /// <summary>
-    /// The result of the modulo operation when using Euclidean division. 
+    /// The result of the modulo operation when using Euclidean division. The remainder will always be positive.
     /// </summary>
     /// <param name="dividend">The element that will be used to calculate the remainder.</param>
     /// <param name="divisor">The interval upon which the dividend will be divided.</param>
-    /// <returns></returns>
+    /// <returns>The remainder.</returns>
     public static float EuclideanDivisionModulo(float dividend, float divisor)
     {
         divisor = Mathf.Abs(divisor);
