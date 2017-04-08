@@ -5,20 +5,20 @@ public static class PlanetariaIntersection
     /// <summary>
     /// Inspector - Returns intersection information between two circles on a sphere.
     /// </summary>
-    /// <param name="coordinate_A">Circle A's Cartesian coordinates.</param>
+    /// <param name="coordinate_A">Circle A's Cartesian coordinates.</param> // TODO: use Circle struct
     /// <param name="coordinate_B">Circle B's Cartesian coordinates.</param>
     /// <param name="radius_A">Circle A's radius.</param>
     /// <param name="radius_B">Circle B's radius.</param>
     /// <returns>
     /// If there are zero or infinite solutions, returns an empty array;
-    /// If there is one or two solutions, returns an array with two Cartesian coordinates.
+    /// If there are one or two solutions, returns an array with two Cartesian coordinates.
     /// </returns>
     public static NormalizedCartesianCoordinates[] circle_circle_intersection(NormalizedCartesianCoordinates coordinate_A, NormalizedCartesianCoordinates coordinate_B, float radius_A, float radius_B)
 	{
         radius_A = Mathf.Abs(radius_A);
         radius_B = Mathf.Abs(radius_B);
 
-        if (radius_A > Mathf.PI || radius_B > Mathf.PI)
+        if (radius_A > Mathf.PI || radius_B > Mathf.PI) // ignore invalid input
         {
             return new NormalizedCartesianCoordinates[0];
         }

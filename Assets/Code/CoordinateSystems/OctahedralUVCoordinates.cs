@@ -60,11 +60,11 @@ public class OctahedralUVCoordinates
     {
         if (Mathf.Abs(data_.x - 0.5f) > 0.5f && data_.x != 1f)
         {
-            data_.x = PlanetariaMath.EuclideanDivisionModulo(data_.x, 1f); //TODO: test that 1) Vector2 is properly assigned
+            data_.x = PlanetariaMath.modulo_using_Euclidean_division(data_.x, 1f); //TODO: test that 1) Vector2 is properly assigned
         }
         if (Mathf.Abs(data_.y - 0.5f) > 0.5f && data_.y != 1f)
         {
-            data_.y = PlanetariaMath.EuclideanDivisionModulo(data_.y, 1f);
+            data_.y = PlanetariaMath.modulo_using_Euclidean_division(data_.y, 1f);
         }
     }
 }

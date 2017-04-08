@@ -1,6 +1,7 @@
 ﻿public static class Precision
 {
     public const float tolerance = 1e-6f;
+    public const int float_bits = 8 * sizeof(float);
 }
 
 /*
