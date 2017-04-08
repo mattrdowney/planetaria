@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// A immutable class that stores an arc along the surface of a unit sphere. Includes convex corners, great edges, convex edges, and concave edges. Cannot store concave corners!
+/// </summary>
 public class Arc : Object
 {
     /// <summary>An axis that includes the center of the circle.</summary>
@@ -11,9 +14,9 @@ public class Arc : Object
 	Vector3 binormal;
 	
     /// <summary>A boundary that determines what is outside of the arc before the arc's beginning.</summary>
-	Vector3 outside_of_beginning;
+	Vector3 inside_of_beginning;
     /// <summary>A boundary that determines what is outside of the arc after the arc's end.</summary>
-	Vector3 outside_of_end;
+	Vector3 inside_of_end;
 	
     /// <summary>The length of the arc</summary>
     float arc_angle;
@@ -44,7 +47,21 @@ public class Arc : Object
     /// </returns>
 	public bool contains(Vector3 position, float radius = 0f)
     {
+        bool bAboveFloor = Vector3.Dot(position, center_axis) >= Mathf.Sin(arc_latitude); // XXX: potential bug based on usage / arc initialization.
+        bool bBelowCeiling = Vector3.Dot(position, center_axis) <= Mathf.Sin(arc_latitude + radius);
+        bool bCorrectLatitude = bAboveFloor && bBelowCeiling;
 
+        bool bInsideBeginning = Vector3.Dot(position, inside_of_beginning) >= 0;
+        bool bInsideEnd = Vector3.Dot(position, inside_of_end) >= 0;
+        bool bReflexAngle = arc_angle > Mathf.PI;
+        bool bCorrectAngle = System.Convert.ToInt32(bInsideBeginning) +
+                System.Convert.ToInt32(bInsideEnd) +
+                System.Convert.ToInt32(bReflexAngle) >= 2;
+        //bool bTotallyInside = bInsideBeginning && bInsideEnd;
+        //bool bValidReflexAngle = arc_angle > Mathf.PI && (bInsideBeginning || bInsideEnd);
+        //bool bCorrectAngle = bTotallyInside || bValidReflexAngle;
+
+        return bCorrectLatitude && bCorrectAngle;
     }
 
     /// <summary>
@@ -65,7 +82,8 @@ public class Arc : Object
     /// <returns>A normal on the arc.</returns>
     public Vector3 normal(float angle, float extrusion = 0f)
     {
-
+        Vector3 equator_position = PlanetariaMath.slerp(beginning, binormal, arc_angle);
+        PlanetariaMath.slerp(center_axis, -equator_position, arc_latitude + extrusion);
     }
 
     /// <summary>
@@ -84,14 +102,14 @@ public class Arc : Object
     /// Mutator - Create an AABB that contains a circular arc
     /// </summary>
     /// <param name="arc">The arc whose AABB will be recalculated.</param>
-    protected static void RecalculateAABB(Arc arc)
+    private static void RecalculateAABB(Arc arc)
 	{
-		float x_min = closest_normal(arc, Vector3.left   ).x;
-		float x_max = closest_normal(arc, Vector3.right  ).x;
-		float y_min = closest_normal(arc, Vector3.down   ).y;
-		float y_max = closest_normal(arc, Vector3.up     ).y;
-		float z_min = closest_normal(arc, Vector3.back   ).z;
-		float z_max = closest_normal(arc, Vector3.forward).z;
+		float x_min = closest_position(arc, Vector3.left   ).x;
+		float x_max = closest_position(arc, Vector3.right  ).x;
+		float y_min = closest_position(arc, Vector3.down   ).y;
+		float y_max = closest_position(arc, Vector3.up     ).y;
+		float z_min = closest_position(arc, Vector3.back   ).z;
+		float z_max = closest_position(arc, Vector3.forward).z;
 
         /*
 		arc.transform.position = new Vector3((x_max + x_min) / 2,
