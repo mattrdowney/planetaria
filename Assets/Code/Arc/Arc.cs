@@ -23,6 +23,33 @@ public class Arc : Object
     /// <summary>The distance of the arc from its parallel "equator".</summary>
     float arc_latitude;
 
+    // Delegating to ConcaveEdge and ConvexEdge might not be required
+    public static Arc CreateArc(NormalizedCartesianCoordinates beginning, NormalizedCartesianCoordinates normal, NormalizedCartesianCoordinates end, bool long_path = false)
+    {
+        Arc result = new Arc();
+
+        return result;
+    }
+
+    public static Arc CreateCorner(Arc left, Arc right)
+    {
+        Arc result = new Arc();
+
+        return result;
+    }
+    
+    private static Arc ConcaveCorner()
+    {
+        return null; // Concave corners are not actually arcs; it's complicated...
+    }
+
+    private static Arc ConvexCorner()
+    {
+        Arc result = new Arc();
+
+        return result;
+    }
+
     /// <summary>
     /// Inspector - Get the angle of the arc in radians.
     /// </summary>
@@ -54,12 +81,14 @@ public class Arc : Object
         bool bInsideBeginning = Vector3.Dot(position, inside_of_beginning) >= 0;
         bool bInsideEnd = Vector3.Dot(position, inside_of_end) >= 0;
         bool bReflexAngle = arc_angle > Mathf.PI;
-        bool bCorrectAngle = System.Convert.ToInt32(bInsideBeginning) +
+
+        bool bTotallyInside = bInsideBeginning && bInsideEnd;
+        bool bValidReflexAngle = bReflexAngle && (bInsideBeginning || bInsideEnd);
+        bool bCorrectAngle = bTotallyInside || bValidReflexAngle;
+
+        /*bool bCorrectAngle = System.Convert.ToInt32(bInsideBeginning) + // TODO: test if this is properly optimized in C#
                 System.Convert.ToInt32(bInsideEnd) +
-                System.Convert.ToInt32(bReflexAngle) >= 2;
-        //bool bTotallyInside = bInsideBeginning && bInsideEnd;
-        //bool bValidReflexAngle = arc_angle > Mathf.PI && (bInsideBeginning || bInsideEnd);
-        //bool bCorrectAngle = bTotallyInside || bValidReflexAngle;
+                System.Convert.ToInt32(bReflexAngle) >= 2;*/
 
         return bCorrectLatitude && bCorrectAngle;
     }
@@ -83,7 +112,7 @@ public class Arc : Object
     public Vector3 normal(float angle, float extrusion = 0f)
     {
         Vector3 equator_position = PlanetariaMath.slerp(beginning, binormal, arc_angle);
-        PlanetariaMath.slerp(center_axis, -equator_position, arc_latitude + extrusion);
+        return PlanetariaMath.slerp(center_axis, -equator_position, arc_latitude + extrusion);
     }
 
     /// <summary>
