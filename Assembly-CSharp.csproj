@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Code\Arc\Arc.cs" />
+     <Compile Include="Assets\Code\CoordinateSystems\Bearing.cs" />
      <Compile Include="Assets\Code\CoordinateSystems\NormalizedCartesianCoordinates.cs" />
      <Compile Include="Assets\Code\CoordinateSystems\NormalizedOctahedralCoordinates.cs" />
      <Compile Include="Assets\Code\CoordinateSystems\NormalizedSphericalCoordinates.cs" />

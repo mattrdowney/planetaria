@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 /// <summary>
-/// A immutable class that stores an arc along the surface of a unit sphere. Includes convex corners, great edges, convex edges, and concave edges. Cannot store concave corners!
+/// A "immutable" class that stores an arc along the surface of a unit sphere. Includes convex corners, great edges, convex edges, and concave edges. Cannot store concave corners!
 /// </summary>
 public class Arc : Object
 {
@@ -13,10 +13,10 @@ public class Arc : Object
     /// <summary>A vector that is normal to both center_axis and beginning.</summary>
 	Vector3 binormal;
 	
-    /// <summary>A boundary that determines what is outside of the arc before the arc's beginning.</summary>
-	Vector3 inside_of_beginning;
-    /// <summary>A boundary that determines what is outside of the arc after the arc's end.</summary>
-	Vector3 inside_of_end;
+    /// <summary>A boundary that determines which points are before the beginning of the arc.</summary>
+	Vector3 after_beginning;
+    /// <summary>A boundary that determines which points are beyond the end of the arc.</summary>
+	Vector3 before_end;
 	
     /// <summary>The length of the arc</summary>
     float arc_angle;
@@ -78,8 +78,8 @@ public class Arc : Object
         bool bBelowCeiling = Vector3.Dot(position, center_axis) <= Mathf.Sin(arc_latitude + radius);
         bool bCorrectLatitude = bAboveFloor && bBelowCeiling;
 
-        bool bInsideBeginning = Vector3.Dot(position, inside_of_beginning) >= 0;
-        bool bInsideEnd = Vector3.Dot(position, inside_of_end) >= 0;
+        bool bInsideBeginning = Vector3.Dot(position, after_beginning) >= 0;
+        bool bInsideEnd = Vector3.Dot(position, before_end) >= 0;
         bool bReflexAngle = arc_angle > Mathf.PI;
 
         bool bTotallyInside = bInsideBeginning && bInsideEnd;
@@ -91,6 +91,22 @@ public class Arc : Object
                 System.Convert.ToInt32(bReflexAngle) >= 2;*/
 
         return bCorrectLatitude && bCorrectAngle;
+    }
+
+    /// <summary>
+    /// Inspector - Determine if the corner between between left's end and right's beginning is convex (i.e. a reflex angle).
+    /// </summary>
+    /// <param name="left">Arc that will connect to beginning.</param>
+    /// <param name="right">Arc that will connect to end.</param>
+    /// <returns>
+    /// True if the arc is convex.
+    /// False if the arc is concave.
+    /// </returns>
+    public static bool is_convex(Arc left, Arc right)
+	{
+        Vector3 normal_for_left = left.normal(left.angle());
+        Vector3 rightward_for_right = Bearing.right(right.position(0), right.normal(0));
+		return Vector3.Dot(normal_for_left, rightward_for_right) < 0;
     }
 
     /// <summary>
@@ -153,3 +169,20 @@ public class Arc : Object
         */
 	}
 }
+
+/*
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
