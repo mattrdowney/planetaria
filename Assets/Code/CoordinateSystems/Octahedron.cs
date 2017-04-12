@@ -6,7 +6,7 @@ public static class Octahedron
     /// Singleton - Fetch the octahedron mesh.
     /// </summary>
     /// <returns>The Mesh for an octahedron.</returns>
-	public static Mesh OctahedronMesh()
+    public static Mesh OctahedronMesh()
     {
         if (octahedron.exists)
         {
@@ -25,7 +25,7 @@ public static class Octahedron
 
             return octahedron.data;
         }
-	}
+    }
 
     /// <summary>
     /// Inspector - Use Barycentric coordinates to convert from octahedral coordinates to octahedral UV coordinates.

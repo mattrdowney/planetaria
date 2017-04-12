@@ -19,9 +19,9 @@
     }
 
     public optional(Type original)
-	{
+    {
         exists_ = true;
-		data_ = original;
+        data_ = original;
     }
 
     public static implicit operator optional<Type>(Type original)

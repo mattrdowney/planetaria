@@ -14,7 +14,7 @@ public static class PlanetariaIntersection
     /// If there are one or two solutions, returns an array with two Cartesian coordinates.
     /// </returns>
     public static NormalizedCartesianCoordinates[] circle_circle_intersection(NormalizedCartesianCoordinates coordinate_A, NormalizedCartesianCoordinates coordinate_B, float radius_A, float radius_B)
-	{
+    {
         radius_A = Mathf.Abs(radius_A);
         radius_B = Mathf.Abs(radius_B);
 
@@ -45,22 +45,22 @@ public static class PlanetariaIntersection
 
         // Instead of thinking of a circle on a globe, it's easier to think of the circle as the intersection of a sphere against the surrounding globe
         float distance_from_origin_A = Mathf.Cos(radius_A);
-		float distance_from_origin_B = Mathf.Cos(radius_B);
-		
+        float distance_from_origin_B = Mathf.Cos(radius_B);
+        
         // The center should be distance_from_origin away iff similarity = 0, otherwise you have to push the center closer or further
-		float center_fraction_A = (distance_from_origin_A - distance_from_origin_B * similarity) / (1 - similarity * similarity);
-		float center_fraction_B = (distance_from_origin_B - distance_from_origin_A * similarity) / (1 - similarity * similarity);
+        float center_fraction_A = (distance_from_origin_A - distance_from_origin_B * similarity) / (1 - similarity * similarity);
+        float center_fraction_B = (distance_from_origin_B - distance_from_origin_A * similarity) / (1 - similarity * similarity);
 
-		Vector3 intersection_center = center_fraction_A*coordinate_A.data + center_fraction_B*coordinate_B.data;
+        Vector3 intersection_center = center_fraction_A*coordinate_A.data + center_fraction_B*coordinate_B.data;
 
-		Vector3 binormal = Vector3.Cross(coordinate_A.data, coordinate_B.data);
+        Vector3 binormal = Vector3.Cross(coordinate_A.data, coordinate_B.data);
 
-		float midpoint_distance = Mathf.Sqrt((1 - Vector3.Dot(intersection_center, intersection_center)) / Vector3.Dot(binormal, binormal)); //CONSIDER: rename?
+        float midpoint_distance = Mathf.Sqrt((1 - Vector3.Dot(intersection_center, intersection_center)) / Vector3.Dot(binormal, binormal)); //CONSIDER: rename?
 
         // Note: tangential circles (i.e. midpoint_distance = 0) return two intersections (i.e. a secant line)
         NormalizedCartesianCoordinates[] result = new NormalizedCartesianCoordinates[2];
-		result[0] = new NormalizedCartesianCoordinates(intersection_center + midpoint_distance*binormal);
-		result[1] = new NormalizedCartesianCoordinates(intersection_center - midpoint_distance*binormal);
+        result[0] = new NormalizedCartesianCoordinates(intersection_center + midpoint_distance*binormal);
+        result[1] = new NormalizedCartesianCoordinates(intersection_center - midpoint_distance*binormal);
 
         return result;
     }

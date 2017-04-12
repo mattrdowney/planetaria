@@ -2,7 +2,7 @@
 
 public class NormalizedSphericalCoordinates
 {
-	public Vector2 data
+    public Vector2 data
     {
         get { return data_; }
         set { data_ = value; Normalize(); }
@@ -73,7 +73,7 @@ public class NormalizedSphericalCoordinates
         }
         if (Mathf.Abs(data_.y - Mathf.PI) > Mathf.PI || data_.y == 2*Mathf.PI)
         {
-            data_.y = PlanetariaMath.EuclideanDivisionModulo(data_.y, 2*Mathf.PI);
+            data_.y = PlanetariaMath.modulo_using_Euclidean_division(data_.y, 2*Mathf.PI);
         }
     }
 }

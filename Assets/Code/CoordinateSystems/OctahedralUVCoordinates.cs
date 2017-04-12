@@ -2,7 +2,7 @@
 
 public class OctahedralUVCoordinates
 {
-	public Vector2 data
+    public Vector2 data
     {
         get { return data_; }
         set { data_ = value; Normalize(); }
