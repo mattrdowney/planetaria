@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 /// <summary>
-/// A "immutable" class that stores an arc along the surface of a unit sphere. Includes convex corners, great edges, convex edges, and concave edges. Cannot store concave corners!
+/// An "immutable" class that stores an arc along the surface of a unit sphere. Includes convex corners, great edges, convex edges, and concave edges. Cannot store concave corners!
 /// </summary>
 public class Arc : Object
 {
@@ -58,6 +58,8 @@ public class Arc : Object
             result.before_end *= -1;
         }
 
+        // TODO: Add Arc to global map and create/change colliders/transforms appropriately
+
         return result;
     }
 
@@ -76,46 +78,6 @@ public class Arc : Object
 
         return ConvexCorner(left, right);
     }
-    
-    /// <summary>
-    /// Constructor - Spoof a concave corner arc with a null value (since concave corner arcs do not extrude concentrically).
-    /// </summary>
-    /// <param name="left">The arc that attaches to the beginning of the corner.</param>
-    /// <param name="right">The arc that attaches to the end of the corner.</param>
-    /// <returns>A null arc (special value for a concave corner).</returns>
-    private static Arc ConcaveCorner(Arc left, Arc right)
-    {
-        return null; // Concave corners are not actually arcs; it's complicated...
-    }
-
-    /// <summary>
-    /// Constructor - Create a convex corner arc.
-    /// </summary>
-    /// <param name="left">The arc that attaches to the beginning of the corner.</param>
-    /// <param name="right">The arc that attaches to the end of the corner.</param>
-    /// <returns>A convex corner arc.</returns>
-    private static Arc ConvexCorner(Arc left, Arc right)
-    {
-        // Rather than doubling the codebase for constructors...
-        // find the arc along the equator and set the latitude to -PI/2 (implicitly, that means the arc radius is zero)
-
-        // The normal vector should point away from the position of the corner
-        Vector3 cut_normal = -right.position(0);
-
-        // The equatorial positions can be found by extruding the edges by PI/2
-        Vector3 start = left.position(left.angle(), Mathf.PI/2);
-        Vector3 end = right.position(0, Mathf.PI/2);
-
-        // Create arc on equator
-        Arc result = CreateArc(new NormalizedCartesianCoordinates(start),
-                new NormalizedCartesianCoordinates(cut_normal),
-                new NormalizedCartesianCoordinates(end));
-
-        // And move the arc to the "South Pole" instead
-        result.arc_latitude = -Mathf.PI/2;
-
-        return result;
-    }
 
     /// <summary>
     /// Inspector - Get the angle of the arc in radians.
@@ -129,11 +91,12 @@ public class Arc : Object
 
     public static float closest_normal(Arc arc, Vector3 normal, int precision = Precision.float_bits)
     {
-        return 0;
+        return closest_heuristic(arc, normal_heuristic, normal, precision);
     }
+
     public static float closest_point(Arc arc, Vector3 point, int precision = Precision.float_bits)
     {
-        return 0;
+        return closest_heuristic(arc, position_heuristic, point, precision);
     }
 
     /// <summary>
@@ -215,13 +178,102 @@ public class Arc : Object
         Vector3 equator_position = PlanetariaMath.slerp(forward_axis, right_axis, arc_angle);
         return PlanetariaMath.slerp(equator_position, center_axis, arc_latitude + extrusion);
     }
+        
+    /// <summary>
+    /// Constructor - Spoof a concave corner arc with a null value (since concave corner arcs do not extrude concentrically).
+    /// </summary>
+    /// <param name="left">The arc that attaches to the beginning of the corner.</param>
+    /// <param name="right">The arc that attaches to the end of the corner.</param>
+    /// <returns>A null arc (special value for a concave corner).</returns>
+    private static Arc ConcaveCorner(Arc left, Arc right)
+    {
+        return null; // Concave corners are not actually arcs; it's complicated...
+    }
 
     /// <summary>
-    /// Inspector - Create an AABB that contains a circular arc.
+    /// Constructor - Create a convex corner arc.
+    /// </summary>
+    /// <param name="left">The arc that attaches to the beginning of the corner.</param>
+    /// <param name="right">The arc that attaches to the end of the corner.</param>
+    /// <returns>A convex corner arc.</returns>
+    private static Arc ConvexCorner(Arc left, Arc right) // CHECKME: does this work when latitude is >0?
+    {
+        // Rather than doubling the codebase for constructors...
+        // find the arc along the equator and set the latitude to -PI/2 (implicitly, that means the arc radius is zero)
+
+        // The normal vector should point away from the position of the corner
+        Vector3 cut_normal = -right.position(0);
+
+        // The equatorial positions can be found by extruding the edges by PI/2
+        Vector3 start = left.position(left.angle(), Mathf.PI/2);
+        Vector3 end = right.position(0, Mathf.PI/2);
+
+        // Create arc on equator
+        Arc result = CreateArc(new NormalizedCartesianCoordinates(start),
+                new NormalizedCartesianCoordinates(cut_normal),
+                new NormalizedCartesianCoordinates(end));
+
+        // And move the arc to the "South Pole" instead
+        result.arc_latitude = -Mathf.PI/2;
+
+        return result;
+    }
+
+    private static float closest_heuristic(Arc arc, heuristic_function distance_heuristic, Vector3 target,
+            int precision = Precision.float_bits)
+    {
+        float closest_angle = 0; // use a valid angle for when arc.angle() returns 0!
+        float closest_heuristic = Mathf.Infinity;
+
+        // if we don't calculate per quadrant, calculations for an arc with angle 2*PI become ambiguous because left == right
+        float quadrants = Mathf.Ceil(arc.angle() / (Mathf.PI / 2f)); //maximum of 4, always integral, float for casting "left" and "right"
+        for (float quadrant = 0; quadrant < quadrants; ++quadrant)
+        {
+            float left_angle = arc.angle() * (quadrant / quadrants); //get beginning of quadrant e.g. 0.00,0.25,0.50,0.75
+            float right_angle = arc.angle() * ((quadrant + 1) / quadrants); //get end of quadrant e.g. 0.25,0.50,0.75,1.00
+
+            float left_heuristic = distance_heuristic(arc, target, left_angle); //find the distance heuristics, lower is closer to target
+            float right_heuristic = distance_heuristic(arc, target, right_angle);
+
+            // This is basically a binary search
+            // 1) find the distance heuristics for left and right side
+            // 2) take the greater heuristic and ignore that half (since it's further away from target)
+            for (int iteration = 0; iteration < precision; ++iteration) //because we are dealing with floats, more precision could help (or hurt?)
+            {
+                float midpoint = (left_angle + right_angle) / 2;
+                if (left_heuristic < right_heuristic) // answer is within left half of arc
+                {
+                    right_angle = midpoint; //throw out the right half (since it's further from target)
+                    right_heuristic = distance_heuristic(arc, target, right_angle);
+                }
+                else // answer is within right half of arc
+                {
+                    left_angle = midpoint; //throw out the left half (since it's further from target)
+                    left_heuristic = distance_heuristic(arc, target, left_angle);
+                }
+            }
+
+            // find out if this quadrant has a closer point to the target
+            if (right_heuristic < closest_heuristic)
+            {
+                closest_angle = right_angle;
+                closest_heuristic = right_heuristic;
+            }
+            if (left_heuristic < closest_heuristic)
+            {
+                closest_angle = left_angle;
+                closest_heuristic = left_heuristic;
+            }
+        }
+        return closest_angle;
+    }
+
+    /// <summary>
+    /// Inspector - Get an AABB that contains a circular arc.
     /// </summary>
     /// <param name="arc">The arc that should be surrounded by an AABB.</param>
     /// <returns>Bounds struct AKA axis-aligned bounding box (AABB).</returns>
-    private static Bounds CreateAABB(Arc arc)
+    private static Bounds GetAABB(Arc arc)
     {
         float x_min = arc.position(closest_point(arc, Vector3.left   )).x;
         float x_max = arc.position(closest_point(arc, Vector3.right  )).x;
@@ -239,6 +291,18 @@ public class Arc : Object
                 z_max - z_min);
 
         return new Bounds(center, size);
+    }
+
+    private delegate float heuristic_function(Arc arc, Vector3 operand, float angle);
+
+    private static float normal_heuristic(Arc arc, Vector3 desired_normal, float angle) // what a normie fuckin' heuristic
+    {
+        return (Vector3.Dot(arc.normal(angle), -desired_normal) + 1f) / 2; // return [0,1] for the hell of it, the dot product would suffice, though
+    }
+
+    private static float position_heuristic(Arc arc, Vector3 desired_position, float angle)
+    {
+        return (Vector3.Dot(arc.position(angle), -desired_position) + 1f) / 2; // return [0,1] for the hell of it, the dot product would suffice, though
     }
 }
 
