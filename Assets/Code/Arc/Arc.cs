@@ -16,7 +16,7 @@ public class Arc : Object
     
     /// <summary>The length of the arc</summary>
     float arc_angle;
-    /// <summary>The distance of the arc from its parallel "equator".</summary>
+    /// <summary>The angle of the arc from its parallel "equator".</summary>
     float arc_latitude;
 
     /// <summary>
@@ -26,12 +26,13 @@ public class Arc : Object
     /// <param name="normal">A normal that defines the "cutting plane" that defines the circle.</param>
     /// <param name="end">The end point of the arc.</param>
     /// <param name="long_path">Is the path longer than PI radians?</param>
-    /// <returns></returns>
+    /// <returns>An arc along the surface of a unit sphere.</returns>
     public static Arc CreateArc(NormalizedCartesianCoordinates start, NormalizedCartesianCoordinates normal, NormalizedCartesianCoordinates end, bool long_path = false)
     {
         Arc result = new Arc();
 
-        Vector3 center = Vector3.Dot(start.data, normal.data) * normal.data;
+        float elevation = Vector3.Dot(start.data.normalized, normal.data.normalized);
+        Vector3 center = elevation * normal.data.normalized;
 
         result.center_axis = normal.data.normalized;
         result.forward_axis = (start.data - center).normalized;
@@ -41,7 +42,7 @@ public class Arc : Object
         result.before_end = -Vector3.Cross(result.center_axis, end_axis).normalized;
 
         result.arc_angle = Vector3.Angle(result.forward_axis - center, end_axis - center);
-        result.arc_latitude = Mathf.Acos(center.magnitude);
+        result.arc_latitude = Mathf.PI/2 - Mathf.Acos(elevation);
 
         if (long_path)
         {
@@ -60,21 +61,58 @@ public class Arc : Object
         return result;
     }
 
+    /// <summary>
+    /// Constructor - Determines whether a corner is concave or convex and delegates accordingly.
+    /// </summary>
+    /// <param name="left">The arc that attaches to the beginning of the corner.</param>
+    /// <param name="right">The arc that attaches to the end of the corner.</param>
+    /// <returns>A concave or convex corner arc.</returns>
     public static Arc CreateCorner(Arc left, Arc right)
     {
-        Arc result = new Arc();
+        if (is_convex(left, right))
+        {
+            return ConcaveCorner(left, right);
+        }
 
-        return result;
+        return ConvexCorner(left, right);
     }
     
-    private static Arc ConcaveCorner()
+    /// <summary>
+    /// Constructor - Spoof a concave corner arc with a null value (since concave corner arcs do not extrude concentrically).
+    /// </summary>
+    /// <param name="left">The arc that attaches to the beginning of the corner.</param>
+    /// <param name="right">The arc that attaches to the end of the corner.</param>
+    /// <returns>A null arc (special value for a concave corner).</returns>
+    private static Arc ConcaveCorner(Arc left, Arc right)
     {
         return null; // Concave corners are not actually arcs; it's complicated...
     }
 
-    private static Arc ConvexCorner()
+    /// <summary>
+    /// Constructor - Create a convex corner arc.
+    /// </summary>
+    /// <param name="left">The arc that attaches to the beginning of the corner.</param>
+    /// <param name="right">The arc that attaches to the end of the corner.</param>
+    /// <returns>A convex corner arc.</returns>
+    private static Arc ConvexCorner(Arc left, Arc right)
     {
-        Arc result = new Arc();
+        // Rather than doubling the codebase for constructors...
+        // find the arc along the equator and set the latitude to -PI/2 (implicitly, that means the arc radius is zero)
+
+        // The normal vector should point away from the position of the corner
+        Vector3 cut_normal = -right.position(0);
+
+        // The equatorial positions can be found by extruding the edges by PI/2
+        Vector3 start = left.position(left.angle(), Mathf.PI/2);
+        Vector3 end = right.position(0, Mathf.PI/2);
+
+        // Create arc on equator
+        Arc result = CreateArc(new NormalizedCartesianCoordinates(start),
+                new NormalizedCartesianCoordinates(cut_normal),
+                new NormalizedCartesianCoordinates(end));
+
+        // And move the arc to the "South Pole" instead
+        result.arc_latitude = -Mathf.PI/2;
 
         return result;
     }
@@ -179,10 +217,11 @@ public class Arc : Object
     }
 
     /// <summary>
-    /// Mutator - Create an AABB that contains a circular arc
+    /// Inspector - Create an AABB that contains a circular arc.
     /// </summary>
-    /// <param name="arc">The arc whose AABB will be recalculated.</param>
-    private static void RecalculateAABB(Arc arc)
+    /// <param name="arc">The arc that should be surrounded by an AABB.</param>
+    /// <returns>Bounds struct AKA axis-aligned bounding box (AABB).</returns>
+    private static Bounds CreateAABB(Arc arc)
     {
         float x_min = arc.position(closest_point(arc, Vector3.left   )).x;
         float x_max = arc.position(closest_point(arc, Vector3.right  )).x;
@@ -191,17 +230,15 @@ public class Arc : Object
         float z_min = arc.position(closest_point(arc, Vector3.back   )).z;
         float z_max = arc.position(closest_point(arc, Vector3.forward)).z;
 
-        /*
-        arc.transform.position = new Vector3((x_max + x_min) / 2,
-                                              (y_max + y_min) / 2,
-                                              (z_max + z_min) / 2);
+        Vector3 center = new Vector3((x_max + x_min) / 2,
+                (y_max + y_min) / 2,
+                (z_max + z_min) / 2);
 
-        BoxCollider    collider = arc.GetComponent<BoxCollider>();
+        Vector3 size = new Vector3(x_max - x_min,
+                y_max - y_min,
+                z_max - z_min);
 
-        collider.size   = new Vector3(x_max - x_min,
-                                      y_max - y_min,
-                                      z_max - z_min);
-        */
+        return new Bounds(center, size);
     }
 }
 
