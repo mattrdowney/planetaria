@@ -27,18 +27,18 @@ public class Arc : Object
     /// <param name="end">The end point of the arc.</param>
     /// <param name="long_path">Is the path longer than PI radians?</param>
     /// <returns>An arc along the surface of a unit sphere.</returns>
-    public static Arc CreateArc(NormalizedCartesianCoordinates start, NormalizedCartesianCoordinates normal, NormalizedCartesianCoordinates end, bool long_path = false)
+    public static Arc CreateArc(Vector3 start, Vector3 normal, Vector3 end, bool long_path = false)
     {
         Arc result = new Arc();
 
-        float elevation = Vector3.Dot(start.data.normalized, normal.data.normalized);
-        Vector3 center = elevation * normal.data.normalized;
+        float elevation = Vector3.Dot(start.normalized, normal.normalized);
+        Vector3 center = elevation * normal.normalized;
 
-        result.center_axis = normal.data.normalized;
-        result.forward_axis = (start.data - center).normalized;
+        result.center_axis = normal.normalized;
+        result.forward_axis = (start - center).normalized;
         result.right_axis = Vector3.Cross(result.center_axis, result.forward_axis).normalized;
 
-        Vector3 end_axis = (end.data - center).normalized;
+        Vector3 end_axis = (end - center).normalized;
         result.before_end = -Vector3.Cross(result.center_axis, end_axis).normalized;
 
         result.arc_angle = Vector3.Angle(result.forward_axis - center, end_axis - center);
@@ -73,10 +73,9 @@ public class Arc : Object
     {
         if (is_convex(left, right))
         {
-            return ConcaveCorner(left, right);
+            return ConvexCorner(left, right);
         }
-
-        return ConvexCorner(left, right);
+        return ConcaveCorner(left, right);
     }
 
     /// <summary>
@@ -208,10 +207,8 @@ public class Arc : Object
         Vector3 start = left.position(left.angle(), Mathf.PI/2);
         Vector3 end = right.position(0, Mathf.PI/2);
 
-        // Create arc on equator
-        Arc result = CreateArc(new NormalizedCartesianCoordinates(start),
-                new NormalizedCartesianCoordinates(cut_normal),
-                new NormalizedCartesianCoordinates(end));
+        // Create arc along equator
+        Arc result = CreateArc(start, cut_normal, end);
 
         // And move the arc to the "South Pole" instead
         result.arc_latitude = -Mathf.PI/2;
@@ -295,7 +292,7 @@ public class Arc : Object
 
     private delegate float heuristic_function(Arc arc, Vector3 operand, float angle);
 
-    private static float normal_heuristic(Arc arc, Vector3 desired_normal, float angle) // what a normie fuckin' heuristic
+    private static float normal_heuristic(Arc arc, Vector3 desired_normal, float angle)
     {
         return (Vector3.Dot(arc.normal(angle), -desired_normal) + 1f) / 2; // return [0,1] for the hell of it, the dot product would suffice, though
     }

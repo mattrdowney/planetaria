@@ -47,12 +47,16 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Code\Arc\Arc.cs" />
+     <Compile Include="Assets\Code\Caching\PlanetariaCache.cs" />
      <Compile Include="Assets\Code\CoordinateSystems\Bearing.cs" />
      <Compile Include="Assets\Code\CoordinateSystems\NormalizedCartesianCoordinates.cs" />
      <Compile Include="Assets\Code\CoordinateSystems\NormalizedOctahedralCoordinates.cs" />
      <Compile Include="Assets\Code\CoordinateSystems\NormalizedSphericalCoordinates.cs" />
      <Compile Include="Assets\Code\CoordinateSystems\OctahedralUVCoordinates.cs" />
      <Compile Include="Assets\Code\CoordinateSystems\Octahedron.cs" />
+     <Compile Include="Assets\Code\Unity\PlanetariaBehaviour.cs" />
+     <Compile Include="Assets\Code\Unity\PlanetariaComponent.cs" />
+     <Compile Include="Assets\Code\Unity\PlanetariaMonoBehaviour.cs" />
      <Compile Include="Assets\Code\Utility\Optional.cs" />
      <Compile Include="Assets\Code\Utility\PlanetariaIntersection.cs" />
      <Compile Include="Assets\Code\Utility\PlanetariaMath.cs" />
