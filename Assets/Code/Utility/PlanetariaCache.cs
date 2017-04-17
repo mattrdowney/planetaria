@@ -1,8 +1,19 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
-public class PlanetariaComponent : Object
+public static class PlanetariaCache
 {
+    static Dictionary<BoxCollider, Arc> arc_map = new Dictionary<BoxCollider, Arc>();
 
+    public static void CacheArc(BoxCollider collider, Arc arc)
+    {
+        arc_map.Add(collider, arc);
+    }
+
+    public static Arc GetArc(BoxCollider collider)
+    {
+        return arc_map[collider];
+    }
 }
 
 /*

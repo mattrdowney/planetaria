@@ -1,8 +1,14 @@
 ﻿using UnityEngine;
 
-public class PlanetariaBehaviour : Object
+public abstract class PlanetariaBehaviour : Component
 {
-
+    public abstract void OnBlockEnter(BlockInteractor block_information);
+    public abstract void OnBlockExit(BlockInteractor block_information);
+    public abstract void OnBlockStay(BlockInteractor block_information);
+    
+    public abstract void OnZoneEnter(ZoneInteractor zone_information);
+    public abstract void OnZoneExit(ZoneInteractor zone_information);
+    public abstract void OnZoneStay(ZoneInteractor zone_information);
 }
 
 /*
