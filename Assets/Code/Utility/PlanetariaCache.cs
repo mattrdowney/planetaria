@@ -10,8 +10,13 @@ public static class PlanetariaCache
         arc_map.Add(collider, arc);
     }
 
-    public static Arc GetArc(BoxCollider collider)
+    public static optional<Arc> GetArc(BoxCollider collider)
     {
+        if (!arc_map.ContainsKey(collider))
+        {
+            return new optional<Arc>();
+        }
+
         return arc_map[collider];
     }
 }

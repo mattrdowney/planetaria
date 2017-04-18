@@ -55,7 +55,8 @@
      <Compile Include="Assets\Code\LevelGeometry\Block.cs" />
      <Compile Include="Assets\Code\LevelGeometry\Octahedron.cs" />
      <Compile Include="Assets\Code\LevelGeometry\Zone.cs" />
-     <Compile Include="Assets\Code\Unity\PlanetariaBehaviour.cs" />
+     <Compile Include="Assets\Code\Unity\PlanetariaActor.cs" />
+     <Compile Include="Assets\Code\Unity\PlanetariaMonoBehaviour.cs" />
      <Compile Include="Assets\Code\Utility\Optional.cs" />
      <Compile Include="Assets\Code\Utility\PlanetariaCache.cs" />
      <Compile Include="Assets\Code\Utility\PlanetariaIntersection.cs" />

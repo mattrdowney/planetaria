@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public abstract class PlanetariaBehaviour : Component
+public abstract class PlanetariaActor : Component
 {
     public abstract void OnBlockEnter(BlockInteractor block_information);
     public abstract void OnBlockExit(BlockInteractor block_information);
