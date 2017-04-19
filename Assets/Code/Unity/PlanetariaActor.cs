@@ -2,6 +2,11 @@
 
 public abstract class PlanetariaActor : Component
 {
+    PlanetariaTransform transform;
+
+    public abstract void Start();
+    public abstract void Update();
+
     public abstract void OnBlockEnter(BlockInteractor block_information);
     public abstract void OnBlockExit(BlockInteractor block_information);
     public abstract void OnBlockStay(BlockInteractor block_information);

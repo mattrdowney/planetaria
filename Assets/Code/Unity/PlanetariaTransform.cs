@@ -1,19 +1,55 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class Block : Component
+public class PlanetariaTransform
 {
-    List<Arc> arc_list;
-
-    public static GameObject CreateBlock(string ssvg_file)
+    public NormalizedSphericalCoordinates position
     {
-        GameObject result = new GameObject();
-        Block block = result.AddComponent<Block>();
+        get
+        {
+            return position_;
+        }
 
-        block.arc_list = new List<Arc>();
-
-        return result;
+        set
+        {
+            position_ = value; Move();
+        }
     }
+
+    public float rotation
+    {
+        get
+        {
+            return rotation_;
+        }
+
+        set
+        {
+            rotation_ = value; Move();
+        }
+    }
+
+    public float scale
+    {
+        get
+        {
+            return scale_;
+        }
+
+        set
+        {
+            scale_ = value;
+        }
+    }
+
+    private void Move()
+    {
+        Cartesian_transform.rotation = Quaternion.AngleAxis(rotation_, position_.data);
+    }
+
+    Transform Cartesian_transform;
+    NormalizedSphericalCoordinates position_;
+    float rotation_;
+    float scale_;
 }
 
 /*

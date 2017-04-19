@@ -1,20 +1,20 @@
 ﻿using UnityEngine;
 
-public class PlanetariaMonoBehaviour : MonoBehaviour
+public sealed class PlanetariaMonoBehaviour : MonoBehaviour
 {
     PlanetariaActor actor;
 
-	void Start()
+	public void Start()
     {
 		actor.Start();
 	}
 	
-	void Update()
+	public void Update()
     {
 		actor.Update();
 	}
 
-    void OnTriggerStay(Collider collider)
+    public void OnTriggerStay(Collider collider)
     {
         BoxCollider box_collider = collider as BoxCollider;
         if (!box_collider)
@@ -24,35 +24,57 @@ public class PlanetariaMonoBehaviour : MonoBehaviour
 
         if (PlanetariaCache.GetArc(box_collider).exists) // block
         {
+            BlockInteractor collision = new BlockInteractor(PlanetariaCache.GetArc(box_collider).data);
+
             if (just_started_colliding)
             {
-                actor.OnBlockEnter();
+                actor.OnBlockEnter(collision);
             }
             else if (just_stopped_colliding)
             {
-                actor.OnBlockExit();
+                actor.OnBlockExit(collision);
             }
 
             if (in_map)
             {
-                actor.OnBlockStay();
+                actor.OnBlockStay(collision);
             }
         }
         else // zone
         {
+            // FIXME: might not be a trigger either
+            ZoneInteractor trigger = new ZoneInteractor(PlanetariaCache.GetZone(box_collider).data);
+
             if (just_started_colliding)
             {
-                actor.OnZoneEnter();
+                actor.OnZoneEnter(trigger);
             }
             else if (just_stopped_colliding)
             {
-                actor.OnZoneExit();
+                actor.OnZoneExit(trigger);
             }
 
             if (in_map)
             {
-                actor.OnZoneStay();
+                actor.OnZoneStay(trigger);
             }
         }
     }
 }
+
+/*
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
