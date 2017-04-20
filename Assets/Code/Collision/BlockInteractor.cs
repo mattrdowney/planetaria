@@ -1,6 +1,9 @@
 ﻿public class BlockInteractor
 {
     Block target;
+    int block_index;
+    float interpolator_angle;
+    float half_height;
 }
 
 /*

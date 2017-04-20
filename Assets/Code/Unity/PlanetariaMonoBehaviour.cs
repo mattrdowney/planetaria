@@ -5,13 +5,14 @@ public sealed class PlanetariaMonoBehaviour : MonoBehaviour
 {
     PlanetariaActor actor;
 
-    Dictionary<BoxCollider, BlockInteractor> collision_map;
-    HashSet<BoxCollider> 
+    Dictionary<Block, BlockInteractor> collision_map = new Dictionary<Block, BlockInteractor>();
+    Dictionary<Zone, ZoneInteractor> trigger_map = new Dictionary<Zone, ZoneInteractor>();
 
 	public void Start()
     {
-        collision_map = new Dictionary<BoxCollider, BlockInteractor>();
-        // add to collision_map for all objects currently intersecting (via Physics.OverlapBox())
+        collision_map = new Dictionary<Block, BlockInteractor>();
+        trigger_map = new Dictionary<Zone, ZoneInteractor>();
+        // add to collision_map and trigger_map for all objects currently intersecting (via Physics.OverlapBox())
 		actor.Start();
 	}
 	
@@ -27,7 +28,8 @@ public sealed class PlanetariaMonoBehaviour : MonoBehaviour
         {
             return;
         }
-        optional<Arc> arc = PlanetariaCache.arc_cache.Get(box_collider);
+
+        optional<Arc> arc = PlanetariaCache.arc_cache.Get(box_collider); // C++17 if statements are so pretty compared to this...
         optional<Zone> zone = PlanetariaCache.zone_cache.Get(box_collider);
         if (arc.exists) // block
         {
@@ -38,39 +40,51 @@ public sealed class PlanetariaMonoBehaviour : MonoBehaviour
                 return;
             }
 
-            if (!collision_map.ContainsValue()arc.data.contains(actor.transform.position))
+            if (!collision_map.ContainsKey(block.data) && arc.data.contains(actor.transform.position, actor.transform.scale))
             {
                 BlockInteractor collision = new BlockInteractor(block.data, block_index, interpolator_angle);
-                collision_map.Add(collision);
+                collision_map.Add(block.data, collision);
                 actor.OnBlockEnter(collision);
             }
-            else if (just_stopped_colliding)
+            else if (collision_map.ContainsKey(block.data) && !block.data.contains(actor.transform.position, actor.transform.scale))
             {
+                BlockInteractor collision = collision_map[block.data];
                 actor.OnBlockExit(collision);
+                collision_map.Remove(block.data);
             }
 
-            if (in_map)
+            if (collision_map.ContainsKey(block.data))
             {
+                BlockInteractor collision = collision_map[block.data];
                 actor.OnBlockStay(collision);
             }
         }
         else // zone
         {
-            // FIXME: might not be a trigger either
-            ZoneInteractor trigger = new ZoneInteractor(PlanetariaCache.GetZone(box_collider).data);
-
-            if (just_started_colliding)
+            optional<Zone> zone = PlanetariaCache.zone_cache.Get(box_collider);
+            if (!zone.exists)
             {
+                Debug.LogError("This is likely an Err0r or setup issue.");
+                return;
+            }
+
+            if (!trigger_map.ContainsKey(zone.data) && arc.data.contains(actor.transform.position, actor.transform.scale))
+            {
+                ZoneInteractor trigger = new ZoneInteractor(zone.data);
+                trigger_map.Add(zone.data, trigger);
                 actor.OnZoneEnter(trigger);
             }
-            else if (just_stopped_colliding)
+            else if (trigger_map.ContainsKey(zone.data) && !zone.data.contains(actor.transform.position, actor.transform.scale))
             {
-                actor.OnZoneExit(trigger);
+                ZoneInteractor collision = trigger_map[zone.data];
+                actor.OnZoneExit(collision);
+                trigger_map.Remove(zone.data);
             }
 
-            if (in_map)
+            if (trigger_map.ContainsKey(zone.data))
             {
-                actor.OnZoneStay(trigger);
+                ZoneInteractor collision = trigger_map[zone.data];
+                actor.OnZoneStay(collision);
             }
         }
     }

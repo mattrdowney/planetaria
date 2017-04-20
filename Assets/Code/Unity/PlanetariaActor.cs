@@ -2,7 +2,7 @@
 
 public abstract class PlanetariaActor : Component
 {
-    PlanetariaTransform transform;
+    new PlanetariaTransform transform;
 
     public abstract void Start();
     public abstract void Update();

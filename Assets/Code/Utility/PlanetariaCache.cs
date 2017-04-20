@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+// TODO: Multiton Design Pattern for multiple levels
 public static class PlanetariaCache
 {
     public static PlanetariaSubcache<BoxCollider, Arc> arc_cache = new PlanetariaSubcache<BoxCollider, Arc>();
     public static PlanetariaSubcache<Arc, Block> block_cache = new PlanetariaSubcache<Arc, Block>();
-    // TODO: add flag so blocks don't check collisions multiple times per frame
     public static PlanetariaSubcache<BoxCollider, Zone> zone_cache = new PlanetariaSubcache<BoxCollider, Zone>();
 }
 

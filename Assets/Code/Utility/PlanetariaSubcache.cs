@@ -2,14 +2,14 @@
 
 public class PlanetariaSubcache<Key, Value>
 {
-    static Dictionary<Key, Value> map_cache = new Dictionary<Key, Value>();
+    Dictionary<Key, Value> map_cache = new Dictionary<Key, Value>();
 
-    public static void Cache(Key key, Value value)
+    public void Cache(Key key, Value value)
     {
         map_cache.Add(key, value);
     }
 
-    public static optional<Value> Get(Key key)
+    public optional<Value> Get(Key key)
     {
         if (!map_cache.ContainsKey(key))
         {
