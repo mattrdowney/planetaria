@@ -1,15 +1,21 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public sealed class PlanetariaMonoBehaviour : MonoBehaviour
 {
     PlanetariaActor actor;
 
+    Dictionary<BoxCollider, BlockInteractor> collision_map;
+    HashSet<BoxCollider> 
+
 	public void Start()
     {
+        collision_map = new Dictionary<BoxCollider, BlockInteractor>();
+        // add to collision_map for all objects currently intersecting (via Physics.OverlapBox())
 		actor.Start();
 	}
 	
-	public void Update()
+	public void FixedUpdate()
     {
 		actor.Update();
 	}
@@ -21,13 +27,21 @@ public sealed class PlanetariaMonoBehaviour : MonoBehaviour
         {
             return;
         }
-
-        if (PlanetariaCache.GetArc(box_collider).exists) // block
+        optional<Arc> arc = PlanetariaCache.arc_cache.Get(box_collider);
+        optional<Zone> zone = PlanetariaCache.zone_cache.Get(box_collider);
+        if (arc.exists) // block
         {
-            BlockInteractor collision = new BlockInteractor(PlanetariaCache.GetArc(box_collider).data);
-
-            if (just_started_colliding)
+            optional<Block> block = PlanetariaCache.block_cache.Get(arc.data);
+            if (!block.exists)
             {
+                Debug.LogError("Critical Err0r.");
+                return;
+            }
+
+            if (!collision_map.ContainsValue()arc.data.contains(actor.transform.position))
+            {
+                BlockInteractor collision = new BlockInteractor(block.data, block_index, interpolator_angle);
+                collision_map.Add(collision);
                 actor.OnBlockEnter(collision);
             }
             else if (just_stopped_colliding)

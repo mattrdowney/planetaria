@@ -1,12 +1,23 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
-public static class PlanetariaCache
+public class PlanetariaSubcache<Key, Value>
 {
-    public static PlanetariaSubcache<BoxCollider, Arc> arc_cache = new PlanetariaSubcache<BoxCollider, Arc>();
-    public static PlanetariaSubcache<Arc, Block> block_cache = new PlanetariaSubcache<Arc, Block>();
-    // TODO: add flag so blocks don't check collisions multiple times per frame
-    public static PlanetariaSubcache<BoxCollider, Zone> zone_cache = new PlanetariaSubcache<BoxCollider, Zone>();
+    static Dictionary<Key, Value> map_cache = new Dictionary<Key, Value>();
+
+    public static void Cache(Key key, Value value)
+    {
+        map_cache.Add(key, value);
+    }
+
+    public static optional<Value> Get(Key key)
+    {
+        if (!map_cache.ContainsKey(key))
+        {
+            return new optional<Value>();
+        }
+
+        return map_cache[key];
+    }
 }
 
 /*

@@ -65,6 +65,7 @@
      <Compile Include="Assets\Code\Utility\Optional.cs" />
      <Compile Include="Assets\Code\Utility\PlanetariaCache.cs" />
      <Compile Include="Assets\Code\Utility\PlanetariaMath.cs" />
+     <Compile Include="Assets\Code\Utility\PlanetariaSubcache.cs" />
      <Compile Include="Assets\Code\Utility\Precision.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>

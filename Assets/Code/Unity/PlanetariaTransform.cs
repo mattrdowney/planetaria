@@ -41,6 +41,7 @@ public class PlanetariaTransform
         }
     }
 
+    // TODO: use dirty flag; only call in FixedUpdate
     private void Move()
     {
         Cartesian_transform.rotation = Quaternion.AngleAxis(rotation_, position_.data);
