@@ -42,7 +42,7 @@ public sealed class PlanetariaMonoBehaviour : MonoBehaviour
 
             if (!collision_map.ContainsKey(block.data) && arc.data.contains(actor.transform.position, actor.transform.scale))
             {
-                BlockInteractor collision = new BlockInteractor(block.data, block_index, interpolator_angle);
+                BlockInteractor collision = new BlockInteractor(arc.data, actor.transform.previous_position.data, actor.transform.position.data, actor.half_height());
                 collision_map.Add(block.data, collision);
                 actor.OnBlockEnter(collision);
             }

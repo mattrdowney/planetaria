@@ -1,5 +1,10 @@
 ﻿public class ZoneInteractor
 {
+    public ZoneInteractor(Zone zone)
+    {
+        target = zone;
+    }
+
     Zone target;
 }
 

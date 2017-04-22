@@ -11,9 +11,20 @@ public class PlanetariaTransform
 
         set
         {
-            position_ = value; Move();
+            previous_position_ = position_;
+            position_ = value;
+            Move();
         }
     }
+
+    public NormalizedSphericalCoordinates previous_position
+    {
+        get
+        {
+            return position_;
+        }
+    }
+
 
     public float rotation
     {
@@ -24,7 +35,8 @@ public class PlanetariaTransform
 
         set
         {
-            rotation_ = value; Move();
+            rotation_ = value;
+            Move();
         }
     }
 
@@ -51,6 +63,8 @@ public class PlanetariaTransform
     NormalizedSphericalCoordinates position_;
     float rotation_;
     float scale_;
+
+    NormalizedSphericalCoordinates previous_position_;
 }
 
 /*

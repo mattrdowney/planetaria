@@ -1,7 +1,31 @@
-﻿public class BlockInteractor
+﻿using UnityEngine;
+
+public class BlockInteractor
 {
+    public BlockInteractor(Arc arc, Vector3 last_position, Vector3 current_position, float half_height_)
+    {
+        optional<Block> block = PlanetariaCache.block_cache.Get(arc);
+
+        if (!block.exists)
+        {
+            Debug.Log("Critical Err0r.");
+            target = null;
+            arc_index = 0;
+            interpolator_angle = 0;
+            half_height = 0;
+            return;
+        }
+
+        target = block.data;
+        half_height = half_height_;
+
+        // Special initialization notes: remember that the arc used for initialization might not be the ultimate arc_index! (it could be a closer adjacent node!)
+        arc_index = target.arc_index(arc.data);
+        interpolator_angle = target.position_to_angle(closest_intersection_point);
+    }
+
     Block target;
-    int block_index;
+    int arc_index;
     float interpolator_angle;
     float half_height;
 }
