@@ -30,7 +30,6 @@ public sealed class PlanetariaMonoBehaviour : MonoBehaviour
         }
 
         optional<Arc> arc = PlanetariaCache.arc_cache.Get(box_collider); // C++17 if statements are so pretty compared to this...
-        optional<Zone> zone = PlanetariaCache.zone_cache.Get(box_collider);
         if (arc.exists) // block
         {
             optional<Block> block = PlanetariaCache.block_cache.Get(arc.data);
@@ -40,13 +39,14 @@ public sealed class PlanetariaMonoBehaviour : MonoBehaviour
                 return;
             }
 
-            if (!collision_map.ContainsKey(block.data) && arc.data.contains(actor.transform.position, actor.transform.scale))
+            if (!collision_map.ContainsKey(block.data) && arc.data.contains(actor.transform.position.data, actor.transform.scale))
             {
-                BlockInteractor collision = new BlockInteractor(arc.data, actor.transform.previous_position.data, actor.transform.position.data, actor.half_height());
+                float half_height = actor.transform.scale / 2;
+                BlockInteractor collision = new BlockInteractor(arc.data, actor.transform.previous_position.data, actor.transform.position.data, half_height);
                 collision_map.Add(block.data, collision);
                 actor.OnBlockEnter(collision);
             }
-            else if (collision_map.ContainsKey(block.data) && !block.data.contains(actor.transform.position, actor.transform.scale))
+            else if (collision_map.ContainsKey(block.data) && !block.data.contains(actor.transform.position.data, actor.transform.scale))
             {
                 BlockInteractor collision = collision_map[block.data];
                 actor.OnBlockExit(collision);
@@ -68,13 +68,14 @@ public sealed class PlanetariaMonoBehaviour : MonoBehaviour
                 return;
             }
 
-            if (!trigger_map.ContainsKey(zone.data) && arc.data.contains(actor.transform.position, actor.transform.scale))
+            if (!trigger_map.ContainsKey(zone.data) && arc.data.contains(actor.transform.position.data, actor.transform.scale))
             {
-                ZoneInteractor trigger = new ZoneInteractor(zone.data);
+                float half_height = actor.transform.scale / 2;
+                ZoneInteractor trigger = new ZoneInteractor(zone.data, half_height);
                 trigger_map.Add(zone.data, trigger);
                 actor.OnZoneEnter(trigger);
             }
-            else if (trigger_map.ContainsKey(zone.data) && !zone.data.contains(actor.transform.position, actor.transform.scale))
+            else if (trigger_map.ContainsKey(zone.data) && !zone.data.contains(actor.transform.position.data, actor.transform.scale))
             {
                 ZoneInteractor collision = trigger_map[zone.data];
                 actor.OnZoneExit(collision);

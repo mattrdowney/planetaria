@@ -5,6 +5,11 @@ public class Block : Component
 {
     List<Arc> arc_list;
 
+    /// <summary>
+    /// Constructor - Generates a block using a .ssvg file.
+    /// </summary>
+    /// <param name="ssvg_file">The .ssvg (spherical scalable vector graphics) file that will generate the block.</param>
+    /// <returns>The GameObject reference with an attached Block component.</returns>
     public static GameObject CreateBlock(string ssvg_file)
     {
         GameObject result = new GameObject();
@@ -13,6 +18,51 @@ public class Block : Component
         block.arc_list = new List<Arc>();
 
         return result;
+    }
+
+    /// <summary>
+    /// Checks if any of the arcs contain the position extruded by radius.
+    /// This does NOT check if the point is inside the convex hull, so points below the floor will not be matched.
+    /// </summary>
+    /// <param name="position">A position on a unit-sphere.</param>
+    /// <param name="radius">The radius [0,PI/2] to extrude.</param>
+    /// <returns>True if any of the arcs contain the point extruded by radius.</returns>
+    public bool contains(Vector3 position, float radius = 0f)
+    {
+        foreach (Arc arc in arc_list)
+        {
+            if (arc)
+            {
+                if (arc.contains(position, radius))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Returns the index of any existing arc within the block that matches the external reference. Null arcs are never found.
+    /// </summary>
+    /// <param name="arc">The reference to the external arc that will be compared to the block's arc list.</param>
+    /// <returns>The index of the match if the arc exists in the container and is not null; a nonexistent index otherwise.</returns>
+    public optional<int> arc_index(Arc arc)
+    {
+        if (!arc)
+        {
+            return new optional<int>();
+        }
+
+        for (int index = 0; index < arc_list.Count; ++index)
+        {
+            if (arc == arc_list[index])
+            {
+                return index;
+            }
+        }
+        return new optional<int>();
     }
 }
 

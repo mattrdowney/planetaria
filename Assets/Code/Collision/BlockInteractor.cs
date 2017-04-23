@@ -20,7 +20,12 @@ public class BlockInteractor
         half_height = half_height_;
 
         // Special initialization notes: remember that the arc used for initialization might not be the ultimate arc_index! (it could be a closer adjacent node!)
-        arc_index = target.arc_index(arc.data);
+        if (!target.arc_index(arc).exists)
+        {
+            Debug.LogError("Critical Err0r");
+        }
+
+        arc_index = target.arc_index(arc).data;
         interpolator_angle = target.position_to_angle(closest_intersection_point);
     }
 

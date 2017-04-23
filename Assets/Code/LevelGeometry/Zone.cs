@@ -1,9 +1,47 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Zone : Object
+public class Zone : Component
 {
+    List<Plane> plane_list;
+    
+    /// <summary>
+    /// Constructor - Generates a zone using a .ssvg file.
+    /// </summary>
+    /// <param name="ssvg_file">
+    /// The .ssvg (spherical scalable vector graphics) file that will generate the zone.
+    /// Special note: the .ssvg MUST be convex or all behavior is undefined.
+    /// </param>
+    /// <returns>The GameObject reference with an attached Zone component.</returns>
+    public static GameObject CreateZone(string ssvg_file) // TODO: add convex check asserts.
+    {
+        GameObject result = new GameObject();
+        Zone zone = result.AddComponent<Zone>();
 
+        zone.plane_list = new List<Plane>();
+
+        return result;
+    }
+
+    /// <summary>
+    /// Checks if the center of mass (position) is below all of the planes. 
+    /// Special note: if a portion of the extruded volume is inside all planes, this function might still return false.
+    /// </summary>
+    /// <param name="position">A position on a unit-sphere.</param>
+    /// <param name="radius">The radius [0,PI/2] to extrude.</param>
+    /// <returns>True if position is below (inside) all of the planes; false otherwise.</returns>
+    public bool contains(Vector3 position, float radius = 0f)
+    {
+        foreach (Plane plane in plane_list)
+        {
+            if (plane.GetSide(position))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
 
 /*
