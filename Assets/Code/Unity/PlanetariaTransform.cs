@@ -11,9 +11,9 @@ public class PlanetariaTransform
 
         set
         {
+            dirty_position = true;
             previous_position_ = position_;
             position_ = value;
-            Move();
         }
     }
 
@@ -25,7 +25,6 @@ public class PlanetariaTransform
         }
     }
 
-
     public float rotation
     {
         get
@@ -35,8 +34,8 @@ public class PlanetariaTransform
 
         set
         {
+            dirty_position = true;
             rotation_ = value;
-            Move();
         }
     }
 
@@ -49,20 +48,32 @@ public class PlanetariaTransform
 
         set
         {
+            dirty_scale = true;
             scale_ = value;
         }
     }
 
-    // TODO: use dirty flag; only call in FixedUpdate
-    private void Move()
+    public void Move()
     {
-        Cartesian_transform.rotation = Quaternion.AngleAxis(rotation_, position_.data);
+        if (dirty_position)
+        {
+            Cartesian_transform.rotation = Quaternion.AngleAxis(rotation_, position_.data);
+            dirty_position = false;
+        }
+        if (dirty_scale)
+        {
+            Cartesian_transform.localScale = Mathf.Sin(scale)*Vector3.one;
+            dirty_scale = false;
+        }
     }
 
     Transform Cartesian_transform;
     NormalizedSphericalCoordinates position_;
     float rotation_;
     float scale_;
+
+    bool dirty_position;
+    bool dirty_scale;
 
     NormalizedSphericalCoordinates previous_position_;
 }

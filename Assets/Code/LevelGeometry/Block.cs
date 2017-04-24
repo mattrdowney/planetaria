@@ -21,6 +21,42 @@ public class Block : Component
     }
 
     /// <summary>
+    /// Returns the index of any existing arc within the block that matches the external reference. Null arcs are never found.
+    /// </summary>
+    /// <param name="arc">The reference to the external arc that will be compared to the block's arc list.</param>
+    /// <returns>The index of the match if the arc exists in the container and is not null; a nonexistent index otherwise.</returns>
+    public optional<int> arc_index(Arc arc)
+    {
+        if (!arc)
+        {
+            return new optional<int>();
+        }
+
+        for (int index = 0; index < arc_list.Count; ++index)
+        {
+            if (arc == arc_list[index])
+            {
+                return index;
+            }
+        }
+        return new optional<int>();
+    }
+
+    /// <summary>
+    /// Inspector - Get the reference to the current arc.
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns>The Arc at the given index.</returns>
+    public Arc at(ref int index)
+    {
+        if (index < 0 || index >= arc_list.Count)
+        {
+            index = (int) PlanetariaMath.modulo_using_Euclidean_division(index, arc_list.Count);
+        }
+        return arc_list[index];
+    }
+
+    /// <summary>
     /// Checks if any of the arcs contain the position extruded by radius.
     /// This does NOT check if the point is inside the convex hull, so points below the floor will not be matched.
     /// </summary>
@@ -41,28 +77,6 @@ public class Block : Component
         }
 
         return false;
-    }
-
-    /// <summary>
-    /// Returns the index of any existing arc within the block that matches the external reference. Null arcs are never found.
-    /// </summary>
-    /// <param name="arc">The reference to the external arc that will be compared to the block's arc list.</param>
-    /// <returns>The index of the match if the arc exists in the container and is not null; a nonexistent index otherwise.</returns>
-    public optional<int> arc_index(Arc arc)
-    {
-        if (!arc)
-        {
-            return new optional<int>();
-        }
-
-        for (int index = 0; index < arc_list.Count; ++index)
-        {
-            if (arc == arc_list[index])
-            {
-                return index;
-            }
-        }
-        return new optional<int>();
     }
 }
 

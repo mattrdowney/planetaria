@@ -19,6 +19,7 @@ public sealed class PlanetariaMonoBehaviour : MonoBehaviour
 	public void FixedUpdate()
     {
 		actor.Update();
+        actor.transform.Move();
 	}
 
     public void OnTriggerStay(Collider collider)

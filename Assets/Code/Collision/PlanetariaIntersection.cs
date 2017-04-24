@@ -64,6 +64,14 @@ public static class PlanetariaIntersection
 
         return result;
     }
+
+    NormalizedCartesianCoordinates[] arc_path_intersection(Arc arc, NormalizedCartesianCoordinates begin, NormalizedCartesianCoordinates end)
+    {
+        Vector3 path_center = Vector3.Cross(begin.data, end.data).normalized;
+        float path_radius = Mathf.PI/2;
+
+        return circle_circle_intersection(arc.pole(), path_center, arc.elevation(), path_radius);
+    }
 }
 
 /*

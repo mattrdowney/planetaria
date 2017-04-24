@@ -177,6 +177,19 @@ public class Arc : Object
         Vector3 equator_position = PlanetariaMath.slerp(forward_axis, right_axis, arc_angle);
         return PlanetariaMath.slerp(equator_position, center_axis, arc_latitude + extrusion);
     }
+
+    /// <summary>
+    /// Inspector - Find the angle travelled along the arc given a position. 
+    /// </summary>
+    /// <param name="position">The position along the arc (elevation doesn't matter).</param>
+    /// <param name="extrusion">The elevation (which is ignored).</param>
+    /// <returns>The angle along the arc starting from the forward vector.</returns>
+    public float position_to_angle(Vector3 position, float extrusion = 0f)
+    {
+        float x = Vector3.Dot(position, forward_axis);
+        float y = Vector3.Dot(position, right_axis);
+        return Mathf.Atan2(y,x);
+    }
         
     /// <summary>
     /// Constructor - Spoof a concave corner arc with a null value (since concave corner arcs do not extrude concentrically).

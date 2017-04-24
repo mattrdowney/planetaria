@@ -19,14 +19,16 @@ public class BlockInteractor
         target = block.data;
         half_height = half_height_;
 
-        // Special initialization notes: remember that the arc used for initialization might not be the ultimate arc_index! (it could be a closer adjacent node!)
+        // Special initialization notes: remember that the arc used for initialization might not be the ultimate arc_index! (it could be a closer adjacent arc!)
         if (!target.arc_index(arc).exists)
         {
             Debug.LogError("Critical Err0r");
         }
 
-        arc_index = target.arc_index(arc).data;
-        interpolator_angle = target.position_to_angle(closest_intersection_point);
+        arc_index = target.arc_index(arc).data; // FIXME: these function work but are not constructing the BlockIterator properly
+        Vector3 closest_intersection_point = PlanetariaIntersection.arc_path_intersection(target.at(ref arc_index),
+                new NormalizedCartesianCoordinates(last_position), new NormalizedCartesianCoordinates(current_position));
+        interpolator_angle = target.at(ref arc_index).position_to_angle(closest_intersection_point);
     }
 
     Block target;
