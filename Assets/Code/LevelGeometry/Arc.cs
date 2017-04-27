@@ -129,6 +129,27 @@ public class Arc : Object
     }
 
     /// <summary>
+    /// Inspector - Determine the elevation of the extruded radius compared to its pole.
+    /// </summary>
+    /// <param name="extrusion">The radius to extrude the arc.</param>
+    /// <returns>
+    /// For poles towards the normal, returns a negative number [-PI/2, 0] representing the angle of decline of the extruded point from the pole.
+    /// For poles away from the normal, returns a positive number [0, PI/2] representing the angle of incline of the extruded point from the pole. 
+    /// </returns>
+    public float elevation(float extrusion = 0f)
+    {
+        float latitude = arc_latitude + extrusion;
+        
+        if (latitude >= 0f) // pole towards normal
+        {
+            return latitude - Mathf.PI/2; // elevation is zero or negative 
+        }
+
+        // pole away from normal
+        return latitude + Mathf.PI/2; // elevation is positive
+    }
+
+    /// <summary>
     /// Inspector - Determine if the corner between between left's end and right's beginning is convex (i.e. a reflex angle).
     /// </summary>
     /// <param name="left">Arc that will connect to beginning.</param>
@@ -164,6 +185,23 @@ public class Arc : Object
     {
         Vector3 equator_position = PlanetariaMath.slerp(forward_axis, right_axis, arc_angle);
         return PlanetariaMath.slerp(center_axis, -equator_position, arc_latitude + extrusion);
+    }
+
+    /// <summary>
+    /// Inspector - Returns the axis perpendicular to all movement along the arc.
+    /// Returns the closer pole, so the pole can be above or below the arc (with respect to the normal).
+    /// </summary>
+    /// <returns>The closest pole, which is perpendicular to the axes of motion.</returns>
+    public Vector3 pole(float extrusion = 0f)
+    {
+        float latitude = arc_latitude + extrusion;
+
+        if (latitude >= 0)
+        {
+            return center_axis;
+        }
+        
+        return -center_axis;
     }
 
     /// <summary>

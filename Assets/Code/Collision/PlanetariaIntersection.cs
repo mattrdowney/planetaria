@@ -9,7 +9,7 @@ public static class PlanetariaIntersection
     /// <param name="coordinate_B">Circle B's Cartesian coordinates.</param>
     /// <param name="radius_A">Circle A's radius.</param>
     /// <param name="radius_B">Circle B's radius.</param>
-    /// <returns>
+    /// <returns>f
     /// If there are zero or infinite solutions, returns an empty array;
     /// If there are one or two solutions, returns an array with two Cartesian coordinates.
     /// </returns>
@@ -18,7 +18,7 @@ public static class PlanetariaIntersection
         radius_A = Mathf.Abs(radius_A);
         radius_B = Mathf.Abs(radius_B);
 
-        if (radius_A > Mathf.PI || radius_B > Mathf.PI) // ignore invalid input
+        if (radius_A > Mathf.PI/2 || radius_B > Mathf.PI/2) // ignore invalid input
         {
             return new NormalizedCartesianCoordinates[0];
         }
@@ -36,9 +36,9 @@ public static class PlanetariaIntersection
 
         bool bAdjacent = arc_distance < radii_sum - Precision.tolerance;
         bool bDoesNotEngulf = radii_difference + Precision.tolerance < arc_distance;
-        bool bInBoundary = bDoesNotEngulf && bAdjacent;
+        bool bIntersect = bDoesNotEngulf && bAdjacent;
 
-        if (!bInBoundary) // ignore circles that do not intersect
+        if (!bIntersect) // solution set will be null
         {
             return new NormalizedCartesianCoordinates[0];
         }
@@ -55,7 +55,7 @@ public static class PlanetariaIntersection
 
         Vector3 binormal = Vector3.Cross(coordinate_A.data, coordinate_B.data);
 
-        float midpoint_distance = Mathf.Sqrt((1 - Vector3.Dot(intersection_center, intersection_center)) / Vector3.Dot(binormal, binormal)); //CONSIDER: rename?
+        float midpoint_distance = Mathf.Sqrt((1 - intersection_center.sqrMagnitude) / binormal.sqrMagnitude); //CONSIDER: rename?
 
         // Note: tangential circles (i.e. midpoint_distance = 0) return two intersections (i.e. a secant line)
         NormalizedCartesianCoordinates[] result = new NormalizedCartesianCoordinates[2];
