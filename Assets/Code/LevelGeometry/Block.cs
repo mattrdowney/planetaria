@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class Block : Component
 {
+    BlockActor behavior;
     List<Arc> arc_list;
 
     /// <summary>

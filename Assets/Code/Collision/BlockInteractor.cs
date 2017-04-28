@@ -43,14 +43,9 @@ public class BlockInteractor
             }
         }
 
-        optional<Arc> closest_arc = target.at(ref closest_index);
-        if (!closest_arc.exists)
-        {
-            nullify(this);
-            return;
-        }
-
-        optional<Vector3> closest_intersection_point = PlanetariaIntersection.arc_path_intersection(closest_arc.data, begin, end);
+        Arc closest_arc = target.at(ref closest_index);
+        
+        optional<Vector3> closest_intersection_point = PlanetariaIntersection.arc_path_intersection(closest_arc, begin, end);
         if (!closest_intersection_point.exists)
         {
             nullify(this);
@@ -58,7 +53,7 @@ public class BlockInteractor
         }
 
         arc_index = closest_index;
-        interpolator_angle = closest_arc.data.position_to_angle(closest_intersection_point.data);
+        interpolator_angle = closest_arc.position_to_angle(closest_intersection_point.data);
     }
 
     private static void nullify(BlockInteractor block_interactor)

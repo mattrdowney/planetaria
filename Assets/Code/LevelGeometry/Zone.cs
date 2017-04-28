@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class Zone : Component
 {
+    ZoneActor field;
     List<Plane> plane_list;
     
     /// <summary>
