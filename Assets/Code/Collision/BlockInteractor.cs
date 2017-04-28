@@ -4,31 +4,70 @@ public class BlockInteractor
 {
     public BlockInteractor(Arc arc, Vector3 last_position, Vector3 current_position, float half_height_)
     {
-        optional<Block> block = PlanetariaCache.block_cache.Get(arc);
+        NormalizedCartesianCoordinates begin = new NormalizedCartesianCoordinates(last_position);
+        NormalizedCartesianCoordinates end = new NormalizedCartesianCoordinates(current_position);
 
+        optional<Block> block = PlanetariaCache.block_cache.Get(arc);
         if (!block.exists)
         {
-            Debug.Log("Critical Err0r.");
-            target = null;
-            arc_index = 0;
-            interpolator_angle = 0;
-            half_height = 0;
+            nullify(this);
             return;
         }
 
         target = block.data;
         half_height = half_height_;
 
-        // Special initialization notes: remember that the arc used for initialization might not be the ultimate arc_index! (it could be a closer adjacent arc!)
-        if (!target.arc_index(arc).exists)
+        optional<int> collision_arc_index = target.arc_index(arc);
+        if (!collision_arc_index.exists)
         {
-            Debug.LogError("Critical Err0r");
+            nullify(this);
+            return;
         }
 
-        arc_index = target.arc_index(arc).data; // FIXME: these function work but are not constructing the BlockIterator properly
-        Vector3 closest_intersection_point = PlanetariaIntersection.arc_path_intersection(target.at(ref arc_index),
-                new NormalizedCartesianCoordinates(last_position), new NormalizedCartesianCoordinates(current_position));
-        interpolator_angle = target.at(ref arc_index).position_to_angle(closest_intersection_point);
+        int closest_index = 0;
+        float closest_similarity = -1;
+
+        for (int adjacent_arc_index = collision_arc_index.data - 2; adjacent_arc_index <= collision_arc_index.data + 2; ++adjacent_arc_index)
+        {
+            int current_index = adjacent_arc_index;
+            Arc current_arc = target.at(ref current_index);
+            optional<Vector3> current_intersection_point = PlanetariaIntersection.arc_path_intersection(current_arc, begin, end);
+            if (current_intersection_point.exists)
+            {
+                float similarity = Vector3.Dot(current_intersection_point.data, last_position);
+                if (similarity > closest_similarity)
+                {
+                    closest_index = current_index;
+                    closest_similarity = similarity;
+                }
+            }
+        }
+
+        optional<Arc> closest_arc = target.at(ref closest_index);
+        if (!closest_arc.exists)
+        {
+            nullify(this);
+            return;
+        }
+
+        optional<Vector3> closest_intersection_point = PlanetariaIntersection.arc_path_intersection(closest_arc.data, begin, end);
+        if (!closest_intersection_point.exists)
+        {
+            nullify(this);
+            return;
+        }
+
+        arc_index = closest_index;
+        interpolator_angle = closest_arc.data.position_to_angle(closest_intersection_point.data);
+    }
+
+    private static void nullify(BlockInteractor block_interactor)
+    {
+        Debug.Log("Critical Err0r.");
+        block_interactor.target = null;
+        block_interactor.arc_index = 0;
+        block_interactor.interpolator_angle = 0f;
+        block_interactor.half_height = 0f;
     }
 
     Block target;

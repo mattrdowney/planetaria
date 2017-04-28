@@ -65,12 +65,26 @@ public static class PlanetariaIntersection
         return result;
     }
 
-    NormalizedCartesianCoordinates[] arc_path_intersection(Arc arc, NormalizedCartesianCoordinates begin, NormalizedCartesianCoordinates end)
+    public static optional<Vector3> arc_path_intersection(Arc arc, NormalizedCartesianCoordinates begin, NormalizedCartesianCoordinates end)
     {
         Vector3 path_center = Vector3.Cross(begin.data, end.data).normalized;
         float path_radius = Mathf.PI/2;
 
-        return circle_circle_intersection(arc.pole(), path_center, arc.elevation(), path_radius);
+        NormalizedCartesianCoordinates[] intersections = circle_circle_intersection(new NormalizedCartesianCoordinates(arc.pole()), new NormalizedCartesianCoordinates(path_center), arc.elevation(), path_radius);
+        if (intersections.Length == 0)
+        {
+            return new optional<Vector3>();
+        }
+
+        float similarity_A = Vector3.Dot(begin.data, intersections[0].data);
+        float similarity_B = Vector3.Dot(begin.data, intersections[1].data);
+
+        if (similarity_A > similarity_B) // Note: the collision should be the first in front, but as long as the velocity is capped this is not an issue.
+        {
+            return intersections[0].data;
+        }
+
+        return intersections[1].data; 
     }
 }
 
