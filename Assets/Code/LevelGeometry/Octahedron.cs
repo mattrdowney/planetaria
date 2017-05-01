@@ -36,14 +36,14 @@ public static class Octahedron
     {
         Vector2 result = Vector2.zero;
 
-        bool[] bSign = new bool[3];
+        // get mapping index from 0-7
+        int triangle_start_index =
+                (octahedral.x < 0 ? 1 : 0) + // x sign is 1s place
+                (octahedral.y < 0 ? 2 : 0) + // y sign is 2s place
+                (octahedral.z < 0 ? 4 : 0);  // z sign is 4s place
 
-        bSign[0] = octahedral.x < 0;
-        bSign[1] = octahedral.y < 0;
-        bSign[2] = octahedral.z < 0;
+        triangle_start_index *= 3; // there are 24 indices in the octahedron mesh (i.e. 3 triangle vertices times 8 faces)
 
-        int triangle_start_index = (bSign[0] ? 1 : 0) + (bSign[1] ? 2 : 0)  + (bSign[2] ? 4 : 0); // get value from 0-7 (x sign is 1s place, y sign is 2s place, z sign is 4s place)
-     
         Mesh mesh = OctahedronMesh();
 
         for (int vertex = 0; vertex < 3; ++vertex)
@@ -74,14 +74,14 @@ public static class Octahedron
     {
         Vector3 result = Vector3.zero;
 
-        bool[] bSign = new bool[3];
+        // get mapping index from 0-7
+        int triangle_start_index =
+                (UV.x < 0.5f ? 1 : 0) + // x sign is 1s place
+                (Mathf.Abs(UV.x) + Mathf.Abs(UV.y) > 1 ? 2 : 0) + // y sign is 2s place
+                (UV.y < 0.5f ? 4 : 0);  // z sign is 4s place
 
-        bSign[0] = UV.x < 0.5f; // x < 0?
-        bSign[1] = Mathf.Abs(UV.x) + Mathf.Abs(UV.y) > 1; // y < 0?
-        bSign[2] = UV.y < 0.5f; // z < 0?
+        triangle_start_index *= 3; // there are 24 indices in the octahedron mesh (i.e. 3 triangle vertices times 8 faces)
 
-        int triangle_start_index = (bSign[0] ? 1 : 0) + (bSign[1] ? 2 : 0)  + (bSign[2] ? 4 : 0); // get value from 0-7 (x sign is 1s place, y sign is 2s place, z sign is 4s place)
-        
         Mesh mesh = OctahedronMesh();
 
         for (int vertex = 0; vertex < 3; ++vertex)

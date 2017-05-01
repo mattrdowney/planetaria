@@ -8,19 +8,19 @@ public sealed class PlanetariaMonoBehaviour : MonoBehaviour
     Dictionary<Block, BlockInteractor> collision_map = new Dictionary<Block, BlockInteractor>();
     Dictionary<Zone, ZoneInteractor> trigger_map = new Dictionary<Zone, ZoneInteractor>();
 
-	public void Start()
+    public void Start()
     {
         collision_map = new Dictionary<Block, BlockInteractor>();
         trigger_map = new Dictionary<Zone, ZoneInteractor>();
         // add to collision_map and trigger_map for all objects currently intersecting (via Physics.OverlapBox())
-		actor.Start();
-	}
-	
-	public void FixedUpdate()
+        actor.Start();
+    }
+    
+    public void FixedUpdate()
     {
-		actor.Update();
+        actor.Update();
         actor.transform.Move();
-	}
+    }
 
     public void OnTriggerStay(Collider collider)
     {

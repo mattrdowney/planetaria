@@ -83,7 +83,7 @@ public class Arc : Object
     /// </summary>
     /// <param name="extrusion">The radius to extrude.</param>
     /// <returns>The angle of the arc in radians.</returns>
-    float angle(float extrusion = 0f)
+    public float angle(float extrusion = 0f)
     {
         return arc_angle;
     }
