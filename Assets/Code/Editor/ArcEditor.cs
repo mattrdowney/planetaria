@@ -6,63 +6,49 @@ public class ArcEditor : Editor
 {
     Arc arc;
 
-    public void OnEnable()
+    /// <summary>
+    /// Inspector - Draw an arc (extruded by a radius)
+    /// </summary>
+    /// <param name="radius">The distance to extrude the arc.</param>
+    /// <param name="color">The color of the drawn arc.</param>
+    void draw_arc(float radius, Color color)
     {
-        arc = target as Arc;
-    }
-
-    void DrawArc(float radius, Color color)
-    {
+        float angle = arc.angle();
         Vector3 from = arc.position(0, radius);
-        Vector3 to = arc.position(arc.angle(), radius);
+        Vector3 to = arc.position(angle, radius);
         Vector3 normal = arc.pole(radius);
-        Vector3 center = Vector3.Project(from, normal);
 
-        DrawArc(from, to, center, normal, color);
+        RendererFacilities.draw_arc(from, to, normal, angle, color);
     }
 
-    // FIXME: this doesn't quite work because arcs and their complementary arcs are ambiguous
-    void DrawArc(Vector3 from, Vector3 to, Vector3 center, Vector3 normal, Color color)
-    {
-        if (from == center) // If this is a corner
-        {
-            return; // there is no need to render since corners have no radius
-        }
-
-        float radius = (from - center).magnitude;
-
-        from = (from - center).normalized;
-        to = (to - center).normalized;
-
-        Vector3 forward = from;
-        Vector3 right = -Vector3.Cross(forward, normal);
-
-        float x = Vector3.Dot(to, forward);
-        float y = Vector3.Dot(to, right);
-
-        float angle = Mathf.Atan2(y, x);
-
-        UnityEditor.Handles.color = color;
-        UnityEditor.Handles.DrawWireArc(center, normal, from, angle, radius);
-    }
-   
-    void DrawRadial(float angle, float radius, Color color)
+    /// <summary>
+    /// Inspector - Draw an extruded radial arc at a particular angle of the specified arc (i.e. the extrusion is its own arc).
+    /// </summary>
+    /// <param name="angle">The angle at which the extruded radius is drawn.</param>
+    /// <param name="radius">The radius to extrude the arc.</param>
+    /// <param name="color">The color of the drawn radial arc.</param>
+    void draw_radial(float angle, float radius, Color color)
     {
         Vector3 from = arc.position(angle, 0);
         Vector3 to = arc.position(angle, radius);
         Vector3 normal = Vector3.Cross(from, to);
 
-        DrawArc(from, to, Vector3.zero, normal, color);
+        RendererFacilities.draw_arc(from, to, normal, radius, color);
+    }
+
+    void OnEnable()
+    {
+        arc = target as Arc;
     }
 
     void OnSceneGUI()
     {
-        DrawArc(0.0f, Color.black);
-        DrawArc(0.05f, Color.gray);
-        DrawArc(0.1f, Color.white);
+        draw_arc(0.0f, Color.black);
+        draw_arc(0.05f, Color.gray);
+        draw_arc(0.1f, Color.white);
 
-        DrawRadial(0, 0.1f, Color.yellow);
-        DrawRadial(arc.angle(), 0.1f, Color.green);
+        draw_radial(0, 0.1f, Color.yellow);
+        draw_radial(arc.angle(), 0.1f, Color.green);
     }
 }
 
