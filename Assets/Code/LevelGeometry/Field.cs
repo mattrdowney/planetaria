@@ -1,25 +1,25 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Zone : Component
+public class Field : Component
 {
-    ZoneActor field;
+    FieldActor field;
     List<Plane> plane_list;
     
     /// <summary>
-    /// Constructor - Generates a zone using a .ssvg file.
+    /// Constructor - Generates a field using a .ssvg file.
     /// </summary>
     /// <param name="ssvg_file">
-    /// The .ssvg (spherical scalable vector graphics) file that will generate the zone.
+    /// The .ssvg (spherical scalable vector graphics) file that will generate the field.
     /// Special note: the .ssvg MUST be convex or all behavior is undefined.
     /// </param>
-    /// <returns>The GameObject reference with an attached Zone component.</returns>
+    /// <returns>The GameObject reference with an attached Field component.</returns>
     public static GameObject CreateZone(string ssvg_file) // TODO: add convex check asserts.
     {
         GameObject result = new GameObject();
-        Zone zone = result.AddComponent<Zone>();
+        Field field = result.AddComponent<Field>();
 
-        zone.plane_list = new List<Plane>();
+        field.plane_list = new List<Plane>();
 
         return result;
     }
@@ -42,6 +42,15 @@ public class Zone : Component
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Mutable? - 
+    /// </summary>
+    /// <returns>The list of planes that make the field.</returns>
+    public List<Plane> get_plane_list()
+    {
+        return plane_list;
     }
 }
 

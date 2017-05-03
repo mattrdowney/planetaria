@@ -6,7 +6,7 @@ public static class PlanetariaCache
 {
     public static PlanetariaSubcache<BoxCollider, Arc> arc_cache = new PlanetariaSubcache<BoxCollider, Arc>();
     public static PlanetariaSubcache<Arc, Block> block_cache = new PlanetariaSubcache<Arc, Block>();
-    public static PlanetariaSubcache<BoxCollider, Zone> zone_cache = new PlanetariaSubcache<BoxCollider, Zone>();
+    public static PlanetariaSubcache<BoxCollider, Field> zone_cache = new PlanetariaSubcache<BoxCollider, Field>();
 }
 
 /*

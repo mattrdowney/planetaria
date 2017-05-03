@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 
-public abstract class ZoneActor : Component
+public abstract class FieldActor : Component
 {
     /// <summary>
     /// Mutator - Changes traveller.
     /// </summary>
-    /// <param name="traveller">The object being affected by the zone field.</param>
+    /// <param name="traveller">The object being affected by the field field.</param>
     public abstract void Update(PlanetariaActor traveller);
 }
 

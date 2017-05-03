@@ -5,6 +5,7 @@ using UnityEditor;
 public class ArcEditor : Editor
 {
     Arc arc;
+    PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
 
     /// <summary>
     /// Inspector - Draw an arc (extruded by a radius)

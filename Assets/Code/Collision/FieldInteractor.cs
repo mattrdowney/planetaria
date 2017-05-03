@@ -1,12 +1,12 @@
-﻿public class ZoneInteractor
+﻿public class FieldInteractor
 {
-    public ZoneInteractor(Zone zone, float half_height_)
+    public FieldInteractor(Field field, float half_height_)
     {
-        target = zone;
+        target = field;
         half_height = half_height_;
     }
 
-    Zone target;
+    Field target;
     float half_height;
 }
 

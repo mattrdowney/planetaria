@@ -6,12 +6,12 @@ public sealed class PlanetariaMonoBehaviour : MonoBehaviour
     PlanetariaActor actor;
 
     Dictionary<Block, BlockInteractor> collision_map = new Dictionary<Block, BlockInteractor>();
-    Dictionary<Zone, ZoneInteractor> trigger_map = new Dictionary<Zone, ZoneInteractor>();
+    Dictionary<Field, FieldInteractor> trigger_map = new Dictionary<Field, FieldInteractor>();
 
     public void Start()
     {
         collision_map = new Dictionary<Block, BlockInteractor>();
-        trigger_map = new Dictionary<Zone, ZoneInteractor>();
+        trigger_map = new Dictionary<Field, FieldInteractor>();
         // add to collision_map and trigger_map for all objects currently intersecting (via Physics.OverlapBox())
         actor.Start();
     }
@@ -60,33 +60,33 @@ public sealed class PlanetariaMonoBehaviour : MonoBehaviour
                 actor.OnBlockStay(collision);
             }
         }
-        else // zone
+        else // field
         {
-            optional<Zone> zone = PlanetariaCache.zone_cache.Get(box_collider);
-            if (!zone.exists)
+            optional<Field> field = PlanetariaCache.zone_cache.Get(box_collider);
+            if (!field.exists)
             {
                 Debug.LogError("This is likely an Err0r or setup issue.");
                 return;
             }
 
-            if (!trigger_map.ContainsKey(zone.data) && arc.data.contains(actor.transform.position.data, actor.transform.scale))
+            if (!trigger_map.ContainsKey(field.data) && arc.data.contains(actor.transform.position.data, actor.transform.scale))
             {
                 float half_height = actor.transform.scale / 2;
-                ZoneInteractor trigger = new ZoneInteractor(zone.data, half_height);
-                trigger_map.Add(zone.data, trigger);
-                actor.OnZoneEnter(trigger);
+                FieldInteractor trigger = new FieldInteractor(field.data, half_height);
+                trigger_map.Add(field.data, trigger);
+                actor.OnFieldEnter(trigger);
             }
-            else if (trigger_map.ContainsKey(zone.data) && !zone.data.contains(actor.transform.position.data, actor.transform.scale))
+            else if (trigger_map.ContainsKey(field.data) && !field.data.contains(actor.transform.position.data, actor.transform.scale))
             {
-                ZoneInteractor collision = trigger_map[zone.data];
-                actor.OnZoneExit(collision);
-                trigger_map.Remove(zone.data);
+                FieldInteractor collision = trigger_map[field.data];
+                actor.OnFieldExit(collision);
+                trigger_map.Remove(field.data);
             }
 
-            if (trigger_map.ContainsKey(zone.data))
+            if (trigger_map.ContainsKey(field.data))
             {
-                ZoneInteractor collision = trigger_map[zone.data];
-                actor.OnZoneStay(collision);
+                FieldInteractor collision = trigger_map[field.data];
+                actor.OnFieldStay(collision);
             }
         }
     }

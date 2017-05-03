@@ -11,9 +11,9 @@ public abstract class PlanetariaActor : Component
     public abstract void OnBlockExit(BlockInteractor block_information);
     public abstract void OnBlockStay(BlockInteractor block_information);
     
-    public abstract void OnZoneEnter(ZoneInteractor zone_information);
-    public abstract void OnZoneExit(ZoneInteractor zone_information);
-    public abstract void OnZoneStay(ZoneInteractor zone_information);
+    public abstract void OnFieldEnter(FieldInteractor zone_information);
+    public abstract void OnFieldExit(FieldInteractor zone_information);
+    public abstract void OnFieldStay(FieldInteractor zone_information);
 }
 
 /*

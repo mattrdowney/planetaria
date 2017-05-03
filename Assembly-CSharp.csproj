@@ -47,8 +47,8 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Code\Collision\BlockInteractor.cs" />
+     <Compile Include="Assets\Code\Collision\FieldInteractor.cs" />
      <Compile Include="Assets\Code\Collision\PlanetariaIntersection.cs" />
-     <Compile Include="Assets\Code\Collision\ZoneInteractor.cs" />
      <Compile Include="Assets\Code\CoordinateSystems\Bearing.cs" />
      <Compile Include="Assets\Code\CoordinateSystems\NormalizedCartesianCoordinates.cs" />
      <Compile Include="Assets\Code\CoordinateSystems\NormalizedOctahedralCoordinates.cs" />
@@ -57,9 +57,9 @@
      <Compile Include="Assets\Code\LevelGeometry\Arc.cs" />
      <Compile Include="Assets\Code\LevelGeometry\Block.cs" />
      <Compile Include="Assets\Code\LevelGeometry\BlockActor.cs" />
+     <Compile Include="Assets\Code\LevelGeometry\Field.cs" />
+     <Compile Include="Assets\Code\LevelGeometry\FieldActor.cs" />
      <Compile Include="Assets\Code\LevelGeometry\Octahedron.cs" />
-     <Compile Include="Assets\Code\LevelGeometry\Zone.cs" />
-     <Compile Include="Assets\Code\LevelGeometry\ZoneActor.cs" />
      <Compile Include="Assets\Code\Unity\PlanetariaActor.cs" />
      <Compile Include="Assets\Code\Unity\PlanetariaMonoBehaviour.cs" />
      <Compile Include="Assets\Code\Unity\PlanetariaRigidbody.cs" />
