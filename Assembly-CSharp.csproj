@@ -46,6 +46,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Code\Camera\PlanetariaCamera.cs" />
      <Compile Include="Assets\Code\Collision\BlockInteractor.cs" />
      <Compile Include="Assets\Code\Collision\FieldInteractor.cs" />
      <Compile Include="Assets\Code\Collision\PlanetariaIntersection.cs" />
@@ -60,6 +61,7 @@
      <Compile Include="Assets\Code\LevelGeometry\Field.cs" />
      <Compile Include="Assets\Code\LevelGeometry\FieldActor.cs" />
      <Compile Include="Assets\Code\LevelGeometry\Octahedron.cs" />
+     <Compile Include="Assets\Code\LevelLoading\Planetarium.cs" />
      <Compile Include="Assets\Code\Unity\PlanetariaActor.cs" />
      <Compile Include="Assets\Code\Unity\PlanetariaMonoBehaviour.cs" />
      <Compile Include="Assets\Code\Unity\PlanetariaRigidbody.cs" />

@@ -60,6 +60,7 @@ public class PlanetariaTransform
             Cartesian_transform.rotation = Quaternion.AngleAxis(rotation_, position_.data);
             dirty_position = false;
         }
+
         if (dirty_scale)
         {
             Cartesian_transform.localScale = Mathf.Sin(scale)*Vector3.one;
