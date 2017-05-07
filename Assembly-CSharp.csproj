@@ -61,6 +61,9 @@
      <Compile Include="Assets\Code\LevelGeometry\Field.cs" />
      <Compile Include="Assets\Code\LevelGeometry\FieldActor.cs" />
      <Compile Include="Assets\Code\LevelGeometry\Octahedron.cs" />
+     <Compile Include="Assets\Code\LevelLoading\BasicLoadingStrategy.cs" />
+     <Compile Include="Assets\Code\LevelLoading\LevelLoader.cs" />
+     <Compile Include="Assets\Code\LevelLoading\LoadingStrategy.cs" />
      <Compile Include="Assets\Code\LevelLoading\Planetarium.cs" />
      <Compile Include="Assets\Code\Unity\PlanetariaActor.cs" />
      <Compile Include="Assets\Code\Unity\PlanetariaMonoBehaviour.cs" />

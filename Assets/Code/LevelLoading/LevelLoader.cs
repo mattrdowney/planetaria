@@ -1,35 +1,39 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
-public class Planetarium
+abstract class LevelLoader : Component
 {
-    int level_index;
+    int initial_level = 1;
 
-    private void Toggle_room(bool state)
+    private static LoadingStrategy loader_;
+
+    public static LoadingStrategy loader
     {
-        GameObject geometry_root = GameObject.Find("/" + level_index.ToString());
-        GameObject graphics_root = GameObject.Find("/" + level_index.ToString() + "g");
-
-        // geometry
-        for (int child_id = 0; child_id < geometry_root.transform.childCount; child_id++)
+        set
         {
-            geometry_root.transform.GetChild(child_id).gameObject.SetActive(state);
+            loader_ = value;
         }
 
-        // graphics
-        for (int child_id = 0; child_id < graphics_root.transform.childCount; child_id++)
+        private get
         {
-            graphics_root.transform.GetChild(child_id).gameObject.SetActive(state);
+            return loader_;
         }
     }
 
-    public void Load_room()
+    public void Awake()
     {
-        Toggle_room(true);
+        loader = new BasicLoadingStrategy();
+
+        loader.Request_level(0);
     }
 
-    public void Unload_room()
+    IEnumerator Wait(int level_index)
     {
-        Toggle_room(false);
+        yield return new WaitUntil(() => loader.fraction_loaded(level_index) == 1f);
+
+        loader.Request_level(level_index);
+
+        Time.timeScale = 1;
     }
 }
 

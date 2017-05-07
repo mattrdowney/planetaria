@@ -1,36 +1,11 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
-public class Planetarium
+public class BasicLoadingStrategy : LoadingStrategy
 {
-    int level_index;
+    List<Planetarium> planetaria;
 
-    private void Toggle_room(bool state)
-    {
-        GameObject geometry_root = GameObject.Find("/" + level_index.ToString());
-        GameObject graphics_root = GameObject.Find("/" + level_index.ToString() + "g");
-
-        // geometry
-        for (int child_id = 0; child_id < geometry_root.transform.childCount; child_id++)
-        {
-            geometry_root.transform.GetChild(child_id).gameObject.SetActive(state);
-        }
-
-        // graphics
-        for (int child_id = 0; child_id < graphics_root.transform.childCount; child_id++)
-        {
-            graphics_root.transform.GetChild(child_id).gameObject.SetActive(state);
-        }
-    }
-
-    public void Load_room()
-    {
-        Toggle_room(true);
-    }
-
-    public void Unload_room()
-    {
-        Toggle_room(false);
-    }
+    //AsyncOperation 
 }
 
 /*

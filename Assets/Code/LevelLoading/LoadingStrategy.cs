@@ -1,36 +1,19 @@
 ﻿using UnityEngine;
 
-public class Planetarium
+public abstract class LoadingStrategy : Component
 {
-    int level_index;
+    /// <summary>
+    /// Inspector - Gets the progress on the level loading.
+    /// </summary>
+    /// <param name="level_index">The index of the level that will be loaded. (Should match Unity level index.)</param>
+    /// <returns>A value [0, 1] inclusive, where 0 means 0% loaded and 1 means 100% loaded.</returns>
+    public abstract float fraction_loaded(int level_index);
 
-    private void Toggle_room(bool state)
-    {
-        GameObject geometry_root = GameObject.Find("/" + level_index.ToString());
-        GameObject graphics_root = GameObject.Find("/" + level_index.ToString() + "g");
-
-        // geometry
-        for (int child_id = 0; child_id < geometry_root.transform.childCount; child_id++)
-        {
-            geometry_root.transform.GetChild(child_id).gameObject.SetActive(state);
-        }
-
-        // graphics
-        for (int child_id = 0; child_id < graphics_root.transform.childCount; child_id++)
-        {
-            graphics_root.transform.GetChild(child_id).gameObject.SetActive(state);
-        }
-    }
-
-    public void Load_room()
-    {
-        Toggle_room(true);
-    }
-
-    public void Unload_room()
-    {
-        Toggle_room(false);
-    }
+    /// <summary>
+    /// Mutator - Starts loading the level (and--if necessary--unloads other levels).
+    /// </summary>
+    /// <param name="level_index">The index of the level that will be loaded. (Should match Unity level index.)</param>
+    public abstract void Request_level(int level_index);
 }
 
 /*
