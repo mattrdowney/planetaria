@@ -4,9 +4,24 @@ public class Planetarium
 {
     int level_index;
 
-    private void Toggle_room(bool state)
+    public Planetarium(int level_index_)
     {
-        GameObject geometry_root = GameObject.Find("/" + level_index.ToString());
+        level_index = level_index_;
+    }
+
+    public void Load_room()
+    {
+        Toggle_room(level_index, true);
+    }
+
+    public void Unload_room()
+    {
+        Toggle_room(level_index, false);
+    }
+
+    private static void Toggle_room(int level_index, bool state)
+    {
+        GameObject geometry_root = GameObject.Find("/" + level_index.ToString()); // TODO: make this more elegant...
         GameObject graphics_root = GameObject.Find("/" + level_index.ToString() + "g");
 
         // geometry
@@ -20,16 +35,6 @@ public class Planetarium
         {
             graphics_root.transform.GetChild(child_id).gameObject.SetActive(state);
         }
-    }
-
-    public void Load_room()
-    {
-        Toggle_room(true);
-    }
-
-    public void Unload_room()
-    {
-        Toggle_room(false);
     }
 }
 

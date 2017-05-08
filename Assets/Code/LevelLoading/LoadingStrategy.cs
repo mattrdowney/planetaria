@@ -14,6 +14,16 @@ public abstract class LoadingStrategy : Component
     /// </summary>
     /// <param name="level_index">The index of the level that will be loaded. (Should match Unity level index.)</param>
     public abstract void Request_level(int level_index);
+
+    /// <summary>
+    /// Mutator - Will instantaneously switch level geometry and transition out the graphics for level gradually.
+    /// </summary>
+    /// <param name="level_index">The index of the level that will be focused, implicitly unfocusing previous level. (Should match Unity level index.)</param>
+    public abstract void Focus_level(int level_index);
+
+    // A footnote regarding graphics loading: until this point I planned on doing a "camera shutter blink to load in/out levels, but I will probably implement two versions:
+    // 1) camera shutter blink (for casual players).
+    // 2) hexagonal shutter blink (for people that hate themselves).
 }
 
 /*
