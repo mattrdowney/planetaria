@@ -1,38 +1,8 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 
-abstract class LevelLoader : Component
+public class CameraRotationStrategy : Component
 {
-    int initial_level = 0;
 
-    private static LoadingStrategy loader_;
-
-    public static LoadingStrategy loader
-    {
-        set
-        {
-            loader_ = value;
-        }
-
-        private get
-        {
-            return loader_;
-        }
-    }
-
-    public void Awake()
-    {
-        loader = new BasicLoadingStrategy();
-
-        loader.Request_level(initial_level);
-
-        Wait(initial_level);
-    }
-
-    IEnumerator Wait(int level_index)
-    {
-        yield return new WaitUntil(() => loader.fraction_loaded(level_index) == 1f);
-    }
 }
 
 /*

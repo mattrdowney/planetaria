@@ -49,6 +49,19 @@
      <Compile Include="Assets\Code\Editor\ArcEditor.cs" />
      <Compile Include="Assets\Code\Editor\FieldEditor.cs" />
      <Compile Include="Assets\Code\Editor\RendererFacilities.cs" />
+     <Compile Include="Assets\OVR\Editor\OVRBuild.cs" />
+     <Compile Include="Assets\OVR\Editor\OVRManifestPreprocessor.cs" />
+     <Compile Include="Assets\OVR\Editor\OVRMoonlightLoader.cs" />
+     <Compile Include="Assets\OVR\Editor\OVRPluginUpdater.cs" />
+     <Compile Include="Assets\OVR\Editor\OVRPluginUpdaterStub.cs" />
+     <Compile Include="Assets\OVR\Editor\OVRScreenshotWizard.cs" />
+     <None Include="Assets\OVR\Editor\AndroidManifest.OVRSubmission.xml" />
+     <None Include="Assets\OVR\Shaders\OVRColorRampAlpha.shader" />
+     <None Include="Assets\OVR\Shaders\Unlit Crosshair.shader" />
+     <None Include="Assets\OVR\Resources\Unlit Transparent Color.shader" />
+     <None Include="Assets\OVR\Resources\Underlay Transparent Occluder.shader" />
+     <None Include="Assets\OVR\Resources\Underlay Impostor.shader" />
+     <None Include="Assets\OVR\Plugins\placeholder.txt" />
  <Reference Include="UnityEditor.Advertisements">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Advertisements/Editor/UnityEditor.Advertisements.dll</HintPath>
  </Reference>
@@ -106,6 +119,10 @@
  <Reference Include="UnityEditor.WindowsStandalone.Extensions">
  <HintPath>C:/Program Files/Unity/Editor/Data/PlaybackEngines/windowsstandalonesupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
  </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Assembly-CSharp.csproj">
+      <Project>{514BDA10-8EB7-F8F7-0421-D7D2EF0A982E}</Project>      <Name>Assembly-CSharp</Name>    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

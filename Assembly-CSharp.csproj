@@ -46,6 +46,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Code\Camera\CameraRotationStrategy.cs" />
+     <Compile Include="Assets\Code\Camera\CameraTrackingStrategy.cs" />
      <Compile Include="Assets\Code\Camera\PlanetariaCamera.cs" />
      <Compile Include="Assets\Code\Collision\BlockInteractor.cs" />
      <Compile Include="Assets\Code\Collision\FieldInteractor.cs" />
@@ -74,6 +76,46 @@
      <Compile Include="Assets\Code\Utility\PlanetariaMath.cs" />
      <Compile Include="Assets\Code\Utility\PlanetariaSubcache.cs" />
      <Compile Include="Assets\Code\Utility\Precision.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRBoundary.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRCameraRig.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRCommon.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRDebugHeadController.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRDisplay.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRHaptics.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRHapticsClip.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRInput.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRLint.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRManager.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVROnCompleteListener.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVROverlay.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRPlatformMenu.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRPlugin.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRProfile.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRTouchpad.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRTracker.cs" />
+     <Compile Include="Assets\OVR\Scripts\Util\OVRChromaticAberration.cs" />
+     <Compile Include="Assets\OVR\Scripts\Util\OVRCubemapCapture.cs" />
+     <Compile Include="Assets\OVR\Scripts\Util\OVRDebugInfo.cs" />
+     <Compile Include="Assets\OVR\Scripts\Util\OVRGearVrController.cs" />
+     <Compile Include="Assets\OVR\Scripts\Util\OVRGearVrControllerTest.cs" />
+     <Compile Include="Assets\OVR\Scripts\Util\OVRGrabbable.cs" />
+     <Compile Include="Assets\OVR\Scripts\Util\OVRGrabber.cs" />
+     <Compile Include="Assets\OVR\Scripts\Util\OVRGridCube.cs" />
+     <Compile Include="Assets\OVR\Scripts\Util\OVRModeParms.cs" />
+     <Compile Include="Assets\OVR\Scripts\Util\OVRMonoscopic.cs" />
+     <Compile Include="Assets\OVR\Scripts\Util\OVRPlayerController.cs" />
+     <Compile Include="Assets\OVR\Scripts\Util\OVRRTOverlayConnector.cs" />
+     <Compile Include="Assets\OVR\Scripts\Util\OVRResetOrientation.cs" />
+     <Compile Include="Assets\OVR\Scripts\Util\OVRSceneSampleController.cs" />
+     <Compile Include="Assets\OVR\Scripts\Util\OVRScreenFade.cs" />
+     <Compile Include="Assets\OVR\Scripts\Util\OVRWaitCursor.cs" />
+     <None Include="Assets\OVR\Editor\AndroidManifest.OVRSubmission.xml" />
+     <None Include="Assets\OVR\Shaders\OVRColorRampAlpha.shader" />
+     <None Include="Assets\OVR\Shaders\Unlit Crosshair.shader" />
+     <None Include="Assets\OVR\Resources\Unlit Transparent Color.shader" />
+     <None Include="Assets\OVR\Resources\Underlay Transparent Occluder.shader" />
+     <None Include="Assets\OVR\Resources\Underlay Impostor.shader" />
+     <None Include="Assets\OVR\Plugins\placeholder.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

@@ -1,8 +1,35 @@
 ﻿using UnityEngine;
 
-public class PlanetariaCamera : MonoBehaviour
+public class PlanetariaCamera : Component
 {
+    public new PlanetariaTransform transform;
+    Camera internal_camera;
+    CameraTrackingStrategy tracking_strategy;
+    CameraRotationStrategy rotation_strategy;
 
+	void Awake()
+	{
+        internal_camera = GameObject.FindObjectOfType<Camera>();
+        transform = new PlanetariaTransform(internal_camera.transform.parent);
+
+		OVRCameraRig camera = GameObject.FindObjectOfType<OVRCameraRig>();
+
+		if (camera)
+        {
+			camera.UpdatedAnchors += LockCamera;
+        }
+	}
+
+	void LockCamera(OVRCameraRig camera)
+	{
+		camera.trackingSpace.FromOVRPose(camera.centerEyeAnchor.ToOVRPose(true).Inverse(), true); // undo all headtracking (by reverting the changes)
+
+		camera.leftEyeAnchor.FromOVRPose(OVRPose.identity); // reset all relative positions to origin
+		camera.rightEyeAnchor.FromOVRPose(OVRPose.identity);
+		camera.leftHandAnchor.FromOVRPose(OVRPose.identity);
+		camera.rightHandAnchor.FromOVRPose(OVRPose.identity);
+		camera.trackerAnchor.FromOVRPose(OVRPose.identity);
+	}
 }
 
 /*

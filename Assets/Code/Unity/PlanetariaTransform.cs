@@ -2,6 +2,11 @@
 
 public class PlanetariaTransform
 {
+    public PlanetariaTransform(Transform internal_transform)
+    {
+        Cartesian_transform = internal_transform;
+    }
+
     public NormalizedSphericalCoordinates position
     {
         get
