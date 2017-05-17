@@ -47,6 +47,8 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Code\Camera\CameraRotationStrategy.cs" />
+     <Compile Include="Assets\Code\Camera\CameraShutterStrategy.cs" />
+     <Compile Include="Assets\Code\Camera\CameraStrategy.cs" />
      <Compile Include="Assets\Code\Camera\CameraTrackingStrategy.cs" />
      <Compile Include="Assets\Code\Camera\PlanetariaCamera.cs" />
      <Compile Include="Assets\Code\Collision\BlockInteractor.cs" />

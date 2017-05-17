@@ -1,6 +1,9 @@
-﻿public abstract class CameraTrackingStrategy : CameraStrategy
-{
+﻿public delegate void OnShutterBlink();
 
+public abstract class CameraShutterStrategy : CameraStrategy
+{
+    // Use Observer pattern to allow positional/rotational tracker to be notified. // (Don't use two direct references: it's simple, but stupid.)
+    public abstract void listen();
 }
 
 /*

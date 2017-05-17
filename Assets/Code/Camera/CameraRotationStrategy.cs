@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class CameraRotationStrategy : Component
+﻿public abstract class CameraRotationStrategy : CameraStrategy
 {
 
 }
