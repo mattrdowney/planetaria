@@ -1,9 +1,27 @@
-﻿public delegate void OnShutterBlink();
+﻿using System.Collections.Generic;
+
+public delegate void OnShutterBlink();
 
 public abstract class CameraShutterStrategy : CameraStrategy
 {
-    // Use Observer pattern to allow positional/rotational tracker to be notified. // (Don't use two direct references: it's simple, but stupid.)
-    public abstract void listen();
+    private List<CameraStrategy> observers; // Use Observer pattern to allow positional/rotational tracker to be notified.
+
+    public void notify(CameraStrategy strategy)
+    {
+        observers.Add(strategy);
+    }
+    public void drop(CameraStrategy strategy)
+    {
+        observers.Remove(strategy);
+    }
+
+    public sealed override void OnShutterBlink()
+    {
+        foreach (CameraStrategy observer in observers)
+        {
+            observer.OnShutterBlink(); // STEP 1: add self to list of observers, STEP 2: ???, STEP 3: Profit? // The sheer possibility of this infinite loop is making me rethink my life decisions...
+        }
+    }
 }
 
 /*

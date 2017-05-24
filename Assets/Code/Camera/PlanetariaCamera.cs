@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 
-public class PlanetariaCamera : Component
+public class PlanetariaCamera : Component // Consider: how do I reduce coupling between 2D and VR camera code?
 {
     public new PlanetariaTransform transform;
     Camera internal_camera;
     CameraTrackingStrategy tracking_strategy;
     CameraRotationStrategy rotation_strategy;
+    CameraShutterStrategy shutter_strategy;
 
 	void Awake()
 	{
@@ -17,6 +18,7 @@ public class PlanetariaCamera : Component
 		if (camera)
         {
 			camera.UpdatedAnchors += LockCamera;
+            // += tracking_strategy and rotation_strategy (check if order is deterministic and whether or not there is an order dependency)
         }
 	}
 
