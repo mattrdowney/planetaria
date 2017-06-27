@@ -46,11 +46,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Code\Camera\CameraRotationStrategy.cs" />
      <Compile Include="Assets\Code\Camera\CameraShutterStrategy.cs" />
-     <Compile Include="Assets\Code\Camera\CameraStrategy.cs" />
-     <Compile Include="Assets\Code\Camera\CameraTrackingStrategy.cs" />
      <Compile Include="Assets\Code\Camera\PlanetariaCamera.cs" />
+     <Compile Include="Assets\Code\Camera\PlanetariaPerspectiveCamera.cs" />
+     <Compile Include="Assets\Code\Camera\PlanetariaStereoscopicCamera.cs" />
      <Compile Include="Assets\Code\Collision\BlockInteractor.cs" />
      <Compile Include="Assets\Code\Collision\FieldInteractor.cs" />
      <Compile Include="Assets\Code\Collision\PlanetariaIntersection.cs" />
@@ -69,6 +68,10 @@
      <Compile Include="Assets\Code\LevelLoading\LevelLoader.cs" />
      <Compile Include="Assets\Code\LevelLoading\LoadingStrategy.cs" />
      <Compile Include="Assets\Code\LevelLoading\Planetarium.cs" />
+     <Compile Include="Assets\Code\Tracker\PlanetariaLookingStrategy.cs" />
+     <Compile Include="Assets\Code\Tracker\PlanetariaTiltingStrategy.cs" />
+     <Compile Include="Assets\Code\Tracker\PlanetariaTracker.cs" />
+     <Compile Include="Assets\Code\Tracker\PlanetariaTrackingStrategy.cs" />
      <Compile Include="Assets\Code\Unity\PlanetariaActor.cs" />
      <Compile Include="Assets\Code\Unity\PlanetariaMonoBehaviour.cs" />
      <Compile Include="Assets\Code\Unity\PlanetariaRigidbody.cs" />

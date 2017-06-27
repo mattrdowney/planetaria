@@ -1,4 +1,4 @@
-﻿public abstract class CameraRotationStrategy : CameraStrategy
+﻿public abstract class PlanetariaLookingStrategy : PlanetariaTrackingStrategy
 {
 
 }

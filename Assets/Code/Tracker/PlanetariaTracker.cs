@@ -1,6 +1,19 @@
-﻿public abstract class CameraTrackingStrategy : CameraStrategy
-{
+﻿using System.Collections.Generic;
 
+public class PlanetariaTracker
+{
+    // Ironically, the tracker should be notifying the camera (I had it wrong, conceptually).
+    private List<Observer> observers; // Use Observer pattern to allow objects to be notified of Transform changes.
+    protected PlanetariaLookingStrategy looking_strategy;
+    protected PlanetariaTiltingStrategy tilting_strategy;
+
+    public void on_teleport()
+    {
+        foreach (PlanetariaTrackingStrategy observer in observers)
+        {
+            observer.on_update();
+        }
+    }
 }
 
 /*

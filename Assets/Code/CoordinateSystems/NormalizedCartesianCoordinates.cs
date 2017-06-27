@@ -12,7 +12,7 @@ public class NormalizedCartesianCoordinates
     /// Constructor - Stores Cartesian coordinates in a wrapper class.
     /// </summary>
     /// <param name="Cartesian">The Cartesian coordinates. Note: matches Unity's default Vector3 definition.</param>
-    public NormalizedCartesianCoordinates(Vector3 Cartesian)
+    public NormalizedCartesianCoordinates(Vector3 Cartesian) // Note: this is an example of where there is ambiguity between variables and types under new naming convention
     {
         data_ = Cartesian;
         Normalize(); 

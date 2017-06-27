@@ -267,7 +267,7 @@ public class Arc : Object
         return result;
     }
 
-    private static float closest_heuristic(Arc arc, heuristic_function distance_heuristic, Vector3 target,
+    private static float closest_heuristic(Arc arc, HeuristicFunction distance_heuristic, Vector3 target,
             int precision = Precision.float_bits)
     {
         float closest_angle = 0; // use a valid angle for when arc.angle() returns 0!
@@ -341,7 +341,7 @@ public class Arc : Object
         return new Bounds(center, size);
     }
 
-    private delegate float heuristic_function(Arc arc, Vector3 operand, float angle);
+    private delegate float HeuristicFunction(Arc arc, Vector3 operand, float angle); // New naming convention I decided on a while back: data types are proper CamelCase and variables are lowercase with underscores.
 
     private static float normal_heuristic(Arc arc, Vector3 desired_normal, float angle)
     {

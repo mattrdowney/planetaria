@@ -1,13 +1,6 @@
-﻿using UnityEngine; 
-
-public delegate void OnShutterBlink();
-
-public abstract class CameraShutterStrategy : Component
+﻿public abstract class PlanetariaTiltingStrategy : PlanetariaTrackingStrategy
 {
-    public void Blink()
-    {
 
-    }
 }
 
 /*

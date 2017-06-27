@@ -1,13 +1,10 @@
-﻿using UnityEngine; 
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-public delegate void OnShutterBlink();
-
-public abstract class CameraShutterStrategy : Component
+public class PlanetariaPerspectiveCamera : PlanetariaCamera
 {
-    public void Blink()
-    {
 
-    }
 }
 
 /*

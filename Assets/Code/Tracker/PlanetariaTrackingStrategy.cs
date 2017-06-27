@@ -1,13 +1,9 @@
-﻿using UnityEngine; 
+﻿using UnityEngine;
 
-public delegate void OnShutterBlink();
-
-public abstract class CameraShutterStrategy : Component
+public abstract class PlanetariaTrackingStrategy : MonoBehaviour
 {
-    public void Blink()
-    {
-
-    }
+    public abstract void Update();
+    public abstract void Teleport();
 }
 
 /*
