@@ -46,10 +46,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Code\Camera\CameraShutterStrategy.cs" />
      <Compile Include="Assets\Code\Camera\PlanetariaCamera.cs" />
      <Compile Include="Assets\Code\Camera\PlanetariaPerspectiveCamera.cs" />
      <Compile Include="Assets\Code\Camera\PlanetariaStereoscopicCamera.cs" />
+     <Compile Include="Assets\Code\Camera\Shutter\HexagonalCameraShutter.cs" />
+     <Compile Include="Assets\Code\Camera\Shutter\PlanetariaCameraShutter.cs" />
      <Compile Include="Assets\Code\Collision\BlockInteractor.cs" />
      <Compile Include="Assets\Code\Collision\FieldInteractor.cs" />
      <Compile Include="Assets\Code\Collision\PlanetariaIntersection.cs" />

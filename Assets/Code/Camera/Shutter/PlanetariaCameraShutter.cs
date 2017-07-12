@@ -1,12 +1,31 @@
-﻿using UnityEngine; 
+﻿using UnityEngine;
 
 public delegate void OnShutterBlink();
 
-public abstract class CameraShutterStrategy : Component
+public abstract class PlanetariaCameraShutter : MonoBehaviour
 {
-    public void Blink()
-    {
+    public enum ShutterPosition { Closing, Closed, Opening };
 
+    public abstract ShutterPosition Blink();
+    public abstract ShutterPosition Open();
+    public abstract ShutterPosition Close();
+
+    ShutterPosition shutter_position;
+
+    void LateUpdate()
+    {
+        switch (shutter_position)
+        {
+            case ShutterPosition.Closing:
+                shutter_position = Close();
+                break;
+            case ShutterPosition.Closed:
+                shutter_position = Blink();
+                break;
+            case ShutterPosition.Opening:
+                shutter_position = Open();
+                break;
+        }
     }
 }
 

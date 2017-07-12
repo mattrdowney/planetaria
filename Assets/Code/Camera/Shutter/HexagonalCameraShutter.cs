@@ -1,12 +1,19 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-public class PlanetariaPerspectiveCamera : PlanetariaCamera
+public class HexagonalCameraShutter : PlanetariaCameraShutter
 {
-    void Awake()
-	{
-        internal_camera = GameObject.FindObjectOfType<Camera>();
-        transform = new PlanetariaTransform(internal_camera.transform.parent);
-	}
+    public override void Blink()
+    {
+        // create six camera shutter quads in a ring
+
+        // rotate each quad clockwise from one corner until they meet in the center.
+
+        // teleport
+
+        // unrotate until ring is formed.
+    }
 }
 
 /*
