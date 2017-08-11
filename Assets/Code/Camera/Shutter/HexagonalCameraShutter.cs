@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HexagonalCameraShutter : PlanetariaCameraShutter
+/*public class HexagonalCameraShutter : PlanetariaCameraShutter
 {
-    public override void Blink()
+    public override ShutterPosition Blink()
     {
         // create six camera shutter quads in a ring
 
@@ -13,8 +13,10 @@ public class HexagonalCameraShutter : PlanetariaCameraShutter
         // teleport
 
         // unrotate until ring is formed.
+
+        return ShutterPosition.Opening;
     }
-}
+}*/
 
 /*
 Permission is hereby granted, free of charge, to any person obtaining a copy

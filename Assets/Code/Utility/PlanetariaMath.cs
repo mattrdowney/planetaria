@@ -3,6 +3,33 @@
 public static class PlanetariaMath
 {
     /// <summary>
+    /// Find the radius of the base of a cone. Useful for determining sizes for camera shutter effects.
+    /// </summary>
+    /// <param name="cone_height">The height of the cone (e.g. the distance from the camera's focus (e.g. near/far clipping planes)).</param>
+    /// <param name="cone_angle">The angle of the cone (e.g. the field of view of the camera (vertical, horizontal, or diagonal)).</param>
+    /// <returns>The radius of the base of the cone.</returns>
+    public static float cone_radius(float cone_height, float cone_angle)
+    {
+        // Derivation: cone_radius / sin(cone_angle / 2) = cone_height / sin(PI/2 - cone_angle / 2) [from Law of Sines]
+        //             cone_radius = cone_height * sin(cone_angle / 2) / sin(PI/2 - cone_angle / 2)
+        //             cone_radius = cone_height * sin(cone_angle / 2) / cos(cone_angle / 2)
+        //             cone_radius = cone_height * tan(cone_angle / 2)
+
+        return cone_height * Mathf.Tan(cone_angle / 2);
+    }
+
+    /// <summary>
+    /// Returns the vertical field of view of a camera, given it's horizontal field of view and aspect ratio
+    /// </summary>
+    /// <param name="horizontal_field_of_view">The horizontal field of view (for the width of the screen).</param>
+    /// <param name="aspect_ratio">The aspect ratio of the screen.</param>
+    /// <returns>The vertical field of view (for the height of the screen).</returns>
+    public static float horizontal_to_vertical_field_of_view(float horizontal_field_of_view, float aspect_ratio)
+    {
+        return 2 * Mathf.Atan(Mathf.Tan(horizontal_field_of_view / 2) / aspect_ratio);
+    }
+
+    /// <summary>
     /// The result of the modulo operation when using Euclidean division. The remainder will always be positive.
     /// </summary>
     /// <param name="dividend">The element that will be used to calculate the remainder.</param>
@@ -34,6 +61,17 @@ public static class PlanetariaMath
     public static Vector3 slerp(Vector3 x_axis, Vector3 y_axis, float radians)
     {
         return x_axis * Mathf.Cos(radians) + y_axis * Mathf.Sin(radians);
+    }
+
+    /// <summary>
+    /// Returns the horizontal field of view of a camera, given it's vertical field of view and aspect ratio
+    /// </summary>
+    /// <param name="vertical_field_of_view">The vertical field of view (for the height of the screen).</param>
+    /// <param name="aspect_ratio">The aspect ratio of the screen.</param>
+    /// <returns>The horizontal field of view (for the width of the screen).</returns>
+    public static float vertical_to_horizontal_field_of_view(float vertical_field_of_view, float aspect_ratio)
+    {
+        return horizontal_to_vertical_field_of_view(vertical_field_of_view, 1/aspect_ratio);
     }
 }
 
