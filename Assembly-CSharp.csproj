@@ -61,6 +61,7 @@
      <Compile Include="Assets\Code\CoordinateSystems\NormalizedOctahedralCoordinates.cs" />
      <Compile Include="Assets\Code\CoordinateSystems\NormalizedSphericalCoordinates.cs" />
      <Compile Include="Assets\Code\CoordinateSystems\OctahedralUVCoordinates.cs" />
+     <Compile Include="Assets\Code\CoordinateSystems\StereoscopicProjectionCoordinates.cs" />
      <Compile Include="Assets\Code\LevelGeometry\Arc.cs" />
      <Compile Include="Assets\Code\LevelGeometry\Block.cs" />
      <Compile Include="Assets\Code\LevelGeometry\BlockActor.cs" />

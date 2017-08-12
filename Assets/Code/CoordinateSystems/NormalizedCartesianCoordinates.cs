@@ -51,6 +51,25 @@ public class NormalizedCartesianCoordinates
         return octahedral;
     }
 
+    /// <summary>
+    /// Inspector - Projects Cartesian coordinates onto plane z=0 in stereoscopic projection coordinates.
+    /// </summary>
+    /// <param name="Cartesian">The coordinates in Cartesian space that will be converted</param>
+    /// <returns>The stereoscopic projection coordinates on plane z=0.</returns> 
+    public static implicit operator StereoscopicProjectionCoordinates(NormalizedCartesianCoordinates Cartesian)
+    {
+        float x = Cartesian.data.x;
+        float y = Cartesian.data.y;
+        float z = Cartesian.data.z;
+
+        float denominator = (1 - z);
+
+        float X = x / denominator;
+        float Y = y / denominator;
+
+        return new StereoscopicProjectionCoordinates(new Vector2(X, Y));
+    }
+
     Vector3 data_;
 
     /// <summary>
