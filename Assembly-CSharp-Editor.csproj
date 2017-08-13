@@ -46,15 +46,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Code\Editor\ArcEditor.cs" />
-     <Compile Include="Assets\Code\Editor\FieldEditor.cs" />
-     <Compile Include="Assets\Code\Editor\RendererFacilities.cs" />
      <Compile Include="Assets\OVR\Editor\OVRBuild.cs" />
      <Compile Include="Assets\OVR\Editor\OVRManifestPreprocessor.cs" />
      <Compile Include="Assets\OVR\Editor\OVRMoonlightLoader.cs" />
      <Compile Include="Assets\OVR\Editor\OVRPluginUpdater.cs" />
      <Compile Include="Assets\OVR\Editor\OVRPluginUpdaterStub.cs" />
      <Compile Include="Assets\OVR\Editor\OVRScreenshotWizard.cs" />
+     <Compile Include="Assets\Planetaria\Code\Editor\ArcEditor.cs" />
+     <Compile Include="Assets\Planetaria\Code\Editor\FieldEditor.cs" />
+     <Compile Include="Assets\Planetaria\Code\Editor\RendererFacilities.cs" />
      <None Include="Assets\OVR\Editor\AndroidManifest.OVRSubmission.xml" />
      <None Include="Assets\OVR\Shaders\OVRColorRampAlpha.shader" />
      <None Include="Assets\OVR\Shaders\Unlit Crosshair.shader" />
