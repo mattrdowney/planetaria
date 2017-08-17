@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public abstract class PlanetariaCamera : MonoBehaviour //Component // Tracker needn't be coupled.
+public abstract class PlanetariaCamera : MonoBehaviour //FIXME: Component // Tracker needn't be coupled.
 {
     protected new PlanetariaTransform transform;
     protected Camera internal_camera;

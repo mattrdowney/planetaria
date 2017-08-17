@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StereoscopicProjectionCoordinates : MonoBehaviour
+public class StereoscopicProjectionCoordinates
 {
     public Vector2 data
     {
@@ -22,7 +22,7 @@ public class StereoscopicProjectionCoordinates : MonoBehaviour
     /// <summary>
     /// Inspector - Converts from stereoscopic projection coordinates to Cartesian coordinates.
     /// </summary>
-    /// <param name="stereoscopic_projection">The coordinates of the stereoscopic projection on plane z=0.</param>
+    /// <param name="stereoscopic_projection">The coordinates of the stereoscopic projection on plane z=0 with focus (0,0,-1).</param>
     /// <returns>The normalized Cartesian coordinates.</returns> 
     public static implicit operator NormalizedCartesianCoordinates(StereoscopicProjectionCoordinates stereoscopic_projection)
     {

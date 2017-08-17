@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 
-public abstract class PlanetariaCameraShutter : Component
+public abstract class PlanetariaCameraShutter : MonoBehaviour
 {
     public delegate void OnShutterBlink();
     public static event OnShutterBlink blink;
 
+    public abstract void initialize();
     public abstract void set(float interpolation_factor);
 }
 
