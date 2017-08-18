@@ -55,6 +55,7 @@
      <Compile Include="Assets\Planetaria\Code\Editor\ArcEditor.cs" />
      <Compile Include="Assets\Planetaria\Code\Editor\DrawSSVG.cs" />
      <Compile Include="Assets\Planetaria\Code\Editor\FieldEditor.cs" />
+     <Compile Include="Assets\Planetaria\Code\Editor\LevelCreatorEditor.cs" />
      <Compile Include="Assets\Planetaria\Code\Editor\RendererFacilities.cs" />
      <None Include="Assets\OVR\Editor\AndroidManifest.OVRSubmission.xml" />
      <None Include="Assets\OVR\Shaders\OVRColorRampAlpha.shader" />

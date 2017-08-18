@@ -106,6 +106,7 @@
      <Compile Include="Assets\Planetaria\Code\LevelLoading\LevelLoader.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelLoading\LoadingStrategy.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelLoading\Planetarium.cs" />
+     <Compile Include="Assets\Planetaria\Code\LevelSaving\LevelCreator.cs" />
      <Compile Include="Assets\Planetaria\Code\Tracker\PlanetariaLookingStrategy.cs" />
      <Compile Include="Assets\Planetaria\Code\Tracker\PlanetariaTiltingStrategy.cs" />
      <Compile Include="Assets\Planetaria\Code\Tracker\PlanetariaTracker.cs" />
