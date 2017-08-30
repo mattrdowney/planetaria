@@ -4,10 +4,27 @@ using UnityEditor;
 [CustomEditor(typeof(LevelCreator))]
 public class LevelCreatorEditor : Editor
 {
+    float yaw;
+    float pitch;
+
+    int control_identifier;
+
+    void Start ()
+    {
+        yaw = pitch = 0;
+        control_identifier = GUIUtility.GetControlID(FocusType.Passive);
+    }
+
     void OnSceneGUI ()
     {
-        Align(SceneView.currentDrawingSceneView);
+        center_camera_view(SceneView.currentDrawingSceneView);
 
+        /// button_down 1: create equatorial circle at point.
+        /// button_up 1: create right-hand-side slope for point 1. 
+        /// button_down 2-n: create arc through point using last right-hand-side slope; adjust previous slope (if neccessary) so that it meets with current point (best fit).
+        /// button_up 2-n: create right-hand-side slope for current point.
+        /// escape: adjust final slope (if neccessary) so that it meets with first point (best fit).
+        /// NOTE: escape should be disabled until mouse_up happens.
         if (Event.current.type == EventType.MouseDown)
         {
             Ray editor_camera_ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
@@ -16,14 +33,18 @@ public class LevelCreatorEditor : Editor
             GameObject spawned_object = PrefabUtility.InstantiatePrefab(prefabricated_object) as GameObject;
             spawned_object.transform.position = editor_camera_ray.direction;
 
+            GUIUtility.hotControl = control_identifier;
+
             EditorUtility.SetDirty(spawned_object);
             Event.current.Use();
         }
     }
 
-    public static void Align(SceneView scene_view)
+    public void center_camera_view(SceneView scene_view)
 	{
-		GameObject empty_gameobject = new GameObject("Alignment");
+		GameObject empty_gameobject = new GameObject("origin");
+        empty_gameobject.transform.position = Vector3.zero;
+        empty_gameobject.transform.rotation = Quaternion.Euler(yaw, pitch, 0);
 
 		scene_view.AlignViewToObject(empty_gameobject.transform);
 		scene_view.camera.transform.position = Vector3.zero;

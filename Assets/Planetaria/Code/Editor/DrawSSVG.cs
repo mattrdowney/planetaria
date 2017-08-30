@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-public class DrawSSVG
+public class DrawSSVG // TODO: rename SSVG because they are not "scalable"
 {
     /// <summary>
     /// Inspector - Creates a ".ssvg" (spherical scalable vector format) from a Block. Based on quadratic bezier curve of the ".svg" file format.
