@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 
 /// <summary>
-/// An "immutable" class that stores an arc along the surface of a unit sphere. Includes convex corners, great edges, convex edges, and concave edges. Cannot store concave corners!
+/// A pseudo-immutable class that stores an arc along the surface of a unit sphere.
+/// Includes convex corners, great edges, convex edges, and concave edges. Cannot store concave corners!
 /// </summary>
 public class Arc : Object
 {
@@ -9,9 +10,9 @@ public class Arc : Object
     Vector3 center_axis;
     /// <summary>An axis that helps define the beginning of the arc.</summary>
     Vector3 forward_axis;
-    /// <summary>A binormal to center_axis and forward_axis. Can also be used as a boundary to determine which points are after the beginning of the arc.</summary>
+    /// <summary>A binormal to center_axis and forward_axis. Determines points after the beginning of the arc.</summary>
     Vector3 right_axis;
-    /// <summary>A boundary that determines which points are before the end of the arc. This is normal to center_axis.</summary>
+    /// <summary>Determines points before the end of the arc. This is normal to center_axis.</summary>
     Vector3 before_end;
     
     /// <summary>The length of the arc</summary>
@@ -23,39 +24,35 @@ public class Arc : Object
     /// Constructor - Creates convex, concave, or great arcs.
     /// </summary>
     /// <param name="start">The start point of the arc.</param>
-    /// <param name="normal">A normal that defines the "cutting plane" that defines the circle.</param>
+    /// <param name="right">The sphere-tangential slope/gradient at the start point going rightward.</param>
     /// <param name="end">The end point of the arc.</param>
-    /// <param name="long_path">Is the path longer than PI radians?</param>
     /// <returns>An arc along the surface of a unit sphere.</returns>
-    public static Arc CreateArc(Vector3 start, Vector3 normal, Vector3 end, bool long_path = false)
+    public static Arc CreateArc(Vector3 start, Vector3 right, Vector3 end) // TODO: verify
     {
+        start.Normalize();
+        right.Normalize();
+        end.Normalize();
+
         Arc result = new Arc();
 
-        float elevation = Vector3.Dot(start.normalized, normal.normalized);
-        Vector3 center = elevation * normal.normalized;
+        Vector3 cutting_plane_normal = Vector3.Cross(start, right).normalized;
+        float elevation = Vector3.Dot(start, cutting_plane_normal);
+        Vector3 center = elevation * cutting_plane_normal;
 
-        result.center_axis = normal.normalized;
+        result.center_axis = cutting_plane_normal;
         result.forward_axis = (start - center).normalized;
-        result.right_axis = Vector3.Cross(result.center_axis, result.forward_axis).normalized;
+        result.right_axis = right.normalized;
 
         Vector3 end_axis = (end - center).normalized;
         result.before_end = -Vector3.Cross(result.center_axis, end_axis).normalized;
 
+        bool long_path = Vector3.Dot(result.right_axis, end_axis) < 0;
         result.arc_angle = Vector3.Angle(result.forward_axis - center, end_axis - center);
         result.arc_latitude = Mathf.PI/2 - Mathf.Acos(elevation);
 
         if (long_path)
         {
             result.arc_angle += Mathf.PI;
-        }
-
-        bool bIsReflexAngle = result.arc_angle > Mathf.PI;
-        bool bVectorsHaveReflexAngle = Vector3.Dot(result.right_axis, result.before_end) < 0;
-        
-        if (bIsReflexAngle ^ bVectorsHaveReflexAngle) // if a reflex angle is present/absent when it shouldn't be, flip the axes (i.e. make sure the angles match).
-        {
-            result.right_axis *= -1;
-            result.before_end *= -1;
         }
 
         // TODO: Add Arc to global map and create/change colliders/transforms appropriately
@@ -109,7 +106,7 @@ public class Arc : Object
     /// </returns>
     public bool contains(Vector3 position, float radius = 0f)
     {
-        bool bAboveFloor = Vector3.Dot(position, center_axis) >= Mathf.Sin(arc_latitude); // XXX: potential bug based on usage / arc initialization.
+        bool bAboveFloor = Vector3.Dot(position, center_axis) >= Mathf.Sin(arc_latitude); // XXX: potential bug
         bool bBelowCeiling = Vector3.Dot(position, center_axis) <= Mathf.Sin(arc_latitude + radius);
         bool bCorrectLatitude = bAboveFloor && bBelowCeiling;
 
@@ -121,7 +118,7 @@ public class Arc : Object
         bool bValidReflexAngle = bReflexAngle && (bInsideBeginning || bInsideEnd);
         bool bCorrectAngle = bTotallyInside || bValidReflexAngle;
 
-        /*bool bCorrectAngle = System.Convert.ToInt32(bInsideBeginning) + // TODO: test if this is properly optimized in C#
+        /*bool bCorrectAngle = System.Convert.ToInt32(bInsideBeginning) + // TODO: test if this is properly optimized C#
                 System.Convert.ToInt32(bInsideEnd) +
                 System.Convert.ToInt32(bReflexAngle) >= 2;*/
 
@@ -133,8 +130,10 @@ public class Arc : Object
     /// </summary>
     /// <param name="extrusion">The radius to extrude the arc.</param>
     /// <returns>
-    /// For poles towards the normal, returns a negative number [-PI/2, 0] representing the angle of decline of the extruded point from the pole.
-    /// For poles away from the normal, returns a positive number [0, PI/2] representing the angle of incline of the extruded point from the pole. 
+    /// For poles towards the normal, returns a negative number [-PI/2, 0]
+    /// representing the angle of decline of the extruded point from the pole.
+    /// For poles away from the normal, returns a positive number [0, PI/2]
+    /// representing the angle of incline of the extruded point from the pole. 
     /// </returns>
     public float elevation(float extrusion = 0f)
     {
@@ -150,7 +149,8 @@ public class Arc : Object
     }
 
     /// <summary>
-    /// Inspector - Determine if the corner between between left's end and right's beginning is convex (i.e. a reflex angle).
+    /// Inspector - Determine if the corner between between left's end and right's beginning is convex
+    /// (i.e. a reflex angle).
     /// </summary>
     /// <param name="left">Arc that will connect to beginning.</param>
     /// <param name="right">Arc that will connect to end.</param>
@@ -230,7 +230,8 @@ public class Arc : Object
     }
         
     /// <summary>
-    /// Constructor - Spoof a concave corner arc with a null value (since concave corner arcs do not extrude concentrically).
+    /// Constructor - Spoof a concave corner arc with a null value
+    /// (since concave corner arcs do not extrude concentrically).
     /// </summary>
     /// <param name="left">The arc that attaches to the beginning of the corner.</param>
     /// <param name="right">The arc that attaches to the end of the corner.</param>
@@ -273,20 +274,20 @@ public class Arc : Object
         float closest_angle = 0; // use a valid angle for when arc.angle() returns 0!
         float closest_heuristic = Mathf.Infinity;
 
-        // if we don't calculate per quadrant, calculations for an arc with angle 2*PI become ambiguous because left == right
-        float quadrants = Mathf.Ceil(arc.angle() / (Mathf.PI / 2f)); //maximum of 4, always integral, float for casting "left" and "right"
+        // calculate per each 4 quadrants, e.g. because the angle 2*PI become ambiguous because left == right
+        float quadrants = Mathf.Ceil(arc.angle() / (Mathf.PI / 2f)); //maximum of 4, always integral
         for (float quadrant = 0; quadrant < quadrants; ++quadrant)
         {
-            float left_angle = arc.angle() * (quadrant / quadrants); //get beginning of quadrant e.g. 0.00,0.25,0.50,0.75
-            float right_angle = arc.angle() * ((quadrant + 1) / quadrants); //get end of quadrant e.g. 0.25,0.50,0.75,1.00
+            float left_angle = arc.angle() * (quadrant / quadrants); // beginning of quadrant e.g. 0.00,0.25,0.50,0.75
+            float right_angle = arc.angle() * ((quadrant + 1) / quadrants); // end of quadrant e.g. 0.25,0.50,0.75,1.00
 
-            float left_heuristic = distance_heuristic(arc, target, left_angle); //find the distance heuristics, lower is closer to target
+            float left_heuristic = distance_heuristic(arc, target, left_angle); //lower h(x) implies closer to target
             float right_heuristic = distance_heuristic(arc, target, right_angle);
 
-            // This is basically a binary search
+            // A type of binary search
             // 1) find the distance heuristics for left and right side
             // 2) take the greater heuristic and ignore that half (since it's further away from target)
-            for (int iteration = 0; iteration < precision; ++iteration) //because we are dealing with floats, more precision could help (or hurt?)
+            for (int iteration = 0; iteration < precision; ++iteration) // when using floats, more precision often helps
             {
                 float midpoint = (left_angle + right_angle) / 2;
                 if (left_heuristic < right_heuristic) // answer is within left half of arc
@@ -341,16 +342,19 @@ public class Arc : Object
         return new Bounds(center, size);
     }
 
-    private delegate float HeuristicFunction(Arc arc, Vector3 operand, float angle); // New naming convention I decided on a while back: data types are proper CamelCase and variables are lowercase with underscores.
+    // New naming convention: data types are proper CamelCase and variables are lowercase with underscores.
+    private delegate float HeuristicFunction(Arc arc, Vector3 operand, float angle);
 
     private static float normal_heuristic(Arc arc, Vector3 desired_normal, float angle)
     {
-        return (Vector3.Dot(arc.normal(angle), -desired_normal) + 1f) / 2; // return [0,1] for the hell of it, the dot product would suffice, though
+        // return [0,1] for the hell of it, the dot product would suffice, though
+        return (Vector3.Dot(arc.normal(angle), -desired_normal) + 1f) / 2;
     }
 
     private static float position_heuristic(Arc arc, Vector3 desired_position, float angle)
     {
-        return (Vector3.Dot(arc.position(angle), -desired_position) + 1f) / 2; // return [0,1] for the hell of it, the dot product would suffice, though
+        // return [0,1] for the hell of it, the dot product would suffice, though
+        return (Vector3.Dot(arc.position(angle), -desired_position) + 1f) / 2;
     }
 }
 

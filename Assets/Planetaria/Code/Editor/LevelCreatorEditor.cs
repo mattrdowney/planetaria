@@ -4,6 +4,17 @@ using UnityEditor;
 [CustomEditor(typeof(LevelCreator))]
 public class LevelCreatorEditor : Editor
 {
+    /// <summary>
+    /// Mutator - draws shapes in the editor; MouseDown creates point at position, MouseUp location determines the slope of the line; Escape finalizes shape.
+    /// </summary>
+    /// <param name="editor">The reference to the LevelCreatorEditor object that stores shape information.</param>
+    /// <returns>The next mode for the state machine.</returns>
+    delegate CreateShape CreateShape(LevelCreatorEditor editor);
+    CreateShape state_machine;
+
+    Ray mouse_down_ray;
+    Ray mouse_up_ray;
+
     float yaw;
     float pitch;
 
@@ -13,33 +24,21 @@ public class LevelCreatorEditor : Editor
     {
         yaw = pitch = 0;
         control_identifier = GUIUtility.GetControlID(FocusType.Passive);
+        mouse_down_ray = mouse_up_ray = new Ray();
+        state_machine = mouse_down;
     }
 
     void OnSceneGUI ()
     {
         center_camera_view(SceneView.currentDrawingSceneView);
 
-        /// button_down 1: create equatorial circle at point.
-        /// button_up 1: create right-hand-side slope for point 1. 
-        /// button_down 2-n: create arc through point using last right-hand-side slope; adjust previous slope (if neccessary) so that it meets with current point (best fit).
-        /// button_up 2-n: create right-hand-side slope for current point.
-        /// escape: adjust final slope (if neccessary) so that it meets with first point (best fit).
-        /// NOTE: escape should be disabled until mouse_up happens.
-        if (Event.current.type == EventType.MouseDown)
-        {
-            Ray editor_camera_ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
-
-            GameObject prefabricated_object = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Planetaria/PrefabricatedObjects/Resources/Sphere.prefab") as GameObject;
-            GameObject spawned_object = PrefabUtility.InstantiatePrefab(prefabricated_object) as GameObject;
-            spawned_object.transform.position = editor_camera_ray.direction;
-
-            GUIUtility.hotControl = control_identifier;
-
-            EditorUtility.SetDirty(spawned_object);
-            Event.current.Use();
-        }
+        state_machine = state_machine(this);
     }
 
+    /// <summary>
+    /// Inspector (quasi-mutator) - locks camera at the origin (so it can't drift).
+    /// </summary>
+    /// <param name="scene_view">The view that will be locked / "mutated".</param>
     public void center_camera_view(SceneView scene_view)
 	{
 		GameObject empty_gameobject = new GameObject("origin");
@@ -51,6 +50,71 @@ public class LevelCreatorEditor : Editor
 		scene_view.Repaint();
 
         GameObject.DestroyImmediate(empty_gameobject);
+    }
+
+    /// <summary>
+    /// Mutator - MouseDown creates point at position
+    /// </summary>
+    /// <param name="editor">The reference to the LevelCreatorEditor object that stores shape information.</param>
+    /// <returns>The next mode for the state machine.</returns>
+    static CreateShape mouse_down(LevelCreatorEditor editor)
+    {
+        /// button_down 1: create equatorial circle at point.
+        /// button_down 2-n: create arc through point using last right-hand-side slope; adjust previous slope (if neccessary) so that it meets with current point (best fit).
+        /// NOTE: MouseUp should be diabled until mouse_down happens.
+        /// NOTE: Escape should be disabled until mouse_up happens.
+        if (Event.current.type == EventType.MouseDown)
+        {
+            editor.mouse_down_ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
+            use_mouse_event(editor);
+
+            return mouse_up;
+        }
+
+        return mouse_down;
+    }
+
+    /// <summary>
+    /// Mutator - MouseUp creates slope at position
+    /// </summary>
+    /// <param name="editor">The reference to the LevelCreatorEditor object that stores shape information.</param>
+    /// <returns>mouse_up if nothing was pressed; mouse_down if MouseUp or Escape was pressed.</returns>
+    static CreateShape mouse_up(LevelCreatorEditor editor)
+    {
+        /// button_up 1: create right-hand-side slope for point 1.
+        /// button_up 2-n: create right-hand-side slope for current point.
+        if (Event.current.type == EventType.MouseUp)
+        {
+            editor.mouse_up_ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
+
+            GameObject prefabricated_object = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Planetaria/PrefabricatedObjects/Resources/Quadrilateral.prefab") as GameObject;
+            GameObject spawned_object = PrefabUtility.InstantiatePrefab(prefabricated_object) as GameObject;
+            spawned_object.transform.position = editor.mouse_down_ray.direction;
+
+            use_mouse_event(editor);
+            EditorUtility.SetDirty(spawned_object);
+
+            return mouse_down;
+        }
+        /// escape: adjust final slope (if neccessary) so that it meets with first point (best fit).
+        else if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
+        {
+            //FIXME:
+
+            return mouse_down;
+        }
+
+        return mouse_up;
+    }
+
+    /// <summary>
+    /// Mutator - prevents editor from selecting objects in the editor view (which can de-select the current object)
+    /// </summary>
+    /// <param name="editor">The current level editor.</param>
+    static void use_mouse_event(LevelCreatorEditor editor)
+    {
+        GUIUtility.hotControl = editor.control_identifier;
+        Event.current.Use();
     }
 }
 
