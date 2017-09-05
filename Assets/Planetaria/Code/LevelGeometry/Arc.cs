@@ -27,37 +27,33 @@ public class Arc : Object
     /// <param name="right">The sphere-tangential slope/gradient at the start point going rightward.</param>
     /// <param name="end">The end point of the arc.</param>
     /// <returns>An arc along the surface of a unit sphere.</returns>
-    public static Arc CreateArc(Vector3 start, Vector3 right, Vector3 end) // TODO: verify
+    public Arc(Vector3 start, Vector3 right, Vector3 end) // TODO: verify
     {
         start.Normalize();
+        right = Vector3.ProjectOnPlane(right, start); // enforce orthogonality
         right.Normalize();
         end.Normalize();
 
-        Arc result = new Arc();
+        right_axis = right;
+        forward_axis = Vector3.ProjectOnPlane(start - end, right).normalized; // [start - end] is within the arc's plane
+        center_axis = Vector3.Cross(forward_axis, right_axis).normalized; // get binormal using left-hand rule
 
-        Vector3 cutting_plane_normal = Vector3.Cross(start, right).normalized;
-        float elevation = Vector3.Dot(start, cutting_plane_normal);
-        Vector3 center = elevation * cutting_plane_normal;
-
-        result.center_axis = cutting_plane_normal;
-        result.forward_axis = (start - center).normalized;
-        result.right_axis = right.normalized;
+        float elevation = Vector3.Dot(start, center_axis);
+        Vector3 center = elevation * center_axis;
 
         Vector3 end_axis = (end - center).normalized;
-        result.before_end = -Vector3.Cross(result.center_axis, end_axis).normalized;
+        before_end = -Vector3.Cross(center_axis, end_axis).normalized;
 
-        bool long_path = Vector3.Dot(result.right_axis, end_axis) < 0;
-        result.arc_angle = Vector3.Angle(result.forward_axis - center, end_axis - center);
-        result.arc_latitude = Mathf.PI/2 - Mathf.Acos(elevation);
+        bool long_path = Vector3.Dot(right_axis, end_axis) < 0;
+        arc_angle = Vector3.Angle(forward_axis - center, end_axis - center);
+        arc_latitude = Mathf.PI/2 - Mathf.Acos(elevation);
 
         if (long_path)
         {
-            result.arc_angle += Mathf.PI;
+            arc_angle = 2*Mathf.PI - arc_angle;
         }
 
         // TODO: Add Arc to global map and create/change colliders/transforms appropriately
-
-        return result;
     }
 
     /// <summary>
@@ -66,7 +62,7 @@ public class Arc : Object
     /// <param name="left">The arc that attaches to the beginning of the corner.</param>
     /// <param name="right">The arc that attaches to the end of the corner.</param>
     /// <returns>A concave or convex corner arc.</returns>
-    public static Arc CreateCorner(Arc left, Arc right)
+    public static Arc CreateCorner(Arc left, Arc right) // TODO: normal constructor
     {
         if (is_convex(left, right))
         {
@@ -260,7 +256,7 @@ public class Arc : Object
         Vector3 end = right.position(0, Mathf.PI/2);
 
         // Create arc along equator
-        Arc result = CreateArc(start, cut_normal, end);
+        Arc result = new Arc(start, cut_normal, end);
 
         // And move the arc to the "South Pole" instead
         result.arc_latitude = -Mathf.PI/2;
