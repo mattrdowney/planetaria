@@ -27,7 +27,7 @@ public static class RendererFacilities
         Vector3 forward = from;
         Vector3 right = -Vector3.Cross(forward, normal);
 
-        if (Vector3.Dot(to, right) > 0 ^ angle <= Mathf.PI)
+        if (angle <= Mathf.PI)
         {
             angle *= -1;
         }

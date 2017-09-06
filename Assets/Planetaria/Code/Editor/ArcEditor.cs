@@ -34,7 +34,7 @@ public class ArcEditor : Editor
         Vector3 to = arc.position(angle, radius);
         Vector3 normal = Vector3.Cross(from, to);
 
-        RendererFacilities.draw_arc(from, to, normal, radius, color);
+        RendererFacilities.draw_arc(from, to, normal, radius*Mathf.Rad2Deg, color);
     }
 
     /*void OnEnable()

@@ -82,6 +82,12 @@ public class LevelCreatorEditor : Editor
         {
             editor.end = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition).direction;
 
+            GameObject prefabricated_object = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Planetaria/PrefabricatedObjects/Resources/Sphere.prefab") as GameObject;
+            GameObject spawned_object = PrefabUtility.InstantiatePrefab(prefabricated_object) as GameObject;
+            spawned_object.transform.position = editor.end;
+
+            EditorUtility.SetDirty(spawned_object);
+
             if (editor.start != Vector3.zero)
             {
                 Arc arc = Arc.CreateArc(editor.start, editor.right, editor.end);
@@ -127,6 +133,13 @@ public class LevelCreatorEditor : Editor
         {
             Vector3 slope_endpoint = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition).direction;
             editor.right = (slope_endpoint - editor.start).normalized;
+
+            GameObject prefabricated_object = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Planetaria/PrefabricatedObjects/Resources/Sphere.prefab") as GameObject;
+            GameObject spawned_object = PrefabUtility.InstantiatePrefab(prefabricated_object) as GameObject;
+            spawned_object.transform.position = editor.right;
+
+            use_mouse_event(editor);
+            EditorUtility.SetDirty(spawned_object);
 
             use_mouse_event(editor);
 
