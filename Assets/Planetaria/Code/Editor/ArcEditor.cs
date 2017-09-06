@@ -12,7 +12,7 @@ public class ArcEditor : Editor
     /// </summary>
     /// <param name="radius">The distance to extrude the arc.</param>
     /// <param name="color">The color of the drawn arc.</param>
-    void draw_arc(float radius, Color color)
+    public static void draw_arc(Arc arc, float radius, Color color)
     {
         float angle = arc.angle();
         Vector3 from = arc.position(0, radius);
@@ -28,7 +28,7 @@ public class ArcEditor : Editor
     /// <param name="angle">The angle at which the extruded radius is drawn.</param>
     /// <param name="radius">The radius to extrude the arc.</param>
     /// <param name="color">The color of the drawn radial arc.</param>
-    void draw_radial(float angle, float radius, Color color)
+    public static void draw_radial(Arc arc, float angle, float radius, Color color)
     {
         Vector3 from = arc.position(angle, 0);
         Vector3 to = arc.position(angle, radius);
@@ -44,12 +44,12 @@ public class ArcEditor : Editor
 
     void OnSceneGUI()
     {
-        draw_arc(0.0f, Color.black);
-        draw_arc(0.05f, Color.gray);
-        draw_arc(0.1f, Color.white);
+        ArcEditor.draw_arc(arc, 0.0f, Color.black);
+        ArcEditor.draw_arc(arc, 0.05f, Color.gray);
+        ArcEditor.draw_arc(arc, 0.1f, Color.white);
 
-        draw_radial(0, 0.1f, Color.yellow);
-        draw_radial(arc.angle(), 0.1f, Color.green);
+        ArcEditor.draw_radial(arc, 0, 0.1f, Color.yellow);
+        ArcEditor.draw_radial(arc, arc.angle(), 0.1f, Color.green);
     }
 }
 

@@ -53,6 +53,7 @@
      <Compile Include="Assets\OVR\Editor\OVRPluginUpdaterStub.cs" />
      <Compile Include="Assets\OVR\Editor\OVRScreenshotWizard.cs" />
      <Compile Include="Assets\Planetaria\Code\Editor\ArcEditor.cs" />
+     <Compile Include="Assets\Planetaria\Code\Editor\BlockEditor.cs" />
      <Compile Include="Assets\Planetaria\Code\Editor\DrawSSVG.cs" />
      <Compile Include="Assets\Planetaria\Code\Editor\FieldEditor.cs" />
      <Compile Include="Assets\Planetaria\Code\Editor\LevelCreatorEditor.cs" />

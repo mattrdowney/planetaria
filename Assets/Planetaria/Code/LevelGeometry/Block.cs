@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Block : Component
+public class Block : MonoBehaviour // FIXME: why can't this be Component? Is this a bug?
 {
     BlockActor behavior;
     List<Arc> arc_list;
@@ -13,12 +13,28 @@ public class Block : Component
     /// <returns>The GameObject reference with an attached Block component.</returns>
     public static GameObject CreateBlock(string ssvg_file)
     {
+        GameObject result = CreateBlock();
+
+        return result;
+    }
+
+    /// <summary>
+    /// Constructor (default) - Creates an empty block
+    /// </summary>
+    /// <returns>An empty block with zero arcs and zero corners</returns>
+    public static GameObject CreateBlock()
+    {
         GameObject result = new GameObject();
         Block block = result.AddComponent<Block>();
 
         block.arc_list = new List<Arc>();
 
         return result;
+    }
+
+    public void Add(Arc arc)
+    {
+        arc_list.Add(arc);
     }
 
     /// <summary>
@@ -28,7 +44,7 @@ public class Block : Component
     /// <returns>The index of the match if the arc exists in the container and is not null; a nonexistent index otherwise.</returns>
     public optional<int> arc_index(Arc arc)
     {
-        if (!arc)
+        if (arc)
         {
             return new optional<int>();
         }
@@ -78,6 +94,11 @@ public class Block : Component
         }
 
         return false;
+    }
+
+    public int size()
+    {
+        return arc_list.Count;
     }
 }
 

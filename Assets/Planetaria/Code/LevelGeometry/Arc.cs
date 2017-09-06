@@ -20,6 +20,10 @@ public class Arc : Object
     /// <summary>The angle of the arc from its parallel "equator".</summary>
     float arc_latitude;
 
+    public Arc()
+    {
+    }
+
     /// <summary>
     /// Constructor - Creates convex, concave, or great arcs.
     /// </summary>
@@ -27,33 +31,61 @@ public class Arc : Object
     /// <param name="right">The sphere-tangential slope/gradient at the start point going rightward.</param>
     /// <param name="end">The end point of the arc.</param>
     /// <returns>An arc along the surface of a unit sphere.</returns>
-    public Arc(Vector3 start, Vector3 right, Vector3 end) // TODO: verify
+    public static Arc CreateArc(Vector3 start, Vector3 right, Vector3 end) // TODO: verify
     {
+        Debug.Log(start + " " + right + " " + end);
+
+        Arc result = new Arc();
+
         start.Normalize();
         right = Vector3.ProjectOnPlane(right, start); // enforce orthogonality
         right.Normalize();
+
+        Debug.Log(start + " " + right + " " + end);
         end.Normalize();
 
-        right_axis = right;
-        forward_axis = Vector3.ProjectOnPlane(start - end, right).normalized; // [start - end] is within the arc's plane
-        center_axis = Vector3.Cross(forward_axis, right_axis).normalized; // get binormal using left-hand rule
+        result.right_axis = right;
+        result.forward_axis = Vector3.ProjectOnPlane(start - end, right).normalized; // [start - end] is within the arc's plane
+        result.center_axis = Vector3.Cross(result.forward_axis, result.right_axis).normalized; // get binormal using left-hand rule
 
-        float elevation = Vector3.Dot(start, center_axis);
-        Vector3 center = elevation * center_axis;
+        Debug.Log(result.right_axis + " " + result.forward_axis + " " + result.center_axis);
+
+        
+        Debug.Log("Happening0");
+
+        float elevation = Vector3.Dot(start, result.center_axis);
+        Vector3 center = elevation * result.center_axis;
+
+        Debug.Log("Happening1");
 
         Vector3 end_axis = (end - center).normalized;
-        before_end = -Vector3.Cross(center_axis, end_axis).normalized;
+        result.before_end = -Vector3.Cross(result.center_axis, end_axis).normalized;
 
-        bool long_path = Vector3.Dot(right_axis, end_axis) < 0;
-        arc_angle = Vector3.Angle(forward_axis - center, end_axis - center);
-        arc_latitude = Mathf.PI/2 - Mathf.Acos(elevation);
+        
+        Debug.Log("Happening2");
+
+        bool long_path = Vector3.Dot(result.right_axis, end_axis) < 0;
+        result.arc_angle = Vector3.Angle(result.forward_axis - center, end_axis - center)*Mathf.Deg2Rad;
+        result.arc_latitude = Mathf.PI/2 - Mathf.Acos(elevation);
+
+        
+        Debug.Log("Happening3");
 
         if (long_path)
         {
-            arc_angle = 2*Mathf.PI - arc_angle;
+            result.arc_angle = 2*Mathf.PI - result.arc_angle;
         }
 
+        
+        Debug.Log("Happening4");
+
+        Debug.Log(result.arc_angle);
+
+        Debug.Log(result);
+
         // TODO: Add Arc to global map and create/change colliders/transforms appropriately
+
+        return result;
     }
 
     /// <summary>
@@ -256,7 +288,7 @@ public class Arc : Object
         Vector3 end = right.position(0, Mathf.PI/2);
 
         // Create arc along equator
-        Arc result = new Arc(start, cut_normal, end);
+        Arc result = CreateArc(start, cut_normal, end);
 
         // And move the arc to the "South Pole" instead
         result.arc_latitude = -Mathf.PI/2;

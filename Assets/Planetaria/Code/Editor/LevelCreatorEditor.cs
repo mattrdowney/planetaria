@@ -12,24 +12,35 @@ public class LevelCreatorEditor : Editor
     delegate CreateShape CreateShape(LevelCreatorEditor editor);
     CreateShape state_machine;
 
-    Ray mouse_down_ray;
-    Ray mouse_up_ray;
+    Block block;
+
+    Vector3 start;
+    Vector3 right;
+    Vector3 end;
 
     float yaw;
     float pitch;
 
     int control_identifier;
 
-    void Start ()
+    void OnEnable ()
     {
+        Debug.Log("Enable");
         yaw = pitch = 0;
         control_identifier = GUIUtility.GetControlID(FocusType.Passive);
-        mouse_down_ray = mouse_up_ray = new Ray();
-        state_machine = mouse_down;
+        start = right = end = Vector3.zero;
+        state_machine = wait_mouse_event;
+    }
+
+    void OnDisable ()
+    {
+        Debug.Log("Disable");
     }
 
     void OnSceneGUI ()
     {
+        Debug.Log("GUI");
+
         center_camera_view(SceneView.currentDrawingSceneView);
 
         state_machine = state_machine(this);
@@ -39,7 +50,7 @@ public class LevelCreatorEditor : Editor
     /// Inspector (quasi-mutator) - locks camera at the origin (so it can't drift).
     /// </summary>
     /// <param name="scene_view">The view that will be locked / "mutated".</param>
-    public void center_camera_view(SceneView scene_view)
+    void center_camera_view(SceneView scene_view)
 	{
 		GameObject empty_gameobject = new GameObject("origin");
         empty_gameobject.transform.position = Vector3.zero;
@@ -59,16 +70,38 @@ public class LevelCreatorEditor : Editor
     /// <returns>The next mode for the state machine.</returns>
     static CreateShape mouse_down(LevelCreatorEditor editor)
     {
+        Debug.Log("MouseDown");
         /// button_down 1: create equatorial circle at point.
         /// button_down 2-n: create arc through point using last right-hand-side slope; adjust previous slope (if neccessary) so that it meets with current point (best fit).
         /// NOTE: MouseUp should be diabled until mouse_down happens.
         /// NOTE: Escape should be disabled until mouse_up happens.
         if (Event.current.type == EventType.MouseDown)
         {
-            editor.mouse_down_ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
+            editor.end = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition).direction;
+
+            if (editor.start != Vector3.zero)
+            {
+                Arc arc = Arc.CreateArc(editor.start, editor.right, editor.end);
+
+                Debug.Log(arc);
+
+                editor.block.Add(arc);
+
+                EditorUtility.SetDirty(editor.block.gameObject);
+            }
+
+            editor.start = editor.end;
+
             use_mouse_event(editor);
 
             return mouse_up;
+        }
+        /// escape: adjust final slope (if neccessary) so that it meets with first point (best fit).
+        else if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
+        {
+            //FIXME:
+
+            return mouse_down;
         }
 
         return mouse_down;
@@ -81,25 +114,16 @@ public class LevelCreatorEditor : Editor
     /// <returns>mouse_up if nothing was pressed; mouse_down if MouseUp or Escape was pressed.</returns>
     static CreateShape mouse_up(LevelCreatorEditor editor)
     {
+        Debug.Log("MouseUp");
+
         /// button_up 1: create right-hand-side slope for point 1.
         /// button_up 2-n: create right-hand-side slope for current point.
         if (Event.current.type == EventType.MouseUp)
         {
-            editor.mouse_up_ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
-
-            GameObject prefabricated_object = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Planetaria/PrefabricatedObjects/Resources/Quadrilateral.prefab") as GameObject;
-            GameObject spawned_object = PrefabUtility.InstantiatePrefab(prefabricated_object) as GameObject;
-            spawned_object.transform.position = editor.mouse_down_ray.direction;
+            Vector3 slope_endpoint = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition).direction;
+            editor.right = (slope_endpoint - editor.start).normalized;
 
             use_mouse_event(editor);
-            EditorUtility.SetDirty(spawned_object);
-
-            return mouse_down;
-        }
-        /// escape: adjust final slope (if neccessary) so that it meets with first point (best fit).
-        else if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
-        {
-            //FIXME:
 
             return mouse_down;
         }
@@ -115,6 +139,23 @@ public class LevelCreatorEditor : Editor
     {
         GUIUtility.hotControl = editor.control_identifier;
         Event.current.Use();
+    }
+
+    static CreateShape wait_mouse_event(LevelCreatorEditor editor)
+    {
+        Debug.Log("Wait");
+
+        editor.start = editor.right = editor.end = Vector3.zero;
+
+        GameObject shape = new GameObject("Shape");
+        editor.block = shape.AddComponent<Block>() as Block;
+
+        if (Event.current.type == EventType.MouseDown)
+        {
+            use_mouse_event(editor);
+        }
+
+        return mouse_down;
     }
 }
 
