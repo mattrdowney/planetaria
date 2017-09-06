@@ -30,6 +30,9 @@ public class LevelCreatorEditor : Editor
         control_identifier = GUIUtility.GetControlID(FocusType.Passive);
         start = right = end = Vector3.zero;
         state_machine = wait_mouse_event;
+
+        GameObject shape = Block.CreateBlock();
+        block = shape.GetComponent<Block>();
     }
 
     void OnDisable ()
@@ -101,7 +104,9 @@ public class LevelCreatorEditor : Editor
         {
             //FIXME:
 
-            return mouse_down;
+            //GUIUtility.hotControl = GUIUtility.GetControlID(FocusType.Keyboard);
+
+            return wait_mouse_event;
         }
 
         return mouse_down;
@@ -144,11 +149,6 @@ public class LevelCreatorEditor : Editor
     static CreateShape wait_mouse_event(LevelCreatorEditor editor)
     {
         Debug.Log("Wait");
-
-        editor.start = editor.right = editor.end = Vector3.zero;
-
-        GameObject shape = new GameObject("Shape");
-        editor.block = shape.AddComponent<Block>() as Block;
 
         if (Event.current.type == EventType.MouseDown)
         {

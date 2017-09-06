@@ -4,8 +4,8 @@ using UnityEditor;
 [CustomEditor(typeof(Arc))]
 public class ArcEditor : Editor
 {
-    Arc arc;
-    PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
+    //Arc arc;
+    //PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
 
     /// <summary>
     /// Inspector - Draw an arc (extruded by a radius)
@@ -19,7 +19,7 @@ public class ArcEditor : Editor
         Vector3 to = arc.position(angle, radius);
         Vector3 normal = arc.pole(radius);
 
-        RendererFacilities.draw_arc(from, to, normal, angle, color);
+        RendererFacilities.draw_arc(from, to, normal, angle*Mathf.Rad2Deg, color);
     }
 
     /// <summary>
@@ -37,12 +37,12 @@ public class ArcEditor : Editor
         RendererFacilities.draw_arc(from, to, normal, radius, color);
     }
 
-    void OnEnable()
+    /*void OnEnable()
     {
         arc = target as Arc;
-    }
+    }*/
 
-    void OnSceneGUI()
+    /*void OnSceneGUI()
     {
         ArcEditor.draw_arc(arc, 0.0f, Color.black);
         ArcEditor.draw_arc(arc, 0.05f, Color.gray);
@@ -50,7 +50,7 @@ public class ArcEditor : Editor
 
         ArcEditor.draw_radial(arc, 0, 0.1f, Color.yellow);
         ArcEditor.draw_radial(arc, arc.angle(), 0.1f, Color.green);
-    }
+    }*/
 }
 
 /*

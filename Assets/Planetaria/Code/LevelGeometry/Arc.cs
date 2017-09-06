@@ -33,55 +33,31 @@ public class Arc : Object
     /// <returns>An arc along the surface of a unit sphere.</returns>
     public static Arc CreateArc(Vector3 start, Vector3 right, Vector3 end) // TODO: verify
     {
-        Debug.Log(start + " " + right + " " + end);
-
         Arc result = new Arc();
 
         start.Normalize();
         right = Vector3.ProjectOnPlane(right, start); // enforce orthogonality
         right.Normalize();
-
-        Debug.Log(start + " " + right + " " + end);
         end.Normalize();
 
         result.right_axis = right;
         result.forward_axis = Vector3.ProjectOnPlane(start - end, right).normalized; // [start - end] is within the arc's plane
         result.center_axis = Vector3.Cross(result.forward_axis, result.right_axis).normalized; // get binormal using left-hand rule
 
-        Debug.Log(result.right_axis + " " + result.forward_axis + " " + result.center_axis);
-
-        
-        Debug.Log("Happening0");
-
         float elevation = Vector3.Dot(start, result.center_axis);
         Vector3 center = elevation * result.center_axis;
 
-        Debug.Log("Happening1");
-
         Vector3 end_axis = (end - center).normalized;
         result.before_end = -Vector3.Cross(result.center_axis, end_axis).normalized;
-
-        
-        Debug.Log("Happening2");
 
         bool long_path = Vector3.Dot(result.right_axis, end_axis) < 0;
         result.arc_angle = Vector3.Angle(result.forward_axis - center, end_axis - center)*Mathf.Deg2Rad;
         result.arc_latitude = Mathf.PI/2 - Mathf.Acos(elevation);
 
-        
-        Debug.Log("Happening3");
-
         if (long_path)
         {
             result.arc_angle = 2*Mathf.PI - result.arc_angle;
         }
-
-        
-        Debug.Log("Happening4");
-
-        Debug.Log(result.arc_angle);
-
-        Debug.Log(result);
 
         // TODO: Add Arc to global map and create/change colliders/transforms appropriately
 

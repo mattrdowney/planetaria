@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Block : MonoBehaviour // FIXME: why can't this be Component? Is this a bug?
+public class Block : MonoBehaviour
 {
     BlockActor behavior;
-    List<Arc> arc_list;
+    public List<Arc> arc_list;
 
     /// <summary>
     /// Constructor - Generates a block using a .ssvg file.
@@ -44,7 +44,7 @@ public class Block : MonoBehaviour // FIXME: why can't this be Component? Is thi
     /// <returns>The index of the match if the arc exists in the container and is not null; a nonexistent index otherwise.</returns>
     public optional<int> arc_index(Arc arc)
     {
-        if (arc)
+        if (arc != null)
         {
             return new optional<int>();
         }
@@ -75,7 +75,7 @@ public class Block : MonoBehaviour // FIXME: why can't this be Component? Is thi
 
     /// <summary>
     /// Checks if any of the arcs contain the position extruded by radius.
-    /// This does NOT check if the point is inside the convex hull, so points below the floor will not be matched.
+    /// This does NOT check if the point is inside the concave/convex hull, so points below the floor will not be matched.
     /// </summary>
     /// <param name="position">A position on a unit-sphere.</param>
     /// <param name="radius">The radius [0,PI/2] to extrude.</param>
@@ -84,7 +84,7 @@ public class Block : MonoBehaviour // FIXME: why can't this be Component? Is thi
     {
         foreach (Arc arc in arc_list)
         {
-            if (arc)
+            if (arc != null)
             {
                 if (arc.contains(position, radius))
                 {

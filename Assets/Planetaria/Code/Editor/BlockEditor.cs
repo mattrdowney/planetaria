@@ -8,11 +8,13 @@ public class BlockEditor : Editor
 {
     Block self;
 
-    void OnDrawGizmos ()
+    void OnSceneGUI ()
     {
         for (int arc_index = 0; arc_index < self.size(); ++arc_index)
         {
             Arc arc = self.at(ref arc_index);
+
+            Debug.Log(arc.angle());
 
             ArcEditor.draw_arc(arc, 0.0f, Color.black);
             ArcEditor.draw_arc(arc, 0.05f, Color.gray);
