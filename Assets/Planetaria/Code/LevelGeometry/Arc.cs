@@ -40,6 +40,8 @@ public class Arc : Object
         right.Normalize();
         end.Normalize();
 
+        Debug.Log(start + " " + right + " " + end);
+
         result.right_axis = right;
         result.forward_axis = Vector3.ProjectOnPlane(start - end, right).normalized; // [start - end] is within the arc's plane
         result.center_axis = Vector3.Cross(result.forward_axis, result.right_axis).normalized; // get binormal using left-hand rule
@@ -51,7 +53,7 @@ public class Arc : Object
         result.before_end = -Vector3.Cross(result.center_axis, end_axis).normalized;
 
         bool long_path = Vector3.Dot(result.right_axis, end_axis) < 0;
-        result.arc_angle = Vector3.Angle(result.forward_axis - center, end_axis - center)*Mathf.Deg2Rad;
+        result.arc_angle = Vector3.Angle(start - center, end - center)*Mathf.Deg2Rad;
         result.arc_latitude = Mathf.PI/2 - Mathf.Acos(elevation);
 
         if (long_path)

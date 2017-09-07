@@ -29,7 +29,7 @@ public class NormalizedSphericalCoordinates
         Vector3 Cartesian = new Vector3();
         Cartesian.x = -Mathf.Sin(octahedral.data.x) * Mathf.Cos(octahedral.data.y);
         Cartesian.y = -Mathf.Cos(octahedral.data.x);
-        Cartesian.z = -Mathf.Sin(octahedral.data.x) * Mathf.Sin(octahedral.data.y);
+        Cartesian.z = Mathf.Sin(octahedral.data.x) * Mathf.Sin(octahedral.data.y);
         return new NormalizedCartesianCoordinates(Cartesian);
     }
 

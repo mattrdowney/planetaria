@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public static class RendererFacilities
+public static class RendererUtility
 {
     /// <summary>
     /// Inspector - Draws an arc on the surface of a unit sphere.
@@ -33,7 +33,7 @@ public static class RendererFacilities
         }
 
         UnityEditor.Handles.color = color;
-        UnityEditor.Handles.DrawWireArc(center, normal, from, angle, radius);
+        UnityEditor.Handles.DrawWireArc(center, normal, from, -angle, radius);
     }
 }
 

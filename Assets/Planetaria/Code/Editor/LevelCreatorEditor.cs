@@ -21,6 +21,9 @@ public class LevelCreatorEditor : Editor
     float yaw;
     float pitch;
 
+    public int rows = 15; //equator drawn when rows is odd
+	public int columns = 16; //RENAME?: misleading //always draws 2*columns lines from the North to South pole
+
     int control_identifier;
 
     void OnEnable ()
@@ -47,6 +50,8 @@ public class LevelCreatorEditor : Editor
         center_camera_view(SceneView.currentDrawingSceneView);
 
         state_machine = state_machine(this);
+
+        draw_grid(rows, columns);
     }
 
     /// <summary>
@@ -81,6 +86,11 @@ public class LevelCreatorEditor : Editor
         if (Event.current.type == EventType.MouseDown)
         {
             editor.end = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition).direction;
+
+            if(Event.current.shift)
+            {
+                editor.end = GridUtility.grid_snap(editor.end, editor.rows, editor.columns);
+            }
 
             GameObject prefabricated_object = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Planetaria/PrefabricatedObjects/Resources/Sphere.prefab") as GameObject;
             GameObject spawned_object = PrefabUtility.InstantiatePrefab(prefabricated_object) as GameObject;
@@ -132,11 +142,17 @@ public class LevelCreatorEditor : Editor
         if (Event.current.type == EventType.MouseUp)
         {
             Vector3 slope_endpoint = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition).direction;
+
+            if(Event.current.shift)
+            {
+                slope_endpoint = GridUtility.grid_snap(slope_endpoint, editor.rows, editor.columns);
+            }
+
             editor.right = (slope_endpoint - editor.start).normalized;
 
             GameObject prefabricated_object = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Planetaria/PrefabricatedObjects/Resources/Sphere.prefab") as GameObject;
             GameObject spawned_object = PrefabUtility.InstantiatePrefab(prefabricated_object) as GameObject;
-            spawned_object.transform.position = editor.right;
+            spawned_object.transform.position = slope_endpoint;
 
             use_mouse_event(editor);
             EditorUtility.SetDirty(spawned_object);
@@ -169,6 +185,26 @@ public class LevelCreatorEditor : Editor
         }
 
         return mouse_down;
+    }
+
+    static void draw_grid(int rows, int columns)
+    {
+		UnityEditor.Handles.color = Color.white;
+
+		for(float row = 1; row <= rows; ++row)
+		{
+			UnityEditor.Handles.DrawWireDisc(Vector3.down*Mathf.Cos(Mathf.PI*row/(rows+1)),
+			                                 Vector3.up,
+			                                 Mathf.Sin(Mathf.PI*row/(rows+1)));
+		}
+		
+		for(float column = 0; column < columns; ++column)
+		{
+			UnityEditor.Handles.DrawWireDisc(Vector3.zero,
+			                                 Vector3.forward*Mathf.Cos(Mathf.PI*column/columns) +
+			                                 Vector3.right  *Mathf.Sin(Mathf.PI*column/columns),
+			                                 1);
+		}
     }
 }
 

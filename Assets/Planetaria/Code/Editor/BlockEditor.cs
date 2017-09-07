@@ -14,8 +14,6 @@ public class BlockEditor : Editor
         {
             Arc arc = self.at(ref arc_index);
 
-            Debug.Log(arc.angle());
-
             ArcEditor.draw_arc(arc, 0.0f, Color.black);
             ArcEditor.draw_arc(arc, 0.05f, Color.gray);
             ArcEditor.draw_arc(arc, 0.1f, Color.white);

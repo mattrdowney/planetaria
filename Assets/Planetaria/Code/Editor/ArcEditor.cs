@@ -19,7 +19,7 @@ public class ArcEditor : Editor
         Vector3 to = arc.position(angle, radius);
         Vector3 normal = arc.pole(radius);
 
-        RendererFacilities.draw_arc(from, to, normal, angle*Mathf.Rad2Deg, color);
+        RendererUtility.draw_arc(from, to, normal, angle*Mathf.Rad2Deg, color);
     }
 
     /// <summary>
@@ -34,7 +34,7 @@ public class ArcEditor : Editor
         Vector3 to = arc.position(angle, radius);
         Vector3 normal = Vector3.Cross(from, to);
 
-        RendererFacilities.draw_arc(from, to, normal, radius*Mathf.Rad2Deg, color);
+        RendererUtility.draw_arc(from, to, normal, radius*Mathf.Rad2Deg, color);
     }
 
     /*void OnEnable()

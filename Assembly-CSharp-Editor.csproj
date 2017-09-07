@@ -61,8 +61,9 @@
      <Compile Include="Assets\Planetaria\Code\Editor\BlockEditor.cs" />
      <Compile Include="Assets\Planetaria\Code\Editor\DrawSSVG.cs" />
      <Compile Include="Assets\Planetaria\Code\Editor\FieldEditor.cs" />
+     <Compile Include="Assets\Planetaria\Code\Editor\GridUtility.cs" />
      <Compile Include="Assets\Planetaria\Code\Editor\LevelCreatorEditor.cs" />
-     <Compile Include="Assets\Planetaria\Code\Editor\RendererFacilities.cs" />
+     <Compile Include="Assets\Planetaria\Code\Editor\RendererUtility.cs" />
      <None Include="Assets\OVR\Editor\AndroidManifest.OVRSubmission.xml" />
      <None Include="Assets\OVR\Shaders\OVRColorRampAlpha.shader" />
      <None Include="Assets\OVR\Shaders\Unlit Crosshair.shader" />

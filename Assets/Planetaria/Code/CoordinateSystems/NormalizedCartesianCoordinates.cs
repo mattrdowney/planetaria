@@ -36,7 +36,7 @@ public class NormalizedCartesianCoordinates
     public static implicit operator NormalizedSphericalCoordinates(NormalizedCartesianCoordinates Cartesian)
     {
         float elevation = Mathf.Acos(-Cartesian.data.y);
-        float azimuth = Mathf.Atan2(Cartesian.data.z, Cartesian.data.x);
+        float azimuth = Mathf.Atan2(Cartesian.data.z, -Cartesian.data.x);
         return new NormalizedSphericalCoordinates(elevation, azimuth);
     }
 
