@@ -43,8 +43,6 @@ public static class GridUtility
 			}
 		}
 
-        Debug.Log("phi: " + clamped_coordinates.data.x + " theta: " + clamped_coordinates.data.y + " dphi: " + desired_coordinates.data.x + " dtheta: " + desired_coordinates.data.y);
-
         Cartesian_position = clamped_coordinates;
 
         return Cartesian_position.data;

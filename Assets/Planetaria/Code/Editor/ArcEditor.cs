@@ -4,27 +4,21 @@ using UnityEditor;
 [CustomEditor(typeof(Arc))]
 public class ArcEditor : Editor
 {
-    //Arc arc;
-    //PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
-
     /// <summary>
     /// Inspector - Draw an arc (extruded by a radius)
     /// </summary>
-    /// <param name="radius">The distance to extrude the arc.</param>
+    /// <param name="arc">The arc that will be rendered.</param>
+    /// <param name="extrusion">The distance to extrude the arc.</param>
     /// <param name="color">The color of the drawn arc.</param>
-    public static void draw_arc(Arc arc, float radius, Color color)
+    public static void draw_arc(Arc arc, float extrusion, Color color)
     {
-        float angle = arc.angle();
-        Vector3 from = arc.position(0, radius);
-        Vector3 to = arc.position(angle, radius);
-        Vector3 normal = arc.pole(radius);
-
-        RendererUtility.draw_arc(from, to, normal, angle*Mathf.Rad2Deg, color);
+        RendererUtility.draw_arc(arc, extrusion, color);
     }
 
     /// <summary>
     /// Inspector - Draw an extruded radial arc at a particular angle of the specified arc (i.e. the extrusion is its own arc).
     /// </summary>
+    /// <param name="arc">The arc that will be rendered.</param>
     /// <param name="angle">The angle at which the extruded radius is drawn.</param>
     /// <param name="radius">The radius to extrude the arc.</param>
     /// <param name="color">The color of the drawn radial arc.</param>
@@ -32,25 +26,9 @@ public class ArcEditor : Editor
     {
         Vector3 from = arc.position(angle, 0);
         Vector3 to = arc.position(angle, radius);
-        Vector3 normal = Vector3.Cross(from, to);
-
-        RendererUtility.draw_arc(from, to, normal, radius*Mathf.Rad2Deg, color);
+        Vector3 from_tangent = Vector3.ProjectOnPlane(to, from).normalized;
+        RendererUtility.draw_arc(from, from_tangent, to, color);
     }
-
-    /*void OnEnable()
-    {
-        arc = target as Arc;
-    }*/
-
-    /*void OnSceneGUI()
-    {
-        ArcEditor.draw_arc(arc, 0.0f, Color.black);
-        ArcEditor.draw_arc(arc, 0.05f, Color.gray);
-        ArcEditor.draw_arc(arc, 0.1f, Color.white);
-
-        ArcEditor.draw_radial(arc, 0, 0.1f, Color.yellow);
-        ArcEditor.draw_radial(arc, arc.angle(), 0.1f, Color.green);
-    }*/
 }
 
 /*

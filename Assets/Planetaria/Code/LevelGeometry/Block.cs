@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Block : MonoBehaviour
 {
     BlockActor behavior;
     public List<Arc> arc_list;
+    //PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
 
     /// <summary>
     /// Constructor - Generates a block using a .ssvg file.
@@ -44,25 +46,20 @@ public class Block : MonoBehaviour
     /// <returns>The index of the match if the arc exists in the container and is not null; a nonexistent index otherwise.</returns>
     public optional<int> arc_index(Arc arc)
     {
-        if (arc != null)
+        int arc_list_index = arc_list.IndexOf(arc);
+
+        if (arc != null || arc_list_index == -1)
         {
             return new optional<int>();
         }
 
-        for (int index = 0; index < arc_list.Count; ++index)
-        {
-            if (arc == arc_list[index])
-            {
-                return index;
-            }
-        }
-        return new optional<int>();
+        return arc_list_index;
     }
 
     /// <summary>
     /// Inspector - Get the reference to the current arc.
     /// </summary>
-    /// <param name="index"></param>
+    /// <param name="index">The (ordered sequence) index of the Arc.</param>
     /// <returns>The Arc at the given index.</returns>
     public Arc at(ref int index)
     {
@@ -70,6 +67,7 @@ public class Block : MonoBehaviour
         {
             index = (int) PlanetariaMath.modulo_using_Euclidean_division(index, arc_list.Count);
         }
+
         return arc_list[index];
     }
 

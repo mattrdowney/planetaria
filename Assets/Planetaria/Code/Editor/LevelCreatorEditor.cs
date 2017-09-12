@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(LevelCreator))]
+[CustomEditor(typeof(LevelCreator))] // TODO: this probably isn't necessary since the other object isn't being used.
+[System.Serializable]
 public class LevelCreatorEditor : Editor
 {
     /// <summary>
@@ -12,6 +13,7 @@ public class LevelCreatorEditor : Editor
     delegate CreateShape CreateShape(LevelCreatorEditor editor);
     CreateShape state_machine;
 
+    GameObject shape;
     Block block;
 
     Vector3 start;
@@ -28,30 +30,29 @@ public class LevelCreatorEditor : Editor
 
     void OnEnable ()
     {
-        Debug.Log("Enable");
         yaw = pitch = 0;
         control_identifier = GUIUtility.GetControlID(FocusType.Passive);
         start = right = end = Vector3.zero;
         state_machine = wait_mouse_event;
 
-        GameObject shape = Block.CreateBlock();
-        block = shape.GetComponent<Block>();
+        shape = Block.CreateBlock();
+
+        block = shape.GetComponent<Block>() as Block;
     }
 
     void OnDisable ()
     {
-        Debug.Log("Disable");
     }
 
     void OnSceneGUI ()
     {
-        Debug.Log("GUI");
-
         center_camera_view(SceneView.currentDrawingSceneView);
 
         state_machine = state_machine(this);
 
         draw_grid(rows, columns);
+
+        Repaint();
     }
 
     /// <summary>
@@ -78,7 +79,6 @@ public class LevelCreatorEditor : Editor
     /// <returns>The next mode for the state machine.</returns>
     static CreateShape mouse_down(LevelCreatorEditor editor)
     {
-        Debug.Log("MouseDown");
         /// button_down 1: create equatorial circle at point.
         /// button_down 2-n: create arc through point using last right-hand-side slope; adjust previous slope (if neccessary) so that it meets with current point (best fit).
         /// NOTE: MouseUp should be diabled until mouse_down happens.
@@ -101,8 +101,6 @@ public class LevelCreatorEditor : Editor
             if (editor.start != Vector3.zero)
             {
                 Arc arc = Arc.CreateArc(editor.start, editor.right, editor.end);
-
-                Debug.Log(arc);
 
                 editor.block.Add(arc);
 
@@ -135,8 +133,6 @@ public class LevelCreatorEditor : Editor
     /// <returns>mouse_up if nothing was pressed; mouse_down if MouseUp or Escape was pressed.</returns>
     static CreateShape mouse_up(LevelCreatorEditor editor)
     {
-        Debug.Log("MouseUp");
-
         /// button_up 1: create right-hand-side slope for point 1.
         /// button_up 2-n: create right-hand-side slope for current point.
         if (Event.current.type == EventType.MouseUp)
@@ -177,8 +173,6 @@ public class LevelCreatorEditor : Editor
 
     static CreateShape wait_mouse_event(LevelCreatorEditor editor)
     {
-        Debug.Log("Wait");
-
         if (Event.current.type == EventType.MouseDown)
         {
             use_mouse_event(editor);

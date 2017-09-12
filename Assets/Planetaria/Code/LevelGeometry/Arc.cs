@@ -4,7 +4,7 @@
 /// A pseudo-immutable class that stores an arc along the surface of a unit sphere.
 /// Includes convex corners, great edges, convex edges, and concave edges. Cannot store concave corners!
 /// </summary>
-public class Arc : Object
+public class Arc : ScriptableObject
 {
     /// <summary>An axis that includes the center of the circle that defines the arc.</summary>
     Vector3 center_axis;
@@ -20,10 +20,6 @@ public class Arc : Object
     /// <summary>The angle of the arc from its parallel "equator".</summary>
     float arc_latitude;
 
-    public Arc()
-    {
-    }
-
     /// <summary>
     /// Constructor - Creates convex, concave, or great arcs.
     /// </summary>
@@ -33,18 +29,20 @@ public class Arc : Object
     /// <returns>An arc along the surface of a unit sphere.</returns>
     public static Arc CreateArc(Vector3 start, Vector3 right, Vector3 end) // TODO: verify
     {
-        Arc result = new Arc();
+        Arc result = CreateInstance<Arc>();
 
         start.Normalize();
         right = Vector3.ProjectOnPlane(right, start); // enforce orthogonality
         right.Normalize();
         end.Normalize();
 
-        Debug.Log(start + " " + right + " " + end);
+        Debug.Log("1 " + start + " " + right + " " + end);
 
         result.right_axis = right;
         result.forward_axis = Vector3.ProjectOnPlane(start - end, right).normalized; // [start - end] is within the arc's plane
         result.center_axis = Vector3.Cross(result.forward_axis, result.right_axis).normalized; // get binormal using left-hand rule
+
+        Debug.Log("2 " + result.forward_axis + " " + result.right_axis + " " + result.center_axis);
 
         float elevation = Vector3.Dot(start, result.center_axis);
         Vector3 center = elevation * result.center_axis;
@@ -218,7 +216,7 @@ public class Arc : Object
     /// <returns>A position on the arc.</returns>
     public Vector3 position(float angle, float extrusion = 0f)
     {
-        Vector3 equator_position = PlanetariaMath.slerp(forward_axis, right_axis, arc_angle);
+        Vector3 equator_position = PlanetariaMath.slerp(forward_axis, right_axis, angle);
         return PlanetariaMath.slerp(equator_position, center_axis, arc_latitude + extrusion);
     }
 
@@ -266,7 +264,7 @@ public class Arc : Object
         Vector3 end = right.position(0, Mathf.PI/2);
 
         // Create arc along equator
-        Arc result = CreateArc(start, cut_normal, end);
+        Arc result = Arc.CreateArc(start, cut_normal, end);
 
         // And move the arc to the "South Pole" instead
         result.arc_latitude = -Mathf.PI/2;

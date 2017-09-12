@@ -5,35 +5,42 @@ public static class RendererUtility
     /// <summary>
     /// Inspector - Draws an arc on the surface of a unit sphere.
     /// </summary>
-    /// <param name="from">The starting point of the arc.</param>
-    /// <param name="to">The ending point of the arc.</param>
-    /// <param name="normal">The cutting normal that defines the circle that defines the arc.</param>
-    /// <param name="angle">The angle (used to determine if the arc is above or below 180 degrees.</param>
+    /// <param name="arc">The arc that will be rendered.</param>
     /// <param name="color">The color of the drawn arc.</param>
-    public static void draw_arc(Vector3 from, Vector3 to, Vector3 normal, float angle, Color color)
+    public static void draw_arc(Arc arc, float extrusion, Color color)
     {
-        if (from == normal) // If radius is zero
+        Vector3 from = arc.position(0, extrusion);
+        Vector3 to = arc.position(arc.angle(), extrusion);
+        Vector3 normal = arc.pole(extrusion);
+        Vector3 center = Vector3.Project(from, normal);
+        normal *= System.Math.Sign(Vector3.Dot(normal, center));
+        normal *= -System.Math.Sign(arc.elevation(0));
+        float angle = arc.angle()*Mathf.Rad2Deg;
+        float radius = (from - center).magnitude;
+
+        Debug.Log("Drawing " + from + "->" + to + " " + center + " " + normal + " " + angle + " " + radius);
+
+        UnityEditor.Handles.color = color;
+        UnityEditor.Handles.DrawWireArc(center, normal, from - center, angle, radius);
+    }
+
+    /// <summary>
+    /// Inspector - Draws an arc on the surface of a unit sphere.
+    /// </summary>
+    /// <param name="from">The starting point of the arc.</param>
+    /// <param name="from_tangent">The rightward tangent/gradient/slope along the sphere at "from".</param>
+    /// <param name="to">The ending point of the arc.</param>
+    /// <param name="color">The color of the drawn arc.</param>
+    public static void draw_arc(Vector3 from, Vector3 from_tangent, Vector3 to, Color color)
+    {
+        if (from == to) // If radius is zero
         {
             return; // there is no need to render since the arc is an infintessimally small point
         }
 
-        Vector3 center = Vector3.Project(from, normal);
+        Arc arc = Arc.CreateArc(from, from_tangent, to);
 
-        float radius = (from - center).magnitude;
-
-        from = (from - center).normalized;
-        to = (to - center).normalized;
-
-        Vector3 forward = from;
-        Vector3 right = -Vector3.Cross(forward, normal);
-
-        if (angle <= Mathf.PI)
-        {
-            angle *= -1;
-        }
-
-        UnityEditor.Handles.color = color;
-        UnityEditor.Handles.DrawWireArc(center, normal, from, -angle, radius);
+        draw_arc(arc, 0, color);
     }
 }
 
