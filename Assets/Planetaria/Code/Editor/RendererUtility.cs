@@ -18,8 +18,6 @@ public static class RendererUtility
         float angle = arc.angle()*Mathf.Rad2Deg;
         float radius = (from - center).magnitude;
 
-        Debug.Log("Drawing " + from + "->" + to + " " + center + " " + normal + " " + angle + " " + radius);
-
         UnityEditor.Handles.color = color;
         UnityEditor.Handles.DrawWireArc(center, normal, from - center, angle, radius);
     }

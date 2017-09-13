@@ -5,6 +5,24 @@ using UnityEditor;
 public class ArcEditor : Editor
 {
     /// <summary>
+    /// Inspector - Draw an arc (basic)
+    /// </summary>
+    /// <param name="arc">The arc that will be rendered.</param>
+    public static void draw_arc(Arc arc)
+    {
+        Color violet = new Color(127, 0, 255);
+
+        draw_arc(arc, 0.0f, Color.black);
+        draw_arc(arc, 0.05f, Color.gray);
+        draw_arc(arc, 0.1f, Color.white);
+
+        draw_radial(arc, 0, 0.1f, Color.red);
+        draw_radial(arc, arc.angle(), 0.1f, violet);
+
+
+    }
+
+    /// <summary>
     /// Inspector - Draw an arc (extruded by a radius)
     /// </summary>
     /// <param name="arc">The arc that will be rendered.</param>
@@ -29,6 +47,10 @@ public class ArcEditor : Editor
         Vector3 from_tangent = Vector3.ProjectOnPlane(to, from).normalized;
         RendererUtility.draw_arc(from, from_tangent, to, color);
     }
+
+    // public static void draw_radial(Arc arc, float angle, float local_angle, float radius, Color color) // TODO: implement
+
+    // public static void draw_tangent(Arc arc, float angle, float radius, Color color) // TODO: implement and add to draw_arc(Arc)
 }
 
 /*

@@ -36,13 +36,9 @@ public class Arc : ScriptableObject
         right.Normalize();
         end.Normalize();
 
-        Debug.Log("1 " + start + " " + right + " " + end);
-
         result.right_axis = right;
         result.forward_axis = Vector3.ProjectOnPlane(start - end, right).normalized; // [start - end] is within the arc's plane
         result.center_axis = Vector3.Cross(result.forward_axis, result.right_axis).normalized; // get binormal using left-hand rule
-
-        Debug.Log("2 " + result.forward_axis + " " + result.right_axis + " " + result.center_axis);
 
         float elevation = Vector3.Dot(start, result.center_axis);
         Vector3 center = elevation * result.center_axis;

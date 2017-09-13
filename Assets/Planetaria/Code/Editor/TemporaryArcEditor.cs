@@ -1,20 +1,16 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(Block))]
-public class BlockEditor : Editor
+[CustomEditor(typeof(TemporaryArc))]
+[System.Serializable]
+public class TemporaryArcEditor : Editor
 {
     [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
-    static void DrawGizmoForBlock(Block self, GizmoType gizmoType)
+    static void DrawGizmoForTemporaryArc(TemporaryArc self, GizmoType gizmoType)
     {
-        for (int arc_index = 0; arc_index < self.size(); ++arc_index)
+        if (self.arc.exists)
         {
-            Arc arc = self.at(ref arc_index);
-
-            if (arc)
-            {
-                ArcEditor.draw_arc(arc);
-            }
+            ArcEditor.draw_arc(self.arc.data);
         }
     }
 }

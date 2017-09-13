@@ -6,6 +6,11 @@ public static class GridUtility
 {
     public static Vector3 grid_snap(Vector3 position, float rows, float columns) // FIXME: optimize
 	{
+        if(!Event.current.shift) // only snap when shift key is held
+        {
+            return position;
+        }
+
         NormalizedCartesianCoordinates Cartesian_position = new NormalizedCartesianCoordinates(position);
 
 		NormalizedSphericalCoordinates clamped_coordinates = new NormalizedSphericalCoordinates(0, 0);

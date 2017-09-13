@@ -15,10 +15,8 @@ public class LevelCreatorEditor : Editor
 
     GameObject shape;
     Block block;
-
-    Vector3 start;
-    Vector3 right;
-    Vector3 end;
+    GameObject arc_builder;
+    TemporaryArc temporary_arc;
 
     float yaw;
     float pitch;
@@ -32,16 +30,18 @@ public class LevelCreatorEditor : Editor
     {
         yaw = pitch = 0;
         control_identifier = GUIUtility.GetControlID(FocusType.Passive);
-        start = right = end = Vector3.zero;
+        arc_builder = new GameObject("Arc builder");
+        temporary_arc = arc_builder.AddComponent<TemporaryArc>();
         state_machine = wait_mouse_event;
 
         shape = Block.CreateBlock();
-
         block = shape.GetComponent<Block>() as Block;
     }
 
     void OnDisable ()
     {
+        GameObject.DestroyImmediate(arc_builder);
+        temporary_arc = null;
     }
 
     void OnSceneGUI ()
@@ -79,38 +79,22 @@ public class LevelCreatorEditor : Editor
     /// <returns>The next mode for the state machine.</returns>
     static CreateShape mouse_down(LevelCreatorEditor editor)
     {
+        editor.temporary_arc.to = GridUtility.grid_snap(HandleUtility.GUIPointToWorldRay(Event.current.mousePosition).direction, editor.rows, editor.columns);
+
         /// button_down 1: create equatorial circle at point.
         /// button_down 2-n: create arc through point using last right-hand-side slope; adjust previous slope (if neccessary) so that it meets with current point (best fit).
         /// NOTE: MouseUp should be diabled until mouse_down happens.
         /// NOTE: Escape should be disabled until mouse_up happens.
         if (Event.current.type == EventType.MouseDown)
         {
-            editor.end = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition).direction;
-
-            if(Event.current.shift)
+            if (editor.temporary_arc.arc.exists)
             {
-                editor.end = GridUtility.grid_snap(editor.end, editor.rows, editor.columns);
-            }
-
-            GameObject prefabricated_object = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Planetaria/PrefabricatedObjects/Resources/Sphere.prefab") as GameObject;
-            GameObject spawned_object = PrefabUtility.InstantiatePrefab(prefabricated_object) as GameObject;
-            spawned_object.transform.position = editor.end;
-
-            EditorUtility.SetDirty(spawned_object);
-
-            if (editor.start != Vector3.zero)
-            {
-                Arc arc = Arc.CreateArc(editor.start, editor.right, editor.end);
-
-                editor.block.Add(arc);
-
+                editor.block.Add(editor.temporary_arc.arc.data);
                 EditorUtility.SetDirty(editor.block.gameObject);
             }
 
-            editor.start = editor.end;
-
             use_mouse_event(editor);
-
+            editor.temporary_arc.Reset();
             return mouse_up;
         }
         /// escape: adjust final slope (if neccessary) so that it meets with first point (best fit).
@@ -133,28 +117,14 @@ public class LevelCreatorEditor : Editor
     /// <returns>mouse_up if nothing was pressed; mouse_down if MouseUp or Escape was pressed.</returns>
     static CreateShape mouse_up(LevelCreatorEditor editor)
     {
+        editor.temporary_arc.from_tangent = GridUtility.grid_snap(HandleUtility.GUIPointToWorldRay(Event.current.mousePosition).direction, editor.rows, editor.columns);
+
         /// button_up 1: create right-hand-side slope for point 1.
         /// button_up 2-n: create right-hand-side slope for current point.
         if (Event.current.type == EventType.MouseUp)
         {
-            Vector3 slope_endpoint = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition).direction;
-
-            if(Event.current.shift)
-            {
-                slope_endpoint = GridUtility.grid_snap(slope_endpoint, editor.rows, editor.columns);
-            }
-
-            editor.right = (slope_endpoint - editor.start).normalized;
-
-            GameObject prefabricated_object = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Planetaria/PrefabricatedObjects/Resources/Sphere.prefab") as GameObject;
-            GameObject spawned_object = PrefabUtility.InstantiatePrefab(prefabricated_object) as GameObject;
-            spawned_object.transform.position = slope_endpoint;
-
             use_mouse_event(editor);
-            EditorUtility.SetDirty(spawned_object);
-
-            use_mouse_event(editor);
-
+            editor.temporary_arc.Advance();
             return mouse_down;
         }
 
@@ -173,12 +143,16 @@ public class LevelCreatorEditor : Editor
 
     static CreateShape wait_mouse_event(LevelCreatorEditor editor)
     {
+        editor.temporary_arc.from = GridUtility.grid_snap(HandleUtility.GUIPointToWorldRay(Event.current.mousePosition).direction, editor.rows, editor.columns);
+
         if (Event.current.type == EventType.MouseDown)
         {
+            editor.temporary_arc.Advance();
             use_mouse_event(editor);
+            return mouse_up;
         }
 
-        return mouse_down;
+        return wait_mouse_event;
     }
 
     static void draw_grid(int rows, int columns)
