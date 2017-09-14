@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(TemporaryArc))]
+[CustomEditor(typeof(ArcBuilder))]
 [System.Serializable]
-public class TemporaryArcEditor : Editor
+public class ArcBuilderEditor : Editor
 {
     [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
-    static void DrawGizmoForTemporaryArc(TemporaryArc self, GizmoType gizmoType)
+    static void DrawGizmoForArcBuilder(ArcBuilder self, GizmoType gizmoType)
     {
         if (self.arc.exists)
         {

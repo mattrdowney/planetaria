@@ -13,8 +13,8 @@ public class ArcEditor : Editor
         Color violet = new Color(127, 0, 255);
 
         draw_arc(arc, 0.0f, Color.black);
-        draw_arc(arc, 0.05f, Color.gray);
-        draw_arc(arc, 0.1f, Color.white);
+        //draw_arc(arc, 0.05f, Color.gray);
+        //draw_arc(arc, 0.1f, Color.white);
 
         draw_radial(arc, 0, 0.1f, Color.red);
         draw_radial(arc, arc.angle(), 0.1f, violet);

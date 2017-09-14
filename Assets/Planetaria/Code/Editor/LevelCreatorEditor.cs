@@ -10,47 +10,41 @@ public class LevelCreatorEditor : Editor
     /// </summary>
     /// <param name="editor">The reference to the LevelCreatorEditor object that stores shape information.</param>
     /// <returns>The next mode for the state machine.</returns>
-    delegate CreateShape CreateShape(LevelCreatorEditor editor);
-    CreateShape state_machine;
+    delegate CreateShape CreateShape();
 
-    GameObject shape;
-    Block block;
-    GameObject arc_builder;
-    TemporaryArc temporary_arc;
+    static CreateShape state_machine;
 
-    float yaw;
-    float pitch;
+    static Block block;
+    static ArcBuilder temporary_arc;
 
-    public int rows = 15; //equator drawn when rows is odd
-	public int columns = 16; //RENAME?: misleading //always draws 2*columns lines from the North to South pole
+    static float yaw;
+    static float pitch;
 
-    int control_identifier;
+    public static int rows = 15; //equator drawn when rows is odd
+	public static int columns = 16; //RENAME?: misleading //always draws 2*columns lines from the North to South pole
+
+    static int control_identifier;
 
     void OnEnable ()
     {
         yaw = pitch = 0;
+        state_machine = draw_first_point;
         control_identifier = GUIUtility.GetControlID(FocusType.Passive);
-        arc_builder = new GameObject("Arc builder");
-        temporary_arc = arc_builder.AddComponent<TemporaryArc>();
-        state_machine = wait_mouse_event;
-
-        shape = Block.CreateBlock();
-        block = shape.GetComponent<Block>() as Block;
+        start_shape();
     }
 
     void OnDisable ()
     {
-        GameObject.DestroyImmediate(arc_builder);
-        temporary_arc = null;
+        end_shape();
     }
 
     void OnSceneGUI ()
     {
-        center_camera_view(SceneView.currentDrawingSceneView);
+        center_camera_view();
 
-        state_machine = state_machine(this);
+        state_machine = state_machine();
 
-        draw_grid(rows, columns);
+        draw_grid();
 
         Repaint();
     }
@@ -59,12 +53,13 @@ public class LevelCreatorEditor : Editor
     /// Inspector (quasi-mutator) - locks camera at the origin (so it can't drift).
     /// </summary>
     /// <param name="scene_view">The view that will be locked / "mutated".</param>
-    void center_camera_view(SceneView scene_view)
+    static void center_camera_view()
 	{
 		GameObject empty_gameobject = new GameObject("origin");
         empty_gameobject.transform.position = Vector3.zero;
         empty_gameobject.transform.rotation = Quaternion.Euler(yaw, pitch, 0);
 
+        SceneView scene_view = SceneView.currentDrawingSceneView;
 		scene_view.AlignViewToObject(empty_gameobject.transform);
 		scene_view.camera.transform.position = Vector3.zero;
 		scene_view.Repaint();
@@ -72,42 +67,41 @@ public class LevelCreatorEditor : Editor
         GameObject.DestroyImmediate(empty_gameobject);
     }
 
+    static Vector3 get_mouse_position()
+    {
+        Vector3 position = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition).direction;
+        Vector3 clamped_position = GridUtility.grid_snap(position, rows, columns);
+
+        return clamped_position;
+    }
+
     /// <summary>
     /// Mutator - MouseDown creates point at position
     /// </summary>
-    /// <param name="editor">The reference to the LevelCreatorEditor object that stores shape information.</param>
     /// <returns>The next mode for the state machine.</returns>
-    static CreateShape mouse_down(LevelCreatorEditor editor)
+    static CreateShape draw_nth_point()
     {
-        editor.temporary_arc.to = GridUtility.grid_snap(HandleUtility.GUIPointToWorldRay(Event.current.mousePosition).direction, editor.rows, editor.columns);
-
-        /// button_down 1: create equatorial circle at point.
-        /// button_down 2-n: create arc through point using last right-hand-side slope; adjust previous slope (if neccessary) so that it meets with current point (best fit).
-        /// NOTE: MouseUp should be diabled until mouse_down happens.
-        /// NOTE: Escape should be disabled until mouse_up happens.
+        temporary_arc.to = get_mouse_position();
+        
+        // MouseDown 2-n: create arc through point using last right-hand-side slope
         if (Event.current.type == EventType.MouseDown)
         {
-            if (editor.temporary_arc.arc.exists)
-            {
-                editor.block.Add(editor.temporary_arc.arc.data);
-                EditorUtility.SetDirty(editor.block.gameObject);
-            }
+            block.Add(temporary_arc.arc.data);
+            EditorUtility.SetDirty(block.gameObject);
 
-            use_mouse_event(editor);
-            editor.temporary_arc.Reset();
-            return mouse_up;
+            use_mouse_event();
+            temporary_arc.FinalizeEdge();
+            return draw_tangent;
         }
-        /// escape: adjust final slope (if neccessary) so that it meets with first point (best fit).
+        // Escape: close the shape so that it meets with the original point
         else if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
         {
-            //FIXME:
-
-            //GUIUtility.hotControl = GUIUtility.GetControlID(FocusType.Keyboard);
-
-            return wait_mouse_event;
+            end_shape();
+            start_shape();
+            return draw_first_point;
         }
 
-        return mouse_down;
+        return draw_nth_point;
     }
 
     /// <summary>
@@ -115,47 +109,81 @@ public class LevelCreatorEditor : Editor
     /// </summary>
     /// <param name="editor">The reference to the LevelCreatorEditor object that stores shape information.</param>
     /// <returns>mouse_up if nothing was pressed; mouse_down if MouseUp or Escape was pressed.</returns>
-    static CreateShape mouse_up(LevelCreatorEditor editor)
+    static CreateShape draw_tangent()
     {
-        editor.temporary_arc.from_tangent = GridUtility.grid_snap(HandleUtility.GUIPointToWorldRay(Event.current.mousePosition).direction, editor.rows, editor.columns);
+        temporary_arc.from_tangent = get_mouse_position();
 
-        /// button_up 1: create right-hand-side slope for point 1.
-        /// button_up 2-n: create right-hand-side slope for current point.
+        // MouseUp 1-n: create the right-hand-side slope for the last point added
         if (Event.current.type == EventType.MouseUp)
         {
-            use_mouse_event(editor);
-            editor.temporary_arc.Advance();
-            return mouse_down;
+            use_mouse_event();
+            temporary_arc.Advance();
+            return draw_nth_point;
+        }
+        // Escape: close the shape so that it meets with the original point (using original point for slope)
+        else if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
+        {
+            end_shape();
+            start_shape();
+            return draw_first_point;
         }
 
-        return mouse_up;
+        return draw_tangent;
+    }
+
+    static CreateShape draw_first_point()
+    {
+        temporary_arc.from = get_mouse_position();
+
+        // MouseDown 1: create first corner of a shape
+        if (Event.current.type == EventType.MouseDown)
+        {
+            use_mouse_event();
+            temporary_arc.Advance();
+            return draw_tangent;
+        }
+
+        return draw_first_point;
     }
 
     /// <summary>
     /// Mutator - prevents editor from selecting objects in the editor view (which can de-select the current object)
     /// </summary>
     /// <param name="editor">The current level editor.</param>
-    static void use_mouse_event(LevelCreatorEditor editor)
+    static void use_mouse_event()
     {
-        GUIUtility.hotControl = editor.control_identifier;
+        GUIUtility.hotControl = control_identifier;
         Event.current.Use();
     }
 
-    static CreateShape wait_mouse_event(LevelCreatorEditor editor)
+    static void start_shape()
     {
-        editor.temporary_arc.from = GridUtility.grid_snap(HandleUtility.GUIPointToWorldRay(Event.current.mousePosition).direction, editor.rows, editor.columns);
+        GameObject arc_builder = new GameObject("Arc builder");
+        temporary_arc = arc_builder.AddComponent<ArcBuilder>();
 
-        if (Event.current.type == EventType.MouseDown)
-        {
-            editor.temporary_arc.Advance();
-            use_mouse_event(editor);
-            return mouse_up;
-        }
-
-        return wait_mouse_event;
+        GameObject shape = Block.CreateBlock();
+        block = shape.GetComponent<Block>() as Block;
     }
 
-    static void draw_grid(int rows, int columns)
+    static void end_shape()
+    {
+        temporary_arc.Close();
+
+        if (temporary_arc.arc.exists)
+        {
+            block.Add(temporary_arc.arc.data);
+            EditorUtility.SetDirty(block.gameObject);
+        }
+
+        GameObject arc_builder = temporary_arc.gameObject;
+        GameObject.DestroyImmediate(arc_builder);
+        temporary_arc = null;
+        block = null;
+
+        GUIUtility.hotControl = GUIUtility.GetControlID(FocusType.Keyboard);
+    }
+
+    static void draw_grid()
     {
 		UnityEditor.Handles.color = Color.white;
 

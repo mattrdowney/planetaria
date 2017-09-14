@@ -10,10 +10,8 @@ public static class RendererUtility
     public static void draw_arc(Arc arc, float extrusion, Color color)
     {
         Vector3 from = arc.position(0, extrusion);
-        Vector3 to = arc.position(arc.angle(), extrusion);
         Vector3 normal = arc.pole(extrusion);
         Vector3 center = Vector3.Project(from, normal);
-        normal *= System.Math.Sign(Vector3.Dot(normal, center));
         normal *= -System.Math.Sign(arc.elevation(0));
         float angle = arc.angle()*Mathf.Rad2Deg;
         float radius = (from - center).magnitude;
@@ -31,11 +29,6 @@ public static class RendererUtility
     /// <param name="color">The color of the drawn arc.</param>
     public static void draw_arc(Vector3 from, Vector3 from_tangent, Vector3 to, Color color)
     {
-        if (from == to) // If radius is zero
-        {
-            return; // there is no need to render since the arc is an infintessimally small point
-        }
-
         Arc arc = Arc.CreateArc(from, from_tangent, to);
 
         draw_arc(arc, 0, color);

@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
 
-public class TemporaryArc : MonoBehaviour
+public class ArcBuilder : MonoBehaviour // TODO: consider switching to ScriptableObject
 {
     enum ConstructionState { SetFrom = 0, SetTangentLine = 1, SetTo = 2 }
     ConstructionState build_state;
 
     optional<Arc> arc_variable;
+
+    Vector3 original_point;
 
     Vector3 from_variable;
     Vector3 from_tangent_variable;
@@ -16,11 +18,16 @@ public class TemporaryArc : MonoBehaviour
         ++build_state;
     }
 
-    public void Reset()
+    public void FinalizeEdge() //LolSet // TrollSet // MonoBehaviour.Reset() // This is my favorite bug ever and it didn't take long to find, luckily.
     {
         build_state = ConstructionState.SetTangentLine;
         arc_variable = new optional<Arc>();
         from_variable = to_variable;
+    }
+
+    public void Close()
+    {
+        to = original_point;
     }
 
     public Vector3 from
@@ -28,6 +35,11 @@ public class TemporaryArc : MonoBehaviour
         set
         {
             from_variable = value.normalized;
+
+            if (build_state == ConstructionState.SetFrom)
+            {
+                original_point = from_variable;
+            }
         }
 
         get
@@ -42,7 +54,7 @@ public class TemporaryArc : MonoBehaviour
         {
             to_variable = value.normalized;
             from_tangent_variable = (to_variable - from_variable).normalized;
-            arc_variable = Arc.CreateArc(from_variable, from_tangent_variable, from_tangent_variable);
+            arc_variable = Arc.CreateArc(from_variable, from_tangent_variable, to_variable);
         }
     }
 
@@ -50,8 +62,19 @@ public class TemporaryArc : MonoBehaviour
     {
         set
         {
-            to_variable = value.normalized;
-            arc_variable = Arc.CreateArc(from_variable, from_tangent_variable, to_variable);
+            if (build_state != ConstructionState.SetFrom)
+            {
+                to_variable = value.normalized;
+
+                if (from_tangent_variable != Vector3.zero && build_state == ConstructionState.SetTo) // for defined slopes, use standard rendering
+                {
+                    arc_variable = Arc.CreateArc(from_variable, from_tangent_variable, to_variable);
+                }
+                else // draw the shortest path if no slope was defined
+                {
+                    arc_variable = Arc.CreateArc(from_variable, to_variable, to_variable);
+                }
+            }
         }
     }
 
