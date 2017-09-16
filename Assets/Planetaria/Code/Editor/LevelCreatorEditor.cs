@@ -39,13 +39,18 @@ public class LevelCreatorEditor : Editor
     }
 
     void OnSceneGUI ()
-    {
+    {   
         center_camera_view();
+        
+        GridUtility.draw_grid(rows, columns);
 
-        state_machine = state_machine();
+        if (EditorWindow.focusedWindow == SceneView.currentDrawingSceneView)
+        {
+            HandleUtility.AddDefaultControl(control_identifier);
 
-        draw_grid();
-
+            state_machine = state_machine();
+        }
+            
         Repaint();
     }
 
@@ -89,8 +94,8 @@ public class LevelCreatorEditor : Editor
             block.Add(temporary_arc.arc.data);
             EditorUtility.SetDirty(block.gameObject);
 
-            use_mouse_event();
             temporary_arc.FinalizeEdge();
+            use_mouse_event();
             return draw_tangent;
         }
         // Escape: close the shape so that it meets with the original point
@@ -101,6 +106,7 @@ public class LevelCreatorEditor : Editor
             return draw_first_point;
         }
 
+        use_mouse_event();
         return draw_nth_point;
     }
 
@@ -116,8 +122,8 @@ public class LevelCreatorEditor : Editor
         // MouseUp 1-n: create the right-hand-side slope for the last point added
         if (Event.current.type == EventType.MouseUp)
         {
-            use_mouse_event();
             temporary_arc.Advance();
+            use_mouse_event();
             return draw_nth_point;
         }
         // Escape: close the shape so that it meets with the original point (using original point for slope)
@@ -128,6 +134,7 @@ public class LevelCreatorEditor : Editor
             return draw_first_point;
         }
 
+        use_mouse_event();
         return draw_tangent;
     }
 
@@ -138,11 +145,12 @@ public class LevelCreatorEditor : Editor
         // MouseDown 1: create first corner of a shape
         if (Event.current.type == EventType.MouseDown)
         {
-            use_mouse_event();
             temporary_arc.Advance();
+            use_mouse_event();
             return draw_tangent;
         }
 
+        use_mouse_event();
         return draw_first_point;
     }
 
@@ -152,8 +160,16 @@ public class LevelCreatorEditor : Editor
     /// <param name="editor">The current level editor.</param>
     static void use_mouse_event()
     {
-        GUIUtility.hotControl = control_identifier;
-        Event.current.Use();
+        if (Event.current.type == EventType.MouseDown)
+        {
+            GUIUtility.hotControl = control_identifier;
+            Event.current.Use();
+        }
+        else if (Event.current.type == EventType.MouseUp)
+        {
+            GUIUtility.hotControl = 0;
+            Event.current.Use();
+        }
     }
 
     static void start_shape()
@@ -188,26 +204,6 @@ public class LevelCreatorEditor : Editor
         block = null;
 
         GUIUtility.hotControl = GUIUtility.GetControlID(FocusType.Keyboard);
-    }
-
-    static void draw_grid()
-    {
-		UnityEditor.Handles.color = Color.white;
-
-		for(float row = 1; row <= rows; ++row)
-		{
-			UnityEditor.Handles.DrawWireDisc(Vector3.down*Mathf.Cos(Mathf.PI*row/(rows+1)),
-			                                 Vector3.up,
-			                                 Mathf.Sin(Mathf.PI*row/(rows+1)));
-		}
-		
-		for(float column = 0; column < columns; ++column)
-		{
-			UnityEditor.Handles.DrawWireDisc(Vector3.zero,
-			                                 Vector3.forward*Mathf.Cos(Mathf.PI*column/columns) +
-			                                 Vector3.right  *Mathf.Sin(Mathf.PI*column/columns),
-			                                 1);
-		}
     }
 }
 

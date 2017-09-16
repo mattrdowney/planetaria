@@ -4,6 +4,26 @@ using UnityEngine;
 
 public static class GridUtility
 {
+    public static void draw_grid(int rows, int columns)
+    {
+		UnityEditor.Handles.color = Color.white;
+
+		for(float row = 1; row <= rows; ++row)
+		{
+			UnityEditor.Handles.DrawWireDisc(Vector3.down*Mathf.Cos(Mathf.PI*row/(rows+1)),
+			                                 Vector3.up,
+			                                 Mathf.Sin(Mathf.PI*row/(rows+1)));
+		}
+		
+		for(float column = 0; column < columns; ++column)
+		{
+			UnityEditor.Handles.DrawWireDisc(Vector3.zero,
+			                                 Vector3.forward*Mathf.Cos(Mathf.PI*column/columns) +
+			                                 Vector3.right  *Mathf.Sin(Mathf.PI*column/columns),
+			                                 1);
+		}
+    }
+
     public static Vector3 grid_snap(Vector3 position, float rows, float columns) // FIXME: optimize
 	{
         if(!Event.current.shift) // only snap when shift key is held
