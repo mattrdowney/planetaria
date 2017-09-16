@@ -9,11 +9,11 @@ public class BlockEditor : Editor
     {
         for (int arc_index = 0; arc_index < self.size(); ++arc_index)
         {
-            Arc arc = self.at(ref arc_index);
+            optional<Arc> arc = self.at(ref arc_index);
 
-            if (arc)
+            if (arc.exists)
             {
-                ArcEditor.draw_arc(arc);
+                ArcEditor.draw_arc(arc.data);
             }
         }
     }

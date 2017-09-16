@@ -30,8 +30,8 @@ public class BlockInteractor
         for (int adjacent_arc_index = collision_arc_index.data - 2; adjacent_arc_index <= collision_arc_index.data + 2; ++adjacent_arc_index)
         {
             int current_index = adjacent_arc_index;
-            Arc current_arc = target.at(ref current_index);
-            optional<Vector3> current_intersection_point = PlanetariaIntersection.arc_path_intersection(current_arc, begin, end);
+            optional<Arc> current_arc = target.at(ref current_index);
+            optional<Vector3> current_intersection_point = PlanetariaIntersection.arc_path_intersection(current_arc.data, begin, end); //TODO: check .data
             if (current_intersection_point.exists)
             {
                 float similarity = Vector3.Dot(current_intersection_point.data, last_position);
@@ -43,9 +43,9 @@ public class BlockInteractor
             }
         }
 
-        Arc closest_arc = target.at(ref closest_index);
+        optional<Arc> closest_arc = target.at(ref closest_index);
         
-        optional<Vector3> closest_intersection_point = PlanetariaIntersection.arc_path_intersection(closest_arc, begin, end);
+        optional<Vector3> closest_intersection_point = PlanetariaIntersection.arc_path_intersection(closest_arc.data, begin, end); //TODO: check
         if (!closest_intersection_point.exists)
         {
             nullify(this);
@@ -53,7 +53,7 @@ public class BlockInteractor
         }
 
         arc_index = closest_index;
-        interpolator_angle = closest_arc.position_to_angle(closest_intersection_point.data);
+        interpolator_angle = closest_arc.data.position_to_angle(closest_intersection_point.data);
     }
 
     private static void nullify(BlockInteractor block_interactor)

@@ -54,7 +54,7 @@ public class ArcBuilder : MonoBehaviour // TODO: consider switching to Scriptabl
         {
             to_variable = value.normalized;
             from_tangent_variable = (to_variable - from_variable).normalized;
-            arc_variable = Arc.CreateArc(from_variable, from_tangent_variable, to_variable);
+            arc_variable = new Arc(from_variable, from_tangent_variable, to_variable);
         }
     }
 
@@ -68,11 +68,11 @@ public class ArcBuilder : MonoBehaviour // TODO: consider switching to Scriptabl
 
                 if (from_tangent_variable != Vector3.zero && build_state == ConstructionState.SetTo) // for defined slopes, use standard rendering
                 {
-                    arc_variable = Arc.CreateArc(from_variable, from_tangent_variable, to_variable);
+                    arc_variable = new Arc(from_variable, from_tangent_variable, to_variable);
                 }
                 else // draw the shortest path if no slope was defined
                 {
-                    arc_variable = Arc.CreateArc(from_variable, to_variable, to_variable);
+                    arc_variable = new Arc(from_variable, to_variable, to_variable);
                 }
             }
         }

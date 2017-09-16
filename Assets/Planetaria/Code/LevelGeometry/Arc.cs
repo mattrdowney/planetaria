@@ -4,21 +4,22 @@
 /// A pseudo-immutable class that stores an arc along the surface of a unit sphere.
 /// Includes convex corners, great edges, convex edges, and concave edges. Cannot store concave corners!
 /// </summary>
-public class Arc : ScriptableObject
+[System.Serializable]
+public struct Arc
 {
     /// <summary>An axis that includes the center of the circle that defines the arc.</summary>
-    Vector3 center_axis;
+    [SerializeField] Vector3 center_axis;
     /// <summary>An axis that helps define the beginning of the arc.</summary>
-    Vector3 forward_axis;
+    [SerializeField] Vector3 forward_axis;
     /// <summary>A binormal to center_axis and forward_axis. Determines points after the beginning of the arc.</summary>
-    Vector3 right_axis;
+    [SerializeField] Vector3 right_axis;
     /// <summary>Determines points before the end of the arc. This is normal to center_axis.</summary>
-    Vector3 before_end;
+    [SerializeField] Vector3 before_end;
     
     /// <summary>The length of the arc</summary>
-    float arc_angle;
+    [SerializeField] float arc_angle;
     /// <summary>The angle of the arc from its parallel "equator".</summary>
-    float arc_latitude;
+    [SerializeField] float arc_latitude;
 
     /// <summary>
     /// Constructor - Creates convex, concave, or great arcs.
@@ -27,37 +28,33 @@ public class Arc : ScriptableObject
     /// <param name="right">The sphere-tangential slope/gradient at the start point going rightward.</param>
     /// <param name="end">The end point of the arc.</param>
     /// <returns>An arc along the surface of a unit sphere.</returns>
-    public static Arc CreateArc(Vector3 start, Vector3 right, Vector3 end) // TODO: verify
+    public Arc(Vector3 start, Vector3 right, Vector3 end) // TODO: verify
     {
-        Arc result = CreateInstance<Arc>();
-
         start.Normalize();
         right = Vector3.ProjectOnPlane(right, start); // enforce orthogonality
         right.Normalize();
         end.Normalize();
 
-        result.right_axis = right;
-        result.forward_axis = Vector3.ProjectOnPlane(start - end, right).normalized; // [start - end] is within the arc's plane
-        result.center_axis = Vector3.Cross(result.forward_axis, result.right_axis).normalized; // get binormal using left-hand rule
+        right_axis = right;
+        forward_axis = Vector3.ProjectOnPlane(start - end, right).normalized; // [start - end] is within the arc's plane
+        center_axis = Vector3.Cross(forward_axis, right_axis).normalized; // get binormal using left-hand rule
 
-        float elevation = Vector3.Dot(start, result.center_axis);
-        Vector3 center = elevation * result.center_axis;
+        float elevation = Vector3.Dot(start, center_axis);
+        Vector3 center = elevation * center_axis;
 
         Vector3 end_axis = (end - center).normalized;
-        result.before_end = -Vector3.Cross(result.center_axis, end_axis).normalized;
+        before_end = -Vector3.Cross(center_axis, end_axis).normalized;
 
-        bool long_path = Vector3.Dot(result.right_axis, end_axis) < 0;
-        result.arc_angle = Vector3.Angle(start - center, end - center)*Mathf.Deg2Rad;
-        result.arc_latitude = Mathf.PI/2 - Mathf.Acos(elevation);
+        bool long_path = Vector3.Dot(right_axis, end_axis) < 0;
+        arc_angle = Vector3.Angle(start - center, end - center)*Mathf.Deg2Rad;
+        arc_latitude = Mathf.PI/2 - Mathf.Acos(elevation);
 
         if (long_path)
         {
-            result.arc_angle = 2*Mathf.PI - result.arc_angle;
+            arc_angle = 2*Mathf.PI - arc_angle;
         }
 
         // TODO: Add Arc to global map and create/change colliders/transforms appropriately
-
-        return result;
     }
 
     /// <summary>
@@ -66,7 +63,7 @@ public class Arc : ScriptableObject
     /// <param name="left">The arc that attaches to the beginning of the corner.</param>
     /// <param name="right">The arc that attaches to the end of the corner.</param>
     /// <returns>A concave or convex corner arc.</returns>
-    public static Arc CreateCorner(Arc left, Arc right) // TODO: normal constructor
+    public static optional<Arc> CreateCorner(Arc left, Arc right) // TODO: normal constructor
     {
         if (is_convex(left, right))
         {
@@ -212,6 +209,7 @@ public class Arc : ScriptableObject
     /// <returns>A position on the arc.</returns>
     public Vector3 position(float angle, float extrusion = 0f)
     {
+        //for concave corners: extrusion / Mathf.Cos(arc_angle / 2) distance at angle/2
         Vector3 equator_position = PlanetariaMath.slerp(forward_axis, right_axis, angle);
         return PlanetariaMath.slerp(equator_position, center_axis, arc_latitude + extrusion);
     }
@@ -236,9 +234,9 @@ public class Arc : ScriptableObject
     /// <param name="left">The arc that attaches to the beginning of the corner.</param>
     /// <param name="right">The arc that attaches to the end of the corner.</param>
     /// <returns>A null arc (special value for a concave corner).</returns>
-    private static Arc ConcaveCorner(Arc left, Arc right)
+    private static optional<Arc> ConcaveCorner(Arc left, Arc right)
     {
-        return null; // Concave corners are not actually arcs; it's complicated...
+        return new optional<Arc>(); // Concave corners are not actually arcs; it's complicated...
     }
 
     /// <summary>
@@ -247,7 +245,7 @@ public class Arc : ScriptableObject
     /// <param name="left">The arc that attaches to the beginning of the corner.</param>
     /// <param name="right">The arc that attaches to the end of the corner.</param>
     /// <returns>A convex corner arc.</returns>
-    private static Arc ConvexCorner(Arc left, Arc right) // CHECKME: does this work when latitude is >0?
+    private static optional<Arc> ConvexCorner(Arc left, Arc right) // CHECKME: does this work when latitude is >0?
     {
         // Rather than doubling the codebase for constructors...
         // find the arc along the equator and set the latitude to -PI/2 (implicitly, that means the arc radius is zero)
@@ -260,7 +258,7 @@ public class Arc : ScriptableObject
         Vector3 end = right.position(0, Mathf.PI/2);
 
         // Create arc along equator
-        Arc result = Arc.CreateArc(start, cut_normal, end);
+        Arc result = new Arc(start, cut_normal, end); // FIXME: cut_normal should be right_tangent
 
         // And move the arc to the "South Pole" instead
         result.arc_latitude = -Mathf.PI/2;

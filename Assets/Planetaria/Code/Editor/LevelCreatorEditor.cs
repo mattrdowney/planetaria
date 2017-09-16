@@ -177,6 +177,13 @@ public class LevelCreatorEditor : Editor
 
         GameObject arc_builder = temporary_arc.gameObject;
         GameObject.DestroyImmediate(arc_builder);
+
+        if (block.size() == 0)
+        {
+            GameObject shape = block.gameObject;
+            GameObject.DestroyImmediate(shape);
+        }
+
         temporary_arc = null;
         block = null;
 

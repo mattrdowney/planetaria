@@ -4,9 +4,10 @@ using UnityEngine;
 [System.Serializable]
 public class Block : MonoBehaviour
 {
-    BlockActor behavior;
-    public List<Arc> arc_list;
-    //PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
+    [SerializeField] BlockActor behavior;
+    
+    [SerializeField] List<Arc> arc_list;
+    //[SerializeField] PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
 
     /// <summary>
     /// Constructor - Generates a block using a .ssvg file.
@@ -34,9 +35,9 @@ public class Block : MonoBehaviour
         return result;
     }
 
-    public void Add(Arc arc)
+    public void Add(optional<Arc> arc)
     {
-        arc_list.Add(arc);
+        arc_list.Add(arc.data);
     }
 
     /// <summary>
@@ -48,7 +49,7 @@ public class Block : MonoBehaviour
     {
         int arc_list_index = arc_list.IndexOf(arc);
 
-        if (arc != null || arc_list_index == -1)
+        if (arc_list_index == -1)
         {
             return new optional<int>();
         }
@@ -61,7 +62,7 @@ public class Block : MonoBehaviour
     /// </summary>
     /// <param name="index">The (ordered sequence) index of the Arc.</param>
     /// <returns>The Arc at the given index.</returns>
-    public Arc at(ref int index)
+    public optional<Arc> at(ref int index)
     {
         if (index < 0 || index >= arc_list.Count)
         {
@@ -80,11 +81,11 @@ public class Block : MonoBehaviour
     /// <returns>True if any of the arcs contain the point extruded by radius.</returns>
     public bool contains(Vector3 position, float radius = 0f)
     {
-        foreach (Arc arc in arc_list)
+        foreach (optional<Arc> arc in arc_list)
         {
-            if (arc != null)
+            if (arc.exists)
             {
-                if (arc.contains(position, radius))
+                if (arc.data.contains(position, radius))
                 {
                     return true;
                 }
