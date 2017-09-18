@@ -8,7 +8,7 @@ public class FieldEditor : Editor
     Field field;
     PlanetariaTransform transform; // TODO: make fields relative (for moving fields)
 
-    void Awake()
+    private void Awake()
     {
         List<Plane> plane_list = field.get_plane_list();
 
@@ -17,7 +17,7 @@ public class FieldEditor : Editor
         //  add to container of field arcs
     }
 
-    void OnSceneGUI()
+    private void OnSceneGUI()
     {
         //for all field arcs
         //  RendererUtility.draw_arc(

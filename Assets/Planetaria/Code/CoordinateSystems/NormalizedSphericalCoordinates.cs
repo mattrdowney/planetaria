@@ -4,8 +4,8 @@ public class NormalizedSphericalCoordinates
 {
     public Vector2 data
     {
-        get { return data_; }
-        set { data_ = value; Normalize(); }
+        get { return data_variable; }
+        set { data_variable = value; normalize(); }
     }
 
     /// <summary>
@@ -15,8 +15,8 @@ public class NormalizedSphericalCoordinates
     /// <param name="azimuth">The angle in radians between the positive x-axis and the vector in Cartian space measured counterclockwise around the y-axis (viewing angle is downward along y-axis).</param>
     public NormalizedSphericalCoordinates(float elevation, float azimuth)
     {
-        data_ = new Vector2(elevation, azimuth);
-        Normalize();
+        data_variable = new Vector2(elevation, azimuth);
+        normalize();
     }
 
     /// <summary>
@@ -26,11 +26,11 @@ public class NormalizedSphericalCoordinates
     /// <returns>The Cartesian coordinates.</returns> 
     public static implicit operator NormalizedCartesianCoordinates(NormalizedSphericalCoordinates octahedral)
     {
-        Vector3 Cartesian = new Vector3();
-        Cartesian.x = -Mathf.Sin(octahedral.data.x) * Mathf.Cos(octahedral.data.y);
-        Cartesian.y = -Mathf.Cos(octahedral.data.x);
-        Cartesian.z = Mathf.Sin(octahedral.data.x) * Mathf.Sin(octahedral.data.y);
-        return new NormalizedCartesianCoordinates(Cartesian);
+        Vector3 cartesian = new Vector3();
+        cartesian.x = -Mathf.Sin(octahedral.data.x) * Mathf.Cos(octahedral.data.y);
+        cartesian.y = -Mathf.Cos(octahedral.data.x);
+        cartesian.z = Mathf.Sin(octahedral.data.x) * Mathf.Sin(octahedral.data.y);
+        return new NormalizedCartesianCoordinates(cartesian);
     }
 
     /// <summary>
@@ -40,8 +40,8 @@ public class NormalizedSphericalCoordinates
     /// <returns>The octahedral coordinates.</returns> 
     public static implicit operator NormalizedOctahedralCoordinates(NormalizedSphericalCoordinates spherical)
     {
-        NormalizedCartesianCoordinates Cartesian = spherical;
-        return Cartesian;
+        NormalizedCartesianCoordinates cartesian = spherical;
+        return cartesian;
     }
 
     /// <summary>
@@ -51,31 +51,32 @@ public class NormalizedSphericalCoordinates
     /// <returns>The UV coordinates for an octahedron.</returns> 
     public static implicit operator OctahedralUVCoordinates(NormalizedSphericalCoordinates spherical)
     {
-        NormalizedCartesianCoordinates Cartesian = spherical;
-        return Cartesian;
+        NormalizedCartesianCoordinates cartesian = spherical;
+        return cartesian;
     }
-
-    Vector2 data_;
 
     /// <summary>
     /// Mutator - Wrap elevation and azimuth so they are within [0, PI] and [0, 2*PI) respectively. 
     /// </summary>
-    void Normalize()
+    private void normalize()
     {
-        if (Mathf.Abs(data_.x - Mathf.PI/2) > Mathf.PI/2)
+        if (data_variable.x < 0 || data_variable.x > Mathf.PI)
         {
-            data_.x = Mathf.PingPong(data_.x, 2*Mathf.PI); //TODO: test that 1) Vector2 is properly assigned 2) PingPong works for negative numbers
-            if (data_.x > Mathf.PI)
+            data_variable.x = Mathf.PingPong(data_variable.x, 2*Mathf.PI); //TODO: test that 1) Vector2 is properly assigned 2) PingPong works for negative numbers
+            if (data_variable.x > Mathf.PI)
             {
-                data_.x -= Mathf.PI;
-                data_.y += Mathf.PI; // going through a pole changes the azimuth
+                data_variable.x -= Mathf.PI;
+                data_variable.y += Mathf.PI; // going through a pole changes the azimuth
             }
         }
-        if (Mathf.Abs(data_.y - Mathf.PI) > Mathf.PI || data_.y == 2*Mathf.PI)
+
+        if (data_variable.y < 0 || data_variable.y >= 2*Mathf.PI)
         {
-            data_.y = PlanetariaMath.modulo_using_Euclidean_division(data_.y, 2*Mathf.PI);
+            data_variable.y = PlanetariaMath.modolo_using_euclidean_division(data_variable.y, 2*Mathf.PI);
         }
     }
+
+    private Vector2 data_variable;
 }
 
 /*

@@ -1,41 +1,45 @@
 ﻿using UnityEngine;
 
-public class Planetarium
+public struct Planetarium
 {
-    int level_index;
-
-    public Planetarium(int level_index_)
+    public static Planetarium planetarium(int level_identifier)
     {
-        level_index = level_index_;
+        Planetarium result = new Planetarium();
+
+        result.level_index = level_identifier;
+
+        return result;
     }
 
-    public void Load_room()
+    public void load_room()
     {
-        Toggle_room(level_index, true);
+        toggle_room(level_index, true);
     }
 
-    public void Unload_room()
+    public void unload_room()
     {
-        Toggle_room(level_index, false);
+        toggle_room(level_index, false);
     }
 
-    private static void Toggle_room(int level_index, bool state)
+    private static void toggle_room(int level_index, bool state)
     {
         GameObject geometry_root = GameObject.Find("/" + level_index.ToString()); // TODO: make this more elegant...
         GameObject graphics_root = GameObject.Find("/" + level_index.ToString() + "g");
 
         // geometry
-        for (int child_id = 0; child_id < geometry_root.transform.childCount; child_id++)
+        for (int geometry_index = 0; geometry_index < geometry_root.transform.childCount; geometry_index++)
         {
-            geometry_root.transform.GetChild(child_id).gameObject.SetActive(state);
+            geometry_root.transform.GetChild(geometry_index).gameObject.SetActive(state);
         }
 
         // graphics
-        for (int child_id = 0; child_id < graphics_root.transform.childCount; child_id++)
+        for (int graphics_index = 0; graphics_index < graphics_root.transform.childCount; graphics_index++)
         {
-            graphics_root.transform.GetChild(child_id).gameObject.SetActive(state);
+            graphics_root.transform.GetChild(graphics_index).gameObject.SetActive(state);
         }
     }
+
+    private int level_index;
 }
 
 /*

@@ -3,9 +3,6 @@ using UnityEngine.SceneManagement;
 
 public class BasicLoadingStrategy : LoadingStrategy
 {
-    int current_level_index;
-    Dictionary<int, Planetarium> planetaria_map;
-
     /// <summary>
     /// Inspector - Return 100% loaded, since the basic loader loads all levels in Awake.
     /// </summary>
@@ -20,7 +17,7 @@ public class BasicLoadingStrategy : LoadingStrategy
     /// Inspector - Since all levels are loaded, do nothing.
     /// </summary>
     /// <param name="level_index">The index of the level that would have been loaded. (Should match Unity level index.)</param>
-    public override void Request_level(int level_index)
+    public override void request_level(int level_index)
     {
     }
 
@@ -28,14 +25,14 @@ public class BasicLoadingStrategy : LoadingStrategy
     /// Mutator - Switch level geometry and graphics.
     /// </summary>
     /// <param name="level_index">The index of the level that will be focused in. (Should match Unity level index.)</param>
-    public override void Focus_level(int level_index)
+    public override void focus_level(int level_index)
     {
-        planetaria_map[current_level_index].Unload_room();
-        planetaria_map[level_index].Load_room();
+        planetaria_map[current_level_index].unload_room();
+        planetaria_map[level_index].load_room();
         current_level_index = level_index;
     }
 
-    public void Awake()
+    private void Awake()
     {
         current_level_index = 0;
         planetaria_map = new Dictionary<int, Planetarium>();
@@ -43,9 +40,12 @@ public class BasicLoadingStrategy : LoadingStrategy
         for (int level_index = 0; level_index < SceneManager.sceneCount; ++level_index) // FIXME: This should NOT load Menu Screen and other GUI levels
         {
             SceneManager.LoadScene(level_index, LoadSceneMode.Additive);
-            planetaria_map[level_index] = new Planetarium(level_index);
+            planetaria_map[level_index] = Planetarium.planetarium(level_index);
         }
     }
+
+    private int current_level_index;
+    private Dictionary<int, Planetarium> planetaria_map;
 }
 
 /*

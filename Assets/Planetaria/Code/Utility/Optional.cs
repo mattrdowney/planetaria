@@ -2,7 +2,7 @@
 {
     public bool exists
     {
-        get { return exists_; }
+        get { return exists_variable; }
     }
 
     public Type data
@@ -13,15 +13,15 @@
             {
                 throw new System.NullReferenceException();
             }
-            return data_;
+            return data_variable;
         }
-        set { exists_ = true; data_ = value; }
+        set { exists_variable = true; data_variable = value; }
     }
 
     public optional(Type original)
     {
-        exists_ = true;
-        data_ = original;
+        exists_variable = true;
+        data_variable = original;
     }
 
     public static implicit operator optional<Type>(Type original)
@@ -31,10 +31,10 @@
 
     public static bool operator ==(optional<Type> left, optional<Type> right)
     {
-        bool bInequalExistence = (left.exists_ != right.exists_);
-        bool bInequalValue = (left.exists_ && !left.data_.Equals(right.data_));
-        bool bInequal = bInequalExistence || bInequalValue;
-        return !bInequal;
+        bool inequal_existance = (left.exists_variable != right.exists_variable);
+        bool inequal_value = (left.exists_variable && !left.data_variable.Equals(right.data_variable));
+        bool inequal = inequal_existance || inequal_value;
+        return !inequal;
     }
 
     public static bool operator !=(optional<Type> left, optional<Type> right)
@@ -44,16 +44,16 @@
 
     public override string ToString()
     {
-        if (!exists_)
+        if (!exists_variable)
         {
             return "nonexistent " + typeof(Type).Name;
         }
 
-        return data_.ToString();
+        return data_variable.ToString();
     }
 
-    bool exists_;
-    Type data_;
+    bool exists_variable;
+    Type data_variable;
 }
 
 /*

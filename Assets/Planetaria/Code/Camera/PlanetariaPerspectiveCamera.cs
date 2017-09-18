@@ -2,7 +2,7 @@
 
 public class PlanetariaPerspectiveCamera : PlanetariaCamera
 {
-    void Awake()
+    private void Awake()
 	{
         internal_camera = GameObject.FindObjectOfType<Camera>();
         transform = new PlanetariaTransform(internal_camera.transform.parent);

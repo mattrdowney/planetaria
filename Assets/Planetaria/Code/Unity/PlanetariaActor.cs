@@ -4,16 +4,16 @@ public abstract class PlanetariaActor : Component
 {
     public new PlanetariaTransform transform;
 
-    public abstract void Start();
-    public abstract void Update();
+    public abstract void start();
+    public abstract void update();
 
-    public abstract void OnBlockEnter(BlockInteractor block_information);
-    public abstract void OnBlockExit(BlockInteractor block_information);
-    public abstract void OnBlockStay(BlockInteractor block_information);
+    public abstract void on_block_enter(BlockInteractor block_information);
+    public abstract void on_block_exit(BlockInteractor block_information);
+    public abstract void on_block_stay(BlockInteractor block_information);
     
-    public abstract void OnFieldEnter(FieldInteractor zone_information);
-    public abstract void OnFieldExit(FieldInteractor zone_information);
-    public abstract void OnFieldStay(FieldInteractor zone_information);
+    public abstract void on_field_enter(FieldInteractor zone_information);
+    public abstract void on_field_exit(FieldInteractor zone_information);
+    public abstract void on_field_stay(FieldInteractor zone_information);
 }
 
 /*

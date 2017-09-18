@@ -2,15 +2,6 @@
 
 public class BlinkCameraShutter : PlanetariaCameraShutter
 {
-    GameObject[] shutter_edges;
-
-    float speed;
-
-    const int edges = 2;
-
-    float screen_height;
-    float screen_width;
-
     public override void initialize()
     {
         Camera camera = GameObject.Find("/MainCamera").GetComponent<Camera>();
@@ -22,7 +13,9 @@ public class BlinkCameraShutter : PlanetariaCameraShutter
 
         for (int edge_index = 0; edge_index < edges; ++edge_index)
         {
-            shutter_edges[edge_index] = (GameObject) Instantiate(Resources.Load("BlinkShutter"), new Vector3(0, screen_height*Mathf.Cos(edge_index*Mathf.PI), 0.5f), Quaternion.Euler(0, 0, edge_index*180f), camera.transform);
+            shutter_edges[edge_index] = (GameObject) Instantiate(Resources.Load("BlinkShutter"),
+                    new Vector3(0, screen_height*Mathf.Cos(edge_index*Mathf.PI), 0.5f),
+                    Quaternion.Euler(0, 0, edge_index*180f), camera.transform);
             shutter_edges[edge_index].transform.localScale = new Vector3(screen_width, screen_height, 1);
         }
     }
@@ -37,6 +30,13 @@ public class BlinkCameraShutter : PlanetariaCameraShutter
             shutter_edges[edge_index].transform.localPosition = new Vector3(0, screen_height*(1-interpolation_factor)*Mathf.Cos(edge_index*Mathf.PI), 0.5f);
         }
     }
+
+    private GameObject[] shutter_edges;
+
+    private const int edges = 2;
+
+    private float screen_height;
+    private float screen_width;
 }
 
 /*

@@ -3,19 +3,14 @@
 [RequireComponent(typeof(PlanetariaCameraShutter))]
 public class PlanetariaShutterMotor : MonoBehaviour
 {
-    PlanetariaCameraShutter shutter;
-
-    float blink_duration = 0.3f;
-    float blink_interval = 5f;
-
-    void Start()
+    private void Start()
     {
         shutter = gameObject.GetComponent<PlanetariaCameraShutter>() as PlanetariaCameraShutter;
         shutter.initialize();
         shutter.set(0f);
     }
 
-    void LateUpdate()
+    private void LateUpdate()
     {
         float interpolation_factor = Time.time % blink_interval;
 
@@ -28,6 +23,11 @@ public class PlanetariaShutterMotor : MonoBehaviour
 
         shutter.set(interpolation_factor);
     }
+
+    public float blink_duration = 0.3f;
+    public float blink_interval = 5f;
+
+    private PlanetariaCameraShutter shutter;
 }
 
 /*

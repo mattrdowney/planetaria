@@ -8,18 +8,18 @@
 public struct Arc
 {
     /// <summary>An axis that includes the center of the circle that defines the arc.</summary>
-    [SerializeField] Vector3 center_axis;
+    [SerializeField] private Vector3 center_axis;
     /// <summary>An axis that helps define the beginning of the arc.</summary>
-    [SerializeField] Vector3 forward_axis;
+    [SerializeField] private Vector3 forward_axis;
     /// <summary>A binormal to center_axis and forward_axis. Determines points after the beginning of the arc.</summary>
-    [SerializeField] Vector3 right_axis;
+    [SerializeField] private Vector3 right_axis;
     /// <summary>Determines points before the end of the arc. This is normal to center_axis.</summary>
-    [SerializeField] Vector3 before_end;
+    [SerializeField] private Vector3 before_end;
     
     /// <summary>The length of the arc</summary>
-    [SerializeField] float arc_angle;
+    [SerializeField] private float arc_angle;
     /// <summary>The angle of the arc from its parallel "equator".</summary>
-    [SerializeField] float arc_latitude;
+    [SerializeField] private float arc_latitude;
 
     /// <summary>
     /// Constructor - Creates convex, concave, or great arcs.
@@ -63,13 +63,13 @@ public struct Arc
     /// <param name="left">The arc that attaches to the beginning of the corner.</param>
     /// <param name="right">The arc that attaches to the end of the corner.</param>
     /// <returns>A concave or convex corner arc.</returns>
-    public static optional<Arc> CreateCorner(Arc left, Arc right) // TODO: normal constructor
+    public static optional<Arc> corner(Arc left, Arc right) // TODO: normal constructor
     {
         if (is_convex(left, right))
         {
-            return ConvexCorner(left, right);
+            return convex_corner(left, right);
         }
-        return ConcaveCorner(left, right);
+        return concave_corner(left, right);
     }
 
     /// <summary>
@@ -103,23 +103,16 @@ public struct Arc
     /// </returns>
     public bool contains(Vector3 position, float radius = 0f)
     {
-        bool bAboveFloor = Vector3.Dot(position, center_axis) >= Mathf.Sin(arc_latitude); // XXX: potential bug
-        bool bBelowCeiling = Vector3.Dot(position, center_axis) <= Mathf.Sin(arc_latitude + radius);
-        bool bCorrectLatitude = bAboveFloor && bBelowCeiling;
+        bool above_floor = Vector3.Dot(position, center_axis) >= Mathf.Sin(arc_latitude); // XXX: potential bug
+        bool below_ceiling = Vector3.Dot(position, center_axis) <= Mathf.Sin(arc_latitude + radius);
+        bool correct_latitude = above_floor && below_ceiling;
 
-        bool bInsideBeginning = Vector3.Dot(position, right_axis) >= 0;
-        bool bInsideEnd = Vector3.Dot(position, before_end) >= 0;
-        bool bReflexAngle = arc_angle > Mathf.PI;
+        bool inside_beginning = Vector3.Dot(position, right_axis) >= 0;
+        bool inside_end = Vector3.Dot(position, before_end) >= 0;
+        bool reflex_angle = arc_angle > Mathf.PI;
+        bool correct_angle = Miscellaneous.count_true_booleans(inside_beginning, inside_end, reflex_angle) >= 2;
 
-        bool bTotallyInside = bInsideBeginning && bInsideEnd;
-        bool bValidReflexAngle = bReflexAngle && (bInsideBeginning || bInsideEnd);
-        bool bCorrectAngle = bTotallyInside || bValidReflexAngle;
-
-        /*bool bCorrectAngle = System.Convert.ToInt32(bInsideBeginning) + // TODO: test if this is properly optimized C#
-                System.Convert.ToInt32(bInsideEnd) +
-                System.Convert.ToInt32(bReflexAngle) >= 2;*/
-
-        return bCorrectLatitude && bCorrectAngle;
+        return correct_latitude && correct_angle;
     }
 
     /// <summary>
@@ -234,7 +227,7 @@ public struct Arc
     /// <param name="left">The arc that attaches to the beginning of the corner.</param>
     /// <param name="right">The arc that attaches to the end of the corner.</param>
     /// <returns>A null arc (special value for a concave corner).</returns>
-    private static optional<Arc> ConcaveCorner(Arc left, Arc right)
+    private static optional<Arc> concave_corner(Arc left, Arc right)
     {
         return new optional<Arc>(); // Concave corners are not actually arcs; it's complicated...
     }
@@ -245,7 +238,7 @@ public struct Arc
     /// <param name="left">The arc that attaches to the beginning of the corner.</param>
     /// <param name="right">The arc that attaches to the end of the corner.</param>
     /// <returns>A convex corner arc.</returns>
-    private static optional<Arc> ConvexCorner(Arc left, Arc right) // CHECKME: does this work when latitude is >0?
+    private static optional<Arc> convex_corner(Arc left, Arc right) // CHECKME: does this work when latitude is >0?
     {
         // Rather than doubling the codebase for constructors...
         // find the arc along the equator and set the latitude to -PI/2 (implicitly, that means the arc radius is zero)
@@ -320,7 +313,7 @@ public struct Arc
     /// </summary>
     /// <param name="arc">The arc that should be surrounded by an AABB.</param>
     /// <returns>Bounds struct AKA axis-aligned bounding box (AABB).</returns>
-    private static Bounds GetAABB(Arc arc)
+    private static Bounds get_axis_aligned_bounding_box(Arc arc)
     {
         float x_min = arc.position(closest_point(arc, Vector3.left   )).x;
         float x_max = arc.position(closest_point(arc, Vector3.right  )).x;

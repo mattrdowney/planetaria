@@ -4,19 +4,14 @@ using UnityEngine;
 [System.Serializable]
 public class Block : MonoBehaviour
 {
-    [SerializeField] BlockActor behavior;
-    
-    [SerializeField] List<Arc> arc_list;
-    //[SerializeField] PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
-
     /// <summary>
     /// Constructor - Generates a block using a .ssvg file.
     /// </summary>
     /// <param name="ssvg_file">The .ssvg (spherical scalable vector graphics) file that will generate the block.</param>
     /// <returns>The GameObject reference with an attached Block component.</returns>
-    public static GameObject CreateBlock(string ssvg_file)
+    public static GameObject block(string ssvg_file)
     {
-        GameObject result = CreateBlock();
+        GameObject result = block();
 
         return result;
     }
@@ -25,7 +20,7 @@ public class Block : MonoBehaviour
     /// Constructor (default) - Creates an empty block
     /// </summary>
     /// <returns>An empty block with zero arcs and zero corners</returns>
-    public static GameObject CreateBlock()
+    public static GameObject block()
     {
         GameObject result = new GameObject();
         Block block = result.AddComponent<Block>();
@@ -35,7 +30,7 @@ public class Block : MonoBehaviour
         return result;
     }
 
-    public void Add(optional<Arc> arc)
+    public void add(optional<Arc> arc)
     {
         arc_list.Add(arc.data);
     }
@@ -66,7 +61,7 @@ public class Block : MonoBehaviour
     {
         if (index < 0 || index >= arc_list.Count)
         {
-            index = (int) PlanetariaMath.modulo_using_Euclidean_division(index, arc_list.Count);
+            index = (int) PlanetariaMath.modolo_using_euclidean_division(index, arc_list.Count);
         }
 
         return arc_list[index];
@@ -99,6 +94,10 @@ public class Block : MonoBehaviour
     {
         return arc_list.Count;
     }
+
+    [SerializeField] private BlockActor behavior;
+    [SerializeField] private List<Arc> arc_list;
+    //[SerializeField] private PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
 }
 
 /*

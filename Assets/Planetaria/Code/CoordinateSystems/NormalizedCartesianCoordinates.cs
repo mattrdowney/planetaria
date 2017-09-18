@@ -4,100 +4,87 @@ public class NormalizedCartesianCoordinates
 {
     public Vector3 data
     {
-        get { return data_; }
-        set { data_ = value; Normalize(); }
+        get { return data_variable; }
+        set { data_variable = value; normalize(); }
     }
 
     /// <summary>
     /// Constructor - Stores Cartesian coordinates in a wrapper class.
     /// </summary>
-    /// <param name="Cartesian">The Cartesian coordinates. Note: matches Unity's default Vector3 definition.</param>
-    public NormalizedCartesianCoordinates(Vector3 Cartesian) // Note: this is an example of where there is ambiguity between variables and types under new naming convention
+    /// <param name="cartesian">The Cartesian coordinates. Note: matches Unity's default Vector3 definition.</param>
+    public NormalizedCartesianCoordinates(Vector3 cartesian) // Note: this is an example of where there is ambiguity between variables and types under new naming convention
     {
-        data_ = Cartesian;
-        Normalize(); 
+        data_variable = cartesian;
+        normalize(); 
     }
 
     /// <summary>
     /// Inspector - Converts Cartesian coordinates into octahedral coordinates.
     /// </summary>
-    /// <param name="Cartesian">The coordinates in Cartesian space that will be converted</param>
+    /// <param name="cartesian">The coordinates in Cartesian space that will be converted</param>
     /// <returns>The octahedral coordinates.</returns> 
-    public static implicit operator NormalizedOctahedralCoordinates(NormalizedCartesianCoordinates Cartesian)
+    public static implicit operator NormalizedOctahedralCoordinates(NormalizedCartesianCoordinates cartesian)
     {
-        return new NormalizedOctahedralCoordinates(Cartesian.data);
+        return new NormalizedOctahedralCoordinates(cartesian.data);
     }
 
     /// <summary>
     /// Inspector - Converts Cartesian coordinates into spherical coordinates.
     /// </summary>
-    /// <param name="Cartesian">The coordinates in Cartesian space that will be converted</param>
+    /// <param name="cartesian">The coordinates in Cartesian space that will be converted</param>
     /// <returns>The spherical coordinates.</returns> 
-    public static implicit operator NormalizedSphericalCoordinates(NormalizedCartesianCoordinates Cartesian)
+    public static implicit operator NormalizedSphericalCoordinates(NormalizedCartesianCoordinates cartesian)
     {
-        float elevation = Mathf.Acos(-Cartesian.data.y);
-        float azimuth = Mathf.Atan2(Cartesian.data.z, -Cartesian.data.x);
+        float elevation = Mathf.Acos(-cartesian.data.y);
+        float azimuth = Mathf.Atan2(cartesian.data.z, -cartesian.data.x);
         return new NormalizedSphericalCoordinates(elevation, azimuth);
     }
 
     /// <summary>
     /// Inspector - Converts Cartesian coordinates into octahedron UV space.
     /// </summary>
-    /// <param name="Cartesian">The coordinates in Cartesian space that will be converted</param>
+    /// <param name="cartesian">The coordinates in Cartesian space that will be converted</param>
     /// <returns>The UV coordinates for an octahedron.</returns> 
-    public static implicit operator OctahedralUVCoordinates(NormalizedCartesianCoordinates Cartesian)
+    public static implicit operator OctahedralUVCoordinates(NormalizedCartesianCoordinates cartesian)
     {
-        NormalizedOctahedralCoordinates octahedral = Cartesian;
+        NormalizedOctahedralCoordinates octahedral = cartesian;
         return octahedral;
     }
 
     /// <summary>
     /// Inspector - Projects Cartesian coordinates onto plane z=0 in stereoscopic projection coordinates.
     /// </summary>
-    /// <param name="Cartesian">The coordinates in Cartesian space that will be converted</param>
+    /// <param name="cartesian">The coordinates in Cartesian space that will be converted</param>
     /// <returns>The stereoscopic projection coordinates on plane z=0.</returns> 
-    public static implicit operator StereoscopicProjectionCoordinates(NormalizedCartesianCoordinates Cartesian)
+    public static implicit operator StereoscopicProjectionCoordinates(NormalizedCartesianCoordinates cartesian)
     {
-        float x = Cartesian.data.x;
-        float y = Cartesian.data.y;
-        float z = Cartesian.data.z;
+        float x = cartesian.data.x;
+        float y = cartesian.data.y;
+        float z = cartesian.data.z;
 
         float denominator = (1 - z);
 
-        float X = x / denominator;
-        float Y = y / denominator;
+        Vector2 stereoscopic_projection = new Vector2(x / denominator, y / denominator);
 
-        return new StereoscopicProjectionCoordinates(new Vector2(X, Y));
-    }
-
-    Vector3 data_;
-
-    /// <summary>
-    /// Inspector - Find the distance from the origin (i.e. magnitude) times itself.
-    /// </summary>
-    /// <returns>The magnitude squared, where the magnitude is the distance from the origin.</returns>
-    float magnitude_squared()
-    {
-        return Mathf.Abs(data_.x) * Mathf.Abs(data_.x) +
-                Mathf.Abs(data_.y) * Mathf.Abs(data_.y) +
-                Mathf.Abs(data_.z) * Mathf.Abs(data_.z);
+        return new StereoscopicProjectionCoordinates(stereoscopic_projection);
     }
 
     /// <summary>
     /// Mutator - Project the Cartesian coordinates onto a unit sphere.
     /// </summary>
-    void Normalize()
+    private void normalize()
     {
-        float approximate_length = magnitude_squared();
+        float approximate_length = data_variable.sqrMagnitude;
         float approximate_error = Mathf.Abs(approximate_length-1);
         if (approximate_error < Precision.tolerance)
         {
             return;
         }
  
-        float length = (float) Mathf.Sqrt(approximate_length);
-        data_ /= length;
+        data_variable.Normalize();
     }
+    
+    private Vector3 data_variable;
 }
 
 /*

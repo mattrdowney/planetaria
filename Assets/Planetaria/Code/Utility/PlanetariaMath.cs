@@ -30,12 +30,22 @@ public static class PlanetariaMath
     }
 
     /// <summary>
+    /// Inspector - finds the Manhattan distance between two points
+    /// </summary>
+    /// <param name="cartesian">The Cartesian coordinates.</param>
+    /// <returns>The Manhattan distance (magnitude).</returns>
+    public static float manhattan_distance(Vector3 cartesian)
+    {
+        return Mathf.Abs(cartesian.x) + Mathf.Abs(cartesian.y) + Mathf.Abs(cartesian.z);
+    }
+
+    /// <summary>
     /// The result of the modulo operation when using Euclidean division. The remainder will always be positive.
     /// </summary>
     /// <param name="dividend">The element that will be used to calculate the remainder.</param>
     /// <param name="divisor">The interval upon which the dividend will be divided.</param>
     /// <returns>The remainder.</returns>
-    public static float modulo_using_Euclidean_division(float dividend, float divisor)
+    public static float modolo_using_euclidean_division(float dividend, float divisor)
     {
         divisor = Mathf.Abs(divisor);
 

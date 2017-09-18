@@ -8,21 +8,21 @@ public sealed class PlanetariaMonoBehaviour : MonoBehaviour
     Dictionary<Block, BlockInteractor> collision_map = new Dictionary<Block, BlockInteractor>();
     Dictionary<Field, FieldInteractor> trigger_map = new Dictionary<Field, FieldInteractor>();
 
-    public void Start()
+    private void Start()
     {
         collision_map = new Dictionary<Block, BlockInteractor>();
         trigger_map = new Dictionary<Field, FieldInteractor>();
         // add to collision_map and trigger_map for all objects currently intersecting (via Physics.OverlapBox())
-        actor.Start();
+        actor.start();
     }
     
-    public void FixedUpdate()
+    private void FixedUpdate()
     {
-        actor.Update();
-        actor.transform.Move();
+        actor.update();
+        actor.transform.move();
     }
 
-    public void OnTriggerStay(Collider collider)
+    private void OnTriggerStay(Collider collider)
     {
         BoxCollider box_collider = collider as BoxCollider;
         if (!box_collider)
@@ -30,10 +30,10 @@ public sealed class PlanetariaMonoBehaviour : MonoBehaviour
             return;
         }
 
-        optional<Arc> arc = PlanetariaCache.arc_cache.Get(box_collider); // C++17 if statements are so pretty compared to this...
+        optional<Arc> arc = PlanetariaCache.arc_cache.get(box_collider); // C++17 if statements are so pretty compared to this...
         if (arc.exists) // block
         {
-            optional<Block> block = PlanetariaCache.block_cache.Get(arc.data);
+            optional<Block> block = PlanetariaCache.block_cache.get(arc.data);
             if (!block.exists)
             {
                 Debug.LogError("Critical Err0r.");
@@ -45,24 +45,24 @@ public sealed class PlanetariaMonoBehaviour : MonoBehaviour
                 float half_height = actor.transform.scale / 2;
                 BlockInteractor collision = new BlockInteractor(arc.data, actor.transform.previous_position.data, actor.transform.position.data, half_height);
                 collision_map.Add(block.data, collision);
-                actor.OnBlockEnter(collision);
+                actor.on_block_enter(collision);
             }
             else if (collision_map.ContainsKey(block.data) && !block.data.contains(actor.transform.position.data, actor.transform.scale))
             {
                 BlockInteractor collision = collision_map[block.data];
-                actor.OnBlockExit(collision);
+                actor.on_block_exit(collision);
                 collision_map.Remove(block.data);
             }
 
             if (collision_map.ContainsKey(block.data))
             {
                 BlockInteractor collision = collision_map[block.data];
-                actor.OnBlockStay(collision);
+                actor.on_block_stay(collision);
             }
         }
         else // field
         {
-            optional<Field> field = PlanetariaCache.zone_cache.Get(box_collider);
+            optional<Field> field = PlanetariaCache.zone_cache.get(box_collider);
             if (!field.exists)
             {
                 Debug.LogError("This is likely an Err0r or setup issue.");
@@ -74,19 +74,19 @@ public sealed class PlanetariaMonoBehaviour : MonoBehaviour
                 float half_height = actor.transform.scale / 2;
                 FieldInteractor trigger = new FieldInteractor(field.data, half_height);
                 trigger_map.Add(field.data, trigger);
-                actor.OnFieldEnter(trigger);
+                actor.on_field_enter(trigger);
             }
             else if (trigger_map.ContainsKey(field.data) && !field.data.contains(actor.transform.position.data, actor.transform.scale))
             {
                 FieldInteractor collision = trigger_map[field.data];
-                actor.OnFieldExit(collision);
+                actor.on_field_exit(collision);
                 trigger_map.Remove(field.data);
             }
 
             if (trigger_map.ContainsKey(field.data))
             {
                 FieldInteractor collision = trigger_map[field.data];
-                actor.OnFieldStay(collision);
+                actor.on_field_stay(collision);
             }
         }
     }

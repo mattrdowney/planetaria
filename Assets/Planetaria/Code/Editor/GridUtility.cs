@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public static class GridUtility
 {
@@ -31,10 +29,10 @@ public static class GridUtility
             return position;
         }
 
-        NormalizedCartesianCoordinates Cartesian_position = new NormalizedCartesianCoordinates(position);
+        NormalizedCartesianCoordinates cartesian_position = new NormalizedCartesianCoordinates(position);
 
 		NormalizedSphericalCoordinates clamped_coordinates = new NormalizedSphericalCoordinates(0, 0);
-        NormalizedSphericalCoordinates desired_coordinates = Cartesian_position;
+        NormalizedSphericalCoordinates desired_coordinates = cartesian_position;
 
 		for (float row = 0; row <= rows + 1; ++row) //going over with off by one errors won't ruin the program...
 		{
@@ -68,9 +66,9 @@ public static class GridUtility
 			}
 		}
 
-        Cartesian_position = clamped_coordinates;
+        cartesian_position = clamped_coordinates;
 
-        return Cartesian_position.data;
+        return cartesian_position.data;
 	}
 
 }

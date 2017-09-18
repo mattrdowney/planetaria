@@ -6,7 +6,7 @@ using UnityEditor;
 public class ArcBuilderEditor : Editor
 {
     [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
-    static void DrawGizmoForArcBuilder(ArcBuilder self, GizmoType gizmoType)
+    static void draw_arc_builder_gizmos(ArcBuilder self, GizmoType gizmo_type)
     {
         if (self.arc.exists)
         {

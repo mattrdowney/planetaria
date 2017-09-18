@@ -1,6 +1,6 @@
 ﻿public class PlanetariaRigidbody
 {
-    NormalizedSphericalCoordinates velocity;
+    private NormalizedSphericalCoordinates velocity;
 }
 
 /*

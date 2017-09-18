@@ -2,30 +2,21 @@
 
 public class ArcBuilder : MonoBehaviour // TODO: consider switching to ScriptableObject
 {
-    enum ConstructionState { SetFrom = 0, SetTangentLine = 1, SetTo = 2 }
-    ConstructionState build_state;
+    private enum ConstructionState { SetFrom = 0, SetTangentLine = 1, SetTo = 2 }
 
-    optional<Arc> arc_variable;
-
-    Vector3 original_point;
-
-    Vector3 from_variable;
-    Vector3 from_tangent_variable;
-    Vector3 to_variable;
-
-    public void Advance()
+    public void advance()
     {
         ++build_state;
     }
 
-    public void FinalizeEdge() //LolSet // TrollSet // MonoBehaviour.Reset() // This is my favorite bug ever and it didn't take long to find, luckily.
+    public void finalize_edge() //LolSet // TrollSet // MonoBehaviour.Reset() // This is my favorite bug ever and it didn't take long to find, luckily.
     {
         build_state = ConstructionState.SetTangentLine;
         arc_variable = new optional<Arc>();
         from_variable = to_variable;
     }
 
-    public void Close()
+    public void close_shape()
     {
         to = original_point;
     }
@@ -85,6 +76,16 @@ public class ArcBuilder : MonoBehaviour // TODO: consider switching to Scriptabl
             return arc_variable;
         }
     }
+
+    private ConstructionState build_state;
+
+    private optional<Arc> arc_variable;
+
+    private Vector3 original_point;
+
+    private Vector3 from_variable;
+    private Vector3 from_tangent_variable;
+    private Vector3 to_variable;
 }
 
 /*

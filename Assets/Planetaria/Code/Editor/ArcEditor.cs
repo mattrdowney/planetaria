@@ -18,8 +18,6 @@ public class ArcEditor : Editor
 
         draw_radial(arc, 0, 0.1f, Color.red);
         draw_radial(arc, arc.angle(), 0.1f, violet);
-
-
     }
 
     /// <summary>

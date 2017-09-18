@@ -2,30 +2,15 @@
 using UnityEditor;
 
 [CustomEditor(typeof(LevelCreator))] // TODO: this probably isn't necessary since the other object isn't being used.
-[System.Serializable]
 public class LevelCreatorEditor : Editor
 {
     /// <summary>
     /// Mutator - draws shapes in the editor; MouseDown creates point at position, MouseUp location determines the slope of the line; Escape finalizes shape.
     /// </summary>
-    /// <param name="editor">The reference to the LevelCreatorEditor object that stores shape information.</param>
     /// <returns>The next mode for the state machine.</returns>
-    delegate CreateShape CreateShape();
+    private delegate CreateShape CreateShape();
 
-    static CreateShape state_machine;
-
-    static Block block;
-    static ArcBuilder temporary_arc;
-
-    static float yaw;
-    static float pitch;
-
-    public static int rows = 15; //equator drawn when rows is odd
-	public static int columns = 16; //RENAME?: misleading //always draws 2*columns lines from the North to South pole
-
-    static int control_identifier;
-
-    void OnEnable ()
+    private void OnEnable ()
     {
         yaw = pitch = 0;
         state_machine = draw_first_point;
@@ -33,22 +18,25 @@ public class LevelCreatorEditor : Editor
         start_shape();
     }
 
-    void OnDisable ()
+    private void OnDisable ()
     {
         end_shape();
+        Repaint();
     }
 
-    void OnSceneGUI ()
-    {   
+    private void OnSceneGUI ()
+    {
         center_camera_view();
         
         GridUtility.draw_grid(rows, columns);
 
-        if (EditorWindow.focusedWindow == SceneView.currentDrawingSceneView)
+        if (EditorWindow.mouseOverWindow == SceneView.currentDrawingSceneView)
         {
             HandleUtility.AddDefaultControl(control_identifier);
 
             state_machine = state_machine();
+
+            use_mouse_event();
         }
             
         Repaint();
@@ -58,7 +46,7 @@ public class LevelCreatorEditor : Editor
     /// Inspector (quasi-mutator) - locks camera at the origin (so it can't drift).
     /// </summary>
     /// <param name="scene_view">The view that will be locked / "mutated".</param>
-    static void center_camera_view()
+    private static void center_camera_view()
 	{
 		GameObject empty_gameobject = new GameObject("origin");
         empty_gameobject.transform.position = Vector3.zero;
@@ -72,7 +60,7 @@ public class LevelCreatorEditor : Editor
         GameObject.DestroyImmediate(empty_gameobject);
     }
 
-    static Vector3 get_mouse_position()
+    private static Vector3 get_mouse_position()
     {
         Vector3 position = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition).direction;
         Vector3 clamped_position = GridUtility.grid_snap(position, rows, columns);
@@ -80,34 +68,18 @@ public class LevelCreatorEditor : Editor
         return clamped_position;
     }
 
-    /// <summary>
-    /// Mutator - MouseDown creates point at position
-    /// </summary>
-    /// <returns>The next mode for the state machine.</returns>
-    static CreateShape draw_nth_point()
+    private static CreateShape draw_first_point()
     {
-        temporary_arc.to = get_mouse_position();
-        
-        // MouseDown 2-n: create arc through point using last right-hand-side slope
+        temporary_arc.from = get_mouse_position();
+
+        // MouseDown 1: create first corner of a shape
         if (Event.current.type == EventType.MouseDown)
         {
-            block.Add(temporary_arc.arc.data);
-            EditorUtility.SetDirty(block.gameObject);
-
-            temporary_arc.FinalizeEdge();
-            use_mouse_event();
+            temporary_arc.advance();
             return draw_tangent;
         }
-        // Escape: close the shape so that it meets with the original point
-        else if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
-        {
-            end_shape();
-            start_shape();
-            return draw_first_point;
-        }
 
-        use_mouse_event();
-        return draw_nth_point;
+        return draw_first_point;
     }
 
     /// <summary>
@@ -115,15 +87,14 @@ public class LevelCreatorEditor : Editor
     /// </summary>
     /// <param name="editor">The reference to the LevelCreatorEditor object that stores shape information.</param>
     /// <returns>mouse_up if nothing was pressed; mouse_down if MouseUp or Escape was pressed.</returns>
-    static CreateShape draw_tangent()
+    private static CreateShape draw_tangent()
     {
         temporary_arc.from_tangent = get_mouse_position();
 
         // MouseUp 1-n: create the right-hand-side slope for the last point added
         if (Event.current.type == EventType.MouseUp)
         {
-            temporary_arc.Advance();
-            use_mouse_event();
+            temporary_arc.advance();
             return draw_nth_point;
         }
         // Escape: close the shape so that it meets with the original point (using original point for slope)
@@ -134,31 +105,42 @@ public class LevelCreatorEditor : Editor
             return draw_first_point;
         }
 
-        use_mouse_event();
         return draw_tangent;
     }
 
-    static CreateShape draw_first_point()
+    /// <summary>
+    /// Mutator - MouseDown creates point at position
+    /// </summary>
+    /// <returns>The next mode for the state machine.</returns>
+    private static CreateShape draw_nth_point()
     {
-        temporary_arc.from = get_mouse_position();
-
-        // MouseDown 1: create first corner of a shape
+        temporary_arc.to = get_mouse_position();
+        
+        // MouseDown 2-n: create arc through point using last right-hand-side slope
         if (Event.current.type == EventType.MouseDown)
         {
-            temporary_arc.Advance();
-            use_mouse_event();
+            block.add(temporary_arc.arc.data);
+            EditorUtility.SetDirty(block.gameObject);
+
+            temporary_arc.finalize_edge();
             return draw_tangent;
         }
+        // Escape: close the shape so that it meets with the original point
+        else if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
+        {
+            end_shape();
+            start_shape();
+            return draw_first_point;
+        }
 
-        use_mouse_event();
-        return draw_first_point;
+        return draw_nth_point;
     }
 
     /// <summary>
     /// Mutator - prevents editor from selecting objects in the editor view (which can de-select the current object)
     /// </summary>
     /// <param name="editor">The current level editor.</param>
-    static void use_mouse_event()
+    private static void use_mouse_event()
     {
         if (Event.current.type == EventType.MouseDown)
         {
@@ -172,22 +154,22 @@ public class LevelCreatorEditor : Editor
         }
     }
 
-    static void start_shape()
+    private static void start_shape()
     {
         GameObject arc_builder = new GameObject("Arc builder");
         temporary_arc = arc_builder.AddComponent<ArcBuilder>();
 
-        GameObject shape = Block.CreateBlock();
+        GameObject shape = Block.block();
         block = shape.GetComponent<Block>() as Block;
     }
 
-    static void end_shape()
+    private static void end_shape()
     {
-        temporary_arc.Close();
+        temporary_arc.close_shape();
 
         if (temporary_arc.arc.exists)
         {
-            block.Add(temporary_arc.arc.data);
+            block.add(temporary_arc.arc.data);
             EditorUtility.SetDirty(block.gameObject);
         }
 
@@ -202,9 +184,22 @@ public class LevelCreatorEditor : Editor
 
         temporary_arc = null;
         block = null;
-
-        GUIUtility.hotControl = GUIUtility.GetControlID(FocusType.Keyboard);
     }
+    
+    /// <summary>Number of rows in the grid. Equator is drawn when rows is odd</summary>
+    public static int rows = 15;
+    /// <summary>Number of columns in the grid (per hemisphere).</summary>
+	public static int columns = 16;
+
+    private static CreateShape state_machine;
+
+    private static Block block;
+    private static ArcBuilder temporary_arc;
+
+    private static float yaw;
+    private static float pitch;
+
+    private static int control_identifier;
 }
 
 /*

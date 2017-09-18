@@ -2,12 +2,12 @@
 
 public class BlockInteractor
 {
-    public BlockInteractor(Arc arc, Vector3 last_position, Vector3 current_position, float half_height_)
+    public BlockInteractor(Arc arc, Vector3 last_position, Vector3 current_position, float radius)
     {
         NormalizedCartesianCoordinates begin = new NormalizedCartesianCoordinates(last_position);
         NormalizedCartesianCoordinates end = new NormalizedCartesianCoordinates(current_position);
 
-        optional<Block> block = PlanetariaCache.block_cache.Get(arc);
+        optional<Block> block = PlanetariaCache.block_cache.get(arc);
         if (!block.exists)
         {
             nullify(this);
@@ -15,7 +15,7 @@ public class BlockInteractor
         }
 
         target = block.data;
-        half_height = half_height_;
+        player_radius = radius;
 
         optional<int> collision_arc_index = target.arc_index(arc);
         if (!collision_arc_index.exists)
@@ -62,13 +62,13 @@ public class BlockInteractor
         block_interactor.target = null;
         block_interactor.arc_index = 0;
         block_interactor.interpolator_angle = 0f;
-        block_interactor.half_height = 0f;
+        block_interactor.player_radius = 0f;
     }
 
-    Block target;
-    int arc_index;
-    float interpolator_angle;
-    float half_height;
+    private Block target;
+    private int arc_index;
+    private float interpolator_angle;
+    private float player_radius;
 }
 
 /*

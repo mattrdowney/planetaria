@@ -2,10 +2,7 @@
 using UnityEngine;
 
 public class Field : Component
-{
-    FieldActor field;
-    List<Plane> plane_list;
-    
+{   
     /// <summary>
     /// Constructor - Generates a field using a .ssvg file.
     /// </summary>
@@ -52,6 +49,9 @@ public class Field : Component
     {
         return plane_list;
     }
+
+    private FieldActor field;
+    private List<Plane> plane_list;
 }
 
 /*

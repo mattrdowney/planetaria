@@ -1,13 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class StereoscopicProjectionCoordinates
 {
     public Vector2 data
     {
-        get { return data_; }
-        set { data_ = value; }
+        get { return data_variable; }
+        set { data_variable = value; }
     }
 
     /// <summary>
@@ -16,7 +14,7 @@ public class StereoscopicProjectionCoordinates
     /// <param name="stereoscopic_projection">The stereoscopic projection coordinates on plane z=0.</param>
     public StereoscopicProjectionCoordinates(Vector2 stereoscopic_projection)
     {
-        data_ = stereoscopic_projection;
+        data_variable = stereoscopic_projection;
     }
 
     /// <summary>
@@ -26,22 +24,21 @@ public class StereoscopicProjectionCoordinates
     /// <returns>The normalized Cartesian coordinates.</returns> 
     public static implicit operator NormalizedCartesianCoordinates(StereoscopicProjectionCoordinates stereoscopic_projection)
     {
-        float X = stereoscopic_projection.data.x;
-        float Y = stereoscopic_projection.data.y;
+        Vector2 projection = stereoscopic_projection.data;
 
-        float denominator = (1 + X*X + Y*Y);
+        float magnitude_squared = Mathf.Pow(projection.x, 2) + Mathf.Pow(projection.y, 2);
+        float denominator = (1 + magnitude_squared);
 
-        float x = (2 * X) / denominator;
-        float y = (2 * Y) / denominator;
-        float z = (-1 + X*X + Y*Y) / denominator;
+        float x = (2 * projection.x) / denominator;
+        float y = (2 * projection.y) / denominator;
+        float z = (-1 + magnitude_squared) / denominator;
 
         return new NormalizedCartesianCoordinates(new Vector3(x, y, z));
     }
 
     // TODO: implement remainder of conversions
 
-    
-    Vector2 data_;
+    private Vector2 data_variable;
 }
 
 /*

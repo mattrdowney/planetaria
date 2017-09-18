@@ -2,14 +2,12 @@
 
 public class PlanetariaSubcache<Key, Value>
 {
-    Dictionary<Key, Value> map_cache = new Dictionary<Key, Value>();
-
-    public void Cache(Key key, Value value)
+    public void cache(Key key, Value value)
     {
         map_cache.Add(key, value);
     }
 
-    public optional<Value> Get(Key key)
+    public optional<Value> get(Key key)
     {
         if (!map_cache.ContainsKey(key))
         {
@@ -18,6 +16,8 @@ public class PlanetariaSubcache<Key, Value>
 
         return map_cache[key];
     }
+
+    private Dictionary<Key, Value> map_cache = new Dictionary<Key, Value>();
 }
 
 /*

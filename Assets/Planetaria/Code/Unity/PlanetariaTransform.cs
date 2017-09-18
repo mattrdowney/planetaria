@@ -4,21 +4,21 @@ public class PlanetariaTransform
 {
     public PlanetariaTransform(Transform internal_transform)
     {
-        Cartesian_transform = internal_transform;
+        cartesian_transform = internal_transform;
     }
 
     public NormalizedSphericalCoordinates position
     {
         get
         {
-            return position_;
+            return position_variable;
         }
 
         set
         {
             dirty_position = true;
-            previous_position_ = position_;
-            position_ = value;
+            previous_position_variable = position_variable;
+            position_variable = value;
         }
     }
 
@@ -26,7 +26,7 @@ public class PlanetariaTransform
     {
         get
         {
-            return position_;
+            return position_variable;
         }
     }
 
@@ -34,13 +34,13 @@ public class PlanetariaTransform
     {
         get
         {
-            return rotation_;
+            return rotation_variable;
         }
 
         set
         {
             dirty_position = true;
-            rotation_ = value;
+            rotation_variable = value;
         }
     }
 
@@ -48,40 +48,40 @@ public class PlanetariaTransform
     {
         get
         {
-            return scale_;
+            return scale_variable;
         }
 
         set
         {
             dirty_scale = true;
-            scale_ = value;
+            scale_variable = value;
         }
     }
 
-    public void Move()
+    public void move()
     {
         if (dirty_position)
         {
-            Cartesian_transform.rotation = Quaternion.AngleAxis(rotation_, position_.data);
+            cartesian_transform.rotation = Quaternion.AngleAxis(rotation_variable, position_variable.data);
             dirty_position = false;
         }
 
         if (dirty_scale)
         {
-            Cartesian_transform.localScale = Mathf.Sin(scale)*Vector3.one;
+            cartesian_transform.localScale = Mathf.Sin(scale)*Vector3.one;
             dirty_scale = false;
         }
     }
 
-    Transform Cartesian_transform;
-    NormalizedSphericalCoordinates position_;
-    float rotation_;
-    float scale_;
+    private Transform cartesian_transform;
+    private NormalizedSphericalCoordinates position_variable;
+    private float rotation_variable;
+    private float scale_variable;
 
-    bool dirty_position;
-    bool dirty_scale;
+    private bool dirty_position;
+    private bool dirty_scale;
 
-    NormalizedSphericalCoordinates previous_position_;
+    private NormalizedSphericalCoordinates previous_position_variable;
 }
 
 /*

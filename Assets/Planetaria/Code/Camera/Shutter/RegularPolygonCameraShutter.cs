@@ -2,13 +2,6 @@
 
 public class RegularPolygonCameraShutter : PlanetariaCameraShutter
 {
-    GameObject[] shutter_edges;
-
-    public int edges;
-    public float rotation_adjustor;
-
-    const float angle_to_center = 60f;
-
     public override void initialize()
     {
         Camera camera = GameObject.Find("/MainCamera").GetComponent<Camera>();
@@ -42,6 +35,15 @@ public class RegularPolygonCameraShutter : PlanetariaCameraShutter
             shutter_edges[edge_index].transform.GetChild(0).localRotation = Quaternion.Euler(0, 0, interpolation_factor*angle_to_center);
         }
     }
+
+    public int edges;
+    public float rotation_adjustor;
+
+    /// <summary>Reference to transparent cutout-textured quadrilateral planes that create camera shutter.</summary>
+    private GameObject[] shutter_edges;
+
+    /// <summary>The angle two semicircles must each turn to intersect at their old center.</summary>
+    private const float angle_to_center = 60f;
 }
 
 /*

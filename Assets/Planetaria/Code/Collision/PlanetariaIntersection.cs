@@ -5,25 +5,25 @@ public static class PlanetariaIntersection
     /// <summary>
     /// Inspector - Returns intersection information between two circles on a sphere.
     /// </summary>
-    /// <param name="coordinate_A">Circle A's Cartesian coordinates.</param> // TODO: use Circle struct
-    /// <param name="coordinate_B">Circle B's Cartesian coordinates.</param>
-    /// <param name="radius_A">Circle A's radius.</param>
-    /// <param name="radius_B">Circle B's radius.</param>
+    /// <param name="coordinate_a">Circle A's Cartesian coordinates.</param> // TODO: use Circle struct
+    /// <param name="coordinate_b">Circle B's Cartesian coordinates.</param>
+    /// <param name="radius_a">Circle A's radius.</param>
+    /// <param name="radius_b">Circle B's radius.</param>
     /// <returns>f
     /// If there are zero or infinite solutions, returns an empty array;
     /// If there are one or two solutions, returns an array with two Cartesian coordinates.
     /// </returns>
-    public static NormalizedCartesianCoordinates[] circle_circle_intersection(NormalizedCartesianCoordinates coordinate_A, NormalizedCartesianCoordinates coordinate_B, float radius_A, float radius_B)
+    public static NormalizedCartesianCoordinates[] circle_circle_intersection(NormalizedCartesianCoordinates coordinate_a, NormalizedCartesianCoordinates coordinate_b, float radius_a, float radius_b)
     {
-        radius_A = Mathf.Abs(radius_A);
-        radius_B = Mathf.Abs(radius_B);
+        radius_a = Mathf.Abs(radius_a);
+        radius_b = Mathf.Abs(radius_b);
 
-        if (radius_A > Mathf.PI/2 || radius_B > Mathf.PI/2) // ignore invalid input
+        if (radius_a > Mathf.PI/2 || radius_b > Mathf.PI/2) // ignore invalid input
         {
             return new NormalizedCartesianCoordinates[0];
         }
 
-        float similarity = Vector3.Dot(coordinate_A.data, coordinate_B.data);
+        float similarity = Vector3.Dot(coordinate_a.data, coordinate_b.data);
 
         if (Mathf.Abs(similarity) > 1f - Precision.tolerance) // ignore points that are 1) equal or 2) opposite (within an error margin) because they will have infinite solutions
         {
@@ -31,38 +31,38 @@ public static class PlanetariaIntersection
         }
 
         float arc_distance = Mathf.Acos(similarity);
-        float radii_sum = radius_A + radius_B;
-        float radii_difference = Mathf.Abs(radius_A - radius_B);
+        float radii_sum = radius_a + radius_b;
+        float radii_difference = Mathf.Abs(radius_a - radius_b);
 
-        bool bAdjacent = arc_distance < radii_sum - Precision.tolerance;
-        bool bDoesNotEngulf = radii_difference + Precision.tolerance < arc_distance;
-        bool bIntersect = bDoesNotEngulf && bAdjacent;
+        bool adjacent = arc_distance < radii_sum - Precision.tolerance;
+        bool does_not_engulf = radii_difference + Precision.tolerance < arc_distance;
+        bool intersects = does_not_engulf && adjacent;
 
-        if (!bIntersect) // solution set will be null
+        if (!intersects) // solution set will be null
         {
             return new NormalizedCartesianCoordinates[0];
         }
 
         // Instead of thinking of a circle on a globe, it's easier to think of the circle as the intersection of a sphere against the surrounding globe
-        float distance_from_origin_A = Mathf.Cos(radius_A);
-        float distance_from_origin_B = Mathf.Cos(radius_B);
+        float distance_from_origin_a = Mathf.Cos(radius_a);
+        float distance_from_origin_b = Mathf.Cos(radius_b);
         
         // The center should be distance_from_origin away iff similarity = 0, otherwise you have to push the center closer or further
-        float center_fraction_A = (distance_from_origin_A - distance_from_origin_B * similarity) / (1 - similarity * similarity);
-        float center_fraction_B = (distance_from_origin_B - distance_from_origin_A * similarity) / (1 - similarity * similarity);
+        float center_fraction_a = (distance_from_origin_a - distance_from_origin_b * similarity) / (1 - similarity * similarity);
+        float center_fraction_b = (distance_from_origin_b - distance_from_origin_a * similarity) / (1 - similarity * similarity);
 
-        Vector3 intersection_center = center_fraction_A*coordinate_A.data + center_fraction_B*coordinate_B.data;
+        Vector3 intersection_center = center_fraction_a*coordinate_a.data + center_fraction_b*coordinate_b.data;
 
-        Vector3 binormal = Vector3.Cross(coordinate_A.data, coordinate_B.data);
+        Vector3 binormal = Vector3.Cross(coordinate_a.data, coordinate_b.data);
 
         float midpoint_distance = Mathf.Sqrt((1 - intersection_center.sqrMagnitude) / binormal.sqrMagnitude); //CONSIDER: rename?
 
         // Note: tangential circles (i.e. midpoint_distance = 0) return two intersections (i.e. a secant line)
-        NormalizedCartesianCoordinates[] result = new NormalizedCartesianCoordinates[2];
-        result[0] = new NormalizedCartesianCoordinates(intersection_center + midpoint_distance*binormal);
-        result[1] = new NormalizedCartesianCoordinates(intersection_center - midpoint_distance*binormal);
+        NormalizedCartesianCoordinates[] intersections = new NormalizedCartesianCoordinates[2];
+        intersections[0] = new NormalizedCartesianCoordinates(intersection_center + midpoint_distance*binormal);
+        intersections[1] = new NormalizedCartesianCoordinates(intersection_center - midpoint_distance*binormal);
 
-        return result;
+        return intersections;
     }
 
     public static optional<Vector3> arc_path_intersection(Arc arc, NormalizedCartesianCoordinates begin, NormalizedCartesianCoordinates end)
@@ -76,10 +76,10 @@ public static class PlanetariaIntersection
             return new optional<Vector3>();
         }
 
-        float similarity_A = Vector3.Dot(begin.data, intersections[0].data);
-        float similarity_B = Vector3.Dot(begin.data, intersections[1].data);
+        float similarity_a = Vector3.Dot(begin.data, intersections[0].data);
+        float similarity_b = Vector3.Dot(begin.data, intersections[1].data);
 
-        if (similarity_A > similarity_B) // Note: the collision should be the first in front, but as long as the velocity is capped this is not an issue.
+        if (similarity_a > similarity_b) // Note: the collision should be the first in front, but as long as the velocity is capped this is not an issue.
         {
             return intersections[0].data;
         }

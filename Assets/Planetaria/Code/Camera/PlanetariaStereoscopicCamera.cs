@@ -2,7 +2,7 @@
 
 public class PlanetariaStereoscopicCamera : PlanetariaCamera
 {
-	void Awake()
+	private void Awake()
 	{
         internal_camera = GameObject.FindObjectOfType<Camera>();
         transform = new PlanetariaTransform(internal_camera.transform.parent);
@@ -11,11 +11,11 @@ public class PlanetariaStereoscopicCamera : PlanetariaCamera
 
 		if (camera)
         {
-			camera.UpdatedAnchors += LockCamera;
+			camera.UpdatedAnchors += lock_camera;
         }
 	}
 
-	void LockCamera(OVRCameraRig camera)
+	private void lock_camera(OVRCameraRig camera)
 	{
 		camera.trackingSpace.FromOVRPose(camera.centerEyeAnchor.ToOVRPose(true).Inverse(), true); // undo all headtracking (by reverting the changes)
 

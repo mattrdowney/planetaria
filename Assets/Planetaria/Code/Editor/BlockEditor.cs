@@ -5,7 +5,7 @@ using UnityEditor;
 public class BlockEditor : Editor
 {
     [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
-    static void DrawGizmoForBlock(Block self, GizmoType gizmoType)
+    private static void draw_block_gizmos(Block self, GizmoType gizmo_type)
     {
         for (int arc_index = 0; arc_index < self.size(); ++arc_index)
         {

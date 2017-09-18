@@ -88,7 +88,6 @@
      <Compile Include="Assets\Planetaria\Code\Camera\PlanetariaPerspectiveCamera.cs" />
      <Compile Include="Assets\Planetaria\Code\Camera\PlanetariaStereoscopicCamera.cs" />
      <Compile Include="Assets\Planetaria\Code\Camera\Shutter\BlinkCameraShutter.cs" />
-     <Compile Include="Assets\Planetaria\Code\Camera\Shutter\HexagonalCameraShutter.cs" />
      <Compile Include="Assets\Planetaria\Code\Camera\Shutter\PlanetariaCameraShutter.cs" />
      <Compile Include="Assets\Planetaria\Code\Camera\Shutter\PlanetariaShutterMotor.cs" />
      <Compile Include="Assets\Planetaria\Code\Camera\Shutter\RegularPolygonCameraShutter.cs" />
@@ -121,6 +120,7 @@
      <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaMonoBehaviour.cs" />
      <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaRigidbody.cs" />
      <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaTransform.cs" />
+     <Compile Include="Assets\Planetaria\Code\Utility\Miscellaneous.cs" />
      <Compile Include="Assets\Planetaria\Code\Utility\Optional.cs" />
      <Compile Include="Assets\Planetaria\Code\Utility\PlanetariaCache.cs" />
      <Compile Include="Assets\Planetaria\Code\Utility\PlanetariaMath.cs" />

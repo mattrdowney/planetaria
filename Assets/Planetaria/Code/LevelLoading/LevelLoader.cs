@@ -1,38 +1,37 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-abstract class LevelLoader : Component
+public abstract class LevelLoader : MonoBehaviour
 {
-    int initial_level = 0;
-
-    private static LoadingStrategy loader_;
-
     public static LoadingStrategy loader
     {
         set
         {
-            loader_ = value;
+            level_loader = value;
         }
 
         private get
         {
-            return loader_;
+            return level_loader;
         }
     }
 
-    public void Awake()
+    private void Awake()
     {
         loader = new BasicLoadingStrategy();
 
-        loader.Request_level(initial_level);
+        loader.request_level(initial_level);
 
-        Wait(initial_level);
+        wait(initial_level);
     }
 
-    IEnumerator Wait(int level_index)
+    IEnumerator wait(int level_index)
     {
         yield return new WaitUntil(() => loader.fraction_loaded(level_index) == 1f);
     }
+
+    private int initial_level = 0;
+    private static LoadingStrategy level_loader;
 }
 
 /*

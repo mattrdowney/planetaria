@@ -1,13 +1,13 @@
 ﻿public class FieldInteractor
 {
-    public FieldInteractor(Field field, float half_height_)
+    public FieldInteractor(Field field, float radius)
     {
         target = field;
-        half_height = half_height_;
+        player_radius = radius;
     }
 
-    Field target;
-    float half_height;
+    private Field target;
+    private float player_radius;
 }
 
 /*

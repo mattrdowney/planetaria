@@ -4,8 +4,8 @@ public struct NormalizedOctahedralCoordinates
 {
     public Vector3 data
     {
-        get { return data_; }
-        set { data_ = value; Normalize(); }
+        get { return data_variable; }
+        set { data_variable = value; normalize(); }
     }
 
     /// <summary>
@@ -14,8 +14,8 @@ public struct NormalizedOctahedralCoordinates
     /// <param name="octahedral">The octahedral coordinates. Note: matches Unity's default Vector3 definition.</param>
     public NormalizedOctahedralCoordinates(Vector3 octahedral)
     {
-        data_ = octahedral;
-        Normalize();
+        data_variable = octahedral;
+        normalize();
     }
 
     /// <summary>
@@ -35,8 +35,8 @@ public struct NormalizedOctahedralCoordinates
     /// <returns>The UV coordinates of an octahedron.</returns> 
     public static implicit operator OctahedralUVCoordinates(NormalizedOctahedralCoordinates octahedral)
     {
-        Vector2 UV = Octahedron.Cartesian_to_UV(octahedral.data);
-        return new OctahedralUVCoordinates(UV.x, UV.y);
+        Vector2 uv = Octahedron.cartesian_to_uv(octahedral.data);
+        return new OctahedralUVCoordinates(uv.x, uv.y);
     }
     
     /// <summary>
@@ -46,35 +46,26 @@ public struct NormalizedOctahedralCoordinates
     /// <returns>The spherical coordinates.</returns> 
     public static implicit operator NormalizedSphericalCoordinates(NormalizedOctahedralCoordinates octahedral)
     {
-        NormalizedCartesianCoordinates Cartesian = octahedral;
-        return Cartesian;
-    }
-
-    Vector3 data_;
-
-    /// <summary>
-    /// Inspector - finds the Manhattan distance between two points
-    /// </summary>
-    /// <returns>The Manhattan distance.</returns>
-    float Manhattan_distance()
-    {
-        return Mathf.Abs(data_.x) + Mathf.Abs(data_.x) + Mathf.Abs(data_.x);
+        NormalizedCartesianCoordinates cartesian = octahedral;
+        return cartesian;
     }
 
     /// <summary>
     /// Mutator - Normalizes Cartesian vector using Manhattan distance
     /// </summary>
-    void Normalize()
+    private void normalize()
     {
-        float length = Manhattan_distance();
+        float length = PlanetariaMath.manhattan_distance(data_variable);
         float absolute_error = Mathf.Abs(length-1);
         if (absolute_error < Precision.tolerance)
         {
             return;
         }
 
-        data_ /= length;
+        data_variable /= length;
     }
+
+    private Vector3 data_variable;
 }
 
 /*

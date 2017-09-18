@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class PlanetariaTracker
 {
-    private Action Teleport;
+    private Action teleport;
     protected List<PlanetariaTrackingStrategy> tracking_strategies;
 }
 

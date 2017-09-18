@@ -2,7 +2,7 @@
 
 public class LevelCreator : MonoBehaviour
 {
-	void Start ()
+	private void Start()
     {
 		
 	}
