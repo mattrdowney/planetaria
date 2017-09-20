@@ -52,8 +52,8 @@
         return data_variable.ToString();
     }
 
-    bool exists_variable;
-    Type data_variable;
+    private bool exists_variable;
+    private Type data_variable;
 }
 
 /*

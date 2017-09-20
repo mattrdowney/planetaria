@@ -1,11 +1,17 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
-public static class Precision
+public static class BlockRenderer
 {
-    public static readonly float delta = 4 * Mathf.Pow(2, -23);
-    public const float threshold = 1e-5f;
-    public const float tolerance = 1e-6f;
-    public const int float_bits = 8 * sizeof(float);
+    public static void render(Block block)
+    {
+        // For intersecting shapes:
+
+        // 1: find all intersections along x=0 or z=0 arcs in southern hemisphere.
+        // 2: take any point from intersections
+        // 3: if a point exists, draw that point until it reaches the next point in the set, delete last point, repeat #3
+        // 4: if there were no intersections, use simple draw to create whole shape.
+    }
 }
 
 /*
