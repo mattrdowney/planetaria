@@ -181,6 +181,12 @@ public class LevelCreatorEditor : Editor
             GameObject shape = block.gameObject;
             GameObject.DestroyImmediate(shape);
         }
+        else
+        {
+            Debug.Log("Happening1");
+            BlockRenderer.render(block);
+            Debug.Log("Happening2");
+        }
 
         temporary_arc = null;
         block = null;

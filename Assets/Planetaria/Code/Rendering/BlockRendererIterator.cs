@@ -3,9 +3,6 @@ using UnityEngine;
 
 public static class BlockRendererIterator
 {
-    private static Block block_variable;
-    private static Dictionary<Arc, List<Discontinuity>> discontinuities;
-
     private static void add_intersections(Arc arc, NormalizedCartesianCoordinates[] positions)
     {
         for (int intersection_index = 0; intersection_index < positions.Length; ++intersection_index)
@@ -89,6 +86,9 @@ public static class BlockRendererIterator
             yield return new ArcIterator(arc.data, begin_angle, arc.data.angle());
         }
     }
+
+    private static Block block_variable;
+    private static Dictionary<Arc, List<Discontinuity>> discontinuities;
 }
 
 /*
