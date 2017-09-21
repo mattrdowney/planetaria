@@ -26,6 +26,8 @@ public class LevelCreatorEditor : Editor
 
     private void OnSceneGUI ()
     {
+        move_camera();
+
         center_camera_view();
         
         GridUtility.draw_grid(rows, columns);
@@ -50,7 +52,7 @@ public class LevelCreatorEditor : Editor
 	{
 		GameObject empty_gameobject = new GameObject("origin");
         empty_gameobject.transform.position = Vector3.zero;
-        empty_gameobject.transform.rotation = Quaternion.Euler(yaw, pitch, 0);
+        empty_gameobject.transform.rotation = Quaternion.Euler(pitch, yaw, 0);
 
         SceneView scene_view = SceneView.currentDrawingSceneView;
 		scene_view.AlignViewToObject(empty_gameobject.transform);
@@ -66,6 +68,30 @@ public class LevelCreatorEditor : Editor
         Vector3 clamped_position = GridUtility.grid_snap(position, rows, columns);
 
         return clamped_position;
+    }
+
+    private static void move_camera()
+    {
+        if (Event.current.type == EventType.KeyDown)
+        {
+            switch(Event.current.keyCode)
+            {
+                case KeyCode.W:
+                    pitch -= camera_speed;
+                    break;
+                case KeyCode.A:
+                    yaw -= camera_speed;
+                    break;
+                case KeyCode.S:
+                    pitch += camera_speed;
+                    break;
+                case KeyCode.D:
+                    yaw += camera_speed;
+                    break;
+            }
+        }
+
+        Debug.Log(yaw + " " + pitch);
     }
 
     private static CreateShape draw_first_point()
@@ -191,7 +217,7 @@ public class LevelCreatorEditor : Editor
         temporary_arc = null;
         block = null;
     }
-    
+
     /// <summary>Number of rows in the grid. Equator is drawn when rows is odd</summary>
     public static int rows = 15;
     /// <summary>Number of columns in the grid (per hemisphere).</summary>
@@ -201,6 +227,8 @@ public class LevelCreatorEditor : Editor
 
     private static Block block;
     private static ArcBuilder temporary_arc;
+
+    private static float camera_speed = 5f;
 
     private static float yaw;
     private static float pitch;

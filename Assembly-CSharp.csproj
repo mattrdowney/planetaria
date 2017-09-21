@@ -116,6 +116,7 @@
      <Compile Include="Assets\Planetaria\Code\Rendering\BlockRenderer.cs" />
      <Compile Include="Assets\Planetaria\Code\Rendering\BlockRendererIterator.cs" />
      <Compile Include="Assets\Planetaria\Code\Rendering\Discontinuity.cs" />
+     <Compile Include="Assets\Planetaria\Code\Rendering\OctahedronMesh.cs" />
      <Compile Include="Assets\Planetaria\Code\Rendering\QuadraticBezierCurve.cs" />
      <Compile Include="Assets\Planetaria\Code\Rendering\VectorGraphicsWriter.cs" />
      <Compile Include="Assets\Planetaria\Code\Tracker\PlanetariaLookingStrategy.cs" />

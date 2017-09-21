@@ -78,7 +78,7 @@ public static class PlanetariaIntersection
         for (int intersection_index = 0; intersection_index < intersections.Length; ++intersection_index)
         {
             float angle = arc.position_to_angle(intersections[intersection_index].data);
-            angle = PlanetariaMath.modolo_using_euclidean_division(angle, 2*Mathf.PI);
+            angle = angle >= 0 ? angle : angle + 2*Mathf.PI;
             if (angle <= arc.angle())
             {
                 System.Array.Resize(ref results, results.Length + 1);

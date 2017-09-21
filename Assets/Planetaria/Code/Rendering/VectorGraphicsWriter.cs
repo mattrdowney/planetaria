@@ -30,7 +30,7 @@ public static class VectorGraphicsWriter
 
     private static void write_header()
     {
-        writer = new StreamWriter(Application.dataPath + "/Planetaria/Art/VectorGraphics" + SceneManager.GetActiveScene().buildIndex + ".svg");
+        writer = new StreamWriter(Application.dataPath + "/Planetaria/Art/VectorGraphics/" + SceneManager.GetActiveScene().buildIndex + ".svg");
         writer.Write("<svg width=\"" + scale + "\" height=\"" + scale + "\">\n\n");
     }
 
