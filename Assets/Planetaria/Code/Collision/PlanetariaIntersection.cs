@@ -73,8 +73,20 @@ public static class PlanetariaIntersection
         const float path_radius = Mathf.PI/2;
 
         NormalizedCartesianCoordinates[] intersections = circle_circle_intersections(arc_center, path_center, arc_radius, path_radius);
-        
-        return intersections;
+        NormalizedCartesianCoordinates[] results = new NormalizedCartesianCoordinates[0];
+
+        for (int intersection_index = 0; intersection_index < intersections.Length; ++intersection_index)
+        {
+            float angle = arc.position_to_angle(intersections[intersection_index].data);
+            angle = PlanetariaMath.modolo_using_euclidean_division(angle, 2*Mathf.PI);
+            if (angle <= arc.angle())
+            {
+                System.Array.Resize(ref results, results.Length + 1);
+                results[results.Length-1] = intersections[intersection_index];
+            }
+        }
+
+        return results;
     }
 
     public static optional<Vector3> arc_path_intersection(Arc arc, NormalizedCartesianCoordinates begin, NormalizedCartesianCoordinates end)

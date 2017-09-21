@@ -14,6 +14,8 @@ public static class BlockRenderer
         foreach (ArcIterator arc_iterator in BlockRendererIterator.arc_iterator())
         {
             render_arc(arc_iterator.arc, arc_iterator.begin, arc_iterator.end);
+
+            Debug.Log("Arc: " + block.arc_index(arc_iterator.arc) + " begin: " + arc_iterator.begin + " end: " + arc_iterator.end);
         }
 
         VectorGraphicsWriter.end_shape();

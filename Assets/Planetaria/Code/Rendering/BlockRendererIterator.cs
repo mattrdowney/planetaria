@@ -47,6 +47,7 @@ public static class BlockRendererIterator
 
     public static void prepare(Block block)
     {
+        discontinuities = new Dictionary<Arc, List<Discontinuity>>();
         find_discontinuities(block);
         sort_discontinuities();
         block_variable = block;
@@ -76,11 +77,14 @@ public static class BlockRendererIterator
             
             float begin_angle = 0;
 
-            for (int list_index = 0; list_index < discontinuities[arc.data].Count; ++list_index)
+            if (discontinuities.ContainsKey(arc.data))
             {
-                float end_angle = discontinuities[arc.data][list_index].angle;
-                yield return new ArcIterator(arc.data, begin_angle, end_angle);
-                begin_angle = end_angle;
+                for (int list_index = 0; list_index < discontinuities[arc.data].Count; ++list_index)
+                {
+                    float end_angle = discontinuities[arc.data][list_index].angle;
+                    yield return new ArcIterator(arc.data, begin_angle, end_angle);
+                    begin_angle = end_angle;
+                }
             }
             
             yield return new ArcIterator(arc.data, begin_angle, arc.data.angle());

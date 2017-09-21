@@ -217,7 +217,8 @@ public struct Arc
     {
         float x = Vector3.Dot(position, forward_axis);
         float y = Vector3.Dot(position, right_axis);
-        return Mathf.Atan2(y,x);
+        float angle = Mathf.Atan2(y,x);
+        return angle >= 0 ? angle : angle + 2*Mathf.PI;
     }
         
     /// <summary>
