@@ -13,7 +13,7 @@ public static class PlanetariaIntersection
     /// If there are zero or infinite solutions, returns an empty array;
     /// If there are one or two solutions, returns an array with two Cartesian coordinates.
     /// </returns>
-    public static NormalizedCartesianCoordinates[] circle_circle_intersection(NormalizedCartesianCoordinates coordinate_a, NormalizedCartesianCoordinates coordinate_b, float radius_a, float radius_b)
+    public static NormalizedCartesianCoordinates[] circle_circle_intersections(NormalizedCartesianCoordinates coordinate_a, NormalizedCartesianCoordinates coordinate_b, float radius_a, float radius_b)
     {
         radius_a = Mathf.Abs(radius_a);
         radius_b = Mathf.Abs(radius_b);
@@ -65,12 +65,21 @@ public static class PlanetariaIntersection
         return intersections;
     }
 
+    public static NormalizedCartesianCoordinates[] arc_path_intersections(Arc arc, NormalizedCartesianCoordinates begin, NormalizedCartesianCoordinates end)
+    {
+        NormalizedCartesianCoordinates arc_center = new NormalizedCartesianCoordinates(arc.pole());
+        NormalizedCartesianCoordinates path_center = new NormalizedCartesianCoordinates(Vector3.Cross(begin.data, end.data).normalized);
+        float arc_radius = arc.elevation();
+        const float path_radius = Mathf.PI/2;
+
+        NormalizedCartesianCoordinates[] intersections = circle_circle_intersections(arc_center, path_center, arc_radius, path_radius);
+        
+        return intersections;
+    }
+
     public static optional<Vector3> arc_path_intersection(Arc arc, NormalizedCartesianCoordinates begin, NormalizedCartesianCoordinates end)
     {
-        Vector3 path_center = Vector3.Cross(begin.data, end.data).normalized;
-        float path_radius = Mathf.PI/2;
-
-        NormalizedCartesianCoordinates[] intersections = circle_circle_intersection(new NormalizedCartesianCoordinates(arc.pole()), new NormalizedCartesianCoordinates(path_center), arc.elevation(), path_radius);
+        NormalizedCartesianCoordinates[] intersections = arc_path_intersections(arc, begin, end);
         if (intersections.Length == 0)
         {
             return new optional<Vector3>();

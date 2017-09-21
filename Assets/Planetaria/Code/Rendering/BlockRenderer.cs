@@ -3,14 +3,73 @@ using UnityEngine;
 
 public static class BlockRenderer
 {
+    private static Dictionary<Arc, List<Discontinuity>> discontinuities;
+
     public static void render(Block block)
     {
         // For intersecting shapes:
 
-        // 1: find all intersections along x=0 or z=0 arcs in southern hemisphere.
+        BlockRendererIterator.prepare(block);
+
+        foreach (ArcIterator arc_iterator in BlockRendererIterator.arc_iterator())
+        {
+            subdivide(arc_iterator.arc, arc_iterator.begin, arc_iterator.end);
+        }
+        
         // 2: take any point from intersections
         // 3: if a point exists, draw that point until it reaches the next point in the set, delete last point, repeat #3
         // 4: if there were no intersections, use simple draw to create whole shape.
+    }
+
+    private static float max_error_location(Arc arc, float begin_point_angle, float end_point_angle)
+    {
+        OctahedralUVCoordinates begin_point = new NormalizedCartesianCoordinates(arc.position(begin_point_angle));
+        OctahedralUVCoordinates end_point = new NormalizedCartesianCoordinates(arc.position(end_point_angle));
+
+        float begin = begin_point_angle;
+        float end = end_point_angle;
+
+        // 2) use binary / bisection search to find the point of maximal error
+        while (end - begin > Precision.delta)
+        {
+            float midpoint = (begin + end) / 2;
+
+            OctahedralUVCoordinates left_midpoint = new NormalizedCartesianCoordinates(arc.position(midpoint - Precision.delta));
+            OctahedralUVCoordinates right_midpoint = new NormalizedCartesianCoordinates(arc.position(midpoint + Precision.delta));
+
+            float error_left  = PlanetariaMath.point_line_distance(begin_point.data, end_point.data, left_midpoint.data);
+            float error_right = PlanetariaMath.point_line_distance(begin_point.data, end_point.data, right_midpoint.data);
+
+            if (error_left < error_right) //error begin should be replaced since it has less error
+            {
+                begin = midpoint;
+            }
+            else //error end should be replaced since it has less error
+            {
+                end = midpoint;
+            }
+        }
+
+        return (begin + end) / 2; // return location of max error
+    }
+
+    private static void subdivide(Arc arc, float begin_point_angle, float end_point_angle)
+    {
+        float middle_point_angle = max_error_location(arc, begin_point_angle, end_point_angle);
+
+        OctahedralUVCoordinates begin_point = new NormalizedCartesianCoordinates(arc.position(begin_point_angle));
+        OctahedralUVCoordinates end_point = new NormalizedCartesianCoordinates(arc.position(end_point_angle));
+        OctahedralUVCoordinates middle_point = new NormalizedCartesianCoordinates(arc.position(middle_point_angle));
+
+        if (PlanetariaMath.point_line_distance(begin_point.data, end_point.data, middle_point.data) > Precision.threshold) // if the max error is greater than a threshold, recursively add the left and right halves into the list of lines
+        {
+            subdivide(arc, begin_point_angle, middle_point_angle);
+            subdivide(arc, middle_point_angle, end_point_angle);
+        }
+        else
+        {
+            // TODO: implement
+        }
     }
 }
 

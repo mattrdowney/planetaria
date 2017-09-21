@@ -62,6 +62,21 @@ public static class PlanetariaMath
     }
 
     /// <summary>
+    /// Inspector - checks the distance between an infinitely long line and a point using perpendicular distance.
+    /// </summary>
+    /// <param name="line_segment_start">A point on the line.</param>
+    /// <param name="line_segment_end">A different point on the line.</param>
+    /// <param name="point">The point whose distance will be checked against the line (not line segment).</param>
+    /// <returns>The perpendicular distance between the line (not line segment) and a point.</returns>
+    public static float point_line_distance(Vector2 line_segment_start, Vector2 line_segment_end, Vector2 point)
+    {
+        float numerator = Mathf.Abs((line_segment_end.y - line_segment_start.y) * point.x - (line_segment_end.x - line_segment_start.x) * point.y + line_segment_end.x * line_segment_start.y - line_segment_end.y * line_segment_start.x);
+        float denominator = Mathf.Sqrt(Mathf.Pow((line_segment_end.y - line_segment_start.y), 2) + Mathf.Pow((line_segment_end.x - line_segment_start.x), 2));
+
+        return numerator / denominator;
+    }
+
+    /// <summary>
     /// Get the position on a circle defined by x_axis and y_axis.
     /// </summary>
     /// <param name="x_axis">The x-axis.</param>

@@ -1,0 +1,109 @@
+﻿using System.Collections.Generic;
+using UnityEngine;
+
+public static class BlockRendererIterator
+{
+    private static Block block_variable;
+    private static Dictionary<Arc, List<Discontinuity>> discontinuities;
+
+    private static void add_intersections(Arc arc, NormalizedCartesianCoordinates[] positions)
+    {
+        for (int intersection_index = 0; intersection_index < positions.Length; ++intersection_index)
+        {
+            add_intersection(arc, positions[intersection_index]);
+        }
+    }
+
+    private static void add_intersection(Arc arc, NormalizedCartesianCoordinates position)
+    {
+        if (!discontinuities.ContainsKey(arc))
+        {
+            discontinuities.Add(arc, new List<Discontinuity>());
+        }
+
+        discontinuities[arc].Add(new Discontinuity(arc, position));
+    }
+
+    /// <summary>
+    /// Mutator - find all intersections along x=0 or z=0 arcs in southern hemisphere.
+    /// </summary>
+    /// <param name="block">The block (set of arcs) to be inspected.</param>
+    private static void find_discontinuities(Block block)
+    {
+        for (int arc_index = 0; arc_index < block.size(); ++arc_index)
+        {
+            for (int quadrant = 1; quadrant <= 4; ++ quadrant)
+            {
+                optional<Arc> arc = block.at(ref arc_index);
+                float angle = (Mathf.PI/2)*quadrant;
+                NormalizedCartesianCoordinates begin = new NormalizedCartesianCoordinates(new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)));
+                NormalizedCartesianCoordinates end = new NormalizedCartesianCoordinates(Vector3.down);
+
+                if (arc.exists)
+                {
+                    NormalizedCartesianCoordinates[] intersections = PlanetariaIntersection.arc_path_intersections(arc.data, begin, end);
+                    add_intersections(arc.data, intersections);
+                }
+            }
+        }
+    }
+
+    public static void prepare(Block block)
+    {
+        find_discontinuities(block);
+        sort_discontinuities();
+        block_variable = block;
+    }
+
+    /// <summary>
+    /// Mutator - Sort the Discontinuity lists in non-decreasing order (with respect to angle)
+    /// </summary>
+    private static void sort_discontinuities()
+    {
+        foreach (KeyValuePair<Arc, List<Discontinuity>> discontinuity in discontinuities)
+        {
+            discontinuity.Value.Sort((left_hand_side, right_hand_side) => left_hand_side.angle.CompareTo(right_hand_side.angle));
+        }
+    }
+
+    public static IEnumerable<ArcIterator> arc_iterator()
+    {
+        for (int arc_index = 0; arc_index < block_variable.size(); ++arc_index)
+        {
+            optional<Arc> arc = block_variable.at(ref arc_index);
+
+            if (!arc.exists)
+            {
+                continue;
+            }
+            
+            float begin_angle = 0;
+
+            for (int list_index = 0; list_index < discontinuities[arc.data].Count; ++list_index)
+            {
+                float end_angle = discontinuities[arc.data][list_index].angle;
+                yield return new ArcIterator(arc.data, begin_angle, end_angle);
+                begin_angle = end_angle;
+            }
+            
+            yield return new ArcIterator(arc.data, begin_angle, arc.data.angle());
+        }
+    }
+}
+
+/*
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/

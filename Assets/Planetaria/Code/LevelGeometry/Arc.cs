@@ -269,8 +269,8 @@ public struct Arc
         float quadrants = Mathf.Ceil(arc.angle() / (Mathf.PI / 2f)); //maximum of 4, always integral
         for (float quadrant = 0; quadrant < quadrants; ++quadrant)
         {
-            float left_angle = arc.angle() * (quadrant / quadrants); // beginning of quadrant e.g. 0.00,0.25,0.50,0.75
-            float right_angle = arc.angle() * ((quadrant + 1) / quadrants); // end of quadrant e.g. 0.25,0.50,0.75,1.00
+            float left_angle = Mathf.Lerp(0, arc.angle(), quadrant/quadrants); // beginning of quadrant e.g. 0.00,0.25,0.50,0.75
+            float right_angle = Mathf.Lerp(0, arc.angle(), (quadrant+1)/quadrants); // end of quadrant e.g. 0.25,0.50,0.75,1.00
 
             float left_heuristic = distance_heuristic(arc, target, left_angle); //lower h(x) implies closer to target
             float right_heuristic = distance_heuristic(arc, target, right_angle);
