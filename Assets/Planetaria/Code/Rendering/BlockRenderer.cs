@@ -13,9 +13,8 @@ public static class BlockRenderer
 
         foreach (ArcIterator arc_iterator in BlockRendererIterator.arc_iterator())
         {
+            Debug.Log("Arc#: " + block.arc_index(arc_iterator.arc) + " begin: " + arc_iterator.begin + " end: " + arc_iterator.end);
             partition_arc(arc_iterator.arc, arc_iterator.begin, arc_iterator.end);
-
-            Debug.Log("Arc: " + block.arc_index(arc_iterator.arc) + " begin: " + arc_iterator.begin + " end: " + arc_iterator.end);
         }
 
         VectorGraphicsWriter.end_shape();
@@ -104,13 +103,19 @@ public static class BlockRenderer
 
     private static void subdivide(Arc arc, float begin_point_angle, float end_point_angle)
     {
-        Debug.Log("Arc: " + arc + " begin: " + begin_point_angle + " end: " + end_point_angle);
+        Debug.Log("          Arc: " + arc + " begin: " + begin_point_angle + " end: " + end_point_angle);
 
         float middle_point_angle = max_error_location(arc, begin_point_angle, end_point_angle);
 
-        OctahedralUVCoordinates begin_point = new NormalizedCartesianCoordinates(arc.position(begin_point_angle));
-        OctahedralUVCoordinates end_point = new NormalizedCartesianCoordinates(arc.position(end_point_angle));
-        OctahedralUVCoordinates middle_point = new NormalizedCartesianCoordinates(arc.position(middle_point_angle));
+        Vector3 begin = arc.position(begin_point_angle);
+        Vector3 middle = arc.position(middle_point_angle);
+        Vector3 end = arc.position(end_point_angle);
+
+        OctahedralUVCoordinates begin_point = new NormalizedCartesianCoordinates(begin);
+        OctahedralUVCoordinates middle_point = new NormalizedCartesianCoordinates(middle);
+        OctahedralUVCoordinates end_point = new NormalizedCartesianCoordinates(end);
+
+        Debug.Log("                    Cartesian: " + begin + " octahedral UV: " + begin_point.data);
 
         if (PlanetariaMath.point_line_distance(begin_point.data, end_point.data, middle_point.data) > Precision.threshold) // if the max error is greater than a threshold, recursively add the left and right halves into the list of lines
         {

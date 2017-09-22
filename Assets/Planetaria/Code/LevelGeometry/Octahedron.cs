@@ -57,7 +57,8 @@ public static class Octahedron
             Vector3 begin_cartesian = mesh.vertices[begin_edge];
             Vector3 end_cartesian = mesh.vertices[end_edge];
 
-            float dot_product = Vector2.Dot((octahedral - begin_cartesian).normalized, (end_cartesian - begin_cartesian).normalized);
+            Vector3 edge_vector = (end_cartesian - begin_cartesian);
+            float dot_product = Vector2.Dot((octahedral - begin_cartesian), edge_vector) / edge_vector.sqrMagnitude;
             Vector2 uv_vector = end_uv - begin_uv;
             uv += uv_vector*dot_product;
         }
@@ -95,7 +96,8 @@ public static class Octahedron
             Vector3 begin_cartesian = mesh.vertices[begin_edge];
             Vector3 end_cartesian = mesh.vertices[end_edge];
 
-            float dot_product = Vector2.Dot((uv - begin_uv).normalized, (end_uv - begin_uv).normalized);
+            Vector2 edge_vector = (end_uv - begin_uv);
+            float dot_product = Vector2.Dot((uv - begin_uv), edge_vector) / edge_vector.sqrMagnitude;
             Vector3 cartesian_vector = end_cartesian - begin_cartesian;
             cartesian += cartesian_vector*dot_product;
         }

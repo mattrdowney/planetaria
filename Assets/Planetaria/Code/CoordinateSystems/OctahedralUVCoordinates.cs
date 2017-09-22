@@ -60,7 +60,7 @@ public class OctahedralUVCoordinates
     {
         if (data_variable.x < 0 || data_variable.x > 1)
         {
-            data_variable.x = PlanetariaMath.modolo_using_euclidean_division(data_variable.x, 1);
+            data_variable.x = PlanetariaMath.modolo_using_euclidean_division(data_variable.x, 1); // TODO: does this work?
         }
 
         if (data_variable.y < 0 || data_variable.y > 1)
