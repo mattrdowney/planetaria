@@ -13,12 +13,15 @@ public static class BlockRendererIterator
 
     private static void add_intersection(Arc arc, NormalizedCartesianCoordinates position)
     {
-        if (!discontinuities.ContainsKey(arc))
+        if (position.data.y <= 0) // FIXME:
         {
-            discontinuities.Add(arc, new List<Discontinuity>());
-        }
+            if (!discontinuities.ContainsKey(arc))
+            {
+                discontinuities.Add(arc, new List<Discontinuity>());
+            }
 
-        discontinuities[arc].Add(new Discontinuity(arc, position));
+            discontinuities[arc].Add(new Discontinuity(arc, position));
+        }
     }
 
     /// <summary>
@@ -29,10 +32,10 @@ public static class BlockRendererIterator
     {
         for (int arc_index = 0; arc_index < block.size(); ++arc_index)
         {
-            for (int quadrant = 1; quadrant <= 4; ++ quadrant)
+            for (int dimension = 0; dimension < 2; ++dimension) // Intersect already gets quadrants 3-4 by proxy
             {
                 optional<Arc> arc = block.at(ref arc_index);
-                float angle = (Mathf.PI/2)*quadrant;
+                float angle = (Mathf.PI/2)*dimension;
                 NormalizedCartesianCoordinates begin = new NormalizedCartesianCoordinates(new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)));
                 NormalizedCartesianCoordinates end = new NormalizedCartesianCoordinates(Vector3.down);
 

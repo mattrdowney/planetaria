@@ -90,8 +90,6 @@ public class LevelCreatorEditor : Editor
                     break;
             }
         }
-
-        Debug.Log(yaw + " " + pitch);
     }
 
     private static CreateShape draw_first_point()

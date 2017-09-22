@@ -89,6 +89,8 @@ public static class PlanetariaIntersection
         return results;
     }
 
+    // TODO: consider arc_arc_intersection()
+
     public static optional<Vector3> arc_path_intersection(Arc arc, NormalizedCartesianCoordinates begin, NormalizedCartesianCoordinates end)
     {
         NormalizedCartesianCoordinates[] intersections = arc_path_intersections(arc, begin, end);

@@ -12,7 +12,7 @@ public static class RendererUtility
         Vector3 from = arc.position(0, extrusion);
         Vector3 normal = arc.pole(extrusion);
         Vector3 center = Vector3.Project(from, normal);
-        normal *= -System.Math.Sign(arc.elevation(0));
+        normal *= -Mathf.Sign(arc.elevation(0));
         float angle = arc.angle()*Mathf.Rad2Deg;
         float radius = (from - center).magnitude;
 

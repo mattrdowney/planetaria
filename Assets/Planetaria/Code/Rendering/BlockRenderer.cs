@@ -13,7 +13,7 @@ public static class BlockRenderer
 
         foreach (ArcIterator arc_iterator in BlockRendererIterator.arc_iterator())
         {
-            render_arc(arc_iterator.arc, arc_iterator.begin, arc_iterator.end);
+            partition_arc(arc_iterator.arc, arc_iterator.begin, arc_iterator.end);
 
             Debug.Log("Arc: " + block.arc_index(arc_iterator.arc) + " begin: " + arc_iterator.begin + " end: " + arc_iterator.end);
         }
@@ -57,57 +57,55 @@ public static class BlockRenderer
         return (begin + end) / 2; // return location of max error
     }
 
-    private static void render_arc(Arc arc, float begin, float end)
+    private static void partition_arc(Arc arc, float begin, float end)
     {
-        float range_begin = begin;
-        float range_end = end;
-        float range_mid = (begin + end) / 2;
+        float absolute_begin = begin;
+        float absolute_end = end;
 
-        int[,] xyz_signs_begin = new int[2, 3]; //positional, derivative; x, y, z
-        int[,] xyz_signs_end   = new int[2, 3];
-        int[,] xyz_signs_range_begin = new int[2, 3]; //immediately before the first detected change in sign
-        int[,] xyz_signs_range_end = new int[2, 3]; //the first detected change in any sign
-        int[,] xyz_signs_range_mid = new int[2, 3]; //middle of begin and range_end
+        float[,] xyz_signs_begin = get_signs(arc, begin, Precision.delta); //immediately before the first detected change in sign
+        float[,] xyz_signs_end = get_signs(arc, end, -Precision.delta); //the first detected change in any sign
 
-        // get signs for beginning and end
-        update_signs(arc, ref xyz_signs_begin, 0, Precision.delta);
-        update_signs(arc, ref xyz_signs_end, arc.angle(), -Precision.delta);
-
-        // process new lines until the signs match
-        while (!same_signs(ref xyz_signs_begin, ref xyz_signs_end))
+        if (!same_signs(ref xyz_signs_begin, ref xyz_signs_end))
         {
-            xyz_signs_range_begin = xyz_signs_begin;
-            xyz_signs_range_end = xyz_signs_end;
+            // recursive case: draw line and recursively render remainder
 
             // binary search and discard ranges with matching slope signs and position signs at ends; and then update the slope signs.
-            while (range_end - range_begin > Precision.delta)
+            // when you find a sign that switches, log the exact position of the switch with as much precision as possible
+            while (end - begin > Precision.delta)
             {
-                range_mid = (range_begin + range_end) / 2; //guaranteed not to overflow since numbers are in range [0, 2pi]
-                update_signs(arc, ref xyz_signs_range_mid, range_mid, Precision.delta);
-                if (same_signs(ref xyz_signs_range_begin, ref xyz_signs_range_mid))
+                float mid = (begin + end) / 2; //guaranteed not to overflow since numbers are in range [0, 2pi]
+
+                float[,] xyz_signs_mid = get_signs(arc, mid, Precision.delta); //middle of begin and range_end
+
+                if (same_signs(ref xyz_signs_begin, ref xyz_signs_mid))
                 {
-                    range_begin = range_mid;
-                    //xyz_signs_begin = xyz_signs_range_mid; //not necessary, the signs are the same
+                    begin = mid;
+                    //xyz_signs_begin = xyz_signs_mid; //not necessary, the signs are the same
                 }
                 else
                 {
-                    range_end = range_mid;
-                    xyz_signs_range_end = xyz_signs_range_mid;
+                    end = mid;
+                    xyz_signs_end = xyz_signs_mid;
                 }
             }
-            // when you find a sign that switches, log the exact position of the switch with as much precision as possible
-                
-            subdivide(arc, begin, range_begin);
-            // when you find that position, you must then switch the x, y, z signs at the new beginning of the arc and the slope signs xyz at the beginning of the arc
-            begin = range_end;
-            xyz_signs_begin = xyz_signs_range_end;
+
+            Debug.Log(xyz_signs_begin[0,0] + " " + xyz_signs_begin[0,1] + " " + xyz_signs_begin[0,2] + " " +
+                    xyz_signs_end[0,0] + " " + xyz_signs_end[0,1] + " " + xyz_signs_end[0,2]);
         }
-        // draw the last line
-        subdivide(arc, begin, end);
+
+        // always draw arc segment
+        subdivide(arc, absolute_begin, end);
+
+        if (end != absolute_end) // base case to prevent infinite recursion
+        {
+            partition_arc(arc, end, absolute_end);
+        }
     }
 
     private static void subdivide(Arc arc, float begin_point_angle, float end_point_angle)
     {
+        Debug.Log("Arc: " + arc + " begin: " + begin_point_angle + " end: " + end_point_angle);
+
         float middle_point_angle = max_error_location(arc, begin_point_angle, end_point_angle);
 
         OctahedralUVCoordinates begin_point = new NormalizedCartesianCoordinates(arc.position(begin_point_angle));
@@ -126,7 +124,7 @@ public static class BlockRenderer
         }
     }
 
-    private static bool same_signs(ref int[,] data_A, ref int[,] data_B) // for the purpose of this function, zero is not considered a sign
+    private static bool same_signs(ref float[,] data_A, ref float[,] data_B) // for the purpose of this function, zero is not considered a sign
     {
         for (int derivative = 0; derivative < 2; ++derivative)
         {
@@ -141,18 +139,21 @@ public static class BlockRenderer
         return true;
     }
 
-    private static void update_signs(Arc arc, ref int[,] data, float location, float delta)
+    private static float[,] get_signs(Arc arc, float location, float delta)
     {
-        //assert data's size is [2, 3]
+        float[,] result = new float[2,3];
 
         for (int dimension = 0; dimension < 3; ++dimension)
         {
-            data[0, dimension] = System.Math.Sign(arc.position(location)[dimension]);
+            result[0, dimension] = Mathf.Sign(arc.position(location)[dimension]);
         }
         for (int dimension = 0; dimension < 3; ++dimension)
         {
-            data[1, dimension] = System.Math.Sign(arc.position(location + delta)[dimension] - arc.position(location)[dimension]) * System.Math.Sign(delta);
+            result[1, dimension] = 1f;
+            //data[1, dimension] = Mathf.Sign(arc.position(location + delta)[dimension] - arc.position(location)[dimension]) * Mathf.Sign(delta);
         }
+
+        return result;
     }
 
     private static Dictionary<Arc, List<Discontinuity>> discontinuities;
