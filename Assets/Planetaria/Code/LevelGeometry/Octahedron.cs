@@ -40,7 +40,7 @@ public static class Octahedron
                 (octahedral.y < 0 ? 2 : 0) + // y sign is 2s place
                 (octahedral.z < 0 ? 4 : 0);  // z sign is 4s place
 
-        return convert<Vector3, Vector2>(octahedral, xyz_mask);
+        return convert(octahedron_mesh().vertices, octahedron_mesh().uv, octahedral, xyz_mask);
     }
 
     /// <summary>
@@ -56,14 +56,24 @@ public static class Octahedron
                 (Mathf.Abs(uv.x) + Mathf.Abs(uv.y) > 1 ? 2 : 0) + // y sign is 2s place
                 (uv.y < 0.5f ? 4 : 0);  // z sign is 4s place
 
-        return convert<Vector2, Vector3>(uv, xyz_mask);
+        return convert(octahedron_mesh().vertices, octahedron_mesh().uv, uv, xyz_mask);
     }
 
-    private static To convert<From, To>(From from, int xyz_mask) // FIXME: less than ideal, prefer using From[] To[] (supplied as parameters)
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="From"></typeparam>
+    /// <typeparam name="To"></typeparam>
+    /// <param name="from_array"></param>
+    /// <param name="to_array"></param>
+    /// <param name="from"></param>
+    /// <param name="xyz_mask">Number from [0,7] inclusive. 1's place => negative x value, 2's => -y, 4's => -z. </param>
+    /// <returns></returns>
+    private static To convert<From, To>(From[] from_array, To[] to_array, Vector3 from, int xyz_mask) // FIXME: less than ideal, prefer using From[] To[] (supplied as parameters) // but until C# gets on their shit a la template metaprogramming / https://stackoverflow.com/questions/8188784/how-can-i-subtract-two-generic-objects-t-t-in-c-sharp-example-datetime-d this is in limbo // YESH workaround
     {
-        To to = (To) System.Activator.CreateInstance(typeof(To), new object[] {});
+        Vector3 to = Vector3.zero;
 
-        // get mapping index from 0-7
         int triangle_start_index = xyz_mask * 3; // there are 24 indices in the octahedron mesh (i.e. 3 triangle vertices times 8 faces)
 
         Mesh mesh = octahedron_mesh();
@@ -73,30 +83,46 @@ public static class Octahedron
             int begin_edge = mesh.triangles[triangle_start_index + vertex];
             int end_edge = mesh.triangles[triangle_start_index + (vertex + 1) % 3];
 
-            Vector2 begin_uv = mesh.uv[begin_edge];
-            Vector2 end_uv = mesh.uv[end_edge];
+            Vector3 from_begin = get_vector(from_array[begin_edge]); // Rather than From, From, From...
+            Vector3 from_end = get_vector(from_array[end_edge]);
+            Vector3 from_vector = from_end - from_begin;
 
-            Vector3 begin_cartesian = mesh.vertices[begin_edge];
-            Vector3 end_cartesian = mesh.vertices[end_edge];
+            Vector3 to_begin = get_vector(to_array[begin_edge]); // ... and To, To, To...
+            Vector3 to_end = get_vector(to_array[end_edge]);
+            Vector3 to_vector = to_end - to_begin;
 
-            Vector2 uv_vector = end_uv - begin_uv;
-            Vector3 cartesian_vector = end_cartesian - begin_cartesian;
-
-            if (typeof(From) == uv_vector.GetType())
-            {
-                Vector2 relative_uv = ((Vector2)(object)from) - begin_uv;
-                float dot_product = Vector2.Dot(relative_uv, uv_vector) / uv_vector.sqrMagnitude;
-                to = (To)(object)(cartesian_vector*dot_product + (Vector3)(object)to);
-            }
-            else if (typeof(From) == cartesian_vector.GetType())
-            {
-                Vector3 relative_xyz = ((Vector3)(object)from) - begin_cartesian;
-                float dot_product = Vector3.Dot(relative_xyz, cartesian_vector) / cartesian_vector.sqrMagnitude;
-                to = (To)(object)(uv_vector*dot_product + (Vector2)(object)to);
-            }
+            Vector3 from_position = get_vector(from) - from_begin; // ... This is a little workaround-y
+            float dot_product = Vector3.Dot(from_position, from_vector) / from_vector.sqrMagnitude;
+            to += to_vector*dot_product;
         }
 
-        return to;
+        return set_vector<To>(to);
+    }
+
+    private static Vector3 get_vector<Vector>(Vector vector) // HACK: (I still think this makes the code easier to read than the alternative)
+    {
+        //return typeof(Vector) == typeof(Vector3) ? (Vector3)(object) vector : (Vector2)(object) vector; // Note: FIXME: this seems to be a Unity/VS/C#/idk bug
+
+        if (typeof(Vector) == typeof(Vector3))
+        {
+            return (Vector3)(object) vector;
+        }
+        else
+        {
+            return (Vector2)(object) vector;
+        }
+    }
+
+    private static Vector set_vector<Vector>(Vector3 vector) // HACK: 
+    {
+        if (typeof(Vector) == typeof(Vector3))
+        {
+            return (Vector) (object) vector;
+        }
+        else
+        {
+            return (Vector) (object) new Vector2(vector.x, vector.y);
+        }
     }
 
     /// <summary>
