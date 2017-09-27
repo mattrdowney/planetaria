@@ -62,10 +62,27 @@ public class OctahedralUVCoordinates
         {
             data_variable.x = PlanetariaMath.modolo_using_euclidean_division(data_variable.x, 1); // TODO: does this work?
         }
+        else if (data_variable.x == 0)
+        {
+            data_variable.x = Precision.just_above_zero;
+        }
+        else if (data_variable.x == 1)
+        {
+            data_variable.x = Precision.just_below_one;
+        }
+
 
         if (data_variable.y < 0 || data_variable.y > 1)
         {
             data_variable.y = PlanetariaMath.modolo_using_euclidean_division(data_variable.y, 1);
+        }
+        else if (data_variable.y == 0)
+        {
+            data_variable.y = Precision.just_above_zero;
+        }
+        else if (data_variable.y == 1)
+        {
+            data_variable.y = Precision.just_below_one;
         }
     }
 }

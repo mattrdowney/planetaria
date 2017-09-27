@@ -2,6 +2,27 @@
 
 public static class PlanetariaMath
 {
+    public static Vector3 barycentric_coordinates(Vector3 coordinate, Vector3 vertex_a, Vector3 vertex_b, Vector3 vertex_c) // FIXME: ideally remove this altogether, otherwise make elegant
+    {
+        Vector3 left_edge = vertex_b - vertex_a;
+        Vector3 right_edge = vertex_c - vertex_a;
+        Vector3 relative_coordinate = coordinate - vertex_a;
+
+        float left_edge_length_squared = Vector3.Dot(left_edge, left_edge);
+        float right_edge_length_squared = Vector3.Dot(right_edge, right_edge);
+        float edge_similarity = Vector3.Dot(left_edge, right_edge);
+        float left_edge_component = Vector3.Dot(relative_coordinate, left_edge);
+        float right_edge_component = Vector3.Dot(relative_coordinate, right_edge);
+        float denominator = left_edge_length_squared * right_edge_length_squared - edge_similarity * edge_similarity;
+
+        Vector3 uvw = Vector3.zero;
+        uvw[1] = (right_edge_length_squared * left_edge_component - edge_similarity * right_edge_component) / denominator;
+        uvw[2] = (left_edge_length_squared * right_edge_component - edge_similarity * left_edge_component) / denominator;
+        uvw[0] = 1 - uvw[1] - uvw[2];
+
+        return uvw;
+    }
+
     /// <summary>
     /// Find the radius of the base of a cone. Useful for determining sizes for camera shutter effects.
     /// </summary>

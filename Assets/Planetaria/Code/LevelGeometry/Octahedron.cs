@@ -53,10 +53,10 @@ public static class Octahedron
         // get mapping index from 0-7
         int xyz_mask =
                 (uv.x < 0.5f ? 1 : 0) + // x sign is 1s place
-                (Mathf.Abs(uv.x) + Mathf.Abs(uv.y) > 1 ? 2 : 0) + // y sign is 2s place
+                (PlanetariaMath.manhattan_distance(uv - Vector2.one/2) > 0.5f ? 2 : 0) + // y sign is 2s place
                 (uv.y < 0.5f ? 4 : 0);  // z sign is 4s place
 
-        return convert(octahedron_mesh().vertices, octahedron_mesh().uv, uv, xyz_mask);
+        return convert(octahedron_mesh().uv, octahedron_mesh().vertices, uv, xyz_mask);
     }
 
     
@@ -70,59 +70,30 @@ public static class Octahedron
     /// <param name="from"></param>
     /// <param name="xyz_mask">Number from [0,7] inclusive. 1's place => negative x value, 2's => -y, 4's => -z. </param>
     /// <returns></returns>
-    private static To convert<From, To>(From[] from_array, To[] to_array, Vector3 from, int xyz_mask) // FIXME: less than ideal, prefer using From[] To[] (supplied as parameters) // but until C# gets on their shit a la template metaprogramming / https://stackoverflow.com/questions/8188784/how-can-i-subtract-two-generic-objects-t-t-in-c-sharp-example-datetime-d this is in limbo // YESH workaround
+    private static To convert<From, To>(From[] from_array, To[] to_array, From from, int xyz_mask) // FIXME: less than ideal, prefer using From[] To[] (supplied as parameters) // but until C# gets on their shit a la template metaprogramming / https://stackoverflow.com/questions/8188784/how-can-i-subtract-two-generic-objects-t-t-in-c-sharp-example-datetime-d this is in limbo // YESH workaround
     {
-        Vector3 to = Vector3.zero;
-
         int triangle_start_index = xyz_mask * 3; // there are 24 indices in the octahedron mesh (i.e. 3 triangle vertices times 8 faces)
 
         Mesh mesh = octahedron_mesh();
+        
+        int[] triangle_indices = new int[3];
+        Vector3[] from_triangle = new Vector3[3];
+        Vector3[] to_triangle = new Vector3[3];
 
-        for (int vertex = 0; vertex < 3; ++vertex)
+        for (int triangle = 0; triangle < 3; ++triangle)
         {
-            int begin_edge = mesh.triangles[triangle_start_index + vertex];
-            int end_edge = mesh.triangles[triangle_start_index + (vertex + 1) % 3];
-
-            Vector3 from_begin = get_vector(from_array[begin_edge]); // Rather than From, From, From...
-            Vector3 from_end = get_vector(from_array[end_edge]);
-            Vector3 from_vector = from_end - from_begin;
-
-            Vector3 to_begin = get_vector(to_array[begin_edge]); // ... and To, To, To...
-            Vector3 to_end = get_vector(to_array[end_edge]);
-            Vector3 to_vector = to_end - to_begin;
-
-            Vector3 from_position = get_vector(from) - from_begin; // ... This is a little workaround-y
-            float dot_product = Vector3.Dot(from_position, from_vector) / from_vector.sqrMagnitude;
-            to += to_vector*dot_product;
+            int current_triangle_index = mesh.triangles[triangle_start_index + triangle];
+            triangle_indices[triangle] = current_triangle_index;
+            from_triangle[triangle] = get_vector(from_array[current_triangle_index]);
+            to_triangle[triangle] = get_vector(to_array[current_triangle_index]);
         }
 
-        return set_vector<To>(to);
-    }
+        Vector3 uvw = PlanetariaMath.barycentric_coordinates(get_vector(from),
+                from_triangle[0],from_triangle[1],from_triangle[2]);
 
-    private static Vector3 get_vector<Vector>(Vector vector) // HACK: (I still think this makes the code easier to read than the alternative)
-    {
-        //return typeof(Vector) == typeof(Vector3) ? (Vector3)(object) vector : (Vector2)(object) vector; // Note: FIXME: this seems to be a Unity/VS/C#/idk bug
+        Vector3 to = to_triangle[0]*uvw[0] + to_triangle[1]*uvw[1] + to_triangle[2]*uvw[2];
 
-        if (typeof(Vector) == typeof(Vector3))
-        {
-            return (Vector3)(object) vector;
-        }
-        else
-        {
-            return (Vector2)(object) vector;
-        }
-    }
-
-    private static Vector set_vector<Vector>(Vector3 vector) // HACK: 
-    {
-        if (typeof(Vector) == typeof(Vector3))
-        {
-            return (Vector) (object) vector;
-        }
-        else
-        {
-            return (Vector) (object) new Vector2(vector.x, vector.y);
-        }
+        return set_vector<To>(to); // set_vector() is also a workaround that merely sets a Vector2/Vector3
     }
 
     /// <summary>
@@ -156,13 +127,13 @@ public static class Octahedron
 
         uv_array[0] = new Vector2(0.5f, 0.5f); // up
         uv_array[1] = new Vector2(1.0f, 0.5f); // right
-        uv_array[2] = new Vector2(0.5f, 0.0f); // forward
+        uv_array[2] = new Vector2(0.5f, 1.0f); // forward
         uv_array[3] = new Vector2(0.0f, 0.5f); // left
-        uv_array[4] = new Vector2(0.5f, 1.0f); // back
-        uv_array[5] = new Vector2(1.0f, 0.0f); // down
-        uv_array[6] = new Vector2(0.0f, 0.0f); // down
-        uv_array[7] = new Vector2(0.0f, 1.0f); // down
-        uv_array[8] = new Vector2(1.0f, 1.0f); // down
+        uv_array[4] = new Vector2(0.5f, 0.0f); // back
+        uv_array[5] = new Vector2(1.0f, 1.0f); // down
+        uv_array[6] = new Vector2(0.0f, 1.0f); // down
+        uv_array[7] = new Vector2(0.0f, 0.0f); // down
+        uv_array[8] = new Vector2(1.0f, 0.0f); // down
 
         return uv_array;
     }
@@ -175,16 +146,30 @@ public static class Octahedron
     {
         int[] triangle_array = new int[3 * 8];
 
-        triangle_array[0]  = 0; triangle_array[1]  = 1; triangle_array[2]  = 2; //+x, +y, +z
-        triangle_array[3]  = 0; triangle_array[4]  = 2; triangle_array[5]  = 3; //-x, +y, +z
+        // Note: normally, Unity's winding order is clockwise,
+        // this uses counter-clockwise ordering because the octahedron is "inside-out"
+        triangle_array[0] = 0; triangle_array[1] = 1; triangle_array[2] = 2; //+x, +y, +z
+        triangle_array[3] = 0; triangle_array[4] = 2; triangle_array[5] = 3; //-x, +y, +z
         triangle_array[6] = 5; triangle_array[7] = 2; triangle_array[8] = 1; //+x, -y, +z
         triangle_array[9] = 6; triangle_array[10] = 3; triangle_array[11] = 2; //-x, -y, +z
-        triangle_array[12]  = 0; triangle_array[13] = 4; triangle_array[14] = 1; //+x, +y, -z
-        triangle_array[15]  = 0; triangle_array[16]  = 3; triangle_array[17]  = 4; //-x, +y, -z
+        triangle_array[12] = 0; triangle_array[13] = 4; triangle_array[14] = 1; //+x, +y, -z
+        triangle_array[15] = 0; triangle_array[16] = 3; triangle_array[17]  = 4; //-x, +y, -z
         triangle_array[18] = 8; triangle_array[19] = 1; triangle_array[20] = 4; //+x, -y, -z
         triangle_array[21] = 7; triangle_array[22] = 4; triangle_array[23] = 3; //-x, -y, -z
 
         return triangle_array;
+    }
+
+    private static Vector3 get_vector<Vector>(Vector vector) // HACK: (I still think this makes the code easier to read than the alternative)
+    {
+        if (typeof(Vector) == typeof(Vector3)) return (Vector3)(object) vector;
+        else                                   return (Vector2)(object) vector;
+    }
+
+    private static Vector set_vector<Vector>(Vector3 vector) // HACK: 
+    {
+        if (typeof(Vector) == typeof(Vector3)) return (Vector) (object) vector;
+        else                                   return (Vector) (object) new Vector2(vector.x, vector.y);
     }
 
     private static optional<Mesh> octahedron;

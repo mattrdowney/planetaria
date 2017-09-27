@@ -2,6 +2,8 @@
 
 public static class Precision
 {
+    public const float just_below_one = 0.99999994f; // largest IEEE float32 number below 1
+    public static readonly float just_above_zero = 1 - just_below_one;
     public static readonly float delta = 4 * Mathf.Pow(2, -23);
     public const float threshold = 1e-5f;
     public const float tolerance = 1e-6f;

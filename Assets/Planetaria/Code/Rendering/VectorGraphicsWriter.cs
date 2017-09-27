@@ -16,10 +16,10 @@ public static class VectorGraphicsWriter
     {
         if (first)
         {
-            writer.Write("M" + curve.begin_uv.x * scale + "," + curve.begin_uv.y * scale);
+            writer.Write("M" + curve.begin_uv.x * scale + "," + (1 - curve.begin_uv.y) * scale);
             first = false;
         }
-        writer.Write(" Q" + curve.control_uv.x * scale + "," + curve.control_uv.y * scale + " " + curve.end_uv.x * scale + "," + curve.end_uv.y * scale);
+        writer.Write(" Q" + curve.control_uv.x * scale + "," + (1 - curve.control_uv.y) * scale + " " + curve.end_uv.x * scale + "," + (1 - curve.end_uv.y) * scale);
     }
 
     public static void end_shape()

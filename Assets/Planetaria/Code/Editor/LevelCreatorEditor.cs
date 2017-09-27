@@ -14,7 +14,8 @@ public class LevelCreatorEditor : Editor
     {
         yaw = pitch = 0;
         state_machine = draw_first_point;
-        control_identifier = GUIUtility.GetControlID(FocusType.Passive);
+        mouse_control = GUIUtility.GetControlID(FocusType.Passive);
+        keyboard_control = GUIUtility.GetControlID(FocusType.Passive);
         start_shape();
     }
 
@@ -26,6 +27,7 @@ public class LevelCreatorEditor : Editor
 
     private void OnSceneGUI ()
     {
+        HandleUtility.AddDefaultControl(keyboard_control);
         move_camera();
 
         center_camera_view();
@@ -34,7 +36,7 @@ public class LevelCreatorEditor : Editor
 
         if (EditorWindow.mouseOverWindow == SceneView.currentDrawingSceneView)
         {
-            HandleUtility.AddDefaultControl(control_identifier);
+            HandleUtility.AddDefaultControl(mouse_control);
 
             state_machine = state_machine();
 
@@ -87,6 +89,25 @@ public class LevelCreatorEditor : Editor
                     break;
                 case KeyCode.D:
                     yaw += camera_speed;
+                    break;
+            }
+
+            switch(Event.current.keyCode)
+            {
+                case KeyCode.W: case KeyCode.A: case KeyCode.S: case KeyCode.D:
+                    GUIUtility.hotControl = keyboard_control;
+                    Event.current.Use();
+                    break;
+            }
+
+        }
+        else if (Event.current.type == EventType.KeyUp)
+        {
+            switch(Event.current.keyCode)
+            {
+                case KeyCode.W: case KeyCode.A: case KeyCode.S: case KeyCode.D:
+                    GUIUtility.hotControl = 0;
+                    Event.current.Use();
                     break;
             }
         }
@@ -168,7 +189,7 @@ public class LevelCreatorEditor : Editor
     {
         if (Event.current.type == EventType.MouseDown)
         {
-            GUIUtility.hotControl = control_identifier;
+            GUIUtility.hotControl = mouse_control;
             Event.current.Use();
         }
         else if (Event.current.type == EventType.MouseUp)
@@ -207,9 +228,7 @@ public class LevelCreatorEditor : Editor
         }
         else
         {
-            Debug.Log("Happening1");
             BlockRenderer.render(block);
-            Debug.Log("Happening2");
         }
 
         temporary_arc = null;
@@ -231,7 +250,8 @@ public class LevelCreatorEditor : Editor
     private static float yaw;
     private static float pitch;
 
-    private static int control_identifier;
+    private static int mouse_control;
+    private static int keyboard_control;
 }
 
 /*
