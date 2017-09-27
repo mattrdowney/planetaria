@@ -15,13 +15,33 @@
             }
             return data_variable;
         }
-        set { exists_variable = true; data_variable = value; }
+        set
+        {
+            data_variable = value;
+
+            if (value != null)
+            {
+                exists_variable = true;
+            }
+            else
+            {
+                exists_variable = false;
+            }
+        }
     }
 
     public optional(Type original)
     {
-        exists_variable = true;
         data_variable = original;
+
+        if (original != null)
+        {
+            exists_variable = true;
+        }
+        else
+        {
+            exists_variable = false;
+        }
     }
 
     public static implicit operator optional<Type>(Type original)

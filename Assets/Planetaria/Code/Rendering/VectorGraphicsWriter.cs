@@ -28,9 +28,15 @@ public static class VectorGraphicsWriter
         write_footer();
     }
 
+    public static TextAsset get_svg()
+    {
+        TextAsset result = Resources.Load(SceneManager.GetActiveScene().buildIndex.ToString()) as TextAsset;
+        return result;
+    }
+
     private static void write_header()
     {
-        writer = new StreamWriter(Application.dataPath + "/Planetaria/Art/VectorGraphics/" + SceneManager.GetActiveScene().buildIndex + ".svg");
+        writer = new StreamWriter(svg_path);
         writer.Write("<svg width=\"" + scale + "\" height=\"" + scale + "\">\n\n");
     }
 
@@ -43,6 +49,7 @@ public static class VectorGraphicsWriter
     }
 
     private static StreamWriter writer;
+    private static string svg_path = Application.dataPath + "/Planetaria/Art/VectorGraphics/Resources/" + SceneManager.GetActiveScene().buildIndex + ".svg";
     private static int scale = 1024;
     private static bool first;
 }

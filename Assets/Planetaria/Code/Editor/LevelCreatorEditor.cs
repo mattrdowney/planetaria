@@ -218,14 +218,21 @@ public class LevelCreatorEditor : Editor
         GameObject arc_builder = temporary_arc.gameObject;
         GameObject.DestroyImmediate(arc_builder);
 
+        GameObject shape = block.gameObject;
+
         if (block.size() == 0)
         {
-            GameObject shape = block.gameObject;
             GameObject.DestroyImmediate(shape);
         }
         else
         {
             BlockRenderer.render(block);
+            OctahedronMesh mesh = shape.AddComponent<OctahedronMesh>();
+            MeshRenderer renderer = shape.GetComponent<MeshRenderer>();
+            Material result = RenderVectorGraphics.render();
+            Debug.Log(result);
+            Debug.Log(result.mainTexture);
+            renderer.sharedMaterial = result;
         }
 
         temporary_arc = null;

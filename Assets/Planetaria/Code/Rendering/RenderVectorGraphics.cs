@@ -1,18 +1,26 @@
 ﻿using UnityEngine;
 
 [ExecuteInEditMode]
-public class OctahedronMesh : MonoBehaviour
+public static class RenderVectorGraphics
 {
-    //public Material material;
-
-	private void Awake()
+    public static Material render()
     {
-        MeshFilter mesh_filter = this.gameObject.AddComponent<MeshFilter>();
-		MeshRenderer mesh_renderer = this.gameObject.AddComponent<MeshRenderer>();
+        TextAsset svg_file = VectorGraphicsWriter.get_svg();
+        Material result = new Material(Shader.Find("Unlit/Transparent"));
+        if(svg_file != null)
+        {
+            ISVGDevice device = new SVGDeviceFast();
+            Implement rendering_implementation = new Implement(svg_file, device);
+            rendering_implementation.StartProcess();
 
-        mesh_filter.sharedMesh = Octahedron.octahedron_mesh();
-        //mesh_renderer.sharedMaterial = material;
-	}
+            Texture2D rendered_svg = rendering_implementation.GetTexture();
+            rendered_svg.wrapMode = TextureWrapMode.Clamp;
+            rendered_svg.filterMode = FilterMode.Bilinear;
+            rendered_svg.anisoLevel = 0; // setting anisotropic filtering (e.g. to 9) would probably be a waste
+            result.mainTexture = rendered_svg;
+        }
+        return result;
+    }
 }
 
 /*
