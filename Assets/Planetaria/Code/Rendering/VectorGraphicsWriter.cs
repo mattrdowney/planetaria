@@ -39,6 +39,7 @@ public static class VectorGraphicsWriter
         writer.Write("\n</svg>");
         writer.Flush();
         writer.Close();
+        writer.Dispose();
     }
 
     private static StreamWriter writer;

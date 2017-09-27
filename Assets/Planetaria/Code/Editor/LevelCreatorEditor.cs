@@ -12,7 +12,6 @@ public class LevelCreatorEditor : Editor
 
     private void OnEnable ()
     {
-        yaw = pitch = 0;
         state_machine = draw_first_point;
         mouse_control = GUIUtility.GetControlID(FocusType.Passive);
         keyboard_control = GUIUtility.GetControlID(FocusType.Passive);
@@ -27,7 +26,6 @@ public class LevelCreatorEditor : Editor
 
     private void OnSceneGUI ()
     {
-        HandleUtility.AddDefaultControl(keyboard_control);
         move_camera();
 
         center_camera_view();
@@ -37,9 +35,7 @@ public class LevelCreatorEditor : Editor
         if (EditorWindow.mouseOverWindow == SceneView.currentDrawingSceneView)
         {
             HandleUtility.AddDefaultControl(mouse_control);
-
             state_machine = state_machine();
-
             use_mouse_event();
         }
             
@@ -74,6 +70,7 @@ public class LevelCreatorEditor : Editor
 
     private static void move_camera()
     {
+        HandleUtility.AddDefaultControl(keyboard_control);
         if (Event.current.type == EventType.KeyDown)
         {
             switch(Event.current.keyCode)
@@ -118,7 +115,7 @@ public class LevelCreatorEditor : Editor
         temporary_arc.from = get_mouse_position();
 
         // MouseDown 1: create first corner of a shape
-        if (Event.current.type == EventType.MouseDown)
+        if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
         {
             temporary_arc.advance();
             return draw_tangent;
@@ -137,7 +134,7 @@ public class LevelCreatorEditor : Editor
         temporary_arc.from_tangent = get_mouse_position();
 
         // MouseUp 1-n: create the right-hand-side slope for the last point added
-        if (Event.current.type == EventType.MouseUp)
+        if (Event.current.type == EventType.MouseUp && Event.current.button == 0)
         {
             temporary_arc.advance();
             return draw_nth_point;
@@ -162,7 +159,7 @@ public class LevelCreatorEditor : Editor
         temporary_arc.to = get_mouse_position();
         
         // MouseDown 2-n: create arc through point using last right-hand-side slope
-        if (Event.current.type == EventType.MouseDown)
+        if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
         {
             block.add(temporary_arc.arc.data);
             EditorUtility.SetDirty(block.gameObject);
@@ -187,12 +184,12 @@ public class LevelCreatorEditor : Editor
     /// <param name="editor">The current level editor.</param>
     private static void use_mouse_event()
     {
-        if (Event.current.type == EventType.MouseDown)
+        if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
         {
             GUIUtility.hotControl = mouse_control;
             Event.current.Use();
         }
-        else if (Event.current.type == EventType.MouseUp)
+        else if (Event.current.type == EventType.MouseUp && Event.current.button == 0)
         {
             GUIUtility.hotControl = 0;
             Event.current.Use();
@@ -247,8 +244,8 @@ public class LevelCreatorEditor : Editor
 
     private static float camera_speed = 5f;
 
-    private static float yaw;
-    private static float pitch;
+    private static float yaw = 0;
+    private static float pitch = 0;
 
     private static int mouse_control;
     private static int keyboard_control;
