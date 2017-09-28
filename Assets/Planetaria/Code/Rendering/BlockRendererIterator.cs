@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public static class BlockRendererIterator
 {
     private static void add_intersections(Arc arc, NormalizedCartesianCoordinates[] positions)

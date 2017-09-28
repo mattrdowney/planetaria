@@ -13,7 +13,7 @@ public class LevelCreatorEditor : Editor
     private void OnEnable ()
     {
         state_machine = draw_first_point;
-        mouse_control = GUIUtility.GetControlID(FocusType.Passive);
+        mouse_control = GUIUtility.GetControlID(FocusType.Passive); //TODO: use FocusType.Keyboard
         keyboard_control = GUIUtility.GetControlID(FocusType.Passive);
         start_shape();
     }
@@ -230,9 +230,9 @@ public class LevelCreatorEditor : Editor
             OctahedronMesh mesh = shape.AddComponent<OctahedronMesh>();
             MeshRenderer renderer = shape.GetComponent<MeshRenderer>();
             Material result = RenderVectorGraphics.render();
+            renderer.sharedMaterial = result;
             Debug.Log(result);
             Debug.Log(result.mainTexture);
-            renderer.sharedMaterial = result;
         }
 
         temporary_arc = null;

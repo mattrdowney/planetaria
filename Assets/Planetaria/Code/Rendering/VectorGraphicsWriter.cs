@@ -30,8 +30,12 @@ public static class VectorGraphicsWriter
 
     public static TextAsset get_svg()
     {
-        TextAsset result = Resources.Load(SceneManager.GetActiveScene().buildIndex.ToString()) as TextAsset;
-        return result;
+        string location = SceneManager.GetActiveScene().buildIndex.ToString();
+        Debug.Log(location);
+        TextAsset result = Resources.Load<TextAsset>(location);
+        Debug.Log("Happening2");
+        Debug.Log(result);
+        return new TextAsset();
     }
 
     private static void write_header()
@@ -49,7 +53,7 @@ public static class VectorGraphicsWriter
     }
 
     private static StreamWriter writer;
-    private static string svg_path = Application.dataPath + "/Planetaria/Art/VectorGraphics/Resources/" + SceneManager.GetActiveScene().buildIndex + ".svg";
+    private static string svg_path = Application.dataPath + "/Planetaria/Art/VectorGraphics/Resources/" + SceneManager.GetActiveScene().buildIndex + ".txt"; // .svg, oh Unity
     private static int scale = 1024;
     private static bool first;
 }

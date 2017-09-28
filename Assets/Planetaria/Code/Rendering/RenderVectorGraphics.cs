@@ -6,7 +6,9 @@ public static class RenderVectorGraphics
     public static Material render()
     {
         TextAsset svg_file = VectorGraphicsWriter.get_svg();
+        Debug.Log(svg_file);
         Material result = new Material(Shader.Find("Unlit/Transparent"));
+        Debug.Log(result);
         if(svg_file != null)
         {
             ISVGDevice device = new SVGDeviceFast();
@@ -14,6 +16,7 @@ public static class RenderVectorGraphics
             rendering_implementation.StartProcess();
 
             Texture2D rendered_svg = rendering_implementation.GetTexture();
+            Debug.Log(rendered_svg.name);
             rendered_svg.wrapMode = TextureWrapMode.Clamp;
             rendered_svg.filterMode = FilterMode.Bilinear;
             rendered_svg.anisoLevel = 0; // setting anisotropic filtering (e.g. to 9) would probably be a waste
