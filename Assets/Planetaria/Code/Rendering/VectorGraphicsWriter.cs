@@ -16,37 +16,35 @@ public static class VectorGraphicsWriter
     {
         if (first)
         {
-            writer.Write("M" + curve.begin_uv.x * scale + "," + (1 - curve.begin_uv.y) * scale);
+            writer.Write("M" + (1 - curve.begin_uv.x) * scale + "," + curve.begin_uv.y * scale);
             first = false;
         }
-        writer.Write(" Q" + curve.control_uv.x * scale + "," + (1 - curve.control_uv.y) * scale + " " + curve.end_uv.x * scale + "," + (1 - curve.end_uv.y) * scale);
+        writer.Write(" Q" + (1 - curve.control_uv.x) * scale + "," + curve.control_uv.y * scale);
+        writer.Write(" " + (1 - curve.end_uv.x) * scale + "," + curve.end_uv.y * scale);
     }
 
     public static void end_shape()
     {
-        writer.Write("\"/>\n\n\n");
+        writer.Write(" Z\" fill=\"black\"/>\n");
         write_footer();
     }
 
     public static TextAsset get_svg()
     {
-        string location = SceneManager.GetActiveScene().buildIndex.ToString();
-        Debug.Log(location);
+        string location = "0";
         TextAsset result = Resources.Load<TextAsset>(location);
-        Debug.Log("Happening2");
-        Debug.Log(result);
-        return new TextAsset();
+        return result;
     }
 
     private static void write_header()
     {
         writer = new StreamWriter(svg_path);
-        writer.Write("<svg width=\"" + scale + "\" height=\"" + scale + "\">\n\n");
+        writer.Write("<svg width=\"" + scale + "\" height=\"" + scale + "\">\n");
     }
 
     private static void write_footer()
     {
-        writer.Write("\n</svg>");
+        writer.Write("</svg>");
         writer.Flush();
         writer.Close();
         writer.Dispose();
@@ -55,7 +53,7 @@ public static class VectorGraphicsWriter
     private static StreamWriter writer;
     private static string svg_path = Application.dataPath + "/Planetaria/Art/VectorGraphics/Resources/" + SceneManager.GetActiveScene().buildIndex + ".txt"; // .svg, oh Unity
     private static int scale = 1024;
-    private static bool first;
+    private static bool first = true;
 }
 
 /*

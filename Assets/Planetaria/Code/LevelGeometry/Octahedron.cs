@@ -8,7 +8,7 @@ public static class Octahedron
     /// <returns>The Mesh for an octahedron.</returns>
     public static Mesh octahedron_mesh()
     {
-        if (octahedron.exists)
+        if (octahedron.exists && octahedron.data != null)
         {
             return octahedron.data;
         }
@@ -40,7 +40,8 @@ public static class Octahedron
                 (octahedral.y < 0 ? 2 : 0) + // y sign is 2s place
                 (octahedral.z < 0 ? 4 : 0);  // z sign is 4s place
 
-        return convert(octahedron_mesh().vertices, octahedron_mesh().uv, octahedral, xyz_mask);
+        Mesh mesh = octahedron_mesh();
+        return convert(mesh.vertices, mesh.uv, octahedral, xyz_mask);
     }
 
     /// <summary>
@@ -56,7 +57,8 @@ public static class Octahedron
                 (PlanetariaMath.manhattan_distance(uv - Vector2.one/2) > 0.5f ? 2 : 0) + // y sign is 2s place
                 (uv.y < 0.5f ? 4 : 0);  // z sign is 4s place
 
-        return convert(octahedron_mesh().uv, octahedron_mesh().vertices, uv, xyz_mask);
+        Mesh mesh = octahedron_mesh();
+        return convert(mesh.uv, mesh.vertices, uv, xyz_mask);
     }
 
     

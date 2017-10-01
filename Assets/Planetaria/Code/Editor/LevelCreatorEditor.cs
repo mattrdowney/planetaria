@@ -57,7 +57,7 @@ public class LevelCreatorEditor : Editor
 		scene_view.camera.transform.position = Vector3.zero;
 		scene_view.Repaint();
 
-        GameObject.DestroyImmediate(empty_gameobject);
+        DestroyImmediate(empty_gameobject);
     }
 
     private static Vector3 get_mouse_position()
@@ -215,9 +215,6 @@ public class LevelCreatorEditor : Editor
             EditorUtility.SetDirty(block.gameObject);
         }
 
-        GameObject arc_builder = temporary_arc.gameObject;
-        GameObject.DestroyImmediate(arc_builder);
-
         GameObject shape = block.gameObject;
 
         if (block.size() == 0)
@@ -227,14 +224,17 @@ public class LevelCreatorEditor : Editor
         else
         {
             BlockRenderer.render(block);
+            AssetDatabase.Refresh();
             OctahedronMesh mesh = shape.AddComponent<OctahedronMesh>();
-            MeshRenderer renderer = shape.GetComponent<MeshRenderer>();
-            Material result = RenderVectorGraphics.render();
-            renderer.sharedMaterial = result;
-            Debug.Log(result);
-            Debug.Log(result.mainTexture);
+            Renderer renderer = shape.GetComponent<Renderer>();
+            TextAsset svg_file = VectorGraphicsWriter.get_svg();
+            Material material = RenderVectorGraphics.render(svg_file);
+            renderer.material = material;
         }
 
+        GameObject arc_builder = temporary_arc.gameObject;
+        GameObject.DestroyImmediate(arc_builder);
+        arc_builder = null;
         temporary_arc = null;
         block = null;
     }

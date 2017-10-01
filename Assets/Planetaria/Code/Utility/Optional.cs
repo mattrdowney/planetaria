@@ -19,14 +19,14 @@
         {
             data_variable = value;
 
-            if (value != null)
-            {
+            //if (value != null)
+            //{
                 exists_variable = true;
-            }
+            /*}
             else
             {
                 exists_variable = false;
-            }
+            }*/
         }
     }
 
@@ -34,14 +34,14 @@
     {
         data_variable = original;
 
-        if (original != null)
-        {
+        //if (original != null)
+        //{
             exists_variable = true;
-        }
+        /*}
         else
         {
             exists_variable = false;
-        }
+        }*/
     }
 
     public static implicit operator optional<Type>(Type original)

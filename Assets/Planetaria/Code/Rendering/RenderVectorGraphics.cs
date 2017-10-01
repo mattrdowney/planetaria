@@ -1,27 +1,25 @@
 ﻿using UnityEngine;
 
-[ExecuteInEditMode]
 public static class RenderVectorGraphics
 {
-    public static Material render()
+    private static string art_folder = "Planetaria/Art/";
+
+    public static Material render(TextAsset svg)
     {
-        TextAsset svg_file = VectorGraphicsWriter.get_svg();
-        Debug.Log(svg_file);
         Material result = new Material(Shader.Find("Unlit/Transparent"));
-        Debug.Log(result);
-        if(svg_file != null)
+        if(svg != null)
         {
-            ISVGDevice device = new SVGDeviceFast();
-            Implement rendering_implementation = new Implement(svg_file, device);
+            ISVGDevice rendering_device = new SVGDeviceFast();
+            Implement rendering_implementation = new Implement(svg, rendering_device);
             rendering_implementation.StartProcess();
 
-            Texture2D rendered_svg = rendering_implementation.GetTexture();
-            Debug.Log(rendered_svg.name);
-            rendered_svg.wrapMode = TextureWrapMode.Clamp;
-            rendered_svg.filterMode = FilterMode.Bilinear;
-            rendered_svg.anisoLevel = 0; // setting anisotropic filtering (e.g. to 9) would probably be a waste
-            result.mainTexture = rendered_svg;
+            Texture2D renderered_svg = rendering_implementation.GetTexture();
+            renderered_svg.wrapMode   = TextureWrapMode.Clamp;
+            renderered_svg.filterMode =  FilterMode.Bilinear;
+            renderered_svg.anisoLevel = 0;
+            result.mainTexture = renderered_svg;
         }
+
         return result;
     }
 }
