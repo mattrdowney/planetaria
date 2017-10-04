@@ -1,19 +1,111 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
-public abstract class PlanetariaActor : Component
+[RequireComponent(typeof(PlanetariaMonoBehaviour))]
+public abstract class PlanetariaActor : PlanetariaMonoBehaviour
 {
     public new PlanetariaTransform transform;
 
-    public abstract void start();
-    public abstract void update();
+    protected sealed override void Awake()
+    {
+        collision_map = new Dictionary<Block, BlockInteractor>();
+        trigger_map = new Dictionary<Field, FieldInteractor>();
+        awake();
+    }
 
-    public abstract void on_block_enter(BlockInteractor block_information);
-    public abstract void on_block_exit(BlockInteractor block_information);
-    public abstract void on_block_stay(BlockInteractor block_information);
+    protected sealed override void Start()
+    {
+        // add to collision_map and trigger_map for all objects currently intersecting (via Physics.OverlapBox())
+        start();
+    }
     
-    public abstract void on_field_enter(FieldInteractor zone_information);
-    public abstract void on_field_exit(FieldInteractor zone_information);
-    public abstract void on_field_stay(FieldInteractor zone_information);
+    protected sealed override void FixedUpdate() // always calling FixedUpdate is less than ideal
+    {
+        update(); // if undefined, this will error out
+        transform.move();
+    }
+
+    protected sealed override void OnTriggerStay(Collider collider)
+    {
+        BoxCollider box_collider = collider as BoxCollider;
+        if (!box_collider)
+        {
+            return;
+        }
+
+        optional<Arc> arc = PlanetariaCache.arc_cache.get(box_collider); // C++17 if statements are so pretty compared to this...
+        if (arc.exists) // block
+        {
+            optional<Block> block = PlanetariaCache.block_cache.get(arc.data);
+            if (!block.exists)
+            {
+                Debug.LogError("Critical Err0r.");
+                return;
+            }
+
+            if (!collision_map.ContainsKey(block.data) && arc.data.contains(transform.position.data, transform.scale))
+            {
+                float half_height = transform.scale / 2;
+                BlockInteractor collision = new BlockInteractor(arc.data, transform.previous_position.data, transform.position.data, half_height);
+                collision_map.Add(block.data, collision);
+                on_block_enter(collision);
+            }
+            else if (collision_map.ContainsKey(block.data) && !block.data.contains(transform.position.data, transform.scale))
+            {
+                BlockInteractor collision = collision_map[block.data];
+                on_block_exit(collision);
+                collision_map.Remove(block.data);
+            }
+
+            if (collision_map.ContainsKey(block.data))
+            {
+                BlockInteractor collision = collision_map[block.data];
+                on_block_stay(collision);
+            }
+        }
+        else // field
+        {
+            optional<Field> field = PlanetariaCache.zone_cache.get(box_collider);
+            if (!field.exists)
+            {
+                Debug.LogError("This is likely an Err0r or setup issue.");
+                return;
+            }
+
+            if (!trigger_map.ContainsKey(field.data) && arc.data.contains(transform.position.data, transform.scale))
+            {
+                float half_height = transform.scale / 2;
+                FieldInteractor trigger = new FieldInteractor(field.data, half_height);
+                trigger_map.Add(field.data, trigger);
+                on_field_enter(trigger);
+            }
+            else if (trigger_map.ContainsKey(field.data) && !field.data.contains(transform.position.data, transform.scale))
+            {
+                FieldInteractor collision = trigger_map[field.data];
+                on_field_exit(collision);
+                trigger_map.Remove(field.data);
+            }
+
+            if (trigger_map.ContainsKey(field.data))
+            {
+                FieldInteractor collision = trigger_map[field.data];
+                on_field_stay(collision);
+            }
+        }
+    }
+
+    protected sealed override void Update() { }
+    protected sealed override void LateUpdate() { }
+
+    protected sealed override void OnTriggerEnter(Collider collider) { }
+    protected sealed override void OnTriggerExit(Collider collider) { }
+
+    protected sealed override void OnCollisionEnter(Collision collision) { }
+    protected sealed override void OnCollisionStay(Collision collision) { }
+    protected sealed override void OnCollisionExit(Collision collision) { }
+
+    private Dictionary<Block, BlockInteractor> collision_map;
+    private Dictionary<Field, FieldInteractor> trigger_map;
 }
 
 /*
