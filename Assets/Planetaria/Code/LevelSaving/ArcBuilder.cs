@@ -1,16 +1,27 @@
 ﻿using UnityEngine;
 
+[ExecuteInEditMode]
 public class ArcBuilder : MonoBehaviour // TODO: consider switching to ScriptableObject
 {
     private enum ConstructionState { SetFrom = 0, SetTangentLine = 1, SetTo = 2 }
+
+    public static ArcBuilder arc_builder()
+    {
+        GameObject block = Block.block();
+        return block.AddComponent<ArcBuilder>();
+    }
 
     public void advance()
     {
         ++build_state;
     }
 
-    public void finalize_edge() //LolSet // TrollSet // MonoBehaviour.Reset() // This is my favorite bug ever and it didn't take long to find, luckily.
+    public void finalize_edge()
     {
+        Block block = this.gameObject.GetComponent<Block>();
+        block.add(arc.data);
+        UnityEditor.EditorUtility.SetDirty(block.gameObject);
+
         build_state = ConstructionState.SetTangentLine;
         arc_variable = new optional<Arc>();
         from_variable = to_variable;
@@ -18,7 +29,31 @@ public class ArcBuilder : MonoBehaviour // TODO: consider switching to Scriptabl
 
     public void close_shape()
     {
+        GameObject shape = this.gameObject;
+        Block block = this.gameObject.GetComponent<Block>();
+
         to = original_point;
+
+        if (arc.exists)
+        {
+            block.add(arc.data);
+            UnityEditor.EditorUtility.SetDirty(block.gameObject);
+        }
+
+        if (block.size() == 0)
+        {
+            GameObject.DestroyImmediate(shape);
+        }
+        else
+        {
+            BlockRenderer.render(block);
+            UnityEditor.AssetDatabase.Refresh();
+            OctahedronMesh mesh = shape.AddComponent<OctahedronMesh>();
+            Renderer renderer = shape.GetComponent<Renderer>();
+            TextAsset svg_file = VectorGraphicsWriter.get_svg();
+            renderer.material = RenderVectorGraphics.render(svg_file);  
+            DestroyImmediate(this);
+        }
     }
 
     public Vector3 from
@@ -78,9 +113,7 @@ public class ArcBuilder : MonoBehaviour // TODO: consider switching to Scriptabl
     }
 
     private ConstructionState build_state;
-
     private optional<Arc> arc_variable;
-
     private Vector3 original_point;
 
     private Vector3 from_variable;

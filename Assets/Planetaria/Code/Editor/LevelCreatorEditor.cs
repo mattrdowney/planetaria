@@ -13,14 +13,14 @@ public class LevelCreatorEditor : Editor
     private void OnEnable ()
     {
         state_machine = draw_first_point;
-        mouse_control = GUIUtility.GetControlID(FocusType.Passive); //TODO: use FocusType.Keyboard
+        mouse_control = GUIUtility.GetControlID(FocusType.Passive); //UNSURE: use FocusType.Keyboard?
         keyboard_control = GUIUtility.GetControlID(FocusType.Passive);
-        start_shape();
+        temporary_arc = ArcBuilder.arc_builder();
     }
 
     private void OnDisable ()
     {
-        end_shape();
+        temporary_arc.close_shape();
         Repaint();
     }
 
@@ -142,8 +142,8 @@ public class LevelCreatorEditor : Editor
         // Escape: close the shape so that it meets with the original point (using original point for slope)
         else if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
         {
-            end_shape();
-            start_shape();
+            temporary_arc.close_shape();
+            temporary_arc = ArcBuilder.arc_builder();
             return draw_first_point;
         }
 
@@ -161,17 +161,14 @@ public class LevelCreatorEditor : Editor
         // MouseDown 2-n: create arc through point using last right-hand-side slope
         if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
         {
-            block.add(temporary_arc.arc.data);
-            EditorUtility.SetDirty(block.gameObject);
-
             temporary_arc.finalize_edge();
             return draw_tangent;
         }
         // Escape: close the shape so that it meets with the original point
         else if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
         {
-            end_shape();
-            start_shape();
+            temporary_arc.close_shape();
+            temporary_arc = ArcBuilder.arc_builder();
             return draw_first_point;
         }
 
@@ -196,49 +193,6 @@ public class LevelCreatorEditor : Editor
         }
     }
 
-    private static void start_shape()
-    {
-        GameObject arc_builder = new GameObject("Arc builder");
-        temporary_arc = arc_builder.AddComponent<ArcBuilder>();
-
-        GameObject shape = Block.block();
-        block = shape.GetComponent<Block>() as Block;
-    }
-
-    private static void end_shape()
-    {
-        temporary_arc.close_shape();
-
-        if (temporary_arc.arc.exists)
-        {
-            block.add(temporary_arc.arc.data);
-            EditorUtility.SetDirty(block.gameObject);
-        }
-
-        GameObject shape = block.gameObject;
-
-        if (block.size() == 0)
-        {
-            GameObject.DestroyImmediate(shape);
-        }
-        else
-        {
-            BlockRenderer.render(block);
-            AssetDatabase.Refresh();
-            OctahedronMesh mesh = shape.AddComponent<OctahedronMesh>();
-            Renderer renderer = shape.GetComponent<Renderer>();
-            TextAsset svg_file = VectorGraphicsWriter.get_svg();
-            Material material = RenderVectorGraphics.render(svg_file);
-            renderer.material = material;
-        }
-
-        GameObject arc_builder = temporary_arc.gameObject;
-        GameObject.DestroyImmediate(arc_builder);
-        arc_builder = null;
-        temporary_arc = null;
-        block = null;
-    }
-
     /// <summary>Number of rows in the grid. Equator is drawn when rows is odd</summary>
     public static int rows = 15;
     /// <summary>Number of columns in the grid (per hemisphere).</summary>
@@ -246,7 +200,6 @@ public class LevelCreatorEditor : Editor
 
     private static CreateShape state_machine;
 
-    private static Block block;
     private static ArcBuilder temporary_arc;
 
     private static float camera_speed = 5f;
