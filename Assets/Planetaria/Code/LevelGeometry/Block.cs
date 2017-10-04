@@ -2,6 +2,7 @@
 using UnityEngine;
 
 [System.Serializable]
+[ExecuteInEditMode]
 public class Block : MonoBehaviour
 {
     /// <summary>
@@ -22,7 +23,7 @@ public class Block : MonoBehaviour
     /// <returns>An empty block with zero arcs and zero corners</returns>
     public static GameObject block()
     {
-        GameObject result = new GameObject();
+        GameObject result = new GameObject("Shape");
         Block block = result.AddComponent<Block>();
 
         block.arc_list = new List<Arc>();
@@ -32,7 +33,22 @@ public class Block : MonoBehaviour
 
     public void add(optional<Arc> arc)
     {
-        arc_list.Add(arc.data);
+        if (arc.exists)
+        {
+            arc_list.Add(arc.data);
+
+            GameObject game_object = new GameObject("Collider");
+            game_object.transform.parent = this.gameObject.transform;
+
+            BoxCollider collider = game_object.AddComponent<BoxCollider>();
+            Bounds axis_aligned_bounding_box = Arc.get_axis_aligned_bounding_box(arc.data);
+            collider.center = axis_aligned_bounding_box.center;
+            collider.size = axis_aligned_bounding_box.size;
+            collider.isTrigger = true;
+
+            PlanetariaCache.arc_cache.cache(collider, arc.data);
+            PlanetariaCache.block_cache.cache(arc.data, this);
+        }
     }
 
     /// <summary>
@@ -93,6 +109,18 @@ public class Block : MonoBehaviour
     public int size()
     {
         return arc_list.Count;
+    }
+
+    private void OnDestroy()
+    {
+        foreach (Arc arc in arc_list)
+        {
+            PlanetariaCache.block_cache.uncache(arc);
+        }
+        foreach (BoxCollider box_collider in this.gameObject.GetComponentsInChildren<BoxCollider>())
+        {
+            PlanetariaCache.arc_cache.uncache(box_collider);
+        }
     }
 
     [SerializeField] private BlockActor behavior;

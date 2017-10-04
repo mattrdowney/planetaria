@@ -8,11 +8,7 @@ public static class Octahedron
     /// <returns>The Mesh for an octahedron.</returns>
     public static Mesh octahedron_mesh()
     {
-        if (octahedron.exists && octahedron.data != null)
-        {
-            return octahedron.data;
-        }
-        else
+        if (!octahedron.exists)
         {
             octahedron = new Mesh();
 
@@ -22,9 +18,8 @@ public static class Octahedron
 
             octahedron.data.RecalculateBounds();
             octahedron.data.RecalculateNormals();
-
-            return octahedron.data;
         }
+        return octahedron.data;
     }
 
     /// <summary>
@@ -72,7 +67,7 @@ public static class Octahedron
     /// <param name="from"></param>
     /// <param name="xyz_mask">Number from [0,7] inclusive. 1's place => negative x value, 2's => -y, 4's => -z. </param>
     /// <returns></returns>
-    private static To convert<From, To>(From[] from_array, To[] to_array, From from, int xyz_mask) // FIXME: less than ideal, prefer using From[] To[] (supplied as parameters) // but until C# gets on their shit a la template metaprogramming / https://stackoverflow.com/questions/8188784/how-can-i-subtract-two-generic-objects-t-t-in-c-sharp-example-datetime-d this is in limbo // YESH workaround
+    private static To convert<From, To>(From[] from_array, To[] to_array, From from, int xyz_mask)
     {
         int triangle_start_index = xyz_mask * 3; // there are 24 indices in the octahedron mesh (i.e. 3 triangle vertices times 8 faces)
 

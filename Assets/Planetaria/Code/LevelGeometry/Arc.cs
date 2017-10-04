@@ -53,8 +53,6 @@ public struct Arc
         {
             arc_angle = 2*Mathf.PI - arc_angle;
         }
-
-        // TODO: Add Arc to global map and create/change colliders/transforms appropriately
     }
 
     /// <summary>
@@ -139,6 +137,31 @@ public struct Arc
     }
 
     /// <summary>
+    /// Inspector - Get an AABB that contains a circular arc.
+    /// </summary>
+    /// <param name="arc">The arc that should be surrounded by an AABB.</param>
+    /// <returns>Bounds struct AKA axis-aligned bounding box (AABB).</returns>
+    public static Bounds get_axis_aligned_bounding_box(Arc arc)
+    {
+        float x_min = arc.position(closest_point(arc, Vector3.left   )).x;
+        float x_max = arc.position(closest_point(arc, Vector3.right  )).x;
+        float y_min = arc.position(closest_point(arc, Vector3.down   )).y;
+        float y_max = arc.position(closest_point(arc, Vector3.up     )).y;
+        float z_min = arc.position(closest_point(arc, Vector3.back   )).z;
+        float z_max = arc.position(closest_point(arc, Vector3.forward)).z;
+
+        Vector3 center = new Vector3((x_max + x_min) / 2,
+                (y_max + y_min) / 2,
+                (z_max + z_min) / 2);
+
+        Vector3 size = new Vector3(x_max - x_min,
+                y_max - y_min,
+                z_max - z_min);
+
+        return new Bounds(center, size);
+    }
+
+    /// <summary>
     /// Inspector - Determine if the corner between between left's end and right's beginning is convex
     /// (i.e. a reflex angle).
     /// </summary>
@@ -220,7 +243,7 @@ public struct Arc
         float angle = Mathf.Atan2(y,x);
         return angle >= 0 ? angle : angle + 2*Mathf.PI;
     }
-        
+
     /// <summary>
     /// Constructor - Spoof a concave corner arc with a null value
     /// (since concave corner arcs do not extrude concentrically).
@@ -307,31 +330,6 @@ public struct Arc
             }
         }
         return closest_angle;
-    }
-
-    /// <summary>
-    /// Inspector - Get an AABB that contains a circular arc.
-    /// </summary>
-    /// <param name="arc">The arc that should be surrounded by an AABB.</param>
-    /// <returns>Bounds struct AKA axis-aligned bounding box (AABB).</returns>
-    private static Bounds get_axis_aligned_bounding_box(Arc arc)
-    {
-        float x_min = arc.position(closest_point(arc, Vector3.left   )).x;
-        float x_max = arc.position(closest_point(arc, Vector3.right  )).x;
-        float y_min = arc.position(closest_point(arc, Vector3.down   )).y;
-        float y_max = arc.position(closest_point(arc, Vector3.up     )).y;
-        float z_min = arc.position(closest_point(arc, Vector3.back   )).z;
-        float z_max = arc.position(closest_point(arc, Vector3.forward)).z;
-
-        Vector3 center = new Vector3((x_max + x_min) / 2,
-                (y_max + y_min) / 2,
-                (z_max + z_min) / 2);
-
-        Vector3 size = new Vector3(x_max - x_min,
-                y_max - y_min,
-                z_max - z_min);
-
-        return new Bounds(center, size);
     }
 
     // New naming convention: data types are proper CamelCase and variables are lowercase with underscores.

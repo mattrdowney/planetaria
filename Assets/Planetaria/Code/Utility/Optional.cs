@@ -18,30 +18,14 @@
         set
         {
             data_variable = value;
-
-            //if (value != null)
-            //{
-                exists_variable = true;
-            /*}
-            else
-            {
-                exists_variable = false;
-            }*/
+            exists_variable = (value != null);
         }
     }
 
     public optional(Type original)
     {
         data_variable = original;
-
-        //if (original != null)
-        //{
-            exists_variable = true;
-        /*}
-        else
-        {
-            exists_variable = false;
-        }*/
+        exists_variable = (original != null);
     }
 
     public static implicit operator optional<Type>(Type original)

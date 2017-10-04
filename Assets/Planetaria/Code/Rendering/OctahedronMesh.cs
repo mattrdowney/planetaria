@@ -1,17 +1,14 @@
 ﻿using UnityEngine;
 
 [ExecuteInEditMode]
+[RequireComponent(typeof(MeshFilter))]
+[RequireComponent(typeof(MeshRenderer))]
 public class OctahedronMesh : MonoBehaviour
 {
-    //public Material material;
-
 	private void Awake()
     {
-        MeshFilter mesh_filter = this.gameObject.AddComponent<MeshFilter>();
-		MeshRenderer mesh_renderer = this.gameObject.AddComponent<MeshRenderer>();
-
+        MeshFilter mesh_filter = this.gameObject.GetComponent<MeshFilter>();
         mesh_filter.sharedMesh = Octahedron.octahedron_mesh();
-        //mesh_renderer.sharedMaterial = material;
 	}
 }
 
