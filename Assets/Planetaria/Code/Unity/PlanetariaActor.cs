@@ -4,24 +4,22 @@ using UnityEngine;
 [RequireComponent(typeof(PlanetariaMonoBehaviour))]
 public abstract class PlanetariaActor : PlanetariaMonoBehaviour
 {
-    public new PlanetariaTransform transform;
-
     protected sealed override void Awake()
     {
         collision_map = new Dictionary<Block, BlockInteractor>();
         trigger_map = new Dictionary<Field, FieldInteractor>();
-        awake();
+        on_existance();
     }
 
     protected sealed override void Start()
     {
         // add to collision_map and trigger_map for all objects currently intersecting (via Physics.OverlapBox())
-        start();
+        on_time_zero();
     }
     
     protected sealed override void FixedUpdate() // always calling FixedUpdate is less than ideal
     {
-        update(); // if undefined, this will error out
+        on_every_frame(); // if undefined, this will error out
         transform.move();
     }
 
@@ -98,7 +96,7 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
     protected sealed override void LateUpdate() { }
 
     protected sealed override void OnTriggerEnter(Collider collider) { }
-    protected sealed override void OnTriggerExit(Collider collider) { }
+    protected sealed override void OnTriggerExit(Collider collider) { } // To account for object deletion, this (or other code) must be defined.
 
     protected sealed override void OnCollisionEnter(Collision collision) { }
     protected sealed override void OnCollisionStay(Collision collision) { }

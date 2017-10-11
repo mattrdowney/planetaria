@@ -4,9 +4,9 @@ public abstract class PlanetariaMonoBehaviour : MonoBehaviour
 {
     public new PlanetariaTransform transform;
 
-    protected abstract void awake();
-    protected abstract void start();
-    protected abstract void update();
+    protected abstract void on_existance(); // CONSIDER: use Delegates?
+    protected abstract void on_time_zero();
+    protected abstract void on_every_frame();
 
     protected abstract void on_block_enter(BlockInteractor block_information);
     protected abstract void on_block_exit(BlockInteractor block_information);
