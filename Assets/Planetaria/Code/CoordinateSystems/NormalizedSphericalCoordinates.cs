@@ -24,12 +24,12 @@ public class NormalizedSphericalCoordinates
     /// </summary>
     /// <param name="spherical">The spherical coordinates that will be converted</param>
     /// <returns>The Cartesian coordinates.</returns> 
-    public static implicit operator NormalizedCartesianCoordinates(NormalizedSphericalCoordinates octahedral)
+    public static implicit operator NormalizedCartesianCoordinates(NormalizedSphericalCoordinates spherical)
     {
         Vector3 cartesian = new Vector3();
-        cartesian.x = -Mathf.Sin(octahedral.data.x) * Mathf.Cos(octahedral.data.y);
-        cartesian.y = -Mathf.Cos(octahedral.data.x);
-        cartesian.z = Mathf.Sin(octahedral.data.x) * Mathf.Sin(octahedral.data.y);
+        cartesian.x = -Mathf.Sin(spherical.data.x) * Mathf.Cos(spherical.data.y);
+        cartesian.y = -Mathf.Cos(spherical.data.x);
+        cartesian.z = Mathf.Sin(spherical.data.x) * Mathf.Sin(spherical.data.y);
         return new NormalizedCartesianCoordinates(cartesian);
     }
 
@@ -50,6 +50,17 @@ public class NormalizedSphericalCoordinates
     /// <param name="spherical">The spherical coordinates that will be converted</param>
     /// <returns>The UV coordinates for an octahedron.</returns> 
     public static implicit operator OctahedralUVCoordinates(NormalizedSphericalCoordinates spherical)
+    {
+        NormalizedCartesianCoordinates cartesian = spherical;
+        return cartesian;
+    }
+
+    /// <summary>
+    /// Inspector - Converts spherical coordinates into Stereoscopic projection coordinates.
+    /// </summary>
+    /// <param name="spherical">The spherical coordinates that will be converted</param>
+    /// <returns>The Stereoscopic projection.</returns> 
+    public static implicit operator StereoscopicProjectionCoordinates(NormalizedSphericalCoordinates spherical)
     {
         NormalizedCartesianCoordinates cartesian = spherical;
         return cartesian;

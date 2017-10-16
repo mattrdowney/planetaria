@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 [ExecuteInEditMode]
-public class ArcBuilder : MonoBehaviour // TODO: consider switching to ScriptableObject
+public class ArcBuilder : MonoBehaviour
 {
     private enum ConstructionState { SetFrom = 0, SetTangentLine = 1, SetTo = 2 }
 
@@ -47,7 +47,7 @@ public class ArcBuilder : MonoBehaviour // TODO: consider switching to Scriptabl
         else
         {
             BlockRenderer.render(block);
-            UnityEditor.AssetDatabase.Refresh();
+            UnityEditor.AssetDatabase.Refresh(); // CONSIDER: Necessary?
             OctahedronMesh mesh = shape.AddComponent<OctahedronMesh>();
             Renderer renderer = shape.GetComponent<Renderer>();
             TextAsset svg_file = VectorGraphicsWriter.get_svg();

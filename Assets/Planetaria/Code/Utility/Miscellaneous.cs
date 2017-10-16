@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
+using UnityEngine;
 
 /// <summary>
 /// A group of miscellaneous helper functions.
@@ -13,6 +15,18 @@ public static class Miscellaneous
     public static int count_true_booleans(params bool[] boolean_list)
     {
        return boolean_list.Count(is_true => is_true);
+    }
+
+    public static optional<Texture2D> fetch_image(string image_file)
+    {
+        optional<Texture2D> texture = new optional<Texture2D>();
+        if (File.Exists(image_file))
+        {
+             byte[] raw_file_binary = File.ReadAllBytes(image_file);
+             texture = new Texture2D(0,0);
+             texture.data.LoadImage(raw_file_binary);
+        }
+        return texture;
     }
 }
 

@@ -3,11 +3,17 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public static class VectorGraphicsWriter
+public static class VectorGraphicsWriter // FIXME: TODO: clean this up! // CONSIDER: make into an abstract interface? // Parameters for "edge creation" get weird if an interface is used
 {
     public static void begin_shape()
     {
-        write_header();
+        scene_index = SceneManager.GetActiveScene().buildIndex;
+        if (!Directory.Exists(svg_folder_path + "/" + scene_index))
+        {
+            Directory.CreateDirectory(svg_folder_path + "/" + scene_index);
+        }
+        svg_path = svg_relative_folder_path + scene_index + "/" + scene_index + ".txt";
+        write_uv_header();
         first = true;
         writer.Write("\t<path d=\"");
     }
@@ -23,20 +29,72 @@ public static class VectorGraphicsWriter
         writer.Write(" " + (1 - curve.end_uv.x) * scale + "," + curve.end_uv.y * scale);
     }
 
+    public static void set_pixels(string file, float scale)
+    {
+        write_pixel_art_header();
+        optional<Texture2D> texture = Miscellaneous.fetch_image(file);
+        if (texture.exists)
+        {
+            Color[] pixel_buffer = texture.data.GetPixels();
+            int rows = texture.data.height;
+            int columns = texture.data.width;
+            int max_size = Mathf.Max(rows, columns);
+            float width = ((columns/max_size)*scale);
+            float height = ((rows/max_size)*scale);
+
+            StereoscopicProjectionCoordinates[,] pixel_grid_points = new StereoscopicProjectionCoordinates[rows+1,columns+1];
+            for (int row = 0; row <= rows; ++row) // <= because of rows+1 size
+            {
+                float angle = (-row/2f) * width;
+                for (int column = 0; column <= columns; ++column)
+                {
+                    float elevation = (-column/2f) * height;
+                    pixel_grid_points[row,column] = new NormalizedSphericalCoordinates(elevation, angle);
+                }
+            }
+            for (int row = 0; row < rows; ++row) // <= because of rows+1 size
+            {
+                for (int column = 0; column < columns; ++column)
+                {
+                    set_pixel(pixel_grid_points[row,column].data, pixel_grid_points[row,column+1].data,
+                            pixel_grid_points[row+1,column].data, pixel_grid_points[row+1,column+1].data,
+                            pixel_buffer[row*columns + column]);
+                }
+            }
+        }
+        write_footer();
+    }
+
+    public static void set_pixel(Vector2 top_left, Vector2 top_right, Vector2 bottom_right, Vector2 bottom_left, Color color)
+    {
+        writer.Write("\t<path d=\"");
+        writer.Write("M" + top_left.x + "," + top_left.y);
+        writer.Write("L " + top_right.x + "," + top_right.y);
+        writer.Write("L " + bottom_right.x + "," + bottom_right.y);
+        writer.Write("L " + bottom_left.x + "," + bottom_left.y);
+        writer.Write(" Z\" fill=\"rgb(" + color.r + "," + color.g + "," + color.b + ")\"/>\n");
+    }
+
     public static void end_shape()
     {
         writer.Write(" Z\" fill=\"black\"/>\n");
         write_footer();
     }
 
-    public static TextAsset get_svg()
+    public static TextAsset get_svg() // Unity is gr8; 10/10, would rate again
     {
-        string location = "0";
-        TextAsset result = Resources.Load<TextAsset>(location);
+        TextAsset result = Resources.Load<TextAsset>(resource_location);
         return result;
     }
 
-    private static void write_header()
+    private static void write_pixel_art_header()
+    {
+        writer = new StreamWriter(svg_path); //Replace-able with: write_uv_header();
+        writer.Write("<svg width=\"" + scale + "\" height=\"" + scale + "\"");
+        writer.Write(" viewBox =\"" + (-scale/2) + " " + (-scale/2) + " " + scale + " " + scale + "\">\n");
+    }
+
+    private static void write_uv_header()
     {
         writer = new StreamWriter(svg_path);
         writer.Write("<svg width=\"" + scale + "\" height=\"" + scale + "\">\n");
@@ -48,10 +106,25 @@ public static class VectorGraphicsWriter
         writer.Flush();
         writer.Close();
         writer.Dispose();
+        UnityEditor.AssetDatabase.Refresh();
+        string guid = UnityEditor.AssetDatabase.AssetPathToGUID(svg_path);
+        writer = new StreamWriter(svg_path.Substring(0, svg_path.Length - 4) + "_" + guid + ".svg");
+        resource_location = + scene_index + "/" + scene_index;
+        writer.Write(get_svg().text);
+        writer.Flush();
+        writer.Close();
+        writer.Dispose();
+        UnityEditor.AssetDatabase.RenameAsset(svg_path, scene_index + "_" + guid);
+        resource_location = + scene_index + "/" + scene_index + "_" + guid;
+        UnityEditor.AssetDatabase.Refresh();
     }
 
     private static StreamWriter writer;
-    private static string svg_path = Application.dataPath + "/Planetaria/Art/VectorGraphics/Resources/" + SceneManager.GetActiveScene().buildIndex + ".txt"; // .svg, oh Unity
+    private static int scene_index;
+    private static string svg_folder_path = Application.dataPath + "/Planetaria/Art/VectorGraphics/Resources/";
+    private static string svg_relative_folder_path = "Assets/Planetaria/Art/VectorGraphics/Resources/";
+    private static string svg_path; // .svg, oh Unity
+    private static string resource_location;
     private static int scale = 1024;
     private static bool first = true;
 }
