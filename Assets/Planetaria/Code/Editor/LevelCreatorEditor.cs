@@ -12,6 +12,8 @@ public class LevelCreatorEditor : Editor
 
     private void OnEnable ()
     {
+        VectorGraphicsWriter.set_pixels("Assets/Planetaria/Art/Textures/checker_board.png", 0.4f);
+
         state_machine = draw_first_point;
         mouse_control = GUIUtility.GetControlID(FocusType.Passive); //UNSURE: use FocusType.Keyboard?
         keyboard_control = GUIUtility.GetControlID(FocusType.Passive);

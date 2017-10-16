@@ -31,7 +31,7 @@ public static class VectorGraphicsWriter // FIXME: TODO: clean this up! // CONSI
 
     public static void set_pixels(string file, float scale)
     {
-        write_pixel_art_header();
+        write_pixel_art_header("Assets/Planetaria/Art/VectorGraphics/checker_board.txt");
         optional<Texture2D> texture = Miscellaneous.fetch_image(file);
         if (texture.exists)
         {
@@ -45,14 +45,14 @@ public static class VectorGraphicsWriter // FIXME: TODO: clean this up! // CONSI
             StereoscopicProjectionCoordinates[,] pixel_grid_points = new StereoscopicProjectionCoordinates[rows+1,columns+1];
             for (int row = 0; row <= rows; ++row) // <= because of rows+1 size
             {
-                float angle = (-row/2f) * width;
+                float elevation = Mathf.Lerp(0.5f, -0.5f, row/(float)rows) * height;
                 for (int column = 0; column <= columns; ++column)
                 {
-                    float elevation = (-column/2f) * height;
+                    float angle = Mathf.Lerp(-0.5f, 0.5f, column/(float)columns) * width;
                     pixel_grid_points[row,column] = new NormalizedSphericalCoordinates(elevation, angle);
                 }
             }
-            for (int row = 0; row < rows; ++row) // <= because of rows+1 size
+            for (int row = 0; row < rows; ++row)
             {
                 for (int column = 0; column < columns; ++column)
                 {
@@ -65,13 +65,23 @@ public static class VectorGraphicsWriter // FIXME: TODO: clean this up! // CONSI
         write_footer();
     }
 
-    public static void set_pixel(Vector2 top_left, Vector2 top_right, Vector2 bottom_right, Vector2 bottom_left, Color color)
+    private static void set_pixel(Vector2 top_left, Vector2 top_right, Vector2 bottom_right, Vector2 bottom_left, Color32 color)
     {
+        /*top_left += Vector2.one/2;
+        top_right += Vector2.one/2;
+        bottom_right += Vector2.one/2;
+        bottom_left += Vector2.one/2;*/
+
+        /*top_left = new Vector2(top_left.x, -top_left.y);
+        top_right = new Vector2(top_right.x, -top_right.y);
+        bottom_right = new Vector2(bottom_right.x, -bottom_right.y);
+        bottom_left = new Vector2(bottom_left.x, -bottom_left.y);*/
+
         writer.Write("\t<path d=\"");
-        writer.Write("M" + top_left.x + "," + top_left.y);
-        writer.Write("L " + top_right.x + "," + top_right.y);
-        writer.Write("L " + bottom_right.x + "," + bottom_right.y);
-        writer.Write("L " + bottom_left.x + "," + bottom_left.y);
+        writer.Write("M" + top_left.x * scale + "," + top_left.y * scale);
+        writer.Write(" L " + top_right.x * scale + "," + top_right.y * scale);
+        writer.Write(" L " + bottom_right.x * scale + "," + bottom_right.y * scale);
+        writer.Write(" L " + bottom_left.x * scale + "," + bottom_left.y * scale);
         writer.Write(" Z\" fill=\"rgb(" + color.r + "," + color.g + "," + color.b + ")\"/>\n");
     }
 
@@ -87,11 +97,11 @@ public static class VectorGraphicsWriter // FIXME: TODO: clean this up! // CONSI
         return result;
     }
 
-    private static void write_pixel_art_header()
+    private static void write_pixel_art_header(string path)
     {
-        writer = new StreamWriter(svg_path); //Replace-able with: write_uv_header();
-        writer.Write("<svg width=\"" + scale + "\" height=\"" + scale + "\"");
-        writer.Write(" viewBox =\"" + (-scale/2) + " " + (-scale/2) + " " + scale + " " + scale + "\">\n");
+        writer = new StreamWriter(path); //Replace-able with: write_uv_header();
+        writer.Write("<svg width=\"" + scale + "\" height=\"" + scale + "\">\n");
+        //writer.Write(" viewBox =\"" + (-scale/2) + " " + (-scale/2) + " " + scale + " " + scale + "\">\n");
     }
 
     private static void write_uv_header()

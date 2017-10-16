@@ -47,7 +47,7 @@ public class NormalizedSphericalCoordinates
     /// <summary>
     /// Inspector - Converts spherical coordinates into octahedron UV space.
     /// </summary>
-    /// <param name="spherical">The spherical coordinates that will be converted</param>
+    /// 7
     /// <returns>The UV coordinates for an octahedron.</returns> 
     public static implicit operator OctahedralUVCoordinates(NormalizedSphericalCoordinates spherical)
     {
