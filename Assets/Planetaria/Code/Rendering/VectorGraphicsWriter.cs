@@ -45,7 +45,7 @@ public static class VectorGraphicsWriter // FIXME: TODO: clean this up! // CONSI
             StereoscopicProjectionCoordinates[,] pixel_grid_points = new StereoscopicProjectionCoordinates[rows+1,columns+1];
             for (int row = 0; row <= rows; ++row) // <= because of rows+1 size
             {
-                float elevation = Mathf.Lerp(0.5f, -0.5f, row/(float)rows) * height;
+                float elevation = Mathf.Lerp(0.5f, -0.5f, row/(float)rows) * height + Mathf.PI/2;
                 for (int column = 0; column <= columns; ++column)
                 {
                     float angle = Mathf.Lerp(-0.5f, 0.5f, column/(float)columns) * width;
@@ -67,15 +67,15 @@ public static class VectorGraphicsWriter // FIXME: TODO: clean this up! // CONSI
 
     private static void set_pixel(Vector2 top_left, Vector2 top_right, Vector2 bottom_right, Vector2 bottom_left, Color32 color)
     {
-        /*top_left += Vector2.one/2;
+        top_left += Vector2.one/2;
         top_right += Vector2.one/2;
         bottom_right += Vector2.one/2;
-        bottom_left += Vector2.one/2;*/
+        bottom_left += Vector2.one/2;
 
-        /*top_left = new Vector2(top_left.x, -top_left.y);
-        top_right = new Vector2(top_right.x, -top_right.y);
-        bottom_right = new Vector2(bottom_right.x, -bottom_right.y);
-        bottom_left = new Vector2(bottom_left.x, -bottom_left.y);*/
+        top_left = new Vector2(-top_left.x, top_left.y);
+        top_right = new Vector2(-top_right.x, top_right.y);
+        bottom_right = new Vector2(-bottom_right.x, bottom_right.y);
+        bottom_left = new Vector2(-bottom_left.x, bottom_left.y);
 
         writer.Write("\t<path d=\"");
         writer.Write("M" + top_left.x * scale + "," + top_left.y * scale);
