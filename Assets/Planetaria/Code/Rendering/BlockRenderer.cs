@@ -59,7 +59,7 @@ public static class BlockRenderer
         return (begin + end) / 2; // return location of max error
     }
 
-    private static void partition_arc(Arc arc, float begin, float end)
+    public static void partition_arc(Arc arc, float begin, float end) // FIXME: make private
     {
         float absolute_begin = begin;
         float absolute_end = end;

@@ -227,6 +227,7 @@
      <None Include="Assets\OVR\Editor\AndroidManifest.OVRSubmission.xml" />
      <None Include="Assets\OVR\Shaders\OVRColorRampAlpha.shader" />
      <None Include="Assets\OVR\Resources\OVRMRUnlit.shader" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_d385a19635969be4cbfcda21fdb20b08.txt" />
      <None Include="Assets\OVR\Shaders\Unlit Crosshair.shader" />
      <None Include="Assets\OVR\Resources\Unlit Transparent Color.shader" />
      <None Include="Assets\OVR\Resources\OVRMRCameraFrameLit.shader" />

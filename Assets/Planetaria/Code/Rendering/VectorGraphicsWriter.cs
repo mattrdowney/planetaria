@@ -61,29 +61,54 @@ public static class VectorGraphicsWriter // FIXME: TODO: clean this up! // CONSI
 
             Arc left_arc_rail = Arc.arc(rectangle_corners[1].data, rectangle_corners[2].data);
             Arc right_arc_rail = Arc.arc(rectangle_corners[0].data, rectangle_corners[3].data);
-
-            for (int row = 0; row < rows; ++row) // <= because of rows+1 size
+            Arc[,] row_arcs = new Arc[rows,2];
+            for (int row = 0; row < rows; ++row)
             {
-                float upper_interpolation = row/(float)rows;
-                float lower_interpolation = (row+1)/(float)rows;
-                Arc upper_row = Arc.arc(left_arc_rail.position(upper_interpolation*left_arc_rail.angle()),
-                        right_arc_rail.position(upper_interpolation*right_arc_rail.angle()));
-                Arc lower_row = Arc.arc(left_arc_rail.position(lower_interpolation*left_arc_rail.angle()),
-                        right_arc_rail.position(lower_interpolation*right_arc_rail.angle()));
-                for (int column = 0; column <= columns; ++column)
-                {
-                    float left_interpolation = row/(float)rows;
-                    float right_interpolation = (row+1)/(float)rows;
-                    Arc left_column = Arc.arc(upper_row.position(left_interpolation*upper_row.angle()),
-                            lower_row.position(left_interpolation*lower_row.angle()));
-                    Arc right_column = Arc.arc(upper_row.position(right_interpolation*upper_row.angle()),
-                            lower_row.position(right_interpolation*lower_row.angle()));
-                    {
-                        // CONSIDER: temporary test with set_pixel.
-                        // Render four arc sides here. //CONSIDER: pre-make the row and column arcs
-                    }
-                }
+                float upper_row = row/(float)rows;
+                float lower_row = (row+1)/(float)rows;
+                row_arcs[row,0] = Arc.arc(left_arc_rail.position(upper_row*left_arc_rail.angle()),
+                        right_arc_rail.position(upper_row*right_arc_rail.angle()));
+                row_arcs[row,1] = Arc.arc(right_arc_rail.position(lower_row*right_arc_rail.angle()),
+                        left_arc_rail.position(lower_row*left_arc_rail.angle()));
             }
+
+            Arc upper_arc_rail = Arc.arc(rectangle_corners[1].data, rectangle_corners[0].data);
+            Arc lower_arc_rail = Arc.arc(rectangle_corners[2].data, rectangle_corners[3].data);
+            Arc[,] column_arcs = new Arc[columns,2];
+            for (int column = 0; column < columns; ++column)
+            {
+                float left_column = column/(float)columns;
+                float right_column = (column+1)/(float)columns;
+                column_arcs[column,0] = Arc.arc(upper_arc_rail.position(left_column*upper_arc_rail.angle()),
+                        lower_arc_rail.position(left_column*lower_arc_rail.angle()));
+                column_arcs[column,1] = Arc.arc(lower_arc_rail.position(right_column*lower_arc_rail.angle()),
+                        upper_arc_rail.position(right_column*upper_arc_rail.angle()));
+            }
+            
+            for (int row = 0; row < rows; ++row)
+            {
+                float upper_row = row/(float)rows;
+                float lower_row = (row+1)/(float)rows;
+                Arc upper_arc = row_arcs[row,0];
+                Arc lower_arc = row_arcs[row,1];
+                float upper_angle = upper_arc.angle();
+                float lower_angle = lower_arc.angle();
+                for (int column = 0; column < columns; ++column)
+                {
+                    begin_shape();
+                    float left_column = column/(float)columns;
+                    float right_column = (column+1)/(float)columns;
+                    Arc left_arc = column_arcs[column,0];
+                    Arc right_arc = column_arcs[column,1];
+                    float left_angle = left_arc.angle();
+                    float right_angle = right_arc.angle();
+                    BlockRenderer.partition_arc(upper_arc, upper_angle*left_column, upper_angle*right_column);
+                    BlockRenderer.partition_arc(right_arc, right_angle*upper_row, right_angle*lower_row);
+                    BlockRenderer.partition_arc(lower_arc, lower_angle*(1-right_column), lower_angle*(1-left_column));
+                    BlockRenderer.partition_arc(right_arc, left_angle*(1-lower_row), left_angle*(1-upper_row));
+                    end_shape(pixel_buffer[columns*row + column]);
+                }
+            }      
         }
         write_footer();
     }
