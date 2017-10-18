@@ -8,6 +8,7 @@ public static class BlockRenderer
     {
         // For intersecting shapes:
 
+        VectorGraphicsWriter.begin_canvas();
         VectorGraphicsWriter.begin_shape();
 
         BlockRendererIterator.prepare(block);
@@ -18,7 +19,8 @@ public static class BlockRenderer
             partition_arc(arc_iterator.arc, arc_iterator.begin, arc_iterator.end);
         }
 
-        VectorGraphicsWriter.end_shape();
+        VectorGraphicsWriter.end_shape(Color.black);
+        VectorGraphicsWriter.end_canvas();
         
         // 2: take any point from intersections
         // 3: if a point exists, draw that point until it reaches the next point in the set, delete last point, repeat #3

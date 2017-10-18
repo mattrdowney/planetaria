@@ -23,6 +23,7 @@ public class LevelCreatorEditor : Editor
     private void OnDisable ()
     {
         temporary_arc.close_shape();
+        
         Repaint();
     }
 

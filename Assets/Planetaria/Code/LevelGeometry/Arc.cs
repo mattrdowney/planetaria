@@ -56,6 +56,17 @@ public struct Arc
     }
 
     /// <summary>
+    /// Constructor - Creates convex, concave, or great arcs.
+    /// </summary>
+    /// <param name="start">The start point of the arc.</param>
+    /// <param name="end">The end point of the arc.</param>
+    /// <returns>An arc along the surface of a unit sphere.</returns>
+    public static Arc arc(Vector3 start, Vector3 end)
+    {
+        return new Arc(start, end, end);
+    }
+
+    /// <summary>
     /// Constructor - Determines whether a corner is concave or convex and delegates accordingly.
     /// </summary>
     /// <param name="left">The arc that attaches to the beginning of the corner.</param>

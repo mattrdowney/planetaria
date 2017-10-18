@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public static class VectorGraphicsWriter // FIXME: TODO: clean this up! // CONSIDER: make into an abstract interface? // Parameters for "edge creation" get weird if an interface is used
 {
-    public static void begin_shape()
+    public static void begin_canvas()
     {
         scene_index = SceneManager.GetActiveScene().buildIndex;
         if (!Directory.Exists(svg_folder_path + "/" + scene_index))
@@ -14,6 +14,10 @@ public static class VectorGraphicsWriter // FIXME: TODO: clean this up! // CONSI
         }
         svg_path = svg_relative_folder_path + scene_index + "/" + scene_index + ".txt";
         write_uv_header();
+    }
+
+    public static void begin_shape()
+    {
         first = true;
         writer.Write("\t<path d=\"");
     }
@@ -31,6 +35,7 @@ public static class VectorGraphicsWriter // FIXME: TODO: clean this up! // CONSI
 
     public static void set_pixels(string file, float scale)
     {
+        scale = Mathf.Clamp(Mathf.Abs(scale), 0, Mathf.PI);
         write_pixel_art_header("Assets/Planetaria/Art/VectorGraphics/checker_board.txt");
         optional<Texture2D> texture = Miscellaneous.fetch_image(file);
         if (texture.exists)
@@ -42,23 +47,41 @@ public static class VectorGraphicsWriter // FIXME: TODO: clean this up! // CONSI
             float width = ((columns/max_size)*scale);
             float height = ((rows/max_size)*scale);
 
-            StereoscopicProjectionCoordinates[,] pixel_grid_points = new StereoscopicProjectionCoordinates[rows+1,columns+1];
-            for (int row = 0; row <= rows; ++row) // <= because of rows+1 size
+            NormalizedCartesianCoordinates[] cardinal_boundaries = new NormalizedCartesianCoordinates[4];
+            cardinal_boundaries[0] = new NormalizedSphericalCoordinates(1.5f*Mathf.PI - width, 0.0f*Mathf.PI);
+            cardinal_boundaries[1] = new NormalizedSphericalCoordinates(1.5f*Mathf.PI - height, 0.5f*Mathf.PI);
+            cardinal_boundaries[2] = new NormalizedSphericalCoordinates(1.5f*Mathf.PI - width, 1.0f*Mathf.PI);
+            cardinal_boundaries[3] = new NormalizedSphericalCoordinates(1.5f*Mathf.PI - height, 1.5f*Mathf.PI);
+
+            NormalizedCartesianCoordinates[] rectangle_corners = new NormalizedCartesianCoordinates[4];
+            for (int side = 0; side < cardinal_boundaries.Length; ++side)
             {
-                float elevation = Mathf.Lerp(0.5f, -0.5f, row/(float)rows) * height + Mathf.PI/2;
+                rectangle_corners[side] = new NormalizedCartesianCoordinates(Vector3.Cross(cardinal_boundaries[side].data, cardinal_boundaries[(side + 1) % 4].data));
+            }
+
+            Arc left_arc_rail = Arc.arc(rectangle_corners[1].data, rectangle_corners[2].data);
+            Arc right_arc_rail = Arc.arc(rectangle_corners[0].data, rectangle_corners[3].data);
+
+            for (int row = 0; row < rows; ++row) // <= because of rows+1 size
+            {
+                float upper_interpolation = row/(float)rows;
+                float lower_interpolation = (row+1)/(float)rows;
+                Arc upper_row = Arc.arc(left_arc_rail.position(upper_interpolation*left_arc_rail.angle()),
+                        right_arc_rail.position(upper_interpolation*right_arc_rail.angle()));
+                Arc lower_row = Arc.arc(left_arc_rail.position(lower_interpolation*left_arc_rail.angle()),
+                        right_arc_rail.position(lower_interpolation*right_arc_rail.angle()));
                 for (int column = 0; column <= columns; ++column)
                 {
-                    float angle = Mathf.Lerp(-0.5f, 0.5f, column/(float)columns) * width;
-                    pixel_grid_points[row,column] = new NormalizedSphericalCoordinates(elevation, angle);
-                }
-            }
-            for (int row = 0; row < rows; ++row)
-            {
-                for (int column = 0; column < columns; ++column)
-                {
-                    set_pixel(pixel_grid_points[row,column].data, pixel_grid_points[row,column+1].data,
-                            pixel_grid_points[row+1,column].data, pixel_grid_points[row+1,column+1].data,
-                            pixel_buffer[row*columns + column]);
+                    float left_interpolation = row/(float)rows;
+                    float right_interpolation = (row+1)/(float)rows;
+                    Arc left_column = Arc.arc(upper_row.position(left_interpolation*upper_row.angle()),
+                            lower_row.position(left_interpolation*lower_row.angle()));
+                    Arc right_column = Arc.arc(upper_row.position(right_interpolation*upper_row.angle()),
+                            lower_row.position(right_interpolation*lower_row.angle()));
+                    {
+                        // CONSIDER: temporary test with set_pixel.
+                        // Render four arc sides here. //CONSIDER: pre-make the row and column arcs
+                    }
                 }
             }
         }
@@ -85,10 +108,14 @@ public static class VectorGraphicsWriter // FIXME: TODO: clean this up! // CONSI
         writer.Write(" Z\" fill=\"rgb(" + color.r + "," + color.g + "," + color.b + ")\"/>\n");
     }
 
-    public static void end_shape()
+    public static void end_canvas()
     {
-        writer.Write(" Z\" fill=\"black\"/>\n");
         write_footer();
+    }
+
+    public static void end_shape(Color32 color)
+    {
+        writer.Write(" Z\" fill=\"rgb(" + color.r + "," + color.g + "," + color.b + ")\"/>\n");
     }
 
     public static TextAsset get_svg() // Unity is gr8; 10/10, would rate again
