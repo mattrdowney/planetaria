@@ -6,8 +6,6 @@ public static class BlockRenderer
 {
     public static void render(Block block)
     {
-        // For intersecting shapes:
-
         VectorGraphicsWriter.begin_canvas();
         VectorGraphicsWriter.begin_shape();
 
@@ -15,16 +13,11 @@ public static class BlockRenderer
 
         foreach (ArcIterator arc_iterator in BlockRendererIterator.arc_iterator())
         {
-            //Debug.Log("Arc#: " + block.arc_index(arc_iterator.arc) + " begin: " + arc_iterator.begin + " end: " + arc_iterator.end);
             partition_arc(arc_iterator.arc, arc_iterator.begin, arc_iterator.end);
         }
 
         VectorGraphicsWriter.end_shape(Color.black);
         VectorGraphicsWriter.end_canvas();
-        
-        // 2: take any point from intersections
-        // 3: if a point exists, draw that point until it reaches the next point in the set, delete last point, repeat #3
-        // 4: if there were no intersections, use simple draw to create whole shape.
     }
 
     private static float max_error_location(Arc arc, float begin_point_angle, float end_point_angle)
@@ -59,7 +52,12 @@ public static class BlockRenderer
         return (begin + end) / 2; // return location of max error
     }
 
-    public static void partition_arc(Arc arc, float begin, float end) // FIXME: make private
+    public static void draw_arc(Arc arc, float interpolator_begin, float interpolator_end)
+    {
+        partition_arc(arc, interpolator_begin*arc.angle(), interpolator_end*arc.angle());
+    }
+
+    private static void partition_arc(Arc arc, float begin, float end)
     {
         float absolute_begin = begin;
         float absolute_end = end;

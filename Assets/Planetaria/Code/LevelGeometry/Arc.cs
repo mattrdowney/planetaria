@@ -173,6 +173,17 @@ public struct Arc
     }
 
     /// <summary>
+    /// Inspector - Get the position at a particular interpolation factor [0,1].
+    /// </summary>
+    /// <param name="interpolator">The interpolation factor [0,1] along the arc.</param>
+    /// <param name="extrusion">The radius to extrude.</param>
+    /// <returns>A position on the arc.</returns>
+    public Vector3 interpolate(float interpolator, float extrusion = 0f)
+    {
+        return position(interpolator*angle(), extrusion);
+    }
+
+    /// <summary>
     /// Inspector - Determine if the corner between between left's end and right's beginning is convex
     /// (i.e. a reflex angle).
     /// </summary>

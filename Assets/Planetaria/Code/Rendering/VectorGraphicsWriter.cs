@@ -59,78 +59,54 @@ public static class VectorGraphicsWriter // FIXME: TODO: clean this up! // CONSI
                 rectangle_corners[side] = new NormalizedCartesianCoordinates(Vector3.Cross(cardinal_boundaries[side].data, cardinal_boundaries[(side + 1) % 4].data));
             }
 
-            Arc left_arc_rail = Arc.arc(rectangle_corners[1].data, rectangle_corners[2].data);
-            Arc right_arc_rail = Arc.arc(rectangle_corners[0].data, rectangle_corners[3].data);
-            Arc[,] row_arcs = new Arc[rows,2];
-            for (int row = 0; row < rows; ++row)
-            {
-                float upper_row = row/(float)rows;
-                float lower_row = (row+1)/(float)rows;
-                row_arcs[row,0] = Arc.arc(left_arc_rail.position(upper_row*left_arc_rail.angle()),
-                        right_arc_rail.position(upper_row*right_arc_rail.angle()));
-                row_arcs[row,1] = Arc.arc(right_arc_rail.position(lower_row*right_arc_rail.angle()),
-                        left_arc_rail.position(lower_row*left_arc_rail.angle()));
-            }
+            Arc upper_rail = Arc.arc(rectangle_corners[1].data, rectangle_corners[0].data);
+            Arc right_rail = Arc.arc(rectangle_corners[0].data, rectangle_corners[3].data);
+            Arc lower_rail = Arc.arc(rectangle_corners[2].data, rectangle_corners[3].data);
+            Arc left_rail = Arc.arc(rectangle_corners[1].data, rectangle_corners[2].data);
 
-            Arc upper_arc_rail = Arc.arc(rectangle_corners[1].data, rectangle_corners[0].data);
-            Arc lower_arc_rail = Arc.arc(rectangle_corners[2].data, rectangle_corners[3].data);
-            Arc[,] column_arcs = new Arc[columns,2];
-            for (int column = 0; column < columns; ++column)
-            {
-                float left_column = column/(float)columns;
-                float right_column = (column+1)/(float)columns;
-                column_arcs[column,0] = Arc.arc(upper_arc_rail.position(left_column*upper_arc_rail.angle()),
-                        lower_arc_rail.position(left_column*lower_arc_rail.angle()));
-                column_arcs[column,1] = Arc.arc(lower_arc_rail.position(right_column*lower_arc_rail.angle()),
-                        upper_arc_rail.position(right_column*upper_arc_rail.angle()));
-            }
+            Arc[] upper_arcs = get_arcs(left_rail, right_rail, rows);
+            Arc[] lower_arcs = get_arcs(right_rail, left_rail, rows, true);
+            Arc[] right_arcs = get_arcs(upper_rail, lower_rail, columns, true);
+            Arc[] left_arcs = get_arcs(lower_rail, upper_rail, columns);
             
+            begin_shape();
+            BlockRenderer.draw_arc(upper_arcs[0], 0, 1);
+            BlockRenderer.draw_arc(right_arcs[columns-1], 0, 1);
+            BlockRenderer.draw_arc(lower_arcs[rows-1], 0, 1);
+            BlockRenderer.draw_arc(left_arcs[0], 0, 1);
+            end_shape(Color.black);
+
             for (int row = 0; row < rows; ++row)
             {
-                float upper_row = row/(float)rows;
-                float lower_row = (row+1)/(float)rows;
-                Arc upper_arc = row_arcs[row,0];
-                Arc lower_arc = row_arcs[row,1];
-                float upper_angle = upper_arc.angle();
-                float lower_angle = lower_arc.angle();
+                //if (row > 0) continue;
+                float prior_row = row/(float)rows;
+                float later_row = (row+1)/(float)rows;
                 for (int column = 0; column < columns; ++column)
                 {
+                    //if (column > 0) continue;
+                    float prior_column = column/(float)columns;
+                    float later_column = (column+1)/(float)columns;
                     begin_shape();
-                    float left_column = column/(float)columns;
-                    float right_column = (column+1)/(float)columns;
-                    Arc left_arc = column_arcs[column,0];
-                    Arc right_arc = column_arcs[column,1];
-                    float left_angle = left_arc.angle();
-                    float right_angle = right_arc.angle();
-                    BlockRenderer.partition_arc(upper_arc, upper_angle*left_column, upper_angle*right_column);
-                    BlockRenderer.partition_arc(right_arc, right_angle*upper_row, right_angle*lower_row);
-                    BlockRenderer.partition_arc(lower_arc, lower_angle*(1-right_column), lower_angle*(1-left_column));
-                    BlockRenderer.partition_arc(right_arc, left_angle*(1-lower_row), left_angle*(1-upper_row));
+                    BlockRenderer.draw_arc(upper_arcs[row], prior_column, later_column); // upper row
+                    BlockRenderer.draw_arc(right_arcs[column], prior_row, later_row); // right column
+                    BlockRenderer.draw_arc(lower_arcs[row], (1-later_column), (1-prior_column)); // lower row
+                    BlockRenderer.draw_arc(left_arcs[column], (1-later_row), (1-prior_row)); // left column
                     end_shape(pixel_buffer[columns*row + column]);
                 }
-            }      
+            }
         }
         write_footer();
     }
 
-    private static void set_pixel(Vector2 top_left, Vector2 top_right, Vector2 bottom_right, Vector2 bottom_left, Color32 color)
+    private static Arc[] get_arcs(Arc first_rail, Arc second_rail, int segments, bool offset = false)
     {
-        top_left += Vector2.one/2;
-        top_right += Vector2.one/2;
-        bottom_right += Vector2.one/2;
-        bottom_left += Vector2.one/2;
-
-        top_left = new Vector2(-top_left.x, top_left.y);
-        top_right = new Vector2(-top_right.x, top_right.y);
-        bottom_right = new Vector2(-bottom_right.x, bottom_right.y);
-        bottom_left = new Vector2(-bottom_left.x, bottom_left.y);
-
-        writer.Write("\t<path d=\"");
-        writer.Write("M" + top_left.x * scale + "," + top_left.y * scale);
-        writer.Write(" L " + top_right.x * scale + "," + top_right.y * scale);
-        writer.Write(" L " + bottom_right.x * scale + "," + bottom_right.y * scale);
-        writer.Write(" L " + bottom_left.x * scale + "," + bottom_left.y * scale);
-        writer.Write(" Z\" fill=\"rgb(" + color.r + "," + color.g + "," + color.b + ")\"/>\n");
+        Arc[] arcs = new Arc[segments];
+        for (int segment = 0; segment < segments; ++segment)
+        {
+            float interpolation = (segment+(offset?1:0))/(float)segments;
+            arcs[segment] = Arc.arc(first_rail.interpolate(interpolation), second_rail.interpolate(interpolation));
+        }
+        return arcs;
     }
 
     public static void end_canvas()

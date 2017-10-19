@@ -67,7 +67,6 @@
      <Compile Include="Assets\Planetaria\Code\Editor\GridUtility.cs" />
      <Compile Include="Assets\Planetaria\Code\Editor\LevelCreatorEditor.cs" />
      <Compile Include="Assets\Planetaria\Code\Editor\RendererUtility.cs" />
-     <None Include="Assets\Planetaria\Art\VectorGraphics\checker_board.txt" />
      <None Include="Assets\OVR\Resources\OVRMRUnlitTransparent.shader" />
      <None Include="Assets\OVR\Resources\OVRMRChromaKey.cginc" />
      <None Include="Assets\OVR\Editor\AndroidManifest.OVRSubmission.xml" />
