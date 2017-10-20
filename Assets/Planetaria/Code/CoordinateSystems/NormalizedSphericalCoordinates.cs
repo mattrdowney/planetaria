@@ -73,10 +73,10 @@ public class NormalizedSphericalCoordinates
     {
         if (data_variable.x < 0 || data_variable.x > Mathf.PI)
         {
-            data_variable.x = Mathf.PingPong(data_variable.x, 2*Mathf.PI); //TODO: test that 1) Vector2 is properly assigned 2) PingPong works for negative numbers
+            data_variable.x %= 2*Mathf.PI;
             if (data_variable.x > Mathf.PI)
             {
-                data_variable.x -= Mathf.PI;
+                data_variable.x = 2*Mathf.PI - data_variable.x;
                 data_variable.y += Mathf.PI; // going through a pole changes the azimuth
             }
         }
