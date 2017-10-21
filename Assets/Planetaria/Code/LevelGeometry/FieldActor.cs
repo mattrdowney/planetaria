@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 
-public abstract class FieldActor : Component
+public abstract class FieldActor : PlanetariaActor
 {
     /// <summary>
-    /// Mutator - Changes traveller.
+    /// Mutator - Changes other object.
     /// </summary>
-    /// <param name="traveller">The object being affected by the field field.</param>
-    public abstract void Update(PlanetariaActor traveller);
+    /// <param name="other">The object that is being manipulated by the field.</param>
+    public abstract void on_field_stay(PlanetariaActor other);
 }
 
 /*

@@ -1,13 +1,12 @@
 ﻿using UnityEngine;
 
-public abstract class BlockActor : Component
+public abstract class BlockActor : PlanetariaActor
 {
     /// <summary>
-    /// Mutator - Changes traveller.
+    /// Mutator - Changes other object.
     /// </summary>
-    /// <param name="traveller">The object that is being manipulated by the block.</param>
-    /// <returns>Should the traveller cling to the block?</returns>
-    public abstract bool Update(PlanetariaActor traveller);
+    /// <param name="other">The object that is being manipulated by the block.</param>
+    public abstract void on_block_stay(PlanetariaActor other);
 }
 
 /*

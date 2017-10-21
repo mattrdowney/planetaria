@@ -8,13 +8,13 @@ public abstract class PlanetariaMonoBehaviour : MonoBehaviour
     protected abstract void on_time_zero();
     protected abstract void on_every_frame();
 
-    protected abstract void on_block_enter(BlockInteractor block_information);
-    protected abstract void on_block_exit(BlockInteractor block_information);
-    protected abstract void on_block_stay(BlockInteractor block_information);
+    protected abstract void on_block_enter(BlockCollision block_information);
+    protected abstract void on_block_exit(BlockCollision block_information);
+    protected abstract void on_block_stay(BlockCollision block_information);
     
-    protected abstract void on_field_enter(FieldInteractor zone_information);
-    protected abstract void on_field_exit(FieldInteractor zone_information);
-    protected abstract void on_field_stay(FieldInteractor zone_information);
+    protected abstract void on_field_enter(Field zone_information);
+    protected abstract void on_field_exit(Field zone_information);
+    protected abstract void on_field_stay(Field zone_information);
 
     protected abstract void Awake();
     protected abstract void Start();

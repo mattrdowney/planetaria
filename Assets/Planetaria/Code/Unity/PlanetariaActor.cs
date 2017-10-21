@@ -6,8 +6,8 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
 {
     protected sealed override void Awake()
     {
-        collision_map = new Dictionary<Block, BlockInteractor>();
-        trigger_map = new Dictionary<Field, FieldInteractor>();
+        collision_map = new Dictionary<Block, BlockCollision>();
+        trigger_set = new List<Field>();
         on_existance();
     }
 
@@ -44,20 +44,20 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
             if (!collision_map.ContainsKey(block.data) && arc.data.contains(transform.position.data, transform.scale))
             {
                 float half_height = transform.scale / 2;
-                BlockInteractor collision = new BlockInteractor(arc.data, transform.previous_position.data, transform.position.data, half_height);
+                BlockCollision collision = new BlockCollision(arc.data, transform.previous_position.data, transform.position.data, half_height);
                 collision_map.Add(block.data, collision);
                 on_block_enter(collision);
             }
             else if (collision_map.ContainsKey(block.data) && !block.data.contains(transform.position.data, transform.scale))
             {
-                BlockInteractor collision = collision_map[block.data];
+                BlockCollision collision = collision_map[block.data];
                 on_block_exit(collision);
                 collision_map.Remove(block.data);
             }
 
             if (collision_map.ContainsKey(block.data))
             {
-                BlockInteractor collision = collision_map[block.data];
+                BlockCollision collision = collision_map[block.data];
                 on_block_stay(collision);
             }
         }
@@ -70,24 +70,20 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
                 return;
             }
 
-            if (!trigger_map.ContainsKey(field.data) && arc.data.contains(transform.position.data, transform.scale))
+            if (!trigger_set.Contains(field.data) && arc.data.contains(transform.position.data, transform.scale))
             {
-                float half_height = transform.scale / 2;
-                FieldInteractor trigger = new FieldInteractor(field.data, half_height);
-                trigger_map.Add(field.data, trigger);
-                on_field_enter(trigger);
+                on_field_enter(field.data);
+                trigger_set.Add(field.data);
             }
-            else if (trigger_map.ContainsKey(field.data) && !field.data.contains(transform.position.data, transform.scale))
+            else if (trigger_set.Contains(field.data) && !field.data.contains(transform.position.data, transform.scale))
             {
-                FieldInteractor collision = trigger_map[field.data];
-                on_field_exit(collision);
-                trigger_map.Remove(field.data);
+                on_field_exit(field.data);
+                trigger_set.Remove(field.data);
             }
 
-            if (trigger_map.ContainsKey(field.data))
+            if (trigger_set.Contains(field.data))
             {
-                FieldInteractor collision = trigger_map[field.data];
-                on_field_stay(collision);
+                on_field_stay(field.data);
             }
         }
     }
@@ -102,8 +98,8 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
     protected sealed override void OnCollisionStay(Collision collision) { }
     protected sealed override void OnCollisionExit(Collision collision) { }
 
-    private Dictionary<Block, BlockInteractor> collision_map;
-    private Dictionary<Field, FieldInteractor> trigger_map;
+    private Dictionary<Block, BlockCollision> collision_map;
+    private List<Field> trigger_set;
 }
 
 /*

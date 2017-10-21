@@ -95,7 +95,7 @@ public static class ShapeRenderer
         Vector3 begin = arc.position(begin_point_angle);
         Vector3 middle = arc.position(middle_point_angle);
         Vector3 end = arc.position(end_point_angle);
-
+        
         OctahedralUVCoordinates begin_point = new NormalizedCartesianCoordinates(begin);
         OctahedralUVCoordinates middle_point = new NormalizedCartesianCoordinates(middle);
         OctahedralUVCoordinates end_point = new NormalizedCartesianCoordinates(end);

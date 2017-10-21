@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-public class BlockInteractor
+public class BlockCollision
 {
-    public BlockInteractor(Arc arc, Vector3 last_position, Vector3 current_position, float radius)
+    public BlockCollision(Arc arc, Vector3 last_position, Vector3 current_position, float radius)
     {
         NormalizedCartesianCoordinates begin = new NormalizedCartesianCoordinates(last_position);
         NormalizedCartesianCoordinates end = new NormalizedCartesianCoordinates(current_position);
@@ -56,7 +56,7 @@ public class BlockInteractor
         interpolator_angle = closest_arc.data.position_to_angle(closest_intersection_point.data);
     }
 
-    private static void nullify(BlockInteractor block_interactor)
+    private static void nullify(BlockCollision block_interactor)
     {
         Debug.Log("Critical Err0r.");
         block_interactor.target = null;
