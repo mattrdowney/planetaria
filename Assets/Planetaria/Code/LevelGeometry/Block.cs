@@ -30,6 +30,10 @@ public class Block : MonoBehaviour
 
         return result;
     }
+    public void traverse(BlockCollision collision)
+    {
+
+    } 
 
     public void add(optional<Arc> arc)
     {
@@ -111,6 +115,12 @@ public class Block : MonoBehaviour
         return arc_list.Count;
     }
 
+    private void Start()
+    {
+        effects = this.GetComponents<BlockActor>(); // TODO: check null is properly set
+        transform = new PlanetariaTransform(this.GetComponent<Transform>());
+    }
+
     private void OnDestroy()
     {
         foreach (Arc arc in arc_list)
@@ -123,9 +133,9 @@ public class Block : MonoBehaviour
         }
     }
 
-    [SerializeField] private BlockActor behavior;
-    [SerializeField] private List<Arc> arc_list;
-    //[SerializeField] private PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
+    [SerializeField] private BlockActor[] effects; // previously optional<BlockActor>
+    [SerializeField] private List<Arc> arc_list; // FIXME: System.Collection.Immutable.ImmutableArray<Arc> not supported in current Unity version?
+    [SerializeField] private new PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
 }
 
 /*

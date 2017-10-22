@@ -2,26 +2,25 @@
 
 public class BlockCollision
 {
-    public BlockCollision(Arc arc, Vector3 last_position, Vector3 current_position, float radius)
+    public static optional<BlockCollision> block_collision(Arc arc, Vector3 last_position, Vector3 current_position, float radius)
     {
+        BlockCollision result = new BlockCollision();
+
         NormalizedCartesianCoordinates begin = new NormalizedCartesianCoordinates(last_position);
         NormalizedCartesianCoordinates end = new NormalizedCartesianCoordinates(current_position);
 
         optional<Block> block = PlanetariaCache.block_cache.get(arc);
         if (!block.exists)
         {
-            nullify(this);
-            return;
+            return new optional<BlockCollision>();
         }
 
-        target = block.data;
-        player_radius = radius;
+        result.target = block.data;
 
-        optional<int> collision_arc_index = target.arc_index(arc);
+        optional<int> collision_arc_index = result.target.arc_index(arc);
         if (!collision_arc_index.exists)
         {
-            nullify(this);
-            return;
+            return new optional<BlockCollision>();
         }
 
         int closest_index = 0;
@@ -30,7 +29,7 @@ public class BlockCollision
         for (int adjacent_arc_index = collision_arc_index.data - 2; adjacent_arc_index <= collision_arc_index.data + 2; ++adjacent_arc_index)
         {
             int current_index = adjacent_arc_index;
-            optional<Arc> current_arc = target.at(ref current_index);
+            optional<Arc> current_arc = result.target.at(ref current_index);
             optional<Vector3> current_intersection_point = PlanetariaIntersection.arc_path_intersection(current_arc.data, begin, end); //TODO: check .data
             if (current_intersection_point.exists)
             {
@@ -43,32 +42,23 @@ public class BlockCollision
             }
         }
 
-        optional<Arc> closest_arc = target.at(ref closest_index);
+        optional<Arc> closest_arc = result.target.at(ref closest_index);
         
         optional<Vector3> closest_intersection_point = PlanetariaIntersection.arc_path_intersection(closest_arc.data, begin, end); //TODO: check
         if (!closest_intersection_point.exists)
         {
-            nullify(this);
-            return;
+            return new optional<BlockCollision>();
         }
 
-        arc_index = closest_index;
-        interpolator_angle = closest_arc.data.position_to_angle(closest_intersection_point.data);
-    }
+        result.arc_index = closest_index;
+        result.interpolator_angle = closest_arc.data.position_to_angle(closest_intersection_point.data);
 
-    private static void nullify(BlockCollision block_interactor)
-    {
-        Debug.Log("Critical Err0r.");
-        block_interactor.target = null;
-        block_interactor.arc_index = 0;
-        block_interactor.interpolator_angle = 0f;
-        block_interactor.player_radius = 0f;
+        return result;
     }
 
     private Block target;
-    private int arc_index;
+    private int arc_index; // FIXME: iterator
     private float interpolator_angle;
-    private float player_radius;
 }
 
 /*

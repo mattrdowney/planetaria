@@ -44,9 +44,12 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
             if (!collision_map.ContainsKey(block.data) && arc.data.contains(transform.position.data, transform.scale))
             {
                 float half_height = transform.scale / 2;
-                BlockCollision collision = new BlockCollision(arc.data, transform.previous_position.data, transform.position.data, half_height);
-                collision_map.Add(block.data, collision);
-                on_block_enter(collision);
+                optional<BlockCollision> collision = BlockCollision.block_collision(arc.data, transform.previous_position.data, transform.position.data, half_height);
+                if (collision.exists)
+                {
+                    on_block_enter(collision.data);
+                    collision_map.Add(block.data, collision.data);
+                }
             }
             else if (collision_map.ContainsKey(block.data) && !block.data.contains(transform.position.data, transform.scale))
             {

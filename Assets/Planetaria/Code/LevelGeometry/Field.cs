@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Field : Component
+public class Field : MonoBehaviour
 {   
     /// <summary>
     /// Constructor - Generates a field using a .ssvg file.
@@ -50,8 +50,15 @@ public class Field : Component
         return plane_list;
     }
 
-    private FieldActor field;
-    private List<Plane> plane_list;
+    private void Start()
+    {
+        effects = this.GetComponents<FieldActor>(); // TODO: check null is properly set
+        transform = new PlanetariaTransform(this.GetComponent<Transform>());
+    }
+    
+    private FieldActor[] effects; // previously FieldActor
+    private List<Plane> plane_list; // FIXME: System.Collection.Immutable.ImmutableArray<Plane> not supported in current Unity version?
+    [SerializeField] private new PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
 }
 
 /*
