@@ -3,7 +3,7 @@ using UnityEngine;
 
 [System.Serializable]
 [ExecuteInEditMode]
-public class Block : MonoBehaviour
+public class Block : MonoBehaviour // Consider: class Shape : List<Arc> : IEnumerable<Arc>
 {
     /// <summary>
     /// Constructor - Generates a block using a .ssvg file.
@@ -26,14 +26,20 @@ public class Block : MonoBehaviour
         GameObject result = new GameObject("Shape");
         Block block = result.AddComponent<Block>();
 
-        block.arc_list = new List<Arc>();
+        block.arc_list = new List<optional<Arc>>();
 
         return result;
     }
+
     public void traverse(BlockCollision collision)
     {
 
-    } 
+    }
+
+    public IEnumerator<optional<Arc>> next_arc(IEnumerator<optional<Arc>> arc, int rightward_cycle_count)
+    {
+        //return arc_list.Get
+    }
 
     public void add(optional<Arc> arc)
     {
@@ -123,9 +129,12 @@ public class Block : MonoBehaviour
 
     private void OnDestroy()
     {
-        foreach (Arc arc in arc_list)
+        foreach (optional<Arc> arc in arc_list)
         {
-            PlanetariaCache.block_cache.uncache(arc);
+            if (arc.exists)
+            {
+                PlanetariaCache.block_cache.uncache(arc.data);
+            }
         }
         foreach (BoxCollider box_collider in this.gameObject.GetComponentsInChildren<BoxCollider>())
         {
@@ -134,7 +143,7 @@ public class Block : MonoBehaviour
     }
 
     [SerializeField] private BlockActor[] effects; // previously optional<BlockActor>
-    [SerializeField] private List<Arc> arc_list; // FIXME: System.Collection.Immutable.ImmutableArray<Arc> not supported in current Unity version?
+    [SerializeField] private List<optional<Arc>> arc_list; // FIXME: System.Collection.Immutable.ImmutableArray<Arc> not supported in current Unity version?
     [SerializeField] private new PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
 }
 

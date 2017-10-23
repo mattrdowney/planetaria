@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class BlockCollision
 {
@@ -57,7 +58,7 @@ public class BlockCollision
     }
 
     private Block target;
-    private int arc_index; // FIXME: iterator
+    private IEnumerator<Arc> arc_index;
     private float interpolator_angle;
 }
 
