@@ -1,8 +1,49 @@
-﻿public class ConvexGeometryVisitor : GeometryVisitor
+﻿using System.Collections.Generic;
+
+public sealed class ConvexGeometryVisitor : GeometryVisitor
 {
+    public ConvexGeometryVisitor(List<optional<Arc>> arc_list, ArcIndex arc_index, float angle)
+    {
+        geometry_visitor(this, arc_list, angle);
+        arc_index_variable = arc_index;
+    }
 
+    public GeometryVisitor move_cursor(float delta_length, float extrusion)
+    {
+        recalculate_boundaries(delta_length, extrusion);
 
-    private int arc_index;
+        int index = arc_index_variable.index;
+        float arc_length = arc_list_variable[index].data.length(extrusion);
+        float arc_angle = arc_list_variable[index].data.angle(extrusion);
+        float delta_angle = delta_length * (arc_angle/arc_length);
+
+        if (delta_angle > 0)
+        {
+
+        }
+        else
+        {
+
+        }
+    }
+
+    protected override void recalculate_boundaries(float delta_length, float extrusion)
+    {
+        if (extrusion != last_extrusion)
+        {
+            if (delta_length > 0)
+            {
+                //right_angle_boundary = // FIXME: implement
+            }
+
+            if (delta_length < 0)
+            {
+                //left_angle_boundary = // FIXME: implement
+            }
+        }
+    }
+
+    private ArcIndex arc_index_variable;
 }
 
 /*

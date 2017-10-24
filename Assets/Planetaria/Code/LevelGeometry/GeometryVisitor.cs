@@ -2,10 +2,30 @@
 
 public abstract class GeometryVisitor
 {
+    public static GeometryVisitor geometry_visitor(List<optional<Arc>> arc_list, ArcIndex arc_index, float angle)
+    {
+        if (!arc_list[arc_index.index].exists)
+        {
+            return new ConcaveGeometryVisitor(arc_list, arc_index, angle);
+        }
 
+        return new ConvexGeometryVisitor(arc_list, arc_index, angle);
+    }
 
-    private float last_extrusion = float.NaN;
-    private List<optional<Arc>> arc_list;
+    protected static GeometryVisitor geometry_visitor(GeometryVisitor self, List<optional<Arc>> arc_list, float angle)
+    {
+        self.arc_list_variable = arc_list;
+        self.cursor_position = angle;
+        return self;
+    }
+
+    protected abstract void recalculate_boundaries(float delta_length, float extrusion);
+
+    protected float cursor_position;
+    protected float last_extrusion = float.NaN;
+    protected float left_angle_boundary;
+    protected float right_angle_boundary;
+    protected List<optional<Arc>> arc_list_variable;
 }
 
 /*

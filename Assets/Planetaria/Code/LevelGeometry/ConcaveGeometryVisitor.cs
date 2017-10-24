@@ -1,9 +1,24 @@
-﻿public class ConcaveGeometryVisitor : GeometryVisitor
+﻿using System.Collections.Generic;
+
+public class ConcaveGeometryVisitor : GeometryVisitor
 {
+    public ConcaveGeometryVisitor(List<optional<Arc>> arc_list, ArcIndex arc_index, float angle)
+    {
+        geometry_visitor(this, arc_list, angle);
+        left_arc_index = arc_index.left();
+        right_arc_index = arc_index.right();
+    }
 
+    protected override void recalculate_boundaries(float extrusion)
+    {
+        if (extrusion != last_extrusion)
+        {
 
-    private int left_arc_index;
-    private int right_arc_index;
+        }
+    }
+
+    private ArcIndex left_arc_index;
+    private ArcIndex right_arc_index;
 }
 
 /*

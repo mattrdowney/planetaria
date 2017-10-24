@@ -28,6 +28,17 @@ public static class Miscellaneous
         }
         return texture;
     }
+
+	public static Subtype GetOrAddComponent<Subtype>(this Component self) where Subtype : Component
+    {
+		Subtype result = self.GetComponent<Subtype>();
+		if (result == null)
+        {
+			result = self.gameObject.AddComponent<Subtype>();
+		}
+
+		return result;
+	}
 }
 
 /*

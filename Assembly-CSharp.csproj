@@ -109,6 +109,7 @@
      <Compile Include="Assets\Planetaria\Code\CoordinateSystems\OctahedralUVCoordinates.cs" />
      <Compile Include="Assets\Planetaria\Code\CoordinateSystems\StereoscopicProjectionCoordinates.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelGeometry\Arc.cs" />
+     <Compile Include="Assets\Planetaria\Code\LevelGeometry\ArcIndex.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelGeometry\Block.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelGeometry\BlockActor.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelGeometry\ConcaveGeometryVisitor.cs" />
