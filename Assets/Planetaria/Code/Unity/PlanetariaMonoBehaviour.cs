@@ -4,7 +4,7 @@ public abstract class PlanetariaMonoBehaviour : MonoBehaviour
 {
     public new PlanetariaTransform transform;
 
-    protected abstract void on_existance(); // CONSIDER: use Delegates?
+    protected abstract void on_first_exists(); // CONSIDER: use Delegates?
     protected abstract void on_time_zero();
     protected abstract void on_every_frame();
 

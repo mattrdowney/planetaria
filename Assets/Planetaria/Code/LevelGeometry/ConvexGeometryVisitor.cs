@@ -1,49 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 public sealed class ConvexGeometryVisitor : GeometryVisitor
 {
-    public ConvexGeometryVisitor(List<optional<Arc>> arc_list, ArcIndex arc_index, float angle)
+    public override GeometryVisitor move_cursor(float delta_length, float extrusion)
     {
-        geometry_visitor(this, arc_list, angle);
-        arc_index_variable = arc_index;
-    }
-
-    public GeometryVisitor move_cursor(float delta_length, float extrusion)
-    {
-        recalculate_boundaries(delta_length, extrusion);
-
-        int index = arc_index_variable.index;
-        float arc_length = arc_list_variable[index].data.length(extrusion);
-        float arc_angle = arc_list_variable[index].data.angle(extrusion);
+        recalculate(delta_length, extrusion);
         float delta_angle = delta_length * (arc_angle/arc_length);
-
-        if (delta_angle > 0)
-        {
-
-        }
-        else
-        {
-
-        }
+        return set_cursor(angular_position + delta_angle, extrusion);
     }
 
-    protected override void recalculate_boundaries(float delta_length, float extrusion)
+    protected override void calculate_boundary(float delta_length, float extrusion)
     {
-        if (extrusion != last_extrusion)
-        {
-            if (delta_length > 0)
-            {
-                //right_angle_boundary = // FIXME: implement
-            }
+        bool right = delta_length > 0;
 
-            if (delta_length < 0)
-            {
-                //left_angle_boundary = // FIXME: implement
-            }
-        }
+        // FIXME: implement
     }
 
-    private ArcIndex arc_index_variable;
+    protected override void calculate_extrusion(float extrusion)
+    {
+        int index = arc_index_variable.index;
+        arc_length = arc_list_variable[index].data.length(extrusion);
+        arc_angle = arc_list_variable[index].data.angle(extrusion);
+    }
 }
 
 /*

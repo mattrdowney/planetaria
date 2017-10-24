@@ -8,7 +8,7 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
     {
         collision_map = new Dictionary<Block, BlockCollision>();
         trigger_set = new List<Field>();
-        on_existance();
+        on_first_exists();
     }
 
     protected sealed override void Start()

@@ -1,24 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 public class ConcaveGeometryVisitor : GeometryVisitor
 {
-    public ConcaveGeometryVisitor(List<optional<Arc>> arc_list, ArcIndex arc_index, float angle)
+    public override GeometryVisitor move_cursor(float delta_length, float extrusion)
     {
-        geometry_visitor(this, arc_list, angle);
-        left_arc_index = arc_index.left();
-        right_arc_index = arc_index.right();
+        recalculate(delta_length, extrusion);
+
+        // FIXME: implement
     }
 
-    protected override void recalculate_boundaries(float extrusion)
+    protected override void calculate_boundary(float delta_length, float extrusion)
     {
-        if (extrusion != last_extrusion)
-        {
+        bool right = delta_length > 0;
 
-        }
+        // FIXME: implement
     }
 
-    private ArcIndex left_arc_index;
-    private ArcIndex right_arc_index;
+    protected override void calculate_extrusion(float extrusion)
+    {
+        int left_index = left_arc_index.index;
+
+        // FIXME: implement
+    }
 }
 
 /*
