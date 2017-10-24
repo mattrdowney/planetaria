@@ -2,18 +2,31 @@
 
 public abstract class GeometryVisitor
 {
+    public GeometryVisitor(List<optional<Arc>> arc_list, ArcIndex arc_index, float extrusion)
+    {
+        arc_list_variable = arc_list;
+
+        arc_index_variable = arc_index;
+        left_arc_index = arc_index.left();
+        right_arc_index = arc_index.right();
+
+        calculate_extrusion(extrusion);
+        calculate_boundary(-1, extrusion);
+        calculate_boundary(+1, extrusion);
+        last_extrusion = extrusion;
+    }
+
     public static GeometryVisitor geometry_visitor(List<optional<Arc>> arc_list, ArcIndex arc_index, float extrusion)
     {
         GeometryVisitor result;
         if (!arc_list[arc_index.index].exists)
         {
-            result = new ConcaveGeometryVisitor();
+            result = new ConcaveGeometryVisitor(arc_list, arc_index, extrusion);
         }
         else
         {
-            result = new ConvexGeometryVisitor();
+            result = new ConvexGeometryVisitor(arc_list, arc_index, extrusion);
         }
-        geometry_visitor(result, arc_list, arc_index, extrusion);
         return result;
     }
 
@@ -27,16 +40,6 @@ public abstract class GeometryVisitor
     {
         GeometryVisitor visitor = geometry_visitor(arc_list, arc_index.left(), extrusion);
         return visitor.set_cursor((visitor.right_angle_boundary-leftward_length_from_boundary)*(visitor.arc_angle/visitor.arc_length), extrusion);
-    }
-
-    protected static GeometryVisitor geometry_visitor(GeometryVisitor self, List<optional<Arc>> arc_list, ArcIndex arc_index, float extrusion)
-    {
-        self.arc_list_variable = arc_list;
-        self.calculate_extrusion(extrusion);
-        self.calculate_boundary(-1, extrusion);
-        self.calculate_boundary(+1, extrusion);
-        self.last_extrusion = extrusion;
-        return self;
     }
 
     protected void recalculate(float delta_length, float extrusion)
@@ -75,7 +78,7 @@ public abstract class GeometryVisitor
     protected ArcIndex right_arc_index;
 
     protected float angular_position;
-    protected float last_extrusion;
+    protected float last_extrusion = float.NaN;
 
     protected float left_angle_boundary;
     protected float right_angle_boundary;

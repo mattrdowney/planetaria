@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 public sealed class ConvexGeometryVisitor : GeometryVisitor
 {
+    public ConvexGeometryVisitor(List<optional<Arc>> arc_list, ArcIndex arc_index, float extrusion) : base(arc_list, arc_index, extrusion) { }
+
     public override GeometryVisitor move_cursor(float delta_length, float extrusion)
     {
         recalculate(delta_length, extrusion);
