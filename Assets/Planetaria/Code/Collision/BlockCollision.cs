@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class BlockCollision
 {
-    public static optional<BlockCollision> block_collision(Arc arc, Vector3 last_position, Vector3 current_position, float radius)
+    public static optional<BlockCollision> block_collision(ref Arc arc, Vector3 last_position, Vector3 current_position, float radius)
     {
         BlockCollision result = new BlockCollision();
 
@@ -31,7 +31,7 @@ public class BlockCollision
         {
             int current_index = adjacent_arc_index;
             optional<Arc> current_arc = result.target.at(ref current_index);
-            optional<Vector3> current_intersection_point = PlanetariaIntersection.arc_path_intersection(current_arc.data, begin, end); //TODO: check .data
+            optional<Vector3> current_intersection_point = PlanetariaIntersection.arc_path_intersection(ref current_arc.data, begin, end); //TODO: check .data
             if (current_intersection_point.exists)
             {
                 float similarity = Vector3.Dot(current_intersection_point.data, last_position);
@@ -45,20 +45,20 @@ public class BlockCollision
 
         optional<Arc> closest_arc = result.target.at(ref closest_index);
         
-        optional<Vector3> closest_intersection_point = PlanetariaIntersection.arc_path_intersection(closest_arc.data, begin, end); //TODO: check
+        optional<Vector3> closest_intersection_point = PlanetariaIntersection.arc_path_intersection(ref closest_arc.data, begin, end); //TODO: check
         if (!closest_intersection_point.exists)
         {
             return new optional<BlockCollision>();
         }
 
-        result.arc_index = closest_index;
+        result.arc_index = ArcIndex.arc_index(block.data.arc_list, closest_index);
         result.interpolator_angle = closest_arc.data.position_to_angle(closest_intersection_point.data);
 
         return result;
     }
 
     private Block target;
-    private IEnumerator<Arc> arc_index;
+    private ArcIndex arc_index;
     private float interpolator_angle;
 }
 

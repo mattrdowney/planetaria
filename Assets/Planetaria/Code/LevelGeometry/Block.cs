@@ -36,22 +36,16 @@ public class Block : MonoBehaviour // Consider: class Shape : List<Arc> : IEnume
 
     }
 
-    public IEnumerator<optional<Arc>> next_arc(IEnumerator<optional<Arc>> arc, int rightward_cycle_count)
-    {
-        //return arc_list.Get
-    }
-
     public void add(optional<Arc> arc)
     {
+        arc_list.Add(arc);
         if (arc.exists)
         {
-            arc_list.Add(arc.data);
-
             GameObject game_object = new GameObject("Collider");
             game_object.transform.parent = this.gameObject.transform;
 
             BoxCollider collider = game_object.AddComponent<BoxCollider>();
-            Bounds axis_aligned_bounding_box = Arc.get_axis_aligned_bounding_box(arc.data);
+            Bounds axis_aligned_bounding_box = Arc.get_axis_aligned_bounding_box(ref arc.data);
             collider.center = axis_aligned_bounding_box.center;
             collider.size = axis_aligned_bounding_box.size;
             collider.isTrigger = true;
@@ -66,16 +60,16 @@ public class Block : MonoBehaviour // Consider: class Shape : List<Arc> : IEnume
     /// </summary>
     /// <param name="arc">The reference to the external arc that will be compared to the block's arc list.</param>
     /// <returns>The index of the match if the arc exists in the container and is not null; a nonexistent index otherwise.</returns>
-    public optional<int> arc_index(Arc arc)
+    public optional<ArcIndex> arc_index(ref Arc arc)
     {
         int arc_list_index = arc_list.IndexOf(arc);
 
         if (arc_list_index == -1)
         {
-            return new optional<int>();
+            return new optional<ArcIndex>();
         }
 
-        return arc_list_index;
+        return new ArcIndex.arc_index(arc_list, arc_list_index);
     }
 
     /// <summary>
@@ -83,15 +77,10 @@ public class Block : MonoBehaviour // Consider: class Shape : List<Arc> : IEnume
     /// </summary>
     /// <param name="index">The (ordered sequence) index of the Arc.</param>
     /// <returns>The Arc at the given index.</returns>
-    public optional<Arc> at(ref int index)
+    /*public optional<Arc> at(ArcIndex arc_index)
     {
-        if (index < 0 || index >= arc_list.Count)
-        {
-            index = (int) PlanetariaMath.modolo_using_euclidean_division(index, arc_list.Count);
-        }
-
-        return arc_list[index];
-    }
+        return arc_list[arc_index.index];
+    }*/
 
     /// <summary>
     /// Checks if any of the arcs contain the position extruded by radius.
