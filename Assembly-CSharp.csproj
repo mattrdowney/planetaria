@@ -112,8 +112,6 @@
      <Compile Include="Assets\Planetaria\Code\LevelGeometry\ArcIndex.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelGeometry\Block.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelGeometry\BlockActor.cs" />
-     <Compile Include="Assets\Planetaria\Code\LevelGeometry\ConcaveGeometryVisitor.cs" />
-     <Compile Include="Assets\Planetaria\Code\LevelGeometry\ConvexGeometryVisitor.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelGeometry\Field.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelGeometry\FieldActor.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelGeometry\GeometryVisitor.cs" />
