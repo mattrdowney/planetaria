@@ -3,20 +3,8 @@ using UnityEngine;
 
 [System.Serializable]
 [ExecuteInEditMode]
-public class Block : MonoBehaviour // Consider: class Shape : List<Arc> : IEnumerable<Arc>
+public class Block : MonoBehaviour, ISerializationCallbackReceiver // Consider: class Shape : List<Arc> : IEnumerable<Arc>
 {
-    /// <summary>
-    /// Constructor - Generates a block using a .ssvg file.
-    /// </summary>
-    /// <param name="ssvg_file">The .ssvg (spherical scalable vector graphics) file that will generate the block.</param>
-    /// <returns>The GameObject reference with an attached Block component.</returns>
-    public static GameObject block(string ssvg_file)
-    {
-        GameObject result = block();
-
-        return result;
-    }
-
     /// <summary>
     /// Constructor (default) - Creates an empty block
     /// </summary>
@@ -27,32 +15,15 @@ public class Block : MonoBehaviour // Consider: class Shape : List<Arc> : IEnume
         Block block = result.AddComponent<Block>();
 
         block.arc_list = new List<optional<Arc>>();
+        block.curve_list = new List<GeospatialCurve>();
 
         return result;
     }
 
-    public void traverse(BlockCollision collision)
+    public void add(GeospatialCurve curve)
     {
-
-    }
-
-    public void add(optional<Arc> arc)
-    {
-        arc_list.Add(arc);
-        if (arc.exists)
-        {
-            GameObject game_object = new GameObject("Collider");
-            game_object.transform.parent = this.gameObject.transform;
-
-            BoxCollider collider = game_object.AddComponent<BoxCollider>();
-            Bounds axis_aligned_bounding_box = Arc.get_axis_aligned_bounding_box(ref arc.data);
-            collider.center = axis_aligned_bounding_box.center;
-            collider.size = axis_aligned_bounding_box.size;
-            collider.isTrigger = true;
-
-            PlanetariaCache.arc_cache.cache(collider, arc.data);
-            PlanetariaCache.block_cache.cache(arc.data, this);
-        }
+        curve_list.Add(curve);
+        generate_arcs();
     }
 
     /// <summary>
@@ -60,80 +31,97 @@ public class Block : MonoBehaviour // Consider: class Shape : List<Arc> : IEnume
     /// </summary>
     /// <param name="arc">The reference to the external arc that will be compared to the block's arc list.</param>
     /// <returns>The index of the match if the arc exists in the container and is not null; a nonexistent index otherwise.</returns>
-    public optional<ArcIndex> arc_index(ref Arc arc)
+    public optional<ArcVisitor> arc_visitor(Arc arc)
     {
         int arc_list_index = arc_list.IndexOf(arc);
 
         if (arc_list_index == -1)
         {
-            return new optional<ArcIndex>();
+            return new optional<ArcVisitor>();
         }
 
-        return new ArcIndex.arc_index(arc_list, arc_list_index);
+        return ArcVisitor.arc_visitor(arc_list, arc_list_index);
     }
 
-    /// <summary>
-    /// Inspector - Get the reference to the current arc.
-    /// </summary>
-    /// <param name="index">The (ordered sequence) index of the Arc.</param>
-    /// <returns>The Arc at the given index.</returns>
-    /*public optional<Arc> at(ArcIndex arc_index)
+    public IEnumerable<optional<Arc>> iterator()
     {
-        return arc_list[arc_index.index];
-    }*/
+        return arc_list;
+    }
 
-    /// <summary>
-    /// Checks if any of the arcs contain the position extruded by radius.
-    /// This does NOT check if the point is inside the concave/convex hull, so points below the floor will not be matched.
-    /// </summary>
-    /// <param name="position">A position on a unit-sphere.</param>
-    /// <param name="radius">The radius [0,PI/2] to extrude.</param>
-    /// <returns>True if any of the arcs contain the point extruded by radius.</returns>
-    public bool contains(Vector3 position, float radius = 0f)
+    public bool active { get; set; }
+
+    public bool empty()
     {
-        foreach (optional<Arc> arc in arc_list)
+        return curve_list.Count == 0;
+    }
+
+    private void generate_arcs()
+    {
+        arc_list.Clear();
+        foreach (GeospatialCurve curve in curve_list)
         {
-            if (arc.exists)
+            arc_list.Add(Arc.arc(curve));
+        }
+        recache();
+    }
+
+    private void recache()
+    {
+        PlanetariaCache.arc_cache.clear();
+        PlanetariaCache.block_cache.clear();
+        PlanetariaCache.field_cache.clear();
+        Block[] blocks = GameObject.FindObjectsOfType<Block>();
+        foreach (Block block in blocks)
+        {
+            block.gameObject.transform.clear_children();
+            foreach (optional<Arc> arc in arc_list)
             {
-                if (arc.data.contains(position, radius))
+                if (arc.exists)
                 {
-                    return true;
+                    GameObject game_object = new GameObject("Collider");
+                    game_object.transform.parent = block.gameObject.transform;
+
+                    BoxCollider collider = game_object.AddComponent<BoxCollider>();
+                    Bounds axis_aligned_bounding_box = Arc.get_axis_aligned_bounding_box(arc.data);
+                    collider.center = axis_aligned_bounding_box.center;
+                    collider.size = axis_aligned_bounding_box.size;
+                    collider.isTrigger = true;
+
+                    PlanetariaCache.arc_cache.cache(collider, arc.data);
+                    PlanetariaCache.block_cache.cache(arc.data, block);
                 }
             }
         }
-
-        return false;
-    }
-
-    public int size()
-    {
-        return arc_list.Count;
     }
 
     private void Start()
     {
-        effects = this.GetComponents<BlockActor>(); // TODO: check null is properly set
+        effects = this.GetComponents<BlockActor>();
         transform = new PlanetariaTransform(this.GetComponent<Transform>());
+        active = true;
+    }
+
+    public void OnAfterDeserialize()
+    {
+        generate_arcs();
+    }
+
+    public void OnBeforeSerialize()
+    {
+        this.gameObject.transform.clear_children(); // Prevent serialization of children (which would change on each save)
     }
 
     private void OnDestroy()
     {
-        foreach (optional<Arc> arc in arc_list)
-        {
-            if (arc.exists)
-            {
-                PlanetariaCache.block_cache.uncache(arc.data);
-            }
-        }
-        foreach (BoxCollider box_collider in this.gameObject.GetComponentsInChildren<BoxCollider>())
-        {
-            PlanetariaCache.arc_cache.uncache(box_collider);
-        }
+        curve_list.Clear();
+        arc_list.Clear();
+        recache();
     }
 
     [SerializeField] private BlockActor[] effects; // previously optional<BlockActor>
-    [SerializeField] private List<optional<Arc>> arc_list; // FIXME: System.Collection.Immutable.ImmutableArray<Arc> not supported in current Unity version?
+    [SerializeField] private List<GeospatialCurve> curve_list;
     [SerializeField] private new PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
+    [System.NonSerialized] private List<optional<Arc>> arc_list; // FIXME: System.Collection.Immutable.ImmutableArray<Arc> not supported in current Unity version?
 }
 
 /*

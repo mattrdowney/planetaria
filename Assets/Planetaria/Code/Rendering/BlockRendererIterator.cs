@@ -31,17 +31,15 @@ public static class BlockRendererIterator
     /// <param name="block">The block (set of arcs) to be inspected.</param>
     private static void find_discontinuities(Block block)
     {
-        for (int arc_index = 0; arc_index < block.size(); ++arc_index)
+        foreach (optional<Arc> arc in block.iterator())
         {
             for (int dimension = 0; dimension < 2; ++dimension) // Intersect already gets quadrants 3-4 by proxy
             {
-                optional<Arc> arc = block.at(ref arc_index);
-                float angle = (Mathf.PI/2)*dimension;
-                NormalizedCartesianCoordinates begin = new NormalizedCartesianCoordinates(new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)));
-                NormalizedCartesianCoordinates end = new NormalizedCartesianCoordinates(Vector3.down);
-
                 if (arc.exists)
                 {
+                    float angle = (Mathf.PI/2)*dimension;
+                    NormalizedCartesianCoordinates begin = new NormalizedCartesianCoordinates(new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)));
+                    NormalizedCartesianCoordinates end = new NormalizedCartesianCoordinates(Vector3.down);
                     NormalizedCartesianCoordinates[] intersections = PlanetariaIntersection.arc_path_intersections(arc.data, begin, end);
                     add_intersections(arc.data, intersections);
                 }
@@ -70,10 +68,8 @@ public static class BlockRendererIterator
 
     public static IEnumerable<ArcIterator> arc_iterator()
     {
-        for (int arc_index = 0; arc_index < block_variable.size(); ++arc_index)
-        {
-            optional<Arc> arc = block_variable.at(ref arc_index);
-
+        foreach (optional<Arc> arc in block_variable.iterator())
+        { 
             if (!arc.exists)
             {
                 continue;

@@ -3,9 +3,9 @@ using UnityEngine;
 
 public abstract class GeometryVisitor
 {
-    public GeometryVisitor geometry_visitor(List<optional<Arc>> arc_list, ArcIndex arc_index, float angular_position, float extrusion)
+    public static GeometryVisitor geometry_visitor(ArcVisitor arc_visitor, float angular_position, float extrusion)
     {
-        GeometryVisitor result = geometry_visitor(arc_list, arc_index, extrusion);
+        GeometryVisitor result = geometry_visitor(arc_visitor, extrusion);
         return result.set_position(angular_position, extrusion);
     }
 
@@ -26,13 +26,11 @@ public abstract class GeometryVisitor
         return cached_position;
     }
 
-    protected GeometryVisitor(List<optional<Arc>> arc_list, ArcIndex arc_index, float extrusion)
+    protected GeometryVisitor(ArcVisitor arc_visitor, float extrusion)
     {
-        arc_list_variable = arc_list;
-
-        arc_index_variable = arc_index;
-        left_arc_index = arc_index.left();
-        right_arc_index = arc_index.right();
+        center_arc = arc_visitor;
+        left_arc = arc_visitor.left();
+        right_arc = arc_visitor.right();
 
         calculate_extrusion(extrusion);
         calculate_boundary(-1, extrusion);
@@ -40,30 +38,30 @@ public abstract class GeometryVisitor
         last_extrusion = extrusion;
     }
 
-    private static GeometryVisitor geometry_visitor(List<optional<Arc>> arc_list, ArcIndex arc_index, float extrusion)
+    private static GeometryVisitor geometry_visitor(ArcVisitor arc_visitor, float extrusion)
     {
         GeometryVisitor result;
-        if (!arc_list[arc_index.index].exists)
+        if (!arc_visitor.arc.exists)
         {
-            result = new ConcaveGeometryVisitor(arc_list, arc_index, extrusion);
+            result = new ConcaveGeometryVisitor(arc_visitor, extrusion);
         }
         else
         {
-            result = new ConvexGeometryVisitor(arc_list, arc_index, extrusion);
+            result = new ConvexGeometryVisitor(arc_visitor, extrusion);
         }
 
         return result;
     }
 
-    private static GeometryVisitor right_visitor(List<optional<Arc>> arc_list, ArcIndex arc_index, float rightward_length_from_boundary, float extrusion)
+    private static GeometryVisitor right_visitor(ArcVisitor arc_visitor, float rightward_length_from_boundary, float extrusion)
     {
-        GeometryVisitor visitor = geometry_visitor(arc_list, arc_index.right(), extrusion);
+        GeometryVisitor visitor = geometry_visitor(arc_visitor.right(), extrusion);
         return visitor.set_position((visitor.left_angle_boundary+rightward_length_from_boundary)*(visitor.arc_angle/visitor.arc_length), extrusion);
     }
 
-    private static GeometryVisitor left_visitor(List<optional<Arc>> arc_list, ArcIndex arc_index, float leftward_length_from_boundary, float extrusion)
+    private static GeometryVisitor left_visitor(ArcVisitor arc_visitor, float leftward_length_from_boundary, float extrusion)
     {
-        GeometryVisitor visitor = geometry_visitor(arc_list, arc_index.left(), extrusion);
+        GeometryVisitor visitor = geometry_visitor(arc_visitor.left(), extrusion);
         return visitor.set_position((visitor.right_angle_boundary-leftward_length_from_boundary)*(visitor.arc_angle/visitor.arc_length), extrusion);
     }
 
@@ -86,12 +84,12 @@ public abstract class GeometryVisitor
         if (angular_position < left_angle_boundary)
         {
             float extra_length = (left_angle_boundary - angular_position) * (arc_length/arc_angle);
-            result = left_visitor(arc_list_variable, arc_index_variable, extra_length, extrusion);
+            result = left_visitor(center_arc, extra_length, extrusion);
         }
         else if (angular_position > right_angle_boundary)
         {
             float extra_length = (angular_position - right_angle_boundary) * (arc_length/arc_angle);
-            result = right_visitor(arc_list_variable, arc_index_variable, extra_length, extrusion);
+            result = right_visitor(center_arc, extra_length, extrusion);
         }
         calculate_location();
         return result;
@@ -100,11 +98,10 @@ public abstract class GeometryVisitor
     protected abstract void calculate_boundary(float delta_length, float extrusion);
     protected abstract void calculate_extrusion(float extrusion);
     protected abstract void calculate_location();
-
-    protected List<optional<Arc>> arc_list_variable;
-    protected ArcIndex arc_index_variable;
-    protected ArcIndex left_arc_index;
-    protected ArcIndex right_arc_index;
+    
+    protected ArcVisitor center_arc;
+    protected ArcVisitor left_arc;
+    protected ArcVisitor right_arc;
 
     protected Vector3 cached_position;
     protected Vector3 cached_normal;
@@ -121,7 +118,7 @@ public abstract class GeometryVisitor
 
 internal sealed class ConvexGeometryVisitor : GeometryVisitor
 {
-    public ConvexGeometryVisitor(List<optional<Arc>> arc_list, ArcIndex arc_index, float extrusion) : base(arc_list, arc_index, extrusion) { }
+    public ConvexGeometryVisitor(ArcVisitor arc_index, float extrusion) : base(arc_index, extrusion) { }
 
     protected override void calculate_boundary(float delta_length, float extrusion)
     {
@@ -132,22 +129,20 @@ internal sealed class ConvexGeometryVisitor : GeometryVisitor
 
     protected override void calculate_extrusion(float extrusion)
     {
-        int index = arc_index_variable.index;
-        arc_length = arc_list_variable[index].data.length(extrusion);
-        arc_angle = arc_list_variable[index].data.angle(extrusion);
+        arc_length = center_arc.arc.data.length(extrusion);
+        arc_angle = center_arc.arc.data.angle(extrusion);
     }
 
     protected override void calculate_location()
     {
-        int index = arc_index_variable.index;
-        cached_position = arc_list_variable[index].data.position(angular_position, last_extrusion);
-        cached_normal = arc_list_variable[index].data.normal(angular_position, last_extrusion);
+        cached_position = center_arc.arc.data.position(angular_position, last_extrusion);
+        cached_normal = center_arc.arc.data.normal(angular_position, last_extrusion);
     }
 }
 
 internal sealed class ConcaveGeometryVisitor : GeometryVisitor
 {
-    public ConcaveGeometryVisitor(List<optional<Arc>> arc_list, ArcIndex arc_index, float extrusion) : base(arc_list, arc_index, extrusion) { }
+    public ConcaveGeometryVisitor(ArcVisitor arc_index, float extrusion) : base(arc_index, extrusion) { }
 
     protected override void calculate_boundary(float delta_length, float extrusion)
     {
@@ -155,22 +150,16 @@ internal sealed class ConcaveGeometryVisitor : GeometryVisitor
         // FIXME: implement
 
 
-
-        int left_index = left_arc_index.index;
-        int right_index = right_arc_index.index;
-        Vector3 left_position = arc_list_variable[left_index].data.position(left_angle_boundary, extrusion);
-        Vector3 right_position = arc_list_variable[right_index].data.position(right_angle_boundary, extrusion);
+        Vector3 left_position = left_arc.arc.data.position(left_angle_boundary, extrusion);
+        Vector3 right_position = right_arc.arc.data.position(right_angle_boundary, extrusion);
         // Assert left_position == right_position
         cached_position = (left_position+right_position)/2; // FIXME: unneccessary
     }
 
     protected override void calculate_extrusion(float extrusion)
     {
-        int left_index = left_arc_index.index;
-        int right_index = right_arc_index.index;
-
-        left_normal = arc_list_variable[left_index].data.normal(left_angle_boundary, extrusion);
-        right_normal = arc_list_variable[right_index].data.normal(right_angle_boundary, extrusion);
+        left_normal = left_arc.arc.data.normal(left_angle_boundary, extrusion);
+        right_normal = right_arc.arc.data.normal(right_angle_boundary, extrusion);
         arc_angle = Vector3.Angle(left_normal, right_normal);
         arc_length = extrusion / Mathf.Sin(arc_angle / 2);
     }

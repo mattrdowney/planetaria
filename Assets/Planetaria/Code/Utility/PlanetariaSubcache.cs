@@ -17,9 +17,9 @@ public class PlanetariaSubcache<Key, Value>
         return map_cache[key];
     }
 
-    public void uncache(Key key)
+    public void clear()
     {
-        map_cache.Remove(key);
+        map_cache.Clear();
     }
 
     private Dictionary<Key, Value> map_cache = new Dictionary<Key, Value>();

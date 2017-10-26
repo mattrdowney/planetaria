@@ -4,7 +4,7 @@ public class BlinkCameraShutter : PlanetariaCameraShutter
 {
     public override void initialize()
     {
-        Camera camera = GameObject.Find("/MainCamera").GetOrAddComponent<Camera>();
+        Camera camera = GameObject.Find("/MainCamera").GetComponent<Camera>();
 
         shutter_edges = new GameObject[edges];
 

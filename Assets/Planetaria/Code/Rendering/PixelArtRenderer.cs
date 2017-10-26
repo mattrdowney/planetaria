@@ -38,13 +38,13 @@ public static class PixelArtRenderer
                 Debug.Log("Cardinal[" + side + "] = " + cardinal_boundaries[side].data.ToString("F4") + " ... " + "Rectangle[" + side + "] = " + rectangle_corners[side].data.ToString("F4"));
             }
 
-            Arc upper_rail = Arc.arc(rectangle_corners[0].data, rectangle_corners[1].data);
-            Arc right_rail = Arc.arc(rectangle_corners[1].data, rectangle_corners[2].data);
-            Arc lower_rail = Arc.arc(rectangle_corners[3].data, rectangle_corners[2].data);
-            Arc left_rail = Arc.arc(rectangle_corners[0].data, rectangle_corners[3].data);
+            Arc upper_rail = Arc.arc(GeospatialCurve.line(rectangle_corners[0].data, rectangle_corners[1].data));
+            Arc right_rail = Arc.arc(GeospatialCurve.line(rectangle_corners[1].data, rectangle_corners[2].data));
+            Arc lower_rail = Arc.arc(GeospatialCurve.line(rectangle_corners[3].data, rectangle_corners[2].data));
+            Arc left_rail = Arc.arc(GeospatialCurve.line(rectangle_corners[0].data, rectangle_corners[3].data));
 
-            Arc horizontal_rail = Arc.arc(cardinal_boundaries[0].data, cardinal_boundaries[2].data);
-            Arc vertical_rail = Arc.arc(cardinal_boundaries[1].data, cardinal_boundaries[3].data);
+            Arc horizontal_rail = Arc.arc(GeospatialCurve.line(cardinal_boundaries[0].data, cardinal_boundaries[2].data));
+            Arc vertical_rail = Arc.arc(GeospatialCurve.line(cardinal_boundaries[1].data, cardinal_boundaries[3].data));
 
             Arc[] upper_arcs = get_arcs(left_rail, vertical_rail, right_rail, rows);
             Arc[] lower_arcs = get_arcs(right_rail, vertical_rail, left_rail, rows, true);
@@ -84,9 +84,10 @@ public static class PixelArtRenderer
         for (int segment = 0; segment < segments; ++segment)
         {
             float interpolation = (segment+(offset?1:0))/(float)segments;
-            arcs[segment] = Arc.arc(first_rail.interpolate(interpolation),
+            arcs[segment] = Arc.arc(GeospatialCurve.curve(
+                    first_rail.interpolate(interpolation),
                     inner_rail.interpolate(interpolation),
-                    last_rail.interpolate(interpolation));
+                    last_rail.interpolate(interpolation)));
         }
         return arcs;
     }

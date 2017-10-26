@@ -1,81 +1,19 @@
 ﻿using UnityEngine;
 
 /// <summary>
-/// A pseudo-immutable class that stores an arc along the surface of a unit sphere.
+/// An immutable class that stores an arc along the surface of a unit sphere.
 /// Includes convex corners, great edges, convex edges, and concave edges. Cannot store concave corners!
 /// </summary>
-[System.Serializable]
-public struct Arc
+public class Arc
 {
-    /// <summary>An axis that includes the center of the circle that defines the arc.</summary>
-    [SerializeField] private Vector3 center_axis;
-    /// <summary>An axis that helps define the beginning of the arc.</summary>
-    [SerializeField] private Vector3 forward_axis;
-    /// <summary>A binormal to center_axis and forward_axis. Determines points after the beginning of the arc.</summary>
-    [SerializeField] private Vector3 right_axis;
-    /// <summary>Determines points before the end of the arc. This is normal to center_axis.</summary>
-    [SerializeField] private Vector3 before_end;
-    
-    /// <summary>The length of the arc</summary>
-    [SerializeField] private float arc_angle;
-    /// <summary>The angle of the arc from its parallel "equator".</summary>
-    [SerializeField] private float arc_latitude;
-
     /// <summary>
     /// Constructor - Creates convex, concave, or great arcs.
     /// </summary>
-    /// <param name="start">The start point of the arc.</param>
-    /// <param name="right">The sphere-tangential slope/gradient at the start point going rightward.</param>
-    /// <param name="end">The end point of the arc.</param>
+    /// <param name="curve">The GeospatialCurve that defines an arc on a unit sphere.</param>
     /// <returns>An arc along the surface of a unit sphere.</returns>
-    public Arc(Vector3 start, Vector3 right, Vector3 end) // TODO: verify
+    public static Arc arc(GeospatialCurve curve)
     {
-        start.Normalize();
-        right = Vector3.ProjectOnPlane(right, start); // enforce orthogonality
-        right.Normalize();
-        end.Normalize();
-
-        right_axis = right;
-        forward_axis = Vector3.ProjectOnPlane(start - end, right).normalized; // [start - end] is within the arc's plane
-        center_axis = Vector3.Cross(forward_axis, right_axis).normalized; // get binormal using left-hand rule
-
-        float elevation = Vector3.Dot(start, center_axis);
-        Vector3 center = elevation * center_axis;
-
-        Vector3 end_axis = (end - center).normalized;
-        before_end = -Vector3.Cross(center_axis, end_axis).normalized;
-
-        bool long_path = Vector3.Dot(right_axis, end_axis) < 0;
-        arc_angle = Vector3.Angle(start - center, end - center)*Mathf.Deg2Rad;
-        arc_latitude = Mathf.PI/2 - Mathf.Acos(elevation);
-
-        if (long_path)
-        {
-            arc_angle = 2*Mathf.PI - arc_angle;
-        }
-    }
-
-    /// <summary>
-    /// Constructor - Creates convex, concave, or great arcs.
-    /// </summary>
-    /// <param name="start">The start point of the arc.</param>
-    /// <param name="end">The end point of the arc.</param>
-    /// <returns>An arc along the surface of a unit sphere.</returns>
-    public static Arc arc(Vector3 start, Vector3 end)
-    {
-        return new Arc(start, end, end);
-    }
-
-    /// <summary>
-    /// Constructor - Creates convex, concave, or great arcs.
-    /// </summary>
-    /// <param name="start">The start point of the arc.</param>
-    /// <param name="right">The sphere-tangential slope/gradient at the start point going rightward.</param>
-    /// <param name="end">The end point of the arc.</param>
-    /// <returns>An arc along the surface of a unit sphere.</returns>
-    public static Arc arc(Vector3 start, Vector3 right, Vector3 end)
-    {
-        return new Arc(start, right, end);
+        return new Arc(curve);
     }
 
     /// <summary>
@@ -84,13 +22,13 @@ public struct Arc
     /// <param name="left">The arc that attaches to the beginning of the corner.</param>
     /// <param name="right">The arc that attaches to the end of the corner.</param>
     /// <returns>A concave or convex corner arc.</returns>
-    public static optional<Arc> corner(ref Arc left, ref Arc right) // TODO: normal constructor
+    public static optional<Arc> corner(Arc left, Arc right) // TODO: normal constructor
     {
-        if (is_convex(ref left, ref right))
+        if (is_convex(left, right))
         {
-            return convex_corner(ref left, ref right);
+            return convex_corner(left, right);
         }
-        return concave_corner(ref left, ref right);
+        return concave_corner(left, right);
     }
 
     /// <summary>
@@ -103,14 +41,14 @@ public struct Arc
         return arc_angle;
     }
 
-    public static float closest_normal(ref Arc arc, Vector3 normal, int precision = Precision.float_bits)
+    public static float closest_normal(Arc arc, Vector3 normal, int precision = Precision.float_bits)
     {
-        return closest_heuristic(ref arc, normal_heuristic, normal, precision);
+        return closest_heuristic(arc, normal_heuristic, normal, precision);
     }
 
-    public static float closest_point(ref Arc arc, Vector3 point, int precision = Precision.float_bits)
+    public static float closest_point(Arc arc, Vector3 point, int precision = Precision.float_bits)
     {
-        return closest_heuristic(ref arc, position_heuristic, point, precision);
+        return closest_heuristic(arc, position_heuristic, point, precision);
     }
 
     /// <summary>
@@ -164,14 +102,14 @@ public struct Arc
     /// </summary>
     /// <param name="arc">The arc that should be surrounded by an AABB.</param>
     /// <returns>Bounds struct AKA axis-aligned bounding box (AABB).</returns>
-    public static Bounds get_axis_aligned_bounding_box(ref Arc arc)
+    public static Bounds get_axis_aligned_bounding_box(Arc arc)
     {
-        float x_min = arc.position(closest_point(ref arc, Vector3.left   )).x;
-        float x_max = arc.position(closest_point(ref arc, Vector3.right  )).x;
-        float y_min = arc.position(closest_point(ref arc, Vector3.down   )).y;
-        float y_max = arc.position(closest_point(ref arc, Vector3.up     )).y;
-        float z_min = arc.position(closest_point(ref arc, Vector3.back   )).z;
-        float z_max = arc.position(closest_point(ref arc, Vector3.forward)).z;
+        float x_min = arc.position(closest_point(arc, Vector3.left   )).x;
+        float x_max = arc.position(closest_point(arc, Vector3.right  )).x;
+        float y_min = arc.position(closest_point(arc, Vector3.down   )).y;
+        float y_max = arc.position(closest_point(arc, Vector3.up     )).y;
+        float z_min = arc.position(closest_point(arc, Vector3.back   )).z;
+        float z_max = arc.position(closest_point(arc, Vector3.forward)).z;
 
         Vector3 center = new Vector3((x_max + x_min) / 2,
                 (y_max + y_min) / 2,
@@ -205,7 +143,7 @@ public struct Arc
     /// True if the arc is convex.
     /// False if the arc is concave.
     /// </returns>
-    public static bool is_convex(ref Arc left, ref Arc right)
+    public static bool is_convex(Arc left, Arc right)
     {
         Vector3 normal_for_left = left.normal(left.angle());
         Vector3 rightward_for_right = Bearing.right(right.position(0), right.normal(0));
@@ -279,13 +217,40 @@ public struct Arc
     }
 
     /// <summary>
+    /// Constructor - Creates convex, concave, or great arcs.
+    /// </summary>
+    /// <param name="curve">The GeospatialCurve that defines an arc on a unit sphere.</param>
+    /// <returns>An arc along the surface of a unit sphere.</returns>
+    private Arc(GeospatialCurve curve)
+    {
+        right_axis = curve.slope;
+        forward_axis = Vector3.ProjectOnPlane(curve.from - curve.to, curve.slope).normalized; // [start - end] is within the arc's plane
+        center_axis = Vector3.Cross(forward_axis, right_axis).normalized; // get binormal using left-hand rule
+
+        float elevation = Vector3.Dot(curve.from, center_axis);
+        Vector3 center = elevation * center_axis;
+
+        Vector3 end_axis = (curve.to - center).normalized;
+        before_end = -Vector3.Cross(center_axis, end_axis).normalized;
+
+        bool long_path = Vector3.Dot(right_axis, end_axis) < 0;
+        arc_angle = Vector3.Angle(curve.from - center, curve.to - center)*Mathf.Deg2Rad;
+        arc_latitude = Mathf.PI/2 - Mathf.Acos(elevation);
+
+        if (long_path)
+        {
+            arc_angle = 2*Mathf.PI - arc_angle;
+        }
+    }
+
+    /// <summary>
     /// Constructor - Spoof a concave corner arc with a null value
     /// (since concave corner arcs do not extrude concentrically).
     /// </summary>
     /// <param name="left">The arc that attaches to the beginning of the corner.</param>
     /// <param name="right">The arc that attaches to the end of the corner.</param>
     /// <returns>A null arc (special value for a concave corner).</returns>
-    private static optional<Arc> concave_corner(ref Arc left, ref Arc right)
+    private static optional<Arc> concave_corner(Arc left, Arc right)
     {
         return new optional<Arc>(); // Concave corners are not actually arcs; it's complicated...
     }
@@ -296,20 +261,19 @@ public struct Arc
     /// <param name="left">The arc that attaches to the beginning of the corner.</param>
     /// <param name="right">The arc that attaches to the end of the corner.</param>
     /// <returns>A convex corner arc.</returns>
-    private static optional<Arc> convex_corner(ref Arc left, ref Arc right) // CHECKME: does this work when latitude is >0?
+    private static optional<Arc> convex_corner(Arc left, Arc right) // CHECKME: does this work when latitude is >0?
     {
-        // Rather than doubling the codebase for constructors...
         // find the arc along the equator and set the latitude to -PI/2 (implicitly, that means the arc radius is zero)
 
         // The normal vector should point away from the position of the corner
-        Vector3 cut_normal = -right.position(0);
+        Vector3 cut_normal = -right.position(0); //FIXME: this is almost certainly wrong
 
         // The equatorial positions can be found by extruding the edges by PI/2
         Vector3 start = left.position(left.angle(), Mathf.PI/2);
         Vector3 end = right.position(0, Mathf.PI/2);
 
         // Create arc along equator
-        Arc result = new Arc(start, cut_normal, end); // FIXME: cut_normal should be right_tangent
+        Arc result = new Arc(GeospatialCurve.curve(start, cut_normal, end)); // FIXME: cut_normal should be right_tangent
 
         // And move the arc to the "South Pole" instead
         result.arc_latitude = -Mathf.PI/2;
@@ -317,7 +281,7 @@ public struct Arc
         return result;
     }
 
-    private static float closest_heuristic(ref Arc arc, HeuristicFunction distance_heuristic, Vector3 target,
+    private static float closest_heuristic(Arc arc, HeuristicFunction distance_heuristic, Vector3 target,
             int precision = Precision.float_bits)
     {
         float closest_angle = 0; // use a valid angle for when arc.angle() returns 0!
@@ -330,8 +294,8 @@ public struct Arc
             float left_angle = Mathf.Lerp(0, arc.angle(), quadrant/quadrants); // beginning of quadrant e.g. 0.00,0.25,0.50,0.75
             float right_angle = Mathf.Lerp(0, arc.angle(), (quadrant+1)/quadrants); // end of quadrant e.g. 0.25,0.50,0.75,1.00
 
-            float left_heuristic = distance_heuristic(ref arc, target, left_angle); //lower h(x) implies closer to target
-            float right_heuristic = distance_heuristic(ref arc, target, right_angle);
+            float left_heuristic = distance_heuristic(arc, target, left_angle); //lower h(x) implies closer to target
+            float right_heuristic = distance_heuristic(arc, target, right_angle);
 
             // A type of binary search
             // 1) find the distance heuristics for left and right side
@@ -342,12 +306,12 @@ public struct Arc
                 if (left_heuristic < right_heuristic) // answer is within left half of arc
                 {
                     right_angle = midpoint; //throw out the right half (since it's further from target)
-                    right_heuristic = distance_heuristic(ref arc, target, right_angle);
+                    right_heuristic = distance_heuristic(arc, target, right_angle);
                 }
                 else // answer is within right half of arc
                 {
                     left_angle = midpoint; //throw out the left half (since it's further from target)
-                    left_heuristic = distance_heuristic(ref arc, target, left_angle);
+                    left_heuristic = distance_heuristic(arc, target, left_angle);
                 }
             }
 
@@ -367,19 +331,33 @@ public struct Arc
     }
 
     // New naming convention: data types are proper CamelCase and variables are lowercase with underscores.
-    private delegate float HeuristicFunction(ref Arc arc, Vector3 operand, float angle);
+    private delegate float HeuristicFunction(Arc arc, Vector3 operand, float angle);
 
-    private static float normal_heuristic(ref Arc arc, Vector3 desired_normal, float angle)
+    private static float normal_heuristic(Arc arc, Vector3 desired_normal, float angle)
     {
         // return [0,1] for the hell of it, the dot product would suffice, though
         return (Vector3.Dot(arc.normal(angle), -desired_normal) + 1f) / 2;
     }
 
-    private static float position_heuristic(ref Arc arc, Vector3 desired_position, float angle)
+    private static float position_heuristic(Arc arc, Vector3 desired_position, float angle)
     {
         // return [0,1] for the hell of it, the dot product would suffice, though
         return (Vector3.Dot(arc.position(angle), -desired_position) + 1f) / 2;
     }
+
+    /// <summary>An axis that includes the center of the circle that defines the arc.</summary>
+    [SerializeField] private Vector3 center_axis;
+    /// <summary>An axis that helps define the beginning of the arc.</summary>
+    [SerializeField] private Vector3 forward_axis;
+    /// <summary>A binormal to center_axis and forward_axis. Determines points after the beginning of the arc.</summary>
+    [SerializeField] private Vector3 right_axis;
+    /// <summary>Determines points before the end of the arc. This is normal to center_axis.</summary>
+    [SerializeField] private Vector3 before_end;
+    
+    /// <summary>The length of the arc</summary>
+    [SerializeField] private float arc_angle;
+    /// <summary>The angle of the arc from its parallel "equator".</summary>
+    [SerializeField] private float arc_latitude;
 }
 
 /*

@@ -7,10 +7,8 @@ public class BlockEditor : Editor
     [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
     private static void draw_block_gizmos(Block self, GizmoType gizmo_type)
     {
-        for (int arc_index = 0; arc_index < self.size(); ++arc_index)
+        foreach (optional<Arc> arc in self.iterator())
         {
-            optional<Arc> arc = self.at(ref arc_index);
-
             if (arc.exists)
             {
                 ArcEditor.draw_arc(arc.data);

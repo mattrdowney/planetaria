@@ -3,63 +3,51 @@ using UnityEngine;
 
 public class BlockCollision
 {
-    public static optional<BlockCollision> block_collision(ref Arc arc, Vector3 last_position, Vector3 current_position, float radius)
+    public static optional<BlockCollision> block_collision(Arc arc, Vector3 last_position, Vector3 current_position, float extrusion)
     {
-        BlockCollision result = new BlockCollision();
-
+        optional<Block> block = PlanetariaCache.block_cache.get(arc);
+        if (!block.exists || !block.data.active)
+        {
+            return new optional<BlockCollision>();
+        }
+                
+        optional<ArcVisitor> arc_visitor = block.data.arc_visitor(arc);
+        if (!arc_visitor.exists)
+        {
+            return new optional<BlockCollision>();
+        }
+        
         NormalizedCartesianCoordinates begin = new NormalizedCartesianCoordinates(last_position);
         NormalizedCartesianCoordinates end = new NormalizedCartesianCoordinates(current_position);
-
-        optional<Block> block = PlanetariaCache.block_cache.get(arc);
-        if (!block.exists)
+        optional<Vector3> intersection_point = PlanetariaIntersection.arc_path_intersection(arc, begin, end); //TODO: check .data
+        if (!intersection_point.exists)
         {
             return new optional<BlockCollision>();
         }
 
-        result.target = block.data;
-
-        optional<int> collision_arc_index = result.target.arc_index(arc);
-        if (!collision_arc_index.exists)
-        {
-            return new optional<BlockCollision>();
-        }
-
-        int closest_index = 0;
-        float closest_similarity = -1;
-
-        for (int adjacent_arc_index = collision_arc_index.data - 2; adjacent_arc_index <= collision_arc_index.data + 2; ++adjacent_arc_index)
-        {
-            int current_index = adjacent_arc_index;
-            optional<Arc> current_arc = result.target.at(ref current_index);
-            optional<Vector3> current_intersection_point = PlanetariaIntersection.arc_path_intersection(ref current_arc.data, begin, end); //TODO: check .data
-            if (current_intersection_point.exists)
-            {
-                float similarity = Vector3.Dot(current_intersection_point.data, last_position);
-                if (similarity > closest_similarity)
-                {
-                    closest_index = current_index;
-                    closest_similarity = similarity;
-                }
-            }
-        }
-
-        optional<Arc> closest_arc = result.target.at(ref closest_index);
-        
-        optional<Vector3> closest_intersection_point = PlanetariaIntersection.arc_path_intersection(ref closest_arc.data, begin, end); //TODO: check
-        if (!closest_intersection_point.exists)
-        {
-            return new optional<BlockCollision>();
-        }
-
-        result.arc_index = ArcIndex.arc_index(block.data.arc_list, closest_index);
-        result.interpolator_angle = closest_arc.data.position_to_angle(closest_intersection_point.data);
-
+        BlockCollision result = new BlockCollision();
+        float angle = arc.position_to_angle(intersection_point.data);
+        result.geometry_visitor = GeometryVisitor.geometry_visitor(arc_visitor.data, angle, extrusion);
+        result.block = block.data;
+        result.active = true;
         return result;
     }
+    
+    public bool active
+    {
+        get
+        {
+            return block.active && active_variable;
+        }
+        set
+        {
+            active_variable = value;
+        }
+    }
 
-    private Block target;
-    private ArcIndex arc_index;
-    private float interpolator_angle;
+    private bool active_variable;
+    private Block block;
+    private GeometryVisitor geometry_visitor;
 }
 
 /*

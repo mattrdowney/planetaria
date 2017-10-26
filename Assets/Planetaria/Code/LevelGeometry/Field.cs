@@ -30,6 +30,11 @@ public class Field : MonoBehaviour
     /// <returns>True if position is below (inside) all of the planes; false otherwise.</returns>
     public bool contains(Vector3 position, float radius = 0f)
     {
+        if (!active)
+        {
+            return false;
+        }
+
         foreach (Plane plane in plane_list)
         {
             if (plane.GetSide(position))
@@ -55,6 +60,8 @@ public class Field : MonoBehaviour
         effects = this.GetComponents<FieldActor>(); // TODO: check null is properly set
         transform = new PlanetariaTransform(this.GetComponent<Transform>());
     }
+
+    public bool active { get; set; }
     
     private FieldActor[] effects; // previously FieldActor
     private List<Plane> plane_list; // FIXME: System.Collection.Immutable.ImmutableArray<Plane> not supported in current Unity version?

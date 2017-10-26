@@ -1,55 +1,64 @@
 ﻿using System.Collections.Generic;
 
-public struct ArcIndex
+public struct ArcVisitor
 {
     /// <summary>
-    /// Constructor - finds the ArcIndex at a given position in a list
+    /// Constructor - finds the ArcVisitor at a given position in a list
     /// </summary>
     /// <param name="arc_list">The list of Arc segments</param>
     /// <param name="index">The index of the referenced arc segment.</param>
-    /// <returns>An ArcIndex struct (for cyclic indices wrapping in range [0, last_index] inclusive).</returns>
-    public ArcIndex arc_index(List<optional<Arc>> arc_list, int index)
+    /// <returns>An ArcVisitor struct (for iterating across the arcs in a block).</returns>
+    public static ArcVisitor arc_visitor(List<optional<Arc>> arc_list, int index)
     {
-        return arc_index(arc_list.Count-1, index);
-    }
-
-    private ArcIndex arc_index(int last_index, int index)
-    {
-        ArcIndex result = new ArcIndex();
-        last_index_variable = last_index;
-        index_variable = index;
-        return result;
+        return new ArcVisitor(arc_list, index);
     }
 
     /// <summary>
     /// Constructor - find the (new!) arc segment to the right of the current one.
     /// </summary>
     /// <returns>A (new!) ArcIndex struct referring to the arc segment to the right of current.</returns>
-    public ArcIndex right()
+    public ArcVisitor right()
     {
-        int right_index = (index_variable >= last_index_variable ? 0 : (index_variable+1)); // cyclic behavior (wrap numbers from [0, last_index])
-        return arc_index(last_index_variable, right_index);
+        int right_index = (index_variable >= (arc_list_variable.Count-1) ? 0 : (index_variable+1)); // cyclic behavior (wrap numbers from [0, size-1])
+        return arc_visitor(arc_list_variable, right_index);
     }
 
     /// <summary>
     /// Constructor - find the (new!) arc segment to the left of the current one.
     /// </summary>
     /// <returns>A (new!) ArcIndex struct referring to the arc segment to the left of current.</returns>
-    public ArcIndex left()
+    public ArcVisitor left()
     {
-        int left_index = (index_variable <= 0 ? last_index_variable : (index_variable-1)); // cyclic behavior (wrap numbers from [0, last_index])
-        return arc_index(last_index_variable, left_index);
+        int left_index = (index_variable <= 0 ? (arc_list_variable.Count-1) : (index_variable-1)); // cyclic behavior (wrap numbers from [0, size-1])
+        return arc_visitor(arc_list_variable, left_index);
     }
 
-    public int index
+    public optional<Arc> arc
     {
         get
         {
-            return index_variable;
+            return arc_list_variable[index_variable];
         }
     }
 
-    private int last_index_variable;
+    private ArcVisitor(List<optional<Arc>> arc_list, int index)
+    {
+        arc_list_variable = arc_list;
+        index_variable = index;
+    }
+
+    public static bool operator ==(ArcVisitor left_hand_side, ArcVisitor right_hand_side)
+    {
+        return left_hand_side.index_variable == right_hand_side.index_variable &&
+                left_hand_side.arc_list_variable == right_hand_side.arc_list_variable;
+    }
+
+    public static bool operator !=(ArcVisitor left_hand_side, ArcVisitor right_hand_side)
+    {
+        return !(left_hand_side == right_hand_side);
+    }
+
+    private List<optional<Arc>> arc_list_variable;
     private int index_variable;
 }
 

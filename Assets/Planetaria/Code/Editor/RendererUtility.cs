@@ -29,7 +29,7 @@ public static class RendererUtility
     /// <param name="color">The color of the drawn arc.</param>
     public static void draw_arc(Vector3 from, Vector3 from_tangent, Vector3 to, Color color)
     {
-        Arc arc = new Arc(from, from_tangent, to);
+        Arc arc = Arc.arc(GeospatialCurve.curve(from, from_tangent, to));
 
         draw_arc(arc, 0, color);
     }

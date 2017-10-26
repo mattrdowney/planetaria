@@ -31,14 +31,22 @@ public static class Miscellaneous
 
 	public static Subtype GetOrAddComponent<Subtype>(this Component self) where Subtype : Component
     {
-		Subtype result = self.GetComponent<Subtype>();
-		if (result == null)
+		optional<Subtype> result = self.GetComponent<Subtype>();
+		if (!result.exists)
         {
 			result = self.gameObject.AddComponent<Subtype>();
 		}
-
-		return result;
+		return result.data;
 	}
+
+    public static Transform clear_children(this Transform parent)
+    {
+        foreach (Transform child in parent)
+        {
+            GameObject.DestroyImmediate(child.gameObject);
+        }
+        return parent;
+    }
 }
 
 /*

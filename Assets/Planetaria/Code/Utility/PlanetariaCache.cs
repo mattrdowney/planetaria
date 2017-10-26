@@ -3,9 +3,9 @@
 // TODO: Multiton Design Pattern for multiple levels
 public static class PlanetariaCache
 {
-    public static PlanetariaSubcache<BoxCollider, Arc> arc_cache = new PlanetariaSubcache<BoxCollider, Arc>();
-    public static PlanetariaSubcache<Arc, Block> block_cache = new PlanetariaSubcache<Arc, Block>();
-    public static PlanetariaSubcache<BoxCollider, Field> zone_cache = new PlanetariaSubcache<BoxCollider, Field>();
+    [System.NonSerialized] public static PlanetariaSubcache<BoxCollider, Arc> arc_cache = new PlanetariaSubcache<BoxCollider, Arc>();
+    [System.NonSerialized] public static PlanetariaSubcache<Arc, Block> block_cache = new PlanetariaSubcache<Arc, Block>();
+    [System.NonSerialized] public static PlanetariaSubcache<BoxCollider, Field> field_cache = new PlanetariaSubcache<BoxCollider, Field>();
 }
 
 /*

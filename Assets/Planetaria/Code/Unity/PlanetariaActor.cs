@@ -25,13 +25,13 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
 
     protected sealed override void OnTriggerStay(Collider collider)
     {
-        BoxCollider box_collider = collider as BoxCollider;
-        if (!box_collider)
+        optional<BoxCollider> box_collider = collider as BoxCollider;
+        if (!box_collider.exists)
         {
             return;
         }
 
-        optional<Arc> arc = PlanetariaCache.arc_cache.get(box_collider); // C++17 if statements are so pretty compared to this...
+        optional<Arc> arc = PlanetariaCache.arc_cache.get(box_collider.data); // C++17 if statements are so pretty compared to this...
         if (arc.exists) // block
         {
             optional<Block> block = PlanetariaCache.block_cache.get(arc.data);
@@ -51,11 +51,15 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
                     collision_map.Add(block.data, collision.data);
                 }
             }
-            else if (collision_map.ContainsKey(block.data) && !block.data.contains(transform.position.data, transform.scale))
+
+            if (collision_map.ContainsKey(block.data))
             {
                 BlockCollision collision = collision_map[block.data];
-                on_block_exit(collision);
-                collision_map.Remove(block.data);
+                if (!collision.active)
+                {
+                    on_block_exit(collision);
+                    collision_map.Remove(block.data);
+                }
             }
 
             if (collision_map.ContainsKey(block.data))
@@ -66,7 +70,7 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
         }
         else // field
         {
-            optional<Field> field = PlanetariaCache.zone_cache.get(box_collider);
+            optional<Field> field = PlanetariaCache.field_cache.get(box_collider.data);
             if (!field.exists)
             {
                 Debug.LogError("This is likely an Err0r or setup issue.");

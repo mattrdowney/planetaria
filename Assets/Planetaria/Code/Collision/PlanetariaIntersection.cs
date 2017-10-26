@@ -65,7 +65,7 @@ public static class PlanetariaIntersection
         return intersections;
     }
 
-    public static NormalizedCartesianCoordinates[] arc_path_intersections(ref Arc arc, NormalizedCartesianCoordinates begin, NormalizedCartesianCoordinates end)
+    public static NormalizedCartesianCoordinates[] arc_path_intersections(Arc arc, NormalizedCartesianCoordinates begin, NormalizedCartesianCoordinates end)
     {
         NormalizedCartesianCoordinates arc_center = new NormalizedCartesianCoordinates(arc.pole());
         NormalizedCartesianCoordinates path_center = new NormalizedCartesianCoordinates(Vector3.Cross(begin.data, end.data).normalized);
@@ -91,9 +91,9 @@ public static class PlanetariaIntersection
 
     // TODO: consider arc_arc_intersection()
 
-    public static optional<Vector3> arc_path_intersection(ref Arc arc, NormalizedCartesianCoordinates begin, NormalizedCartesianCoordinates end)
+    public static optional<Vector3> arc_path_intersection(Arc arc, NormalizedCartesianCoordinates begin, NormalizedCartesianCoordinates end)
     {
-        NormalizedCartesianCoordinates[] intersections = arc_path_intersections(ref arc, begin, end);
+        NormalizedCartesianCoordinates[] intersections = arc_path_intersections(arc, begin, end);
         if (intersections.Length == 0)
         {
             return new optional<Vector3>();

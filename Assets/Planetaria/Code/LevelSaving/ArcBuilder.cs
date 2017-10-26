@@ -19,7 +19,7 @@ public class ArcBuilder : MonoBehaviour
     public void finalize_edge()
     {
         Block block = this.gameObject.GetComponent<Block>();
-        block.add(arc.data);
+        block.add(curve);
         UnityEditor.EditorUtility.SetDirty(block.gameObject);
 
         build_state = ConstructionState.SetTangentLine;
@@ -36,18 +36,17 @@ public class ArcBuilder : MonoBehaviour
 
         if (arc.exists)
         {
-            block.add(arc.data);
+            block.add(curve);
             UnityEditor.EditorUtility.SetDirty(block.gameObject);
         }
 
-        if (block.size() == 0)
+        if (block.empty())
         {
             GameObject.DestroyImmediate(shape);
         }
         else
         {
             BlockRenderer.render(block);
-            UnityEditor.AssetDatabase.Refresh(); // CONSIDER: Necessary?
             OctahedronMesh mesh = shape.AddComponent<OctahedronMesh>();
             Renderer renderer = shape.GetComponent<Renderer>();
             TextAsset svg_file = VectorGraphicsWriter.get_svg();
@@ -80,7 +79,7 @@ public class ArcBuilder : MonoBehaviour
         {
             to_variable = value.normalized;
             from_tangent_variable = (to_variable - from_variable).normalized;
-            arc_variable = new Arc(from_variable, from_tangent_variable, to_variable);
+            arc_variable = Arc.arc(curve);
         }
     }
 
@@ -91,16 +90,24 @@ public class ArcBuilder : MonoBehaviour
             if (build_state != ConstructionState.SetFrom)
             {
                 to_variable = value.normalized;
-
-                if (from_tangent_variable != Vector3.zero && build_state == ConstructionState.SetTo) // for defined slopes, use standard rendering
-                {
-                    arc_variable = new Arc(from_variable, from_tangent_variable, to_variable);
-                }
-                else // draw the shortest path if no slope was defined
-                {
-                    arc_variable = new Arc(from_variable, to_variable, to_variable);
-                }
+                arc_variable = Arc.arc(curve);
             }
+        }
+    }
+
+    public GeospatialCurve curve
+    {
+        get
+        {
+            if (from_tangent_variable != Vector3.zero && build_state == ConstructionState.SetTo) // for defined slopes, use standard rendering
+            {
+                return GeospatialCurve.curve(from_variable, from_tangent_variable, to_variable);
+            }
+            else // draw the shortest path if no slope was defined
+            {
+                return GeospatialCurve.line(from_variable, to_variable);
+            }
+            
         }
     }
 
