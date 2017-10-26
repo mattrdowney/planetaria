@@ -7,8 +7,8 @@ public static class PixelArtRenderer
     public static void draw(string file, float scale)
     {
         scale = Mathf.Clamp(Mathf.Abs(scale), 0, Mathf.PI);
-        VectorGraphicsWriter.write_pixel_art_header("Assets/Planetaria/Art/VectorGraphics/checker_board.txt");
-        optional<Texture2D> texture = Miscellaneous.fetch_image(file);
+        VectorGraphicsWriter.write_header(file);
+        optional<Texture2D> texture = Miscellaneous.fetch_image("Assets/Planetaria/Art/Textures/" + file + ".png");
         if (texture.exists)
         {
             Color[] pixel_buffer = texture.data.GetPixels();
@@ -75,7 +75,7 @@ public static class PixelArtRenderer
                 }
             }
         }
-        VectorGraphicsWriter.write_footer();
+        VectorGraphicsWriter.write_footer(file);
     }
 
     private static Arc[] get_arcs(Arc first_rail, Arc inner_rail, Arc last_rail, int segments, bool offset = false)

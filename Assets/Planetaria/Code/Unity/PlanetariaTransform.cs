@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+// FIXME: find a way to serialize
 public class PlanetariaTransform
 {
     public PlanetariaTransform(Transform internal_transform)

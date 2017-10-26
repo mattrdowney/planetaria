@@ -12,8 +12,8 @@ public static class VectorGraphicsWriter // FIXME: TODO: clean this up! // CONSI
         {
             Directory.CreateDirectory(svg_folder_path + "/" + scene_index);
         }
-        svg_path = svg_relative_folder_path + scene_index + "/" + scene_index + ".txt";
-        write_uv_header();
+        string name = scene_index + "/" + scene_index;
+        write_header(name);
     }
 
     public static void begin_shape()
@@ -35,7 +35,8 @@ public static class VectorGraphicsWriter // FIXME: TODO: clean this up! // CONSI
 
     public static void end_canvas()
     {
-        write_footer();
+        string name = scene_index + "/" + scene_index;
+        write_footer(name);
     }
 
     public static void end_shape(Color32 color)
@@ -43,41 +44,37 @@ public static class VectorGraphicsWriter // FIXME: TODO: clean this up! // CONSI
         writer.Write(" Z\" fill=\"rgb(" + color.r + "," + color.g + "," + color.b + ")\"/>\n");
     }
 
-    public static TextAsset get_svg() // Unity is gr8; 10/10, would rate again
+    public static TextAsset get_svg()
     {
         TextAsset result = Resources.Load<TextAsset>(resource_location);
         return result;
     }
 
-    public static void write_pixel_art_header(string path)
+    public static void write_header(string identifier)
     {
-        writer = new StreamWriter(path); //Replace-able with: write_uv_header();
-        writer.Write("<svg width=\"" + scale + "\" height=\"" + scale + "\">\n");
-        //writer.Write(" viewBox =\"" + (-scale/2) + " " + (-scale/2) + " " + scale + " " + scale + "\">\n");
-    }
-
-    public static void write_uv_header()
-    {
-        writer = new StreamWriter(svg_path);
+        writer = new StreamWriter(svg_relative_folder_path + identifier + ".txt");
         writer.Write("<svg width=\"" + scale + "\" height=\"" + scale + "\">\n");
     }
 
-    public static void write_footer()
+    public static void write_footer(string identifier) // TODO: simplify
     {
         writer.Write("</svg>");
         writer.Flush();
         writer.Close();
         writer.Dispose();
         UnityEditor.AssetDatabase.Refresh();
-        string guid = UnityEditor.AssetDatabase.AssetPathToGUID(svg_path);
-        writer = new StreamWriter(svg_path.Substring(0, svg_path.Length - 4) + "_" + guid + ".svg");
-        resource_location = + scene_index + "/" + scene_index;
+        string path = svg_relative_folder_path + identifier;
+        Debug.Log(path);
+        string guid = UnityEditor.AssetDatabase.AssetPathToGUID(path + ".txt");
+        Debug.Log(guid);
+        writer = new StreamWriter(path + "_" + guid + ".svg");
+        resource_location = identifier;
         writer.Write(get_svg().text);
         writer.Flush();
         writer.Close();
         writer.Dispose();
-        UnityEditor.AssetDatabase.RenameAsset(svg_path, scene_index + "_" + guid);
-        resource_location = + scene_index + "/" + scene_index + "_" + guid;
+        UnityEditor.AssetDatabase.RenameAsset(path + ".txt", identifier.Substring(identifier.LastIndexOf('/') + 1) + "_" + guid);
+        resource_location = identifier + "_" + guid;
         UnityEditor.AssetDatabase.Refresh();
     }
 
@@ -85,7 +82,6 @@ public static class VectorGraphicsWriter // FIXME: TODO: clean this up! // CONSI
     private static int scene_index;
     private static string svg_folder_path = Application.dataPath + "/Planetaria/Art/VectorGraphics/Resources/";
     private static string svg_relative_folder_path = "Assets/Planetaria/Art/VectorGraphics/Resources/";
-    private static string svg_path; // .svg, oh Unity
     private static string resource_location;
     private static int scale = 1024;
     private static bool first = true;

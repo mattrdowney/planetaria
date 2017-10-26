@@ -12,7 +12,7 @@ public class LevelCreatorEditor : Editor
 
     private void OnEnable ()
     {
-        //PixelArtRenderer.draw("Assets/Planetaria/Art/Textures/colored_checker_board.png", 0.8f);
+        PixelArtRenderer.draw("colored_checker_board", 0.8f);
 
         state_machine = draw_first_point;
         mouse_control = GUIUtility.GetControlID(FocusType.Passive); //UNSURE: use FocusType.Keyboard?
