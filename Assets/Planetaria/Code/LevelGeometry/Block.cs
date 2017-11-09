@@ -57,7 +57,7 @@ public class Block : MonoBehaviour, ISerializationCallbackReceiver // Consider: 
 
     private void generate_arcs()
     {
-        arc_list.Clear();
+        arc_list = new List<optional<Arc>>();
         foreach (GeospatialCurve curve in curve_list)
         {
             arc_list.Add(Arc.arc(curve));
@@ -94,16 +94,16 @@ public class Block : MonoBehaviour, ISerializationCallbackReceiver // Consider: 
         }
     }
 
-    private void Start()
+    private void Awake()
     {
         effects = this.GetComponents<BlockActor>();
         transform = new PlanetariaTransform(this.GetComponent<Transform>());
         active = true;
+        generate_arcs();
     }
 
     public void OnAfterDeserialize()
     {
-        generate_arcs();
     }
 
     public void OnBeforeSerialize()

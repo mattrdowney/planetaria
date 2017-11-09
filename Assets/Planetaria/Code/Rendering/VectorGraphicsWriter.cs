@@ -56,25 +56,60 @@ public static class VectorGraphicsWriter // FIXME: TODO: clean this up! // CONSI
         writer.Write("<svg width=\"" + scale + "\" height=\"" + scale + "\">\n");
     }
 
-    public static void write_footer(string identifier) // TODO: simplify
+    public static void write_footer(string identifier, bool add_guid) // TODO: simplify
     {
+        string suffix = "";
+        string path = svg_relative_folder_path + identifier;
+        if (add_guid)
+        {
+            string guid = UnityEditor.AssetDatabase.AssetPathToGUID(path + ".txt");
+            suffix = "_" + guid;
+        }
         writer.Write("</svg>");
-        writer.Flush();
-        writer.Close();
         writer.Dispose();
         UnityEditor.AssetDatabase.Refresh();
-        string path = svg_relative_folder_path + identifier;
-        Debug.Log(path);
-        string guid = UnityEditor.AssetDatabase.AssetPathToGUID(path + ".txt");
-        Debug.Log(guid);
-        writer = new StreamWriter(path + "_" + guid + ".svg");
+        writer = new StreamWriter(path + suffix + ".svg");
         resource_location = identifier;
         writer.Write(get_svg().text);
-        writer.Flush();
-        writer.Close();
         writer.Dispose();
-        UnityEditor.AssetDatabase.RenameAsset(path + ".txt", identifier.Substring(identifier.LastIndexOf('/') + 1) + "_" + guid);
-        resource_location = identifier + "_" + guid;
+        if (add_guid)
+        {
+            UnityEditor.AssetDatabase.RenameAsset(path + ".txt", identifier.Substring(identifier.LastIndexOf('/') + 1) + suffix);
+        }
+        resource_location = identifier + suffix;
+        UnityEditor.AssetDatabase.Refresh();
+    }
+    
+    /// <summary>
+    /// Mutator (Operating System level) - Writes (or overwrites!) the file at location "file" with the string "text_contents". 
+    /// </summary>
+    /// <param name="file">The absolute file path from the operating system's root directory (e.g. "C:/ProgramData").</param>
+    /// <param name="text_contents">The contents that will be placed in the file</param>
+    public static void write_file(string file, string text_contents, bool add_guid)
+    {
+        // FIXME: relative file path? :: private static string svg_folder_path = Application.dataPath + "/Planetaria/Art/VectorGraphics/Resources/";
+        // file = Application.dataPath + "/Planetaria/Art/VectorGraphics/Resources/" + file; 
+        using (StreamWriter writer = new StreamWriter(file, false))
+        {
+        string suffix = "";
+        string path = svg_relative_folder_path + identifier;
+        if (add_guid)
+        {
+            string guid = UnityEditor.AssetDatabase.AssetPathToGUID(path + ".txt");
+            suffix = "_" + guid;
+        }
+        writer.Write("</svg>");
+        writer.Dispose();
+        UnityEditor.AssetDatabase.Refresh();
+        writer = new StreamWriter(path + suffix + ".svg");
+        resource_location = identifier;
+        writer.Write(get_svg().text);
+        writer.Dispose();
+        if (add_guid)
+        {
+            UnityEditor.AssetDatabase.RenameAsset(path + ".txt", identifier.Substring(identifier.LastIndexOf('/') + 1) + suffix);
+        }
+        resource_location = identifier + suffix;
         UnityEditor.AssetDatabase.Refresh();
     }
 

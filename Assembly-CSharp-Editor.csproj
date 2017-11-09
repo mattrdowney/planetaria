@@ -72,10 +72,13 @@
      <None Include="Assets\OVR\Resources\OVRMRChromaKey.cginc" />
      <None Include="Assets\OVR\Editor\AndroidManifest.OVRSubmission.xml" />
      <None Include="Assets\OVR\Shaders\OVRColorRampAlpha.shader" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\colored_checker_board_77dbbc15d6852fd4c90e5c026b2df84d.txt" />
      <None Include="Assets\OVR\Resources\OVRMRUnlit.shader" />
      <None Include="Assets\OVR\Shaders\Unlit Crosshair.shader" />
      <None Include="Assets\OVR\Resources\Unlit Transparent Color.shader" />
      <None Include="Assets\OVR\Resources\OVRMRCameraFrameLit.shader" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\colored_checker_board_f01e6639c8de9f94dbd4fa5e43e9ae04.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\colored_checker_board_0117b3a93c25b9241955b228702e180b.txt" />
      <None Include="Assets\OVR\Resources\Underlay Transparent Occluder.shader" />
      <None Include="Assets\OVR\Resources\Alpha Premultiply.shader" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\colored_checker_board_2c28f94bf3086ed42a35dca8d16a3b82.txt" />
