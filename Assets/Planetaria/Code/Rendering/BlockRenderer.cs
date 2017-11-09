@@ -4,7 +4,7 @@ using UnityEngine;
 [ExecuteInEditMode]
 public static class BlockRenderer
 {
-    public static void render(Block block)
+    public static optional<TextAsset> render(Block block)
     {
         VectorGraphicsWriter.begin_canvas();
         VectorGraphicsWriter.begin_shape();
@@ -17,7 +17,7 @@ public static class BlockRenderer
         }
 
         VectorGraphicsWriter.end_shape(Color.black);
-        VectorGraphicsWriter.end_canvas();
+        return VectorGraphicsWriter.end_canvas();
     }
 }
 

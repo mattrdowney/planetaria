@@ -14,9 +14,6 @@ public class Block : MonoBehaviour, ISerializationCallbackReceiver // Consider: 
         GameObject result = new GameObject("Shape");
         Block block = result.AddComponent<Block>();
 
-        block.arc_list = new List<optional<Arc>>();
-        block.curve_list = new List<GeospatialCurve>();
-
         return result;
     }
 
@@ -99,6 +96,8 @@ public class Block : MonoBehaviour, ISerializationCallbackReceiver // Consider: 
         effects = this.GetComponents<BlockActor>();
         transform = new PlanetariaTransform(this.GetComponent<Transform>());
         active = true;
+        arc_list = new List<optional<Arc>>();
+        curve_list = new List<GeospatialCurve>();
         generate_arcs();
     }
 

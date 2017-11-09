@@ -2,8 +2,6 @@
 
 public static class RenderVectorGraphics
 {
-    private static string art_folder = "Planetaria/Art/";
-
     public static Material render(TextAsset svg)
     {
         Material result = new Material(Shader.Find("Unlit/Transparent"));

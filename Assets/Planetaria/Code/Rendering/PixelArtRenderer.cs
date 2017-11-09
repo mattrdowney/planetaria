@@ -75,7 +75,7 @@ public static class PixelArtRenderer
                 }
             }
         }
-        VectorGraphicsWriter.write_footer(file);
+        VectorGraphicsWriter.write_footer(file, false);
     }
 
     private static Arc[] get_arcs(Arc first_rail, Arc inner_rail, Arc last_rail, int segments, bool offset = false)
