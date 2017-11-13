@@ -56,7 +56,7 @@ public class ArcBuilder : MonoBehaviour
             }
             else
             {
-                //DestroyImmediate(this.gameObject);
+                DestroyImmediate(this.gameObject);
             }
 
         }
@@ -112,7 +112,7 @@ public class ArcBuilder : MonoBehaviour
     {
         get
         {
-            if (from_variable == from_tangent_variable || from_variable == to_variable)
+            if (to_variable == Vector3.zero || from_variable == from_tangent_variable || from_variable == to_variable)
             {
                 return new optional<GeospatialCurve>();
             }

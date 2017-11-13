@@ -96,8 +96,11 @@ public class Block : MonoBehaviour, ISerializationCallbackReceiver // Consider: 
         effects = this.GetComponents<BlockActor>();
         transform = new PlanetariaTransform(this.GetComponent<Transform>());
         active = true;
-        arc_list = new List<optional<Arc>>();
-        curve_list = new List<GeospatialCurve>();
+        optional<List<GeospatialCurve>> previous_curve_list = curve_list; // FIXME: workaround because Unity is dumb; expanation: Unity's Awake documenation claims, "Awake is called once, just like the constructor", which is not true. Unity does not have a constructor-like function that is called only once; example: MonoBehaviour created with ExecuteInEditMode property Serialized List<string> "mutable", the "mutable" List<string> adds "changed" in the editor before being saved and closed, when reopened the user expects to see "changed" but instead sees an empty list because the editor reinitialized the List<string> using Awake (or something like that).
+        if (!previous_curve_list.exists) // I have a personal goal to avoid nullity, which makes this more verbose.
+        {
+            curve_list = new List<GeospatialCurve>();
+        }
         generate_arcs();
     }
 
@@ -113,12 +116,11 @@ public class Block : MonoBehaviour, ISerializationCallbackReceiver // Consider: 
     private void OnDestroy()
     {
         curve_list.Clear();
-        arc_list.Clear();
-        recache();
+        generate_arcs(); // called for recache()
     }
 
     [SerializeField] private BlockActor[] effects; // previously optional<BlockActor>
-    [SerializeField] private List<GeospatialCurve> curve_list;
+    [SerializeField] public List<GeospatialCurve> curve_list;
     [SerializeField] private new PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
     [System.NonSerialized] private List<optional<Arc>> arc_list; // FIXME: System.Collection.Immutable.ImmutableArray<Arc> not supported in current Unity version?
 }

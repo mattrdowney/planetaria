@@ -51,19 +51,12 @@ public static class VectorGraphicsWriter // FIXME: TODO: clean this up! // CONSI
         writer.Write("<svg width=\"" + scale + "\" height=\"" + scale + "\">\n");
     }
 
-    public static optional<TextAsset> write_footer(string identifier, bool add_guid) // TODO: simplify
+    public static optional<TextAsset> write_footer(string identifier, bool add_global_unique_identifier) // TODO: simplify
     {
         writer.Write("</svg>");
         string svg_relative_folder_path = "Assets/Planetaria/Art/VectorGraphics/Resources/";
-        optional<string> resource_name;
-        Miscellaneous.write_file(svg_relative_folder_path + identifier + ".svg", writer.ToString(), add_guid);
-        resource_name = Miscellaneous.write_file(svg_relative_folder_path + identifier + ".txt", writer.ToString(), add_guid);
-        optional<TextAsset> resource = new optional<TextAsset>();
-        if (resource_name.exists)
-        {
-            resource = Resources.Load<TextAsset>(resource_name.data);
-        }
-        return resource;
+        Miscellaneous.write_file(svg_relative_folder_path + identifier + ".svg", writer.ToString(), add_global_unique_identifier);
+        return Miscellaneous.write_file(svg_relative_folder_path + identifier + ".txt", writer.ToString(), add_global_unique_identifier);
     }
 
     private static StringWriter writer;

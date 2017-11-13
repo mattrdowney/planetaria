@@ -113,6 +113,18 @@ public class LevelCreatorEditor : Editor
         }
     }
 
+    private static CreateShape escape(CreateShape self)
+    {
+        // Escape: close the shape so that it meets with the original point (using original point for slope)
+        if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
+        {
+            temporary_arc.close_shape();
+            temporary_arc = ArcBuilder.arc_builder();
+            return draw_first_point;
+        }
+        return self;
+    }
+
     private static CreateShape draw_first_point()
     {
         temporary_arc.from = get_mouse_position();
@@ -142,15 +154,7 @@ public class LevelCreatorEditor : Editor
             temporary_arc.advance();
             return draw_nth_point;
         }
-        // Escape: close the shape so that it meets with the original point (using original point for slope)
-        else if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
-        {
-            temporary_arc.close_shape();
-            temporary_arc = ArcBuilder.arc_builder();
-            return draw_first_point;
-        }
-
-        return draw_tangent;
+        return escape(draw_tangent);
     }
 
     /// <summary>
@@ -167,15 +171,7 @@ public class LevelCreatorEditor : Editor
             temporary_arc.finalize_edge();
             return draw_tangent;
         }
-        // Escape: close the shape so that it meets with the original point
-        else if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
-        {
-            temporary_arc.close_shape();
-            temporary_arc = ArcBuilder.arc_builder();
-            return draw_first_point;
-        }
-
-        return draw_nth_point;
+        return escape(draw_nth_point);
     }
 
     /// <summary>

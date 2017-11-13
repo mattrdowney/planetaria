@@ -49,22 +49,21 @@ public static class Miscellaneous
     }
 
     /// <summary>
-    /// Inspector - finds the inner_text between prefix and suffix, if it exists, and returns it.
-    /// Note, this technically has a bug where it will not check before the LastIndexOf(prefix) if end_index >= start_index fails.
+    /// Inspector - finds the last instance of inner_text between prefix and suffix, if it exists, and returns it.
     /// </summary>
     /// <param name="text">The text that will be searched.</param>
     /// <param name="prefix">The prefix before the desired text.</param>
     /// <param name="suffix">The suffix after the desired text.</param>
-    /// <returns>The text between prefix and suffix (including neither prefix phrase nor suffix phrase).</returns>
+    /// <returns>The last instance of text between prefix and suffix (including neither prefix phrase nor suffix phrase).</returns>
     public static optional<string> inner_text(string text, string prefix, string suffix)
     {
-        int start_index = text.LastIndexOf(prefix);
-        if (start_index != -1)
+        int end_index = text.LastIndexOf(suffix);
+        if (end_index != -1)
         {
-            start_index += prefix.Length;
-            int end_index = text.LastIndexOf(suffix);
-            if (end_index >= start_index)
+            int start_index = text.LastIndexOf(prefix, end_index-1);
+            if (start_index != -1)
             {
+                start_index += prefix.Length;
                 int length = end_index - start_index; // off by one? start==0, end==1 (e.g. "A\0") has length (1-0) 
                 return text.Substring(start_index, length);
             }
@@ -72,24 +71,24 @@ public static class Miscellaneous
         return new optional<string>();
     }
 
-        
     /// <summary>
     /// Mutator (Operating System level) - Writes (or overwrites!) the file at location "file" with the string "text_contents". 
     /// </summary>
     /// <param name="file">The relative file path starting in the Unity directory (e.g. "Assets/important_file.txt"). Note: will be overwritten.</param>
     /// <param name="text_contents">The contents that will be placed in the file (overwrites file).</param>
-    public static optional<string> write_file(string file, string text_contents, bool add_guid)
+    /// <param name="add_global_unique_identifier">Adds "_[0-9a-f]{32}" before file extension (last dot) in "file".</param>
+    public static optional<TextAsset> write_file(string file, string text_contents, bool add_global_unique_identifier)
     {
         using (StreamWriter writer = new StreamWriter(file, false))
         {
             string suffix = "";
             writer.Write(text_contents);
-            if (add_guid)
+            if (add_global_unique_identifier)
             {
                 writer.Dispose();
                 UnityEditor.AssetDatabase.Refresh();
-                string guid = UnityEditor.AssetDatabase.AssetPathToGUID(file);
-                suffix = "_" + guid;
+                string global_unique_identifier = UnityEditor.AssetDatabase.AssetPathToGUID(file);
+                suffix = "_" + global_unique_identifier;
                 optional<string> name = Miscellaneous.inner_text(file, "/", ".");
                 if (name.exists)
                 {
@@ -105,8 +104,9 @@ public static class Miscellaneous
             if (resource.exists)
             {
                 resource = resource.data + suffix;
+                return Resources.Load<TextAsset>(resource.data);
             }
-            return resource;
+            return new optional<TextAsset>();
         }
     }
 }
