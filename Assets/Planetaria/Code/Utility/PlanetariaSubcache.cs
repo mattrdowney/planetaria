@@ -7,6 +7,11 @@ public class PlanetariaSubcache<Key, Value>
         map_cache.Add(key, value);
     }
 
+    public void uncache(Key key)
+    {
+        map_cache.Remove(key);
+    }
+
     public optional<Value> get(Key key)
     {
         if (!map_cache.ContainsKey(key))

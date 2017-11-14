@@ -3,7 +3,7 @@ using UnityEngine;
 
 [System.Serializable]
 [ExecuteInEditMode]
-public class Block : MonoBehaviour, ISerializationCallbackReceiver // Consider: class Shape : List<Arc> : IEnumerable<Arc>
+public class Block : MonoBehaviour // Consider: class Shape : List<Arc> : IEnumerable<Arc>
 {
     /// <summary>
     /// Constructor (default) - Creates an empty block
@@ -13,14 +13,19 @@ public class Block : MonoBehaviour, ISerializationCallbackReceiver // Consider: 
     {
         GameObject result = new GameObject("Shape");
         Block block = result.AddComponent<Block>();
+        block.curve_list = new List<GeospatialCurve>();
+        block.generate_arcs();
 
         return result;
     }
 
     public void add(GeospatialCurve curve)
     {
-        curve_list.Add(curve);
-        generate_arcs();
+        if (!Application.isPlaying)
+        {
+            curve_list.Add(curve);
+            generate_arcs();
+        }
     }
 
     /// <summary>
@@ -59,70 +64,32 @@ public class Block : MonoBehaviour, ISerializationCallbackReceiver // Consider: 
         {
             arc_list.Add(Arc.arc(curve));
         }
-        recache();
-    }
-
-    private void recache()
-    {
-        PlanetariaCache.arc_cache.clear();
-        PlanetariaCache.block_cache.clear();
-        PlanetariaCache.field_cache.clear();
-        Block[] blocks = GameObject.FindObjectsOfType<Block>();
-        foreach (Block block in blocks)
-        {
-            block.gameObject.transform.clear_children();
-            foreach (optional<Arc> arc in arc_list)
-            {
-                if (arc.exists)
-                {
-                    GameObject game_object = new GameObject("Collider");
-                    game_object.transform.parent = block.gameObject.transform;
-
-                    BoxCollider collider = game_object.AddComponent<BoxCollider>();
-                    Bounds axis_aligned_bounding_box = Arc.get_axis_aligned_bounding_box(arc.data);
-                    collider.center = axis_aligned_bounding_box.center;
-                    collider.size = axis_aligned_bounding_box.size;
-                    collider.isTrigger = true;
-
-                    PlanetariaCache.arc_cache.cache(collider, arc.data);
-                    PlanetariaCache.block_cache.cache(arc.data, block);
-                }
-            }
-        }
     }
 
     private void Awake()
     {
-        effects = this.GetComponents<BlockActor>();
-        transform = new PlanetariaTransform(this.GetComponent<Transform>());
         active = true;
-        optional<List<GeospatialCurve>> previous_curve_list = curve_list; // FIXME: workaround because Unity is dumb; expanation: Unity's Awake documenation claims, "Awake is called once, just like the constructor", which is not true. Unity does not have a constructor-like function that is called only once; example: MonoBehaviour created with ExecuteInEditMode property Serialized List<string> "mutable", the "mutable" List<string> adds "changed" in the editor before being saved and closed, when reopened the user expects to see "changed" but instead sees an empty list because the editor reinitialized the List<string> using Awake (or something like that).
-        if (!previous_curve_list.exists) // I have a personal goal to avoid nullity, which makes this more verbose.
+        if (Application.isPlaying)
         {
-            curve_list = new List<GeospatialCurve>();
+            generate_arcs();
+            effects = this.GetComponents<BlockActor>();
+            transform = new PlanetariaTransform(this.GetComponent<Transform>());
+            PlanetariaCache.cache(this);
         }
-        generate_arcs();
-    }
-
-    public void OnAfterDeserialize()
-    {
-    }
-
-    public void OnBeforeSerialize()
-    {
-        this.gameObject.transform.clear_children(); // Prevent serialization of children (which would change on each save)
     }
 
     private void OnDestroy()
     {
-        curve_list.Clear();
-        generate_arcs(); // called for recache()
+        if (Application.isPlaying)
+        {
+            PlanetariaCache.uncache(this);
+        }
     }
 
-    [SerializeField] private BlockActor[] effects; // previously optional<BlockActor>
-    [SerializeField] public List<GeospatialCurve> curve_list;
-    [SerializeField] private new PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
-    [System.NonSerialized] private List<optional<Arc>> arc_list; // FIXME: System.Collection.Immutable.ImmutableArray<Arc> not supported in current Unity version?
+    [SerializeField] private List<GeospatialCurve> curve_list;
+    [System.NonSerialized] private BlockActor[] effects; // previously optional<BlockActor>
+    [System.NonSerialized] private new PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
+    [System.NonSerialized] private List<optional<Arc>> arc_list;
 }
 
 /*

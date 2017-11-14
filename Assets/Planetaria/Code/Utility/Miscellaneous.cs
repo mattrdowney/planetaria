@@ -39,15 +39,6 @@ public static class Miscellaneous
 		return result.data;
 	}
 
-    public static Transform clear_children(this Transform parent)
-    {
-        foreach (Transform child in parent)
-        {
-            GameObject.DestroyImmediate(child.gameObject);
-        }
-        return parent;
-    }
-
     /// <summary>
     /// Inspector - finds the last instance of inner_text between prefix and suffix, if it exists, and returns it.
     /// </summary>

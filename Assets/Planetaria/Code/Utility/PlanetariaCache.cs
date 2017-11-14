@@ -3,6 +3,48 @@
 // TODO: Multiton Design Pattern for multiple levels
 public static class PlanetariaCache
 {
+    public static void cache(Block block)
+    {
+        if (Application.isPlaying)
+        {
+            foreach (optional<Arc> arc in block.iterator())
+            {
+                if (arc.exists)
+                {
+                    GameObject game_object = new GameObject("Collider");
+                    game_object.transform.parent = block.gameObject.transform;
+
+                    BoxCollider collider = game_object.AddComponent<BoxCollider>();
+                    Bounds axis_aligned_bounding_box = Arc.get_axis_aligned_bounding_box(arc.data);
+                    collider.center = axis_aligned_bounding_box.center;
+                    collider.size = axis_aligned_bounding_box.size;
+                    collider.isTrigger = true;
+
+                    PlanetariaCache.arc_cache.cache(collider, arc.data);
+                    PlanetariaCache.block_cache.cache(arc.data, block);
+                }
+            }
+        }
+    }
+
+    public static void uncache(Block block)
+    {
+        if (Application.isPlaying)
+        {
+            foreach (optional<Arc> arc in block.iterator())
+            {
+                if (arc.exists)
+                {
+                    PlanetariaCache.block_cache.uncache(arc.data);
+                }
+            }
+            foreach (BoxCollider collider in block.gameObject.GetComponentsInChildren<BoxCollider>())
+            {
+                PlanetariaCache.arc_cache.uncache(collider);
+            }
+        }
+    }
+    
     [System.NonSerialized] public static PlanetariaSubcache<BoxCollider, Arc> arc_cache = new PlanetariaSubcache<BoxCollider, Arc>();
     [System.NonSerialized] public static PlanetariaSubcache<Arc, Block> block_cache = new PlanetariaSubcache<Arc, Block>();
     [System.NonSerialized] public static PlanetariaSubcache<BoxCollider, Field> field_cache = new PlanetariaSubcache<BoxCollider, Field>();
