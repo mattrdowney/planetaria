@@ -13,8 +13,6 @@ public class Block : MonoBehaviour // Consider: class Shape : List<Arc> : IEnume
     {
         GameObject result = new GameObject("Shape");
         Block block = result.AddComponent<Block>();
-        block.curve_list = new List<GeospatialCurve>();
-        block.generate_arcs();
 
         return result;
     }
@@ -69,9 +67,9 @@ public class Block : MonoBehaviour // Consider: class Shape : List<Arc> : IEnume
     private void Awake()
     {
         active = true;
+        generate_arcs();
         if (Application.isPlaying)
         {
-            generate_arcs();
             effects = this.GetComponents<BlockActor>();
             transform = new PlanetariaTransform(this.GetComponent<Transform>());
             PlanetariaCache.cache(this);
@@ -86,7 +84,7 @@ public class Block : MonoBehaviour // Consider: class Shape : List<Arc> : IEnume
         }
     }
 
-    [SerializeField] private List<GeospatialCurve> curve_list;
+    [SerializeField] private List<GeospatialCurve> curve_list = new List<GeospatialCurve>();
     [System.NonSerialized] private BlockActor[] effects; // previously optional<BlockActor>
     [System.NonSerialized] private new PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
     [System.NonSerialized] private List<optional<Arc>> arc_list;

@@ -21,8 +21,19 @@ public static class PlanetariaCache
                     collider.isTrigger = true;
 
                     PlanetariaCache.arc_cache.cache(collider, arc.data);
-                    PlanetariaCache.block_cache.cache(arc.data, block);
+                    PlanetariaCache.block_cache.cache(collider, block);
                 }
+            }
+        }
+    }
+
+    public static void uncache(Field field)
+    {
+        if (Application.isPlaying)
+        {
+            foreach (BoxCollider collider in field.gameObject.GetComponentsInChildren<BoxCollider>())
+            {
+                PlanetariaCache.field_cache.uncache(collider);
             }
         }
     }
@@ -31,22 +42,19 @@ public static class PlanetariaCache
     {
         if (Application.isPlaying)
         {
-            foreach (optional<Arc> arc in block.iterator())
-            {
-                if (arc.exists)
-                {
-                    PlanetariaCache.block_cache.uncache(arc.data);
-                }
-            }
             foreach (BoxCollider collider in block.gameObject.GetComponentsInChildren<BoxCollider>())
             {
                 PlanetariaCache.arc_cache.uncache(collider);
+            }
+            foreach (BoxCollider collider in block.gameObject.GetComponentsInChildren<BoxCollider>())
+            {
+                PlanetariaCache.block_cache.uncache(collider);
             }
         }
     }
     
     [System.NonSerialized] public static PlanetariaSubcache<BoxCollider, Arc> arc_cache = new PlanetariaSubcache<BoxCollider, Arc>();
-    [System.NonSerialized] public static PlanetariaSubcache<Arc, Block> block_cache = new PlanetariaSubcache<Arc, Block>();
+    [System.NonSerialized] public static PlanetariaSubcache<BoxCollider, Block> block_cache = new PlanetariaSubcache<BoxCollider, Block>();
     [System.NonSerialized] public static PlanetariaSubcache<BoxCollider, Field> field_cache = new PlanetariaSubcache<BoxCollider, Field>();
 }
 

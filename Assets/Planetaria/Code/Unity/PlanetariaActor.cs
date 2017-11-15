@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(PlanetariaMonoBehaviour))]
@@ -6,21 +7,38 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
 {
     protected sealed override void Awake()
     {
-        collision_map = new Dictionary<Block, BlockCollision>();
-        trigger_set = new List<Field>();
-        on_first_exists();
+        if (on_first_exists.exists)
+        {
+            on_first_exists.data();
+        }
+        StartCoroutine(post_fixed_update());
     }
 
     protected sealed override void Start()
     {
         // add to collision_map and trigger_map for all objects currently intersecting (via Physics.OverlapBox())
-        on_time_zero();
+        if (on_time_zero.exists)
+        {
+            on_time_zero.data();
+        }
     }
     
     protected sealed override void FixedUpdate() // always calling FixedUpdate is less than ideal
     {
-        on_every_frame(); // if undefined, this will error out
-        transform.move();
+        if (on_every_frame.exists)
+        {
+            on_every_frame.data(); // if undefined, this will error out
+        }
+    }
+
+    private IEnumerator post_fixed_update()
+    {
+        while (true)
+        {
+            yield return new WaitForFixedUpdate();
+            // go through each BlockCollision and cull redundant / irrelevant collisions
+            transform.move();
+        }
     }
 
     protected sealed override void OnTriggerStay(Collider collider)
@@ -32,41 +50,18 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
         }
 
         optional<Arc> arc = PlanetariaCache.arc_cache.get(box_collider.data); // C++17 if statements are so pretty compared to this...
-        if (arc.exists) // block
+        if (arc.exists)
         {
-            optional<Block> block = PlanetariaCache.block_cache.get(arc.data);
+            optional<Block> block = PlanetariaCache.block_cache.get(box_collider.data);
             if (!block.exists)
             {
                 Debug.LogError("Critical Err0r.");
                 return;
             }
 
-            if (!collision_map.ContainsKey(block.data) && arc.data.contains(transform.position.data, transform.scale))
-            {
-                float half_height = transform.scale / 2;
-                optional<BlockCollision> collision = BlockCollision.block_collision(arc.data, transform.previous_position.data, transform.position.data, half_height);
-                if (collision.exists)
-                {
-                    on_block_enter(collision.data);
-                    collision_map.Add(block.data, collision.data);
-                }
-            }
-
-            if (collision_map.ContainsKey(block.data))
-            {
-                BlockCollision collision = collision_map[block.data];
-                if (!collision.active)
-                {
-                    on_block_exit(collision);
-                    collision_map.Remove(block.data);
-                }
-            }
-
-            if (collision_map.ContainsKey(block.data))
-            {
-                BlockCollision collision = collision_map[block.data];
-                on_block_stay(collision);
-            }
+            collision_enter(arc.data, block.data);
+            // collision_exit(arc.data, block.data); // collisions are handled at stage: post_fixed_update()
+            // collision_stay(arc.data, block.data); // enter vs. exit behaviour handled by last_collision_set vs. collision_set continuity
         }
         else // field
         {
@@ -77,21 +72,48 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
                 return;
             }
 
-            if (!trigger_set.Contains(field.data) && arc.data.contains(transform.position.data, transform.scale))
-            {
-                on_field_enter(field.data);
-                trigger_set.Add(field.data);
-            }
-            else if (trigger_set.Contains(field.data) && !field.data.contains(transform.position.data, transform.scale))
-            {
-                on_field_exit(field.data);
-                trigger_set.Remove(field.data);
-            }
+            field_enter(field.data);
+            field_exit(field.data);
+            field_stay(field.data);
+        }
+    }
 
-            if (trigger_set.Contains(field.data))
+    private void collision_enter(Arc arc, Block block)
+    {
+        if (block.active && arc.contains(transform.position.data, transform.scale))
+        {
+            float half_height = transform.scale / 2;
+            optional<BlockCollision> collision = BlockCollision.block_collision(arc, block, transform.previous_position.data, transform.position.data, half_height);
+            if (collision.exists)
             {
-                on_field_stay(field.data);
+                collision_set.Add(collision.data);
             }
+        }
+    }
+
+    private void field_enter(Field field)
+    {
+        if (!trigger_set.Contains(field) && field.contains(transform.position.data, transform.scale))
+        {
+            trigger_set.Add(field);
+            on_field_enter(field);
+        }
+    }
+
+    private void field_stay(Field field)
+    {
+        if (trigger_set.Contains(field))
+        {
+            on_field_stay(field);
+        }
+    }
+
+    private void field_exit(Field field)
+    {
+        if (trigger_set.Contains(field) && !field.contains(transform.position.data, transform.scale))
+        {
+            trigger_set.Remove(field);
+            on_field_exit(field);
         }
     }
 
@@ -105,8 +127,9 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
     protected sealed override void OnCollisionStay(Collision collision) { }
     protected sealed override void OnCollisionExit(Collision collision) { }
 
-    private Dictionary<Block, BlockCollision> collision_map;
-    private List<Field> trigger_set;
+    private List<BlockCollision> last_collision_set = new List<BlockCollision>();
+    private List<BlockCollision> collision_set = new List<BlockCollision>();
+    private List<Field> trigger_set = new List<Field>();
 }
 
 /*

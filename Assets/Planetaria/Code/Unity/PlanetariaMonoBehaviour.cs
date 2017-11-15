@@ -4,9 +4,11 @@ public abstract class PlanetariaMonoBehaviour : MonoBehaviour
 {
     public new PlanetariaTransform transform;
 
-    protected abstract void on_first_exists(); // CONSIDER: use Delegates?
-    protected abstract void on_time_zero();
-    protected abstract void on_every_frame();
+    protected delegate void ActionDelegate();
+
+    protected optional<ActionDelegate> on_first_exists;
+    protected optional<ActionDelegate> on_time_zero; // XXX: use at your own risk
+    protected optional<ActionDelegate> on_every_frame;
 
     protected abstract void on_block_enter(BlockCollision block_information);
     protected abstract void on_block_exit(BlockCollision block_information);

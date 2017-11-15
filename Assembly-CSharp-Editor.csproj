@@ -71,8 +71,10 @@
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_f1baa42131d86fd46a8a74857d4021b8.txt" />
      <None Include="Assets\OVR\Resources\OVRMRUnlitTransparent.shader" />
      <None Include="Assets\OVR\Resources\OVRMRChromaKey.cginc" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_cacea252fa72b8544bf02e1f81ba233f.txt" />
      <None Include="Assets\OVR\Editor\AndroidManifest.OVRSubmission.xml" />
      <None Include="Assets\OVR\Shaders\OVRColorRampAlpha.shader" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_38a303f43cb49f945a8e52d3473fd752.txt" />
      <None Include="Assets\OVR\Resources\OVRMRUnlit.shader" />
      <None Include="Assets\OVR\Shaders\Unlit Crosshair.shader" />
      <None Include="Assets\OVR\Resources\Unlit Transparent Color.shader" />
@@ -86,6 +88,7 @@
      <None Include="Assets\OVR\Resources\OVRMRClipPlane.shader" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\colored_checker_board.txt" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_3d8c5d4e9e130fc4985a84f0e926cad3.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_2762229ed9f731d46b3b968856c5efa3.txt" />
      <None Include="Assets\OVR\Resources\Underlay Impostor.shader" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_9d0202ee4be7f364b85981978173e711.txt" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_d8db5afec49595b4ea7a987375591c03.txt" />
