@@ -36,8 +36,19 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
         while (true)
         {
             yield return new WaitForFixedUpdate();
-            // go through each BlockCollision and cull redundant / irrelevant collisions
+            // FIXME: go through each BlockCollision and cull redundant / irrelevant collisions
             transform.move();
+            List<Block>[] block_set = new List<Block>[2];
+            foreach (BlockCollision block_collision in last_collision_set)
+            {
+                block_set[0].Add(block_collision.block);
+            }
+            foreach (BlockCollision block_collision in collision_set)
+            {
+                block_set[1].Add(block_collision.block);
+            }
+            List<Block
+            last_collision_set = collision_set;
         }
     }
 
@@ -48,7 +59,7 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
         {
             return;
         }
-
+        NormalizedCartesianCoordinates position = transform.position;
         optional<Arc> arc = PlanetariaCache.arc_cache.get(box_collider.data); // C++17 if statements are so pretty compared to this...
         if (arc.exists)
         {
@@ -58,8 +69,7 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
                 Debug.LogError("Critical Err0r.");
                 return;
             }
-
-            collision_enter(arc.data, block.data);
+            collision_enter(arc.data, block.data, position);
             // collision_exit(arc.data, block.data); // collisions are handled at stage: post_fixed_update()
             // collision_stay(arc.data, block.data); // enter vs. exit behaviour handled by last_collision_set vs. collision_set continuity
         }
@@ -71,16 +81,15 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
                 Debug.LogError("This is likely an Err0r or setup issue.");
                 return;
             }
-
-            field_enter(field.data);
-            field_exit(field.data);
+            field_enter(field.data, position);
+            field_exit(field.data, position);
             field_stay(field.data);
         }
     }
 
-    private void collision_enter(Arc arc, Block block)
+    private void collision_enter(Arc arc, Block block, NormalizedCartesianCoordinates position)
     {
-        if (block.active && arc.contains(transform.position.data, transform.scale))
+        if (block.active && arc.contains(position.data, transform.scale))
         {
             float half_height = transform.scale / 2;
             optional<BlockCollision> collision = BlockCollision.block_collision(arc, block, transform.previous_position.data, transform.position.data, half_height);
@@ -91,9 +100,9 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
         }
     }
 
-    private void field_enter(Field field)
+    private void field_enter(Field field, NormalizedCartesianCoordinates position)
     {
-        if (!trigger_set.Contains(field) && field.contains(transform.position.data, transform.scale))
+        if (!trigger_set.Contains(field) && field.contains(position.data, transform.scale))
         {
             trigger_set.Add(field);
             on_field_enter(field);
@@ -108,9 +117,9 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
         }
     }
 
-    private void field_exit(Field field)
+    private void field_exit(Field field, NormalizedCartesianCoordinates position)
     {
-        if (trigger_set.Contains(field) && !field.contains(transform.position.data, transform.scale))
+        if (trigger_set.Contains(field) && !field.contains(position.data, transform.scale))
         {
             trigger_set.Remove(field);
             on_field_exit(field);

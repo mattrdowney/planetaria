@@ -19,8 +19,8 @@ public class BlockCollision
         }
         BlockCollision result = new BlockCollision();
         float angle = arc.position_to_angle(intersection_point.data);
-        result.geometry_visitor = GeometryVisitor.geometry_visitor(arc_visitor.data, angle, extrusion);
-        result.block = block;
+        result.geometry_visitor_variable = GeometryVisitor.geometry_visitor(arc_visitor.data, angle, extrusion);
+        result.block_variable = block;
         result.active = true;
         return result;
     }
@@ -29,7 +29,7 @@ public class BlockCollision
     {
         get
         {
-            return block.active && active_variable;
+            return block_variable.active && active_variable;
         }
         set
         {
@@ -37,9 +37,25 @@ public class BlockCollision
         }
     }
 
+    public Block block
+    {
+        get
+        {
+            return block_variable;
+        }
+    }
+
+    public GeometryVisitor geometry_visitor
+    {
+        get
+        {
+            return geometry_visitor_variable;
+        }
+    }
+
     private bool active_variable;
-    private Block block;
-    private GeometryVisitor geometry_visitor;
+    private Block block_variable;
+    private GeometryVisitor geometry_visitor_variable;
 }
 
 /*
