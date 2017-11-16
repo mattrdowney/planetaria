@@ -20,6 +20,7 @@ public class BlockCollision
         BlockCollision result = new BlockCollision();
         float angle = arc.position_to_angle(intersection_point.data);
         result.geometry_visitor_variable = GeometryVisitor.geometry_visitor(arc_visitor.data, angle, extrusion);
+        result.distance_variable = (intersection_point.data - current_position).sqrMagnitude;
         result.block_variable = block;
         result.active = true;
         return result;
@@ -45,6 +46,14 @@ public class BlockCollision
         }
     }
 
+    public float distance
+    {
+        get
+        {
+            return distance_variable;
+        }
+    }
+
     public GeometryVisitor geometry_visitor
     {
         get
@@ -55,6 +64,7 @@ public class BlockCollision
 
     private bool active_variable;
     private Block block_variable;
+    private float distance_variable;
     private GeometryVisitor geometry_visitor_variable;
 }
 

@@ -5,18 +5,20 @@ public abstract class PlanetariaMonoBehaviour : MonoBehaviour
     public new PlanetariaTransform transform;
 
     protected delegate void ActionDelegate();
+    protected delegate void CollisionDelegate(BlockCollision block_information);
+    protected delegate void TriggerDelegate(Field field_information);
 
-    protected optional<ActionDelegate> on_first_exists;
-    protected optional<ActionDelegate> on_time_zero; // XXX: use at your own risk
-    protected optional<ActionDelegate> on_every_frame;
+    protected optional<ActionDelegate> on_first_exists = null;
+    protected optional<ActionDelegate> on_time_zero = null; // XXX: use at your own risk
+    protected optional<ActionDelegate> on_every_frame = null;
 
-    protected abstract void on_block_enter(BlockCollision block_information);
-    protected abstract void on_block_exit(BlockCollision block_information);
-    protected abstract void on_block_stay(BlockCollision block_information);
+    protected optional<CollisionDelegate> on_block_enter = null;
+    protected optional<CollisionDelegate> on_block_exit = null;
+    protected optional<CollisionDelegate> on_block_stay = null;
     
-    protected abstract void on_field_enter(Field zone_information);
-    protected abstract void on_field_exit(Field zone_information);
-    protected abstract void on_field_stay(Field zone_information);
+    protected optional<TriggerDelegate> on_field_enter = null;
+    protected optional<TriggerDelegate> on_field_exit = null;
+    protected optional<TriggerDelegate> on_field_stay = null;
 
     protected abstract void Awake();
     protected abstract void Start();

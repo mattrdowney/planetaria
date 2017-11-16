@@ -133,6 +133,7 @@
      <Compile Include="Assets\Planetaria\Code\Rendering\RenderVectorGraphics.cs" />
      <Compile Include="Assets\Planetaria\Code\Rendering\ShapeRenderer.cs" />
      <Compile Include="Assets\Planetaria\Code\Rendering\VectorGraphicsWriter.cs" />
+     <Compile Include="Assets\Planetaria\Code\Snippets\PlanetariaCharacter.cs" />
      <Compile Include="Assets\Planetaria\Code\Tracker\PlanetariaLookingStrategy.cs" />
      <Compile Include="Assets\Planetaria\Code\Tracker\PlanetariaTiltingStrategy.cs" />
      <Compile Include="Assets\Planetaria\Code\Tracker\PlanetariaTracker.cs" />
@@ -242,6 +243,7 @@
      <None Include="Assets\OVR\Resources\Alpha Premultiply.shader" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_17d252eac9ab0e24691181b80a02170c.txt" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_0f3a591ba3774204794aecb06a101f38.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\checker_board.txt" />
      <None Include="Assets\OVR\Resources\OVRMRCameraFrame.shader" />
      <None Include="Assets\OVR\Resources\OVRMRClipPlane.shader" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\colored_checker_board.txt" />

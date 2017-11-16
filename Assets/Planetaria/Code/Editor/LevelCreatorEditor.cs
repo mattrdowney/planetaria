@@ -12,7 +12,7 @@ public class LevelCreatorEditor : Editor
 
     private void OnEnable ()
     {
-        PixelArtRenderer.draw("colored_checker_board", 0.8f);
+        PixelArtRenderer.draw("checker_board", 1.5f);
 
         state_machine = draw_first_point;
         mouse_control = GUIUtility.GetControlID(FocusType.Passive); //UNSURE: use FocusType.Keyboard?

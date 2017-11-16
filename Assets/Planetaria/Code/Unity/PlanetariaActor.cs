@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(PlanetariaMonoBehaviour))]
@@ -7,6 +8,8 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
 {
     protected sealed override void Awake()
     {
+        set_delegates();
+        transform = new PlanetariaTransform(this.GetComponent<Transform>());
         if (on_first_exists.exists)
         {
             on_first_exists.data();
@@ -31,24 +34,39 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
         }
     }
 
+    protected abstract void set_delegates();
+
     private IEnumerator post_fixed_update()
     {
         while (true)
         {
             yield return new WaitForFixedUpdate();
-            // FIXME: go through each BlockCollision and cull redundant / irrelevant collisions
+            optional<BlockCollision> next_collision = collision_candidates.Min((collision) => collision);
+            if (next_collision.exists)
+            {
+                if (current_collision.exists)
+                {
+                    if (on_block_exit.exists)
+                    {
+                        on_block_exit.data(current_collision.data);
+                    }
+                }
+                if (on_block_enter.exists)
+                {
+                    on_block_enter.data(next_collision.data);
+                }
+                current_collision = next_collision;
+            }
+            // I feel like this doesn't account for a forced on_block_exit inside on_block_enter call
+            if (current_collision.exists)
+            {
+                if (on_block_stay.exists)
+                {
+                    on_block_stay.data(current_collision.data);
+                }
+            }
+            Debug.Log("Happening");
             transform.move();
-            List<Block>[] block_set = new List<Block>[2];
-            foreach (BlockCollision block_collision in last_collision_set)
-            {
-                block_set[0].Add(block_collision.block);
-            }
-            foreach (BlockCollision block_collision in collision_set)
-            {
-                block_set[1].Add(block_collision.block);
-            }
-            List<Block
-            last_collision_set = collision_set;
         }
     }
 
@@ -91,11 +109,14 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
     {
         if (block.active && arc.contains(position.data, transform.scale))
         {
-            float half_height = transform.scale / 2;
-            optional<BlockCollision> collision = BlockCollision.block_collision(arc, block, transform.previous_position.data, transform.position.data, half_height);
-            if (collision.exists)
+            if (!current_collision.exists || current_collision.data.block != block)
             {
-                collision_set.Add(collision.data);
+                float half_height = transform.scale / 2;
+                optional<BlockCollision> collision = BlockCollision.block_collision(arc, block, transform.previous_position.data, transform.position.data, half_height);
+                if (collision.exists)
+                {
+                    collision_candidates.Add(collision.data);
+                }
             }
         }
     }
@@ -105,7 +126,10 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
         if (!trigger_set.Contains(field) && field.contains(position.data, transform.scale))
         {
             trigger_set.Add(field);
-            on_field_enter(field);
+            if (on_field_enter.exists)
+            {
+                on_field_enter.data(field);
+            }
         }
     }
 
@@ -113,7 +137,10 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
     {
         if (trigger_set.Contains(field))
         {
-            on_field_stay(field);
+            if (on_field_stay.exists)
+            {
+                on_field_stay.data(field);
+            }
         }
     }
 
@@ -122,7 +149,10 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
         if (trigger_set.Contains(field) && !field.contains(position.data, transform.scale))
         {
             trigger_set.Remove(field);
-            on_field_exit(field);
+            if (on_field_exit.exists)
+            {
+                on_field_exit.data(field);
+            }
         }
     }
 
@@ -135,9 +165,9 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
     protected sealed override void OnCollisionEnter(Collision collision) { }
     protected sealed override void OnCollisionStay(Collision collision) { }
     protected sealed override void OnCollisionExit(Collision collision) { }
-
-    private List<BlockCollision> last_collision_set = new List<BlockCollision>();
-    private List<BlockCollision> collision_set = new List<BlockCollision>();
+    
+    private optional<BlockCollision> current_collision = new optional<BlockCollision>();
+    private List<BlockCollision> collision_candidates = new List<BlockCollision>();
     private List<Field> trigger_set = new List<Field>();
 }
 

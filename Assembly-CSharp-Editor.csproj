@@ -84,6 +84,7 @@
      <None Include="Assets\OVR\Resources\Alpha Premultiply.shader" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_17d252eac9ab0e24691181b80a02170c.txt" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_0f3a591ba3774204794aecb06a101f38.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\checker_board.txt" />
      <None Include="Assets\OVR\Resources\OVRMRCameraFrame.shader" />
      <None Include="Assets\OVR\Resources\OVRMRClipPlane.shader" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\colored_checker_board.txt" />

@@ -17,6 +17,7 @@ public class PlanetariaTransform
 
         set
         {
+            Debug.Log(value.data);
             dirty_position = true;
             previous_position_variable = position_variable;
             position_variable = value;
@@ -63,7 +64,8 @@ public class PlanetariaTransform
     {
         if (dirty_position)
         {
-            cartesian_transform.rotation = Quaternion.AngleAxis(rotation_variable, position_variable.data);
+            NormalizedCartesianCoordinates cartesian = position;
+            cartesian_transform.rotation = Quaternion.LookRotation(cartesian.data);
             dirty_position = false;
         }
 
