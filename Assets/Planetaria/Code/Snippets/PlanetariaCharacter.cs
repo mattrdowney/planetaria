@@ -16,13 +16,13 @@ public class PlanetariaCharacter : PlanetariaActor
 
     void main()
     {
-        transform.position = new NormalizedSphericalCoordinates(Mathf.PI - Time.time*.4f, Mathf.PI/2);
+        transform.position = new NormalizedSphericalCoordinates(Mathf.PI - Time.time*.4f, Mathf.PI/2 + .01f);
     }
 
     void main2()
     {
-        current_collision.data.geometry_visitor.move_position(0.4f*Time.deltaTime, transform.scale);
-        transform.position = new NormalizedCartesianCoordinates(current_collision.data.geometry_visitor.position());
+        current_collision.data.move(0.4f*Time.deltaTime, transform.scale/2);
+        transform.position = current_collision.data.position();
     }
 
     void collide(BlockCollision collision)

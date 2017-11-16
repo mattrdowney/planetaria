@@ -20,6 +20,7 @@ public struct ArcVisitor
     public ArcVisitor right()
     {
         int right_index = (index_variable >= (arc_list_variable.Count-1) ? 0 : (index_variable+1)); // cyclic behavior (wrap numbers from [0, size-1])
+        UnityEngine.Debug.Log(right_index);
         return arc_visitor(arc_list_variable, right_index);
     }
 
@@ -30,6 +31,7 @@ public struct ArcVisitor
     public ArcVisitor left()
     {
         int left_index = (index_variable <= 0 ? (arc_list_variable.Count-1) : (index_variable-1)); // cyclic behavior (wrap numbers from [0, size-1])
+        UnityEngine.Debug.Log(left_index);
         return arc_visitor(arc_list_variable, left_index);
     }
 

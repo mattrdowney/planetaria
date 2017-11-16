@@ -25,6 +25,21 @@ public class BlockCollision
         result.active = true;
         return result;
     }
+
+    public void move(float delta_length, float extrusion)
+    {
+        geometry_visitor_variable = geometry_visitor.move_position(delta_length, extrusion);
+    }
+
+    public NormalizedCartesianCoordinates position()
+    {
+        return new NormalizedCartesianCoordinates(geometry_visitor.position());
+    }
+
+    public NormalizedCartesianCoordinates normal()
+    {
+        return new NormalizedCartesianCoordinates(geometry_visitor.normal());
+    }
     
     public bool active
     {

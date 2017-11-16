@@ -81,6 +81,7 @@ public abstract class GeometryVisitor
     private GeometryVisitor set_position(float angular_position, float extrusion)
     {
         GeometryVisitor result = this;
+        Debug.Log(left_angle_boundary + " < " + angular_position + " < " + right_angle_boundary);
         if (angular_position < left_angle_boundary)
         {
             float extra_length = (left_angle_boundary - angular_position) * (arc_length/arc_angle);
@@ -91,6 +92,7 @@ public abstract class GeometryVisitor
             float extra_length = (angular_position - right_angle_boundary) * (arc_length/arc_angle);
             result = right_visitor(center_arc, extra_length, extrusion);
         }
+        this.angular_position = angular_position;
         calculate_location();
         return result;
     }

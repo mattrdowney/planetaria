@@ -58,9 +58,12 @@ public class Block : MonoBehaviour // Consider: class Shape : List<Arc> : IEnume
     private void generate_arcs()
     {
         arc_list = new List<optional<Arc>>();
-        foreach (GeospatialCurve curve in curve_list)
+        for (int edge = 0; edge < curve_list.Count; ++edge)
         {
-            arc_list.Add(Arc.arc(curve));
+            Arc left_arc = Arc.arc(curve_list[edge]);
+            Arc right_arc = Arc.arc(curve_list[(edge+1)%curve_list.Count]);
+            arc_list.Add(left_arc);
+            arc_list.Add(Arc.corner(left_arc, right_arc));
         }
     }
 

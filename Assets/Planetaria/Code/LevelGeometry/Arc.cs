@@ -266,14 +266,14 @@ public class Arc
         // find the arc along the equator and set the latitude to -PI/2 (implicitly, that means the arc radius is zero)
 
         // The normal vector should point away from the position of the corner
-        Vector3 cut_normal = -right.position(0); //FIXME: this is almost certainly wrong
+        Vector3 slope = Bearing.right(left.position(left.angle()), left.normal(left.angle()));
 
         // The equatorial positions can be found by extruding the edges by PI/2
         Vector3 start = left.position(left.angle(), Mathf.PI/2);
         Vector3 end = right.position(0, Mathf.PI/2);
 
         // Create arc along equator
-        Arc result = new Arc(GeospatialCurve.curve(start, cut_normal, end)); // FIXME: cut_normal should be right_tangent
+        Arc result = new Arc(GeospatialCurve.curve(start, slope, end)); // FIXME: cut_normal should be right_tangent
 
         // And move the arc to the "South Pole" instead
         result.arc_latitude = -Mathf.PI/2;
