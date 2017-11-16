@@ -72,14 +72,17 @@
      <None Include="Assets\OVR\Resources\OVRMRUnlitTransparent.shader" />
      <None Include="Assets\OVR\Resources\OVRMRChromaKey.cginc" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_cacea252fa72b8544bf02e1f81ba233f.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_dc8a07a225702cf44bd95c87f97e09e4.txt" />
      <None Include="Assets\OVR\Editor\AndroidManifest.OVRSubmission.xml" />
      <None Include="Assets\OVR\Shaders\OVRColorRampAlpha.shader" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_38a303f43cb49f945a8e52d3473fd752.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_da4569d5ecc8e7e42a946c3027ec7194.txt" />
      <None Include="Assets\OVR\Resources\OVRMRUnlit.shader" />
      <None Include="Assets\OVR\Shaders\Unlit Crosshair.shader" />
      <None Include="Assets\OVR\Resources\Unlit Transparent Color.shader" />
      <None Include="Assets\OVR\Resources\OVRMRCameraFrameLit.shader" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_6a0ec64910d7dff4eae0f8082ac2659d.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_205897b97dc3573439d05677d6642516.txt" />
      <None Include="Assets\OVR\Resources\Underlay Transparent Occluder.shader" />
      <None Include="Assets\OVR\Resources\Alpha Premultiply.shader" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_17d252eac9ab0e24691181b80a02170c.txt" />

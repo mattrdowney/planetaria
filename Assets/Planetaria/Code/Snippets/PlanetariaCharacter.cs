@@ -1,18 +1,33 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlanetariaCharacter : PlanetariaActor
 {
     protected override void set_delegates()
     {
+        on_first_exists.data = initialize;
         on_every_frame.data = main;
+        on_block_enter.data = collide;
     }
-    
+
+    void initialize()
+    {
+        transform.scale = 0.1f;
+    }
+
     void main()
     {
-        transform.position = new NormalizedSphericalCoordinates(Mathf.PI - Time.time*.1f, 0f);
+        transform.position = new NormalizedSphericalCoordinates(Mathf.PI - Time.time*.4f, Mathf.PI/2);
+    }
+
+    void main2()
+    {
+        current_collision.data.geometry_visitor.move_position(0.4f*Time.deltaTime, transform.scale);
+        transform.position = new NormalizedCartesianCoordinates(current_collision.data.geometry_visitor.position());
+    }
+
+    void collide(BlockCollision collision)
+    {
+        on_every_frame.data = main2;
     }
 }
 

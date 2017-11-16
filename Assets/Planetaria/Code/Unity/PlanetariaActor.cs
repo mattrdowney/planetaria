@@ -65,7 +65,6 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
                     on_block_stay.data(current_collision.data);
                 }
             }
-            Debug.Log("Happening");
             transform.move();
         }
     }
@@ -166,7 +165,7 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
     protected sealed override void OnCollisionStay(Collision collision) { }
     protected sealed override void OnCollisionExit(Collision collision) { }
     
-    private optional<BlockCollision> current_collision = new optional<BlockCollision>();
+    protected optional<BlockCollision> current_collision = new optional<BlockCollision>();
     private List<BlockCollision> collision_candidates = new List<BlockCollision>();
     private List<Field> trigger_set = new List<Field>();
 }

@@ -125,6 +125,8 @@ internal sealed class ConvexGeometryVisitor : GeometryVisitor
         bool right = delta_length > 0;
 
         // FIXME: implement
+        left_angle_boundary = 0;
+        right_angle_boundary = arc_angle;
     }
 
     protected override void calculate_extrusion(float extrusion)
@@ -148,7 +150,8 @@ internal sealed class ConcaveGeometryVisitor : GeometryVisitor
     {
         // Note: right vs. left doesn't matter, both boundaries need to be recalculated
         // FIXME: implement
-
+        left_angle_boundary = 0;
+        right_angle_boundary = arc_angle;
 
         Vector3 left_position = left_arc.arc.data.position(left_angle_boundary, extrusion);
         Vector3 right_position = right_arc.arc.data.position(right_angle_boundary, extrusion);

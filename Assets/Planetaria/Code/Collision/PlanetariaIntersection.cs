@@ -9,7 +9,7 @@ public static class PlanetariaIntersection
     /// <param name="coordinate_b">Circle B's Cartesian coordinates.</param>
     /// <param name="radius_a">Circle A's radius.</param>
     /// <param name="radius_b">Circle B's radius.</param>
-    /// <returns>f
+    /// <returns>
     /// If there are zero or infinite solutions, returns an empty array;
     /// If there are one or two solutions, returns an array with two Cartesian coordinates.
     /// </returns>
@@ -61,7 +61,6 @@ public static class PlanetariaIntersection
         NormalizedCartesianCoordinates[] intersections = new NormalizedCartesianCoordinates[2];
         intersections[0] = new NormalizedCartesianCoordinates(intersection_center + midpoint_distance*binormal);
         intersections[1] = new NormalizedCartesianCoordinates(intersection_center - midpoint_distance*binormal);
-
         return intersections;
     }
 
@@ -97,6 +96,11 @@ public static class PlanetariaIntersection
         if (intersections.Length == 0)
         {
             return new optional<Vector3>();
+        }
+
+        if (intersections.Length == 1)
+        {
+            return intersections[0].data;
         }
 
         float similarity_a = Vector3.Dot(begin.data, intersections[0].data);

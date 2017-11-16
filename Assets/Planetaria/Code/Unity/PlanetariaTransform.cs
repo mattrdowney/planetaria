@@ -8,7 +8,7 @@ public class PlanetariaTransform
         cartesian_transform = internal_transform;
     }
 
-    public NormalizedSphericalCoordinates position
+    public NormalizedCartesianCoordinates position
     {
         get
         {
@@ -17,18 +17,17 @@ public class PlanetariaTransform
 
         set
         {
-            Debug.Log(value.data);
             dirty_position = true;
             previous_position_variable = position_variable;
             position_variable = value;
         }
     }
 
-    public NormalizedSphericalCoordinates previous_position
+    public NormalizedCartesianCoordinates previous_position
     {
         get
         {
-            return position_variable;
+            return previous_position_variable;
         }
     }
 
@@ -64,9 +63,14 @@ public class PlanetariaTransform
     {
         if (dirty_position)
         {
-            NormalizedCartesianCoordinates cartesian = position;
-            cartesian_transform.rotation = Quaternion.LookRotation(cartesian.data);
+            cartesian_transform.position = position.data;
             dirty_position = false;
+        }
+
+        if (dirty_rotation)
+        {
+            //cartesian_transform.rotation = position;
+            dirty_rotation = false;
         }
 
         if (dirty_scale)
@@ -77,14 +81,15 @@ public class PlanetariaTransform
     }
 
     private Transform cartesian_transform;
-    private NormalizedSphericalCoordinates position_variable;
+    private NormalizedCartesianCoordinates position_variable;
     private float rotation_variable;
     private float scale_variable;
 
     private bool dirty_position;
+    private bool dirty_rotation;
     private bool dirty_scale;
 
-    private NormalizedSphericalCoordinates previous_position_variable;
+    private NormalizedCartesianCoordinates previous_position_variable;
 }
 
 /*
