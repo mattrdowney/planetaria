@@ -79,6 +79,11 @@ public class Block : MonoBehaviour // Consider: class Shape : List<Arc> : IEnume
         }
     }
 
+    private void Reset()
+    {
+        generate_arcs();
+    }
+
     private void OnDestroy()
     {
         if (Application.isPlaying)

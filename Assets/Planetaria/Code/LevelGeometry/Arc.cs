@@ -71,6 +71,12 @@ public class Arc
         bool reflex_angle = arc_angle > Mathf.PI;
         bool correct_angle = Miscellaneous.count_true_booleans(inside_beginning, inside_end, reflex_angle) >= 2;
 
+        if (correct_latitude && correct_angle)
+        {
+            Debug.DrawRay(this.position(0), Vector3.up, Color.cyan);
+            Debug.DrawRay(this.position(this.angle()), Vector3.up, Color.magenta);
+        }
+
         return correct_latitude && correct_angle;
     }
 
@@ -157,7 +163,7 @@ public class Arc
     /// <returns>The arc length.</returns>
     public float length(float extrusion = 0f)
     {
-        return arc_angle * Mathf.Cos(arc_latitude + extrusion);
+        return Mathf.Abs(arc_angle * Mathf.Cos(arc_latitude + extrusion));
     }
 
     /// <summary>
@@ -168,8 +174,8 @@ public class Arc
     /// <returns>A normal on the arc.</returns>
     public Vector3 normal(float angle, float extrusion = 0f)
     {
-        Vector3 equator_position = PlanetariaMath.slerp(forward_axis, right_axis, arc_angle);
-        return PlanetariaMath.slerp(center_axis, -equator_position, arc_latitude + extrusion);
+        Vector3 equator_position = PlanetariaMath.slerp(forward_axis, right_axis, angle);
+        return PlanetariaMath.slerp(equator_position, center_axis, Mathf.PI - arc_latitude - extrusion);
     }
 
     /// <summary>
@@ -261,7 +267,7 @@ public class Arc
     /// <param name="left">The arc that attaches to the beginning of the corner.</param>
     /// <param name="right">The arc that attaches to the end of the corner.</param>
     /// <returns>A convex corner arc.</returns>
-    private static optional<Arc> convex_corner(Arc left, Arc right) // CHECKME: does this work when latitude is >0?
+    private static Arc convex_corner(Arc left, Arc right) // CHECKME: does this work when latitude is >0?
     {
         // find the arc along the equator and set the latitude to -PI/2 (implicitly, that means the arc radius is zero)
 
@@ -273,10 +279,11 @@ public class Arc
         Vector3 end = right.position(0, Mathf.PI/2);
 
         // Create arc along equator
-        Arc result = new Arc(GeospatialCurve.curve(start, slope, end)); // FIXME: cut_normal should be right_tangent
+        Arc result = new Arc(GeospatialCurve.curve(start, slope, end));
 
         // And move the arc to the "South Pole" instead
         result.arc_latitude = -Mathf.PI/2;
+        //result.center_axis = -right.position(right.angle()); 
 
         return result;
     }

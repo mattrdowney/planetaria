@@ -2,6 +2,13 @@
 
 public static class Bearing
 {
+    public static float angle(Vector3 position, Vector3 normal)
+    {
+        float x = Vector3.Dot(normal, east(position));
+        float y = Vector3.Dot(normal, north(position));
+        return Mathf.Atan2(y, x);
+    }
+
     /// <summary>
     /// Find right relative to a point with a given normal vector.
     /// </summary>

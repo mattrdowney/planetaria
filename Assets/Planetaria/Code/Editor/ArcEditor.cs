@@ -10,14 +10,17 @@ public class ArcEditor : Editor
     /// <param name="arc">The arc that will be rendered.</param>
     public static void draw_arc(Arc arc)
     {
-        Color violet = new Color(127, 0, 255);
+        if (true)//arc.angle() < Precision.threshold)
+        {
+            Color violet = new Color(127, 0, 255);
 
-        draw_arc(arc, 0.0f, Color.black);
-        //draw_arc(arc, 0.05f, Color.gray);
-        //draw_arc(arc, 0.1f, Color.white);
+            draw_arc(arc, 0.0f, Color.black);
+            draw_arc(arc, 0.05f, Color.gray);
+            draw_arc(arc, 0.1f, Color.white);
 
-        draw_radial(arc, 0, 0.1f, Color.red);
-        draw_radial(arc, arc.angle(), 0.1f, violet);
+            draw_radial(arc, 0, 0.1f, Color.red);
+            draw_radial(arc, arc.angle(), 0.1f, violet);
+        }
     }
 
     /// <summary>

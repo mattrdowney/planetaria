@@ -70,10 +70,7 @@ public abstract class GeometryVisitor
         if (extrusion != last_extrusion)
         {
             calculate_extrusion(extrusion);
-            if (delta_length != 0)
-            {
-                calculate_boundary(delta_length, extrusion);
-            }
+            calculate_boundary(delta_length, extrusion);
             last_extrusion = extrusion;
         }
     }
@@ -81,15 +78,14 @@ public abstract class GeometryVisitor
     private GeometryVisitor set_position(float angular_position, float extrusion)
     {
         GeometryVisitor result = this;
-        Debug.Log(left_angle_boundary + " < " + angular_position + " < " + right_angle_boundary);
         if (angular_position < left_angle_boundary)
         {
-            float extra_length = (left_angle_boundary - angular_position) * (arc_length/arc_angle);
+            float extra_length = Mathf.Abs((left_angle_boundary - angular_position) * (arc_length/arc_angle));
             result = left_visitor(center_arc, extra_length, extrusion);
         }
         else if (angular_position > right_angle_boundary)
         {
-            float extra_length = (angular_position - right_angle_boundary) * (arc_length/arc_angle);
+            float extra_length = Mathf.Abs((angular_position - right_angle_boundary) * (arc_length/arc_angle));
             result = right_visitor(center_arc, extra_length, extrusion);
         }
         this.angular_position = angular_position;
@@ -124,17 +120,28 @@ internal sealed class ConvexGeometryVisitor : GeometryVisitor
 
     protected override void calculate_boundary(float delta_length, float extrusion)
     {
-        bool right = delta_length > 0;
+        if (delta_length != 0) // no need to redefine boundaries if player isn't moving
+        {
+            bool right = delta_length > 0;
 
-        // FIXME: implement
-        left_angle_boundary = 0;
-        right_angle_boundary = arc_angle;
+            // FIXME: implement
+            left_angle_boundary = 0;
+            right_angle_boundary = arc_angle;
+        }
     }
 
     protected override void calculate_extrusion(float extrusion)
     {
-        arc_length = center_arc.arc.data.length(extrusion);
-        arc_angle = center_arc.arc.data.angle(extrusion);
+        if (center_arc.arc.data.length(0) < Precision.threshold) // corner
+        {
+            arc_length = center_arc.arc.data.length(extrusion); // length determined by center of mass arc
+            arc_angle = center_arc.arc.data.angle(extrusion);
+        }
+        else // edge
+        {
+            arc_length = center_arc.arc.data.length(0); // length determined by floor arc
+            arc_angle = center_arc.arc.data.angle(0);
+        }
     }
 
     protected override void calculate_location()

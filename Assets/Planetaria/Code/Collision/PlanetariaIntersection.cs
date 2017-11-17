@@ -64,11 +64,11 @@ public static class PlanetariaIntersection
         return intersections;
     }
 
-    public static NormalizedCartesianCoordinates[] arc_path_intersections(Arc arc, NormalizedCartesianCoordinates begin, NormalizedCartesianCoordinates end)
+    public static NormalizedCartesianCoordinates[] arc_path_intersections(Arc arc, NormalizedCartesianCoordinates begin, NormalizedCartesianCoordinates end, float extrusion)
     {
         NormalizedCartesianCoordinates arc_center = new NormalizedCartesianCoordinates(arc.pole());
         NormalizedCartesianCoordinates path_center = new NormalizedCartesianCoordinates(Vector3.Cross(begin.data, end.data).normalized);
-        float arc_radius = arc.elevation();
+        float arc_radius = arc.elevation() + extrusion;
         const float path_radius = Mathf.PI/2;
 
         NormalizedCartesianCoordinates[] intersections = circle_circle_intersections(arc_center, path_center, arc_radius, path_radius);
@@ -90,9 +90,9 @@ public static class PlanetariaIntersection
 
     // TODO: consider arc_arc_intersection()
 
-    public static optional<Vector3> arc_path_intersection(Arc arc, NormalizedCartesianCoordinates begin, NormalizedCartesianCoordinates end)
+    public static optional<Vector3> arc_path_intersection(Arc arc, NormalizedCartesianCoordinates begin, NormalizedCartesianCoordinates end, float extrusion)
     {
-        NormalizedCartesianCoordinates[] intersections = arc_path_intersections(arc, begin, end);
+        NormalizedCartesianCoordinates[] intersections = arc_path_intersections(arc, begin, end, extrusion);
         if (intersections.Length == 0)
         {
             return new optional<Vector3>();

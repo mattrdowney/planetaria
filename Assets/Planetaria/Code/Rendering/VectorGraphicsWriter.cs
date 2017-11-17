@@ -27,11 +27,11 @@ public static class VectorGraphicsWriter // FIXME: TODO: clean this up! // CONSI
     {
         if (first)
         {
-            writer.Write("M" + (1 - curve.begin_uv.x) * scale + "," + curve.begin_uv.y * scale);
+            writer.Write("M" + curve.begin_uv.x * scale + "," + (1 - curve.begin_uv.y) * scale);
             first = false;
         }
-        writer.Write(" Q" + (1 - curve.control_uv.x) * scale + "," + curve.control_uv.y * scale);
-        writer.Write(" " + (1 - curve.end_uv.x) * scale + "," + curve.end_uv.y * scale);
+        writer.Write(" Q" + curve.control_uv.x * scale + "," + (1 - curve.control_uv.y) * scale);
+        writer.Write(" " + curve.end_uv.x * scale + "," + (1 - curve.end_uv.y) * scale);
     }
 
     public static optional<TextAsset> end_canvas()

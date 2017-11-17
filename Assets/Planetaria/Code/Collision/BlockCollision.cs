@@ -12,7 +12,7 @@ public class BlockCollision
         }
         NormalizedCartesianCoordinates begin = new NormalizedCartesianCoordinates(last_position);
         NormalizedCartesianCoordinates end = new NormalizedCartesianCoordinates(current_position);
-        optional<Vector3> intersection_point = PlanetariaIntersection.arc_path_intersection(arc, begin, end); //TODO: check .data
+        optional<Vector3> intersection_point = PlanetariaIntersection.arc_path_intersection(arc, begin, end, extrusion); //TODO: check .data
         if (!intersection_point.exists)
         {
             return new optional<BlockCollision>();

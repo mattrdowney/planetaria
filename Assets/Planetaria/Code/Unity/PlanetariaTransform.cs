@@ -40,7 +40,7 @@ public class PlanetariaTransform
 
         set
         {
-            dirty_position = true;
+            dirty_rotation = true;
             rotation_variable = value;
         }
     }
@@ -69,7 +69,8 @@ public class PlanetariaTransform
 
         if (dirty_rotation)
         {
-            //cartesian_transform.rotation = position;
+            Vector3 up = new Vector3(Mathf.Cos(rotation), Mathf.Sin(rotation));
+            cartesian_transform.rotation = Quaternion.LookRotation(position.data, up);
             dirty_rotation = false;
         }
 

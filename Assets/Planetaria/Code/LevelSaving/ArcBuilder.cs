@@ -51,14 +51,9 @@ public class ArcBuilder : MonoBehaviour
             Renderer renderer = shape.GetComponent<Renderer>();
             if (svg_file.exists)
             {
-                renderer.material = RenderVectorGraphics.render(svg_file.data);
-                DestroyImmediate(this);
+                //renderer.material = RenderVectorGraphics.render(svg_file.data);
             }
-            else
-            {
-                DestroyImmediate(this.gameObject);
-            }
-
+            DestroyImmediate(this);
         }
     }
 
