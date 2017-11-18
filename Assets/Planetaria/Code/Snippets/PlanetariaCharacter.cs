@@ -11,18 +11,17 @@ public class PlanetariaCharacter : PlanetariaActor
 
     void initialize()
     {
-        //transform.scale = 0.38534065359f;
         transform.scale = .1f;
     }
 
     void main()
     {
-        transform.position = new NormalizedSphericalCoordinates(Mathf.PI - Time.time*.5f, Mathf.PI/2 + 0.01f);
+        transform.position = new NormalizedSphericalCoordinates(Mathf.PI - Time.time*.5f, Mathf.PI/2);
     }
 
     void main2()
     {
-        current_collision.data.move(0.4f*Time.deltaTime, transform.scale/2);
+        current_collision.data.move(0.4f*Time.deltaTime*Input.GetAxis("Horizontal"), transform.scale/2);
         transform.position = current_collision.data.position();
         transform.rotation = Bearing.angle(current_collision.data.position().data, current_collision.data.normal().data);
     }

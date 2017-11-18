@@ -106,9 +106,9 @@ public abstract class PlanetariaActor : PlanetariaMonoBehaviour
 
     private void collision_enter(Arc arc, Block block, NormalizedCartesianCoordinates position)
     {
-        if (block.active && arc.contains(position.data, transform.scale/2))
+        if (!current_collision.exists || current_collision.data.block != block)
         {
-            if (!current_collision.exists || current_collision.data.block != block)
+            if (block.active && arc.contains(position.data, transform.scale/2))
             {
                 float half_height = transform.scale / 2;
                 optional<BlockCollision> collision = BlockCollision.block_collision(arc, block, transform.previous_position.data, transform.position.data, half_height);

@@ -56,13 +56,13 @@ public abstract class GeometryVisitor
     private static GeometryVisitor right_visitor(ArcVisitor arc_visitor, float rightward_length_from_boundary, float extrusion)
     {
         GeometryVisitor visitor = geometry_visitor(arc_visitor.right(), extrusion);
-        return visitor.set_position((visitor.left_angle_boundary+rightward_length_from_boundary)*(visitor.arc_angle/visitor.arc_length), extrusion);
+        return visitor.set_position(visitor.left_angle_boundary + rightward_length_from_boundary*(visitor.arc_angle/visitor.arc_length), extrusion);
     }
 
     private static GeometryVisitor left_visitor(ArcVisitor arc_visitor, float leftward_length_from_boundary, float extrusion)
     {
         GeometryVisitor visitor = geometry_visitor(arc_visitor.left(), extrusion);
-        return visitor.set_position((visitor.right_angle_boundary-leftward_length_from_boundary)*(visitor.arc_angle/visitor.arc_length), extrusion);
+        return visitor.set_position(visitor.right_angle_boundary - leftward_length_from_boundary*(visitor.arc_angle/visitor.arc_length), extrusion);
     }
 
     private void recalculate(float delta_length, float extrusion)
@@ -94,7 +94,7 @@ public abstract class GeometryVisitor
     }
 
     protected abstract void calculate_boundary(float delta_length, float extrusion);
-    protected abstract void calculate_extrusion(float extrusion);
+    protected abstract void calculate_extrusion(float center_of_mass_extrusion);
     protected abstract void calculate_location();
     
     protected ArcVisitor center_arc;
@@ -130,24 +130,19 @@ internal sealed class ConvexGeometryVisitor : GeometryVisitor
         }
     }
 
-    protected override void calculate_extrusion(float extrusion)
+    protected override void calculate_extrusion(float center_of_mass_extrusion)
     {
-        if (center_arc.arc.data.length(0) < Precision.threshold) // corner
-        {
-            arc_length = center_arc.arc.data.length(extrusion); // length determined by center of mass arc
-            arc_angle = center_arc.arc.data.angle(extrusion);
-        }
-        else // edge
-        {
-            arc_length = center_arc.arc.data.length(0); // length determined by floor arc
-            arc_angle = center_arc.arc.data.angle(0);
-        }
+        arc_angle = center_arc.arc.data.angle();
+        float floor_length = center_arc.arc.data.length(); // edge case
+        float ceiling_length = center_arc.arc.data.length(2*center_of_mass_extrusion); // corner case
+        arc_length = Mathf.Max(floor_length, ceiling_length); // use longer distance to make movement feel consistent
     }
 
     protected override void calculate_location()
     {
         cached_position = center_arc.arc.data.position(angular_position, last_extrusion);
         cached_normal = center_arc.arc.data.normal(angular_position, last_extrusion);
+        Debug.DrawRay(cached_position, cached_normal, Color.blue);
     }
 }
 
@@ -168,12 +163,12 @@ internal sealed class ConcaveGeometryVisitor : GeometryVisitor
         cached_position = (left_position+right_position)/2; // FIXME: unneccessary
     }
 
-    protected override void calculate_extrusion(float extrusion)
+    protected override void calculate_extrusion(float center_of_mass_extrusion)
     {
-        left_normal = left_arc.arc.data.normal(left_angle_boundary, extrusion);
-        right_normal = right_arc.arc.data.normal(right_angle_boundary, extrusion);
+        left_normal = left_arc.arc.data.normal(left_angle_boundary, center_of_mass_extrusion);
+        right_normal = right_arc.arc.data.normal(right_angle_boundary, center_of_mass_extrusion);
         arc_angle = Vector3.Angle(left_normal, right_normal);
-        arc_length = extrusion / Mathf.Sin(arc_angle / 2);
+        arc_length = 2 * center_of_mass_extrusion / Mathf.Sin(arc_angle / 2);
     }
 
     protected override void calculate_location()
