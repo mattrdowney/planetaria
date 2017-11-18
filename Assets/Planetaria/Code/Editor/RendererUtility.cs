@@ -27,9 +27,9 @@ public static class RendererUtility
     /// <param name="from_tangent">The rightward tangent/gradient/slope along the sphere at "from".</param>
     /// <param name="to">The ending point of the arc.</param>
     /// <param name="color">The color of the drawn arc.</param>
-    public static void draw_arc(Vector3 from, Vector3 from_tangent, Vector3 to, Color color)
+    public static void draw_arc(Vector3 from, Vector3 slope, Vector3 to, Color color)
     {
-        Arc arc = Arc.arc(GeospatialCurve.curve(from, from_tangent, to));
+        Arc arc = Arc.curve(from, slope, to);
 
         draw_arc(arc, 0, color);
     }

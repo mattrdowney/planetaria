@@ -11,9 +11,14 @@ public class Arc
     /// </summary>
     /// <param name="curve">The GeospatialCurve that defines an arc on a unit sphere.</param>
     /// <returns>An arc along the surface of a unit sphere.</returns>
-    public static Arc arc(GeospatialCurve curve)
+    public static Arc curve(Vector3 from, Vector3 slope, Vector3 to)
     {
-        return new Arc(curve);
+        return validify(from, slope, to);
+    }
+
+    public static Arc line(Vector3 from, Vector3 to)
+    {
+        return curve(from, to, to);
     }
 
     /// <summary>
@@ -220,20 +225,24 @@ public class Arc
     /// </summary>
     /// <param name="curve">The GeospatialCurve that defines an arc on a unit sphere.</param>
     /// <returns>An arc along the surface of a unit sphere.</returns>
-    private Arc(GeospatialCurve curve)
+    private Arc(Vector3 from, Vector3 slope, Vector3 to)
     {
-        right_axis = curve.slope;
-        forward_axis = Vector3.ProjectOnPlane(curve.from - curve.to, curve.slope).normalized; // [from - to] is within the arc's plane
+        right_axis = slope;
+        forward_axis = from; // for great circles only
+        if (from != to) // typical case (for all arcs)
+        {
+            forward_axis = Vector3.ProjectOnPlane(from - to, slope).normalized; // [from - to] is within the arc's plane
+        }
         center_axis = Vector3.Cross(forward_axis, right_axis).normalized; // get binormal using left-hand rule
 
-        float elevation = Vector3.Dot(curve.from, center_axis);
+        float elevation = Vector3.Dot(from, center_axis);
         Vector3 center = elevation * center_axis;
 
-        Vector3 end_axis = (curve.to - center).normalized;
+        Vector3 end_axis = (to - center).normalized;
         before_end = -Vector3.Cross(center_axis, end_axis).normalized;
 
         bool long_path = Vector3.Dot(right_axis, end_axis) < 0;
-        arc_angle = Vector3.Angle(curve.from - center, curve.to - center)*Mathf.Deg2Rad;
+        arc_angle = Vector3.Angle(from - center, to - center)*Mathf.Deg2Rad;
         arc_latitude = Mathf.PI/2 - Mathf.Acos(elevation);
 
         if (long_path)
@@ -272,7 +281,7 @@ public class Arc
         Vector3 slope = Bearing.right(start, left.normal(left.angle(), Mathf.PI/2)); // idk why it's left instead of right, but it works so w/e
 
         // Create arc along equator
-        Arc result = new Arc(GeospatialCurve.curve(start, slope, end));
+        Arc result = new Arc(start, slope, end);
 
         // And move the arc to the "South Pole" instead
         result.arc_latitude = -Mathf.PI/2;
@@ -342,6 +351,21 @@ public class Arc
     {
         // return [0,1] for the hell of it, the dot product would suffice, though
         return (Vector3.Dot(arc.position(angle), -desired_position) + 1f) / 2;
+    }
+
+    private static Arc validify(Vector3 from, Vector3 slope, Vector3 to)
+    {
+        if (from == slope)
+        {
+            slope = Vector3.up;
+        }
+
+        from.Normalize();
+        slope = Vector3.ProjectOnPlane(slope, from);
+        slope.Normalize();
+        to.Normalize();
+
+        return new Arc(from, slope, to);
     }
 
     /// <summary>An axis that includes the center of the circle that defines the arc.</summary>

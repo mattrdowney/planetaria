@@ -60,8 +60,13 @@ public class Block : MonoBehaviour // Consider: class Shape : List<Arc> : IEnume
         arc_list = new List<optional<Arc>>();
         for (int edge = 0; edge < curve_list.Count; ++edge)
         {
-            Arc left_arc = Arc.arc(curve_list[edge]);
-            Arc right_arc = Arc.arc(curve_list[(edge+1)%curve_list.Count]);
+            GeospatialCurve[] circles = new GeospatialCurve[3];
+            for (int circle = 0; circle < 3; ++circle)
+            {
+                circles[circle] = curve_list[(edge+circle)%curve_list.Count];
+            }
+            Arc left_arc = Arc.curve(circles[0].point, circles[0].slope, circles[1].point);
+            Arc right_arc = Arc.curve(circles[1].point, circles[1].slope, circles[2].point);
             arc_list.Add(left_arc);
             arc_list.Add(Arc.corner(left_arc, right_arc));
         }

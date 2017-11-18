@@ -15,12 +15,12 @@ public class LevelCreatorEditor : Editor
         state_machine = draw_first_point;
         mouse_control = GUIUtility.GetControlID(FocusType.Passive); //UNSURE: use FocusType.Keyboard?
         keyboard_control = GUIUtility.GetControlID(FocusType.Passive);
-        temporary_arc = ArcBuilder.arc_builder();
+        temporary_arc = new optional<ArcBuilder>();
     }
 
     private void OnDisable ()
     {
-        temporary_arc.close_shape();
+        temporary_arc.data.close_shape();
         
         Repaint();
     }
@@ -116,8 +116,11 @@ public class LevelCreatorEditor : Editor
         // Escape: close the shape so that it meets with the original point (using original point for slope)
         if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
         {
-            temporary_arc.close_shape();
-            temporary_arc = ArcBuilder.arc_builder();
+            if (temporary_arc.exists)
+            {
+                temporary_arc.data.close_shape();
+                temporary_arc = new optional<ArcBuilder>();
+            }
             return draw_first_point;
         }
         return self;
@@ -125,12 +128,10 @@ public class LevelCreatorEditor : Editor
 
     private static CreateShape draw_first_point()
     {
-        temporary_arc.from = get_mouse_position();
-
         // MouseDown 1: create first corner of a shape
         if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
         {
-            temporary_arc.advance();
+            temporary_arc = ArcBuilder.arc_builder(get_mouse_position());
             return draw_tangent;
         }
 
@@ -144,12 +145,12 @@ public class LevelCreatorEditor : Editor
     /// <returns>mouse_up if nothing was pressed; mouse_down if MouseUp or Escape was pressed.</returns>
     private static CreateShape draw_tangent()
     {
-        temporary_arc.from_tangent = get_mouse_position();
+        temporary_arc.data.receive_vector(get_mouse_position());
 
         // MouseUp 1-n: create the right-hand-side slope for the last point added
         if (Event.current.type == EventType.MouseUp && Event.current.button == 0)
         {
-            temporary_arc.advance();
+            temporary_arc.data.next();
             return draw_nth_point;
         }
         return escape(draw_tangent);
@@ -161,12 +162,12 @@ public class LevelCreatorEditor : Editor
     /// <returns>The next mode for the state machine.</returns>
     private static CreateShape draw_nth_point()
     {
-        temporary_arc.to = get_mouse_position();
-        
+        temporary_arc.data.receive_vector(get_mouse_position());
+
         // MouseDown 2-n: create arc through point using last right-hand-side slope
         if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
         {
-            temporary_arc.finalize_edge();
+            temporary_arc.data.next();
             return draw_tangent;
         }
         return escape(draw_nth_point);
@@ -197,7 +198,7 @@ public class LevelCreatorEditor : Editor
 
     private static CreateShape state_machine;
 
-    private static ArcBuilder temporary_arc;
+    private static optional<ArcBuilder> temporary_arc;
 
     private static float camera_speed = 5f;
 

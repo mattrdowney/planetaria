@@ -3,135 +3,75 @@
 [ExecuteInEditMode]
 public class ArcBuilder : MonoBehaviour
 {
-    private enum ConstructionState { SetFrom = 0, SetTangentLine = 1, SetTo = 2 }
-
-    public static ArcBuilder arc_builder()
+    public static ArcBuilder arc_builder(Vector3 original_point)
     {
         GameObject block = Block.block();
-        return block.AddComponent<ArcBuilder>();
+        ArcBuilder result = block.AddComponent<ArcBuilder>();
+        result.point = result.original_point = original_point;
+        return result;
     }
 
-    public void advance()
+    public void receive_vector(Vector3 vector)
     {
-        ++build_state;
+        if (state == CreationState.SetSlope)
+        {
+            slope = vector;
+            arc = Arc.line(point, slope);
+            
+        }
+        else // CreationState.SetPoint
+        {
+            if (arc.exists)
+            {
+                arc = Arc.curve(arc.data.position(0), slope, point);
+            }
+            point = vector;
+        }
     }
 
-    public void finalize_edge()
+    public void next()
+    {
+        if (state == CreationState.SetSlope)
+        {
+            finalize();
+        }
+        state = (state == CreationState.SetSlope ? CreationState.SetPoint : CreationState.SetSlope); // state = !state;
+    }
+
+    public void finalize()
     {
         Block block = this.gameObject.GetComponent<Block>();
-        block.add(curve.data);
+        block.add(GeospatialCurve.curve(point, slope));
         UnityEditor.EditorUtility.SetDirty(block.gameObject);
-
-        build_state = ConstructionState.SetTangentLine;
-        arc_variable = new optional<Arc>();
-        from_variable = to_variable;
+        point = slope; // point should always be defined
     }
 
     public void close_shape()
     {
         GameObject shape = this.gameObject;
         Block block = this.gameObject.GetComponent<Block>();
-
-        to = original_point;
-
-        if (curve.exists)
+        if (state == CreationState.SetSlope)
         {
-            block.add(curve.data);
-            UnityEditor.EditorUtility.SetDirty(block.gameObject);
+            block.add(GeospatialCurve.curve(point, original_point));
         }
+        UnityEditor.EditorUtility.SetDirty(block.gameObject);
 
-        if (block.empty())
+        optional<TextAsset> svg_file = BlockRenderer.render(block);
+        OctahedronMesh mesh = shape.AddComponent<OctahedronMesh>();
+        Renderer renderer = shape.GetComponent<Renderer>();
+        if (svg_file.exists)
         {
-            GameObject.DestroyImmediate(shape);
+            //renderer.material = RenderVectorGraphics.render(svg_file.data);
         }
-        else
-        {
-            optional<TextAsset> svg_file = BlockRenderer.render(block);
-            OctahedronMesh mesh = shape.AddComponent<OctahedronMesh>();
-            Renderer renderer = shape.GetComponent<Renderer>();
-            if (svg_file.exists)
-            {
-                //renderer.material = RenderVectorGraphics.render(svg_file.data);
-            }
-            DestroyImmediate(this);
-        }
+        DestroyImmediate(this);
     }
-
-    public Vector3 from
-    {
-        set
-        {
-            from_variable = value.normalized;
-
-            if (build_state == ConstructionState.SetFrom)
-            {
-                original_point = from_variable;
-            }
-        }
-
-        get
-        {
-            return from_variable;
-        }
-    }
-
-    public Vector3 from_tangent
-    {
-        set
-        {
-            to_variable = value.normalized;
-            from_tangent_variable = (to_variable - from_variable).normalized;
-            if (curve.exists)
-            {
-                arc_variable = Arc.arc(curve.data);
-            }
-        }
-    }
-
-    public Vector3 to
-    {
-        set
-        {
-            if (build_state != ConstructionState.SetFrom)
-            {
-                to_variable = value.normalized;
-                if (curve.exists)
-                {
-                    arc_variable = Arc.arc(curve.data);
-                }
-            }
-        }
-    }
-
-    public optional<GeospatialCurve> curve
-    {
-        get
-        {
-            if (to_variable == Vector3.zero || from_variable == from_tangent_variable || from_variable == to_variable)
-            {
-                return new optional<GeospatialCurve>();
-            }
-
-            if (from_tangent_variable != Vector3.zero && build_state == ConstructionState.SetTo) // for defined slopes, use standard rendering
-            {
-                return GeospatialCurve.curve(from_variable, from_tangent_variable, to_variable);
-            }
-            else // draw the shortest path if no slope was defined
-            {
-                return GeospatialCurve.line(from_variable, to_variable);
-            }
-        }
-    }
-
+    
+    private enum CreationState { SetSlope = 0, SetPoint = 1 }
+    private CreationState state = CreationState.SetSlope;
     public optional<Arc> arc { get; private set; }
-
-    private ConstructionState build_state;
-    private optional<Arc> arc_variable;
+    private Vector3 point { get; set; }
+    private Vector3 slope { get; set; }
     private Vector3 original_point;
-
-    private Vector3 from_variable;
-    private Vector3 from_tangent_variable;
-    private Vector3 to_variable;
 }
 
 /*

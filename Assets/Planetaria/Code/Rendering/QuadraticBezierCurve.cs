@@ -2,7 +2,7 @@
 
 public struct QuadraticBezierCurve
 {
-    public Vector2 begin_uv { get; private set }
+    public Vector2 begin_uv { get; private set; }
     public Vector2 control_uv { get; private set; }
     public Vector2 end_uv { get; private set; }
 

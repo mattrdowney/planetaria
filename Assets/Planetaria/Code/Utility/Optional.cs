@@ -33,7 +33,7 @@
     public static bool operator ==(optional<Type> left, optional<Type> right)
     {
         bool inequal_existance = (left.exists != right.exists);
-        bool inequal_value = (left.exists && !left.data.Equals(right.data));
+        bool inequal_value = (left.exists && right.exists && !left.data.Equals(right.data));
         bool inequal = inequal_existance || inequal_value;
         return !inequal;
     }

@@ -3,42 +3,57 @@
 [System.Serializable]
 public struct GeospatialCurve
 {
-    public static GeospatialCurve curve(Vector3 from, Vector3 slope, Vector3 to)
+    public static GeospatialCurve curve(Vector3 point, Vector3 slope)
     {
-        from.Normalize();
-        slope = Vector3.ProjectOnPlane(slope, from);
+        point.Normalize();
+        slope = Vector3.ProjectOnPlane(slope, point);
         slope.Normalize();
-        to.Normalize();
 
-        Debug.Assert(from != slope);
-        Debug.Assert(from != to);
-        return new GeospatialCurve(from, slope, to);
+        Debug.Assert(point != slope);
+        return new GeospatialCurve(point, slope);
     }
 
-    public static GeospatialCurve line(Vector3 from, Vector3 to)
+    /// <summary>Property - the start point of the geospatial circle.</summary>
+    public Vector3 point
     {
-        return curve(from, to, to);
+        get
+        {
+            return point_variable;
+        }
     }
 
-    /// <summary>
-    /// Property - the start of the geospatial curve.
-    /// </summary>
-    public Vector3 from { get; private set; }
-
-    /// <summary>
-    /// Property - get the rightward slope starting at point "from".
-    /// </summary>
-    public Vector3 slope { get; private set; }
-
-    /// <summary>
-    /// Property - the end of the geospatial curve.
-    /// </summary>
-    public Vector3 to { get; private set; }
-
-    private GeospatialCurve(Vector3 from, Vector3 slope, Vector3 to)
+    /// <summary>Property - the rightward slope of GeospatialCircle at start point.</summary>
+    public Vector3 slope
     {
-        this.from = from;
-        this.slope = slope;
-        this.to = to;
+        get
+        {
+            return slope_variable;
+        }
     }
+
+    private GeospatialCurve(Vector3 point, Vector3 slope)
+    {
+        point_variable = point;
+        slope_variable = slope;
+    }
+
+    [SerializeField] private Vector3 point_variable;
+    [SerializeField] private Vector3 slope_variable;
 }
+
+/*
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
