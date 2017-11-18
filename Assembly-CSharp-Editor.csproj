@@ -78,6 +78,7 @@
      <None Include="Assets\OVR\Resources\OVRMRUnlit.shader" />
      <None Include="Assets\OVR\Shaders\Unlit Crosshair.shader" />
      <None Include="Assets\OVR\Resources\Unlit Transparent Color.shader" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_d992c4082bff03a4480ad37f0d98b671.txt" />
      <None Include="Assets\OVR\Resources\OVRMRCameraFrameLit.shader" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_b7986ea9f409c1c4c9758d1a166348b1.txt" />
      <None Include="Assets\OVR\Resources\Underlay Transparent Occluder.shader" />

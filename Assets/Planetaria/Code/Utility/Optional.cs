@@ -1,9 +1,6 @@
 ﻿public struct optional<Type>
 {
-    public bool exists
-    {
-        get { return exists_variable; }
-    }
+    public bool exists { get; private set; }
 
     public Type data
     {
@@ -18,14 +15,14 @@
         set
         {
             data_variable = value;
-            exists_variable = (value != null);
+            exists = (value != null);
         }
     }
 
     public optional(Type original)
     {
         data_variable = original;
-        exists_variable = (original != null);
+        exists = (original != null);
     }
 
     public static implicit operator optional<Type>(Type original)
@@ -35,8 +32,8 @@
 
     public static bool operator ==(optional<Type> left, optional<Type> right)
     {
-        bool inequal_existance = (left.exists_variable != right.exists_variable);
-        bool inequal_value = (left.exists_variable && !left.data_variable.Equals(right.data_variable));
+        bool inequal_existance = (left.exists != right.exists);
+        bool inequal_value = (left.exists && !left.data.Equals(right.data));
         bool inequal = inequal_existance || inequal_value;
         return !inequal;
     }
@@ -48,15 +45,14 @@
 
     public override string ToString()
     {
-        if (!exists_variable)
+        if (!exists)
         {
             return "nonexistent " + typeof(Type).Name;
         }
 
-        return data_variable.ToString();
+        return data.ToString();
     }
-
-    private bool exists_variable;
+    
     private Type data_variable;
 }
 

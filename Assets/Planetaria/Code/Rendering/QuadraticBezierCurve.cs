@@ -2,40 +2,16 @@
 
 public struct QuadraticBezierCurve
 {
-    public Vector2 begin_uv
-    {
-        get
-        {
-            return begin_uv_variable;
-        }
-    }
-
-    public Vector2 control_uv
-    {
-        get
-        {
-            return control_uv_variable;
-        }
-    }
-
-    public Vector2 end_uv
-    {
-        get
-        {
-            return end_uv_variable;
-        }
-    }
+    public Vector2 begin_uv { get; private set }
+    public Vector2 control_uv { get; private set; }
+    public Vector2 end_uv { get; private set; }
 
     public QuadraticBezierCurve(Vector2 begin_uv, Vector2 control_uv, Vector2 end_uv)
     {
-        begin_uv_variable = begin_uv;
-        control_uv_variable = control_uv;
-        end_uv_variable = end_uv;
+        this.begin_uv = begin_uv;
+        this.control_uv = control_uv;
+        this.end_uv = end_uv;
     }
-
-    private Vector2 begin_uv_variable;
-    private Vector2 control_uv_variable;
-    private Vector2 end_uv_variable;
 }
 
 /*

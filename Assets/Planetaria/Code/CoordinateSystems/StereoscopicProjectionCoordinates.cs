@@ -2,11 +2,7 @@
 
 public class StereoscopicProjectionCoordinates
 {
-    public Vector2 data
-    {
-        get { return data_variable; }
-        set { data_variable = value; }
-    }
+    public Vector2 data { get; set; }
 
     /// <summary>
     /// Constructor - Stores stereoscopic projection coordinates in a wrapper class.
@@ -14,7 +10,7 @@ public class StereoscopicProjectionCoordinates
     /// <param name="stereoscopic_projection">The stereoscopic projection coordinates on plane z=0.</param>
     public StereoscopicProjectionCoordinates(Vector2 stereoscopic_projection)
     {
-        data_variable = stereoscopic_projection;
+        data = stereoscopic_projection;
     }
 
     /// <summary>
@@ -37,8 +33,6 @@ public class StereoscopicProjectionCoordinates
     }
 
     // TODO: implement remainder of conversions
-
-    private Vector2 data_variable;
 }
 
 /*

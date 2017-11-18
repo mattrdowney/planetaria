@@ -202,7 +202,7 @@ public class Arc
     }
 
     /// <summary>
-    /// Inspector - Find the angle travelled along the arc given a position. 
+    /// Inspector - Find the angle travelled along the arc given a position.
     /// </summary>
     /// <param name="position">The position along the arc (elevation doesn't matter).</param>
     /// <param name="extrusion">The elevation (which is ignored).</param>

@@ -123,13 +123,7 @@ public class ArcBuilder : MonoBehaviour
         }
     }
 
-    public optional<Arc> arc
-    {
-        get
-        {
-            return arc_variable;
-        }
-    }
+    public optional<Arc> arc { get; private set; }
 
     private ConstructionState build_state;
     private optional<Arc> arc_variable;

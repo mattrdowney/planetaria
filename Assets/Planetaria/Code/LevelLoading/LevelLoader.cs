@@ -3,18 +3,7 @@ using UnityEngine;
 
 public abstract class LevelLoader : MonoBehaviour
 {
-    public static LoadingStrategy loader
-    {
-        set
-        {
-            level_loader = value;
-        }
-
-        private get
-        {
-            return level_loader;
-        }
-    }
+    public static LoadingStrategy loader { set; private get; }
 
     private void Awake()
     {
@@ -31,7 +20,6 @@ public abstract class LevelLoader : MonoBehaviour
     }
 
     private int initial_level = 0;
-    private static LoadingStrategy level_loader;
 }
 
 /*

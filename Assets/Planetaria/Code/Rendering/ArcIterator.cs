@@ -1,39 +1,15 @@
 ﻿public struct ArcIterator
 {
-    public Arc arc
-    {
-        get
-        {
-            return arc_variable;
-        }
-    }
-
-    public float begin
-    {
-        get
-        {
-            return begin_variable;
-        }
-    }
-
-    public float end
-    {
-        get
-        {
-            return end_variable;
-        }
-    }
+    public Arc arc { get; private set; }
+    public float begin { get; private set; }
+    public float end { get; private set; }
 
     public ArcIterator(Arc arc, float begin, float end)
     {
-        arc_variable = arc;
-        begin_variable = begin;
-        end_variable = end;
+        this.arc = arc;
+        this.begin = begin;
+        this.end = end;
     }
-
-    private Arc arc_variable;
-    private float begin_variable;
-    private float end_variable;
 }
 
 /*

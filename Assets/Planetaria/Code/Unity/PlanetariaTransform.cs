@@ -18,18 +18,12 @@ public class PlanetariaTransform
         set
         {
             dirty_position = true;
-            previous_position_variable = position_variable;
+            previous_position = position_variable;
             position_variable = value;
         }
     }
 
-    public NormalizedCartesianCoordinates previous_position
-    {
-        get
-        {
-            return previous_position_variable;
-        }
-    }
+    public NormalizedCartesianCoordinates previous_position { get; private set; }
 
     public float rotation
     {
@@ -89,8 +83,6 @@ public class PlanetariaTransform
     private bool dirty_position;
     private bool dirty_rotation;
     private bool dirty_scale;
-
-    private NormalizedCartesianCoordinates previous_position_variable;
 }
 
 /*

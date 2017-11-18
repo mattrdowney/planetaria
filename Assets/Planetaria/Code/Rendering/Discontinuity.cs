@@ -2,45 +2,17 @@
 
 public struct Discontinuity
 {
-    public Arc arc
-    {
-        get
-        {
-            return arc_variable;
-        }
-    }
-
-    public Vector3 position
-    {
-        get
-        {
-            return position_variable;
-        }
-    }
-
-    public float angle
-    {
-        get
-        {
-            return angle_variable;
-        }
-    }
+    public Arc arc { get; private set; }
+    public Vector3 position { get; private set; }
+    public float angle { get; private set; }
 
     public Discontinuity(Arc arc, NormalizedCartesianCoordinates position)
     {
-        arc_variable = arc;
-        position_variable = position.data;
-        angle_variable = arc.position_to_angle(position_variable);
-
-        if (angle_variable < 0 || angle_variable > arc.angle())
-        {
-            Debug.Log("Weird angle: " + angle_variable + "/" + arc.angle());
-        }
+        this.arc = arc;
+        this.position = position.data;
+        this.angle = arc.position_to_angle(this.position);
+        Debug.Assert(angle < 0 || angle > arc.angle());
     }
-
-    private Arc arc_variable;
-    private Vector3 position_variable;
-    private float angle_variable;
 }
 
 /*

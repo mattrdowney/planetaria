@@ -19,16 +19,16 @@ public class BlockCollision
         }
         BlockCollision result = new BlockCollision();
         float angle = arc.position_to_angle(intersection_point.data);
-        result.geometry_visitor_variable = GeometryVisitor.geometry_visitor(arc_visitor.data, angle, extrusion);
-        result.distance_variable = (intersection_point.data - current_position).sqrMagnitude;
-        result.block_variable = block;
+        result.geometry_visitor = GeometryVisitor.geometry_visitor(arc_visitor.data, angle, extrusion);
+        result.distance = (intersection_point.data - current_position).sqrMagnitude;
+        result.block = block;
         result.active = true;
         return result;
     }
 
     public void move(float delta_length, float extrusion)
     {
-        geometry_visitor_variable = geometry_visitor.move_position(delta_length, extrusion);
+        geometry_visitor = geometry_visitor.move_position(delta_length, extrusion);
     }
 
     public NormalizedCartesianCoordinates position()
@@ -45,42 +45,19 @@ public class BlockCollision
     {
         get
         {
-            return block_variable.active && active_variable;
+            return block.active && active_variable;
         }
-        set
+        private set
         {
             active_variable = value;
         }
     }
 
-    public Block block
-    {
-        get
-        {
-            return block_variable;
-        }
-    }
-
-    public float distance
-    {
-        get
-        {
-            return distance_variable;
-        }
-    }
-
-    public GeometryVisitor geometry_visitor
-    {
-        get
-        {
-            return geometry_visitor_variable;
-        }
-    }
+    public Block block { get; private set; }
+    public float distance { get; private set; }
+    public GeometryVisitor geometry_visitor { get; private set; }
 
     private bool active_variable;
-    private Block block_variable;
-    private float distance_variable;
-    private GeometryVisitor geometry_visitor_variable;
 }
 
 /*
