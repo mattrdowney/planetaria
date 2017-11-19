@@ -24,7 +24,7 @@ namespace Planetaria
         /// Inspector - Converts Cartesian coordinates into octahedral coordinates.
         /// </summary>
         /// <param name="cartesian">The coordinates in Cartesian space that will be converted</param>
-        /// <returns>The octahedral coordinates.</returns> 
+        /// <returns>The octahedral coordinates.</returns>
         public static implicit operator NormalizedOctahedralCoordinates(NormalizedCartesianCoordinates cartesian)
         {
             return new NormalizedOctahedralCoordinates(cartesian.data);
@@ -34,7 +34,7 @@ namespace Planetaria
         /// Inspector - Converts Cartesian coordinates into spherical coordinates.
         /// </summary>
         /// <param name="cartesian">The coordinates in Cartesian space that will be converted</param>
-        /// <returns>The spherical coordinates.</returns> 
+        /// <returns>The spherical coordinates.</returns>
         public static implicit operator NormalizedSphericalCoordinates(NormalizedCartesianCoordinates cartesian)
         {
             float elevation = Mathf.Acos(-cartesian.data.y);
@@ -46,7 +46,7 @@ namespace Planetaria
         /// Inspector - Converts Cartesian coordinates into octahedron UV space.
         /// </summary>
         /// <param name="cartesian">The coordinates in Cartesian space that will be converted</param>
-        /// <returns>The UV coordinates for an octahedron.</returns> 
+        /// <returns>The UV coordinates for an octahedron.</returns>
         public static implicit operator OctahedralUVCoordinates(NormalizedCartesianCoordinates cartesian)
         {
             return cartesian; // implicit chains of length three won't automatically work so convert NormalizedCartesianCoordinates -> NormalizedOctahedralCoordinates -> OctahedralUVCoordinates
@@ -56,7 +56,7 @@ namespace Planetaria
         /// Inspector - Projects Cartesian coordinates onto plane z=0 in stereoscopic projection coordinates.
         /// </summary>
         /// <param name="cartesian">The coordinates in Cartesian space that will be converted</param>
-        /// <returns>The stereoscopic projection coordinates on plane z=0.</returns> 
+        /// <returns>The stereoscopic projection coordinates on plane z=0.</returns>
         public static implicit operator StereoscopicProjectionCoordinates(NormalizedCartesianCoordinates cartesian)
         {
             float x = cartesian.data.x;

@@ -117,17 +117,40 @@ namespace Planetaria
 
     internal sealed class ConvexGeometryVisitor : GeometryVisitor
     {
-        public ConvexGeometryVisitor(ArcVisitor arc_index, float extrusion) : base(arc_index, extrusion) { }
+        public ConvexGeometryVisitor(ArcVisitor arc_index, float extrusion) : base(arc_index, extrusion)
+        {
+            left_of_left_arc = arc_index.left().left(); //left_arc.left();
+            right_of_right_arc = arc_index.right().right(); //right_arc.right();
+        }
 
         protected override void calculate_boundary(float delta_length, float extrusion)
         {
             if (delta_length != 0) // no need to redefine boundaries if player isn't moving
             {
-                bool right = delta_length > 0;
-
-                // FIXME: implement
-                left_angle_boundary = 0;
-                right_angle_boundary = arc_angle;
+                if (delta_length > 0) // set right boundary
+                {
+                    if (right_arc.arc.exists)
+                    {
+                        right_angle_boundary = arc_angle;
+                    }
+                    else
+                    {   
+                        Vector3 intersection = PlanetariaIntersection.arc_arc_intersection(center_arc.arc.data, right_of_right_arc.arc.data, extrusion);
+                        right_angle_boundary = center_arc.arc.data.position_to_angle(intersection);
+                    }
+                }
+                else // set left boundary
+                {
+                    if (left_arc.arc.exists)
+                    {
+                        left_angle_boundary = 0;
+                    }
+                    else
+                    {
+                        Vector3 intersection = PlanetariaIntersection.arc_arc_intersection(center_arc.arc.data, left_of_left_arc.arc.data, extrusion);
+                        left_angle_boundary = center_arc.arc.data.position_to_angle(intersection);
+                    }
+                }
             }
         }
 
@@ -145,6 +168,9 @@ namespace Planetaria
             cached_normal = center_arc.arc.data.normal(angular_position, last_extrusion);
             Debug.DrawRay(cached_position, cached_normal, Color.blue);
         }
+
+        ArcVisitor left_of_left_arc;
+        ArcVisitor right_of_right_arc;
     }
 
     internal sealed class ConcaveGeometryVisitor : GeometryVisitor
@@ -153,23 +179,17 @@ namespace Planetaria
 
         protected override void calculate_boundary(float delta_length, float extrusion)
         {
-            // Note: right vs. left doesn't matter, both boundaries need to be recalculated
-            // FIXME: implement
             left_angle_boundary = 0;
             right_angle_boundary = arc_angle;
-
-            Vector3 left_position = left_arc.arc.data.position(left_angle_boundary, extrusion);
-            Vector3 right_position = right_arc.arc.data.position(right_angle_boundary, extrusion);
-            // Assert left_position == right_position
-            cached_position = (left_position+right_position)/2; // FIXME: unneccessary
         }
 
         protected override void calculate_extrusion(float center_of_mass_extrusion)
         {
             left_normal = left_arc.arc.data.normal(left_angle_boundary, center_of_mass_extrusion);
             right_normal = right_arc.arc.data.normal(right_angle_boundary, center_of_mass_extrusion);
-            arc_angle = Vector3.Angle(left_normal, right_normal);
+            arc_angle = Mathf.PI - Vector3.Angle(left_normal, right_normal);
             arc_length = 2 * center_of_mass_extrusion / Mathf.Sin(arc_angle / 2);
+            cached_position = PlanetariaIntersection.arc_arc_intersection(left_arc.arc.data, right_arc.arc.data, center_of_mass_extrusion);
         }
 
         protected override void calculate_location()

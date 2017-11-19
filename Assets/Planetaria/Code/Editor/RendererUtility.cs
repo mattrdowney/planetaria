@@ -11,10 +11,11 @@ namespace Planetaria
         /// <param name="color">The color of the drawn arc.</param>
         public static void draw_arc(Arc arc, float extrusion, Color color)
         {
+            GeospatialCircle circle = arc.circle(extrusion);
             Vector3 from = arc.position(0, extrusion);
-            Vector3 normal = arc.pole(extrusion);
+            Vector3 normal = circle.center;
             Vector3 center = Vector3.Project(from, normal);
-            normal *= -Mathf.Sign(arc.elevation(0));
+            normal *= -Mathf.Sign(circle.radius);
             float angle = arc.angle()*Mathf.Rad2Deg;
             float radius = (from - center).magnitude;
 

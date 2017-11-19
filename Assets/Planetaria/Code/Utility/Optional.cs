@@ -27,6 +27,19 @@
             exists = (original != null);
         }
 
+        public optional(optional<Type> original)
+        {
+            exists = original.exists;
+            if (exists)
+            {
+                data_variable = original.data;
+            }
+            else
+            {
+                data_variable = default(Type);
+            }
+        }
+
         public static implicit operator optional<Type>(Type original)
         {
             return new optional<Type>(original);

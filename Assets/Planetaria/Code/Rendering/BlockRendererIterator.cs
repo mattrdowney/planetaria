@@ -6,11 +6,11 @@ namespace Planetaria
     [ExecuteInEditMode]
     public static class BlockRendererIterator
     {
-        private static void add_intersections(Arc arc, NormalizedCartesianCoordinates[] positions)
+        private static void add_intersections(Arc arc, Vector3[] positions)
         {
             for (int intersection_index = 0; intersection_index < positions.Length; ++intersection_index)
             {
-                add_intersection(arc, positions[intersection_index]);
+                add_intersection(arc, new NormalizedCartesianCoordinates(positions[intersection_index]));
             }
         }
 
@@ -42,7 +42,7 @@ namespace Planetaria
                         float angle = (Mathf.PI/2)*dimension;
                         NormalizedCartesianCoordinates begin = new NormalizedCartesianCoordinates(new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)));
                         NormalizedCartesianCoordinates end = new NormalizedCartesianCoordinates(Vector3.down);
-                        NormalizedCartesianCoordinates[] intersections = PlanetariaIntersection.arc_path_intersections(arc.data, begin, end, 0);
+                        Vector3[] intersections = PlanetariaIntersection.arc_path_intersections(arc.data, begin, end, 0);
                         add_intersections(arc.data, intersections);
                     }
                 }

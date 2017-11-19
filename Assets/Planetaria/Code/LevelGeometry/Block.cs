@@ -55,13 +55,13 @@ namespace Planetaria
             arc_list = new List<optional<Arc>>();
             for (int edge = 0; edge < curve_list.Count; ++edge)
             {
-                GeospatialCurve[] circles = new GeospatialCurve[3];
-                for (int circle = 0; circle < 3; ++circle)
+                GeospatialCurve[] curves = new GeospatialCurve[3];
+                for (int curve = 0; curve < 3; ++curve)
                 {
-                    circles[circle] = curve_list[(edge+circle)%curve_list.Count];
+                    curves[curve] = curve_list[(edge+curve)%curve_list.Count];
                 }
-                Arc left_arc = Arc.curve(circles[0].point, circles[0].slope, circles[1].point);
-                Arc right_arc = Arc.curve(circles[1].point, circles[1].slope, circles[2].point);
+                Arc left_arc = Arc.curve(curves[0].point, curves[0].slope, curves[1].point);
+                Arc right_arc = Arc.curve(curves[1].point, curves[1].slope, curves[2].point);
                 arc_list.Add(left_arc);
                 arc_list.Add(Arc.corner(left_arc, right_arc));
             }

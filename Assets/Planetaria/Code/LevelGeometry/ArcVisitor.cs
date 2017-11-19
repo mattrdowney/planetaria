@@ -49,15 +49,15 @@ namespace Planetaria
             index_variable = index;
         }
 
-        public static bool operator ==(ArcVisitor left_hand_side, ArcVisitor right_hand_side)
+        public static bool operator ==(ArcVisitor left, ArcVisitor right)
         {
-            return left_hand_side.index_variable == right_hand_side.index_variable &&
-                    left_hand_side.arc_list_variable == right_hand_side.arc_list_variable;
+            return left.index_variable == right.index_variable &&
+                    left.arc_list_variable == right.arc_list_variable;
         }
 
-        public static bool operator !=(ArcVisitor left_hand_side, ArcVisitor right_hand_side)
+        public static bool operator !=(ArcVisitor left, ArcVisitor right)
         {
-            return !(left_hand_side == right_hand_side);
+            return !(left == right);
         }
 
         private List<optional<Arc>> arc_list_variable;

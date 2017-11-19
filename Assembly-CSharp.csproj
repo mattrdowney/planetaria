@@ -101,6 +101,7 @@
      <Compile Include="Assets\Planetaria\Code\Camera\Shutter\PlanetariaShutterMotor.cs" />
      <Compile Include="Assets\Planetaria\Code\Camera\Shutter\RegularPolygonCameraShutter.cs" />
      <Compile Include="Assets\Planetaria\Code\Collision\BlockCollision.cs" />
+     <Compile Include="Assets\Planetaria\Code\Collision\GeospatialCircle.cs" />
      <Compile Include="Assets\Planetaria\Code\Collision\PlanetariaIntersection.cs" />
      <Compile Include="Assets\Planetaria\Code\CoordinateSystems\Bearing.cs" />
      <Compile Include="Assets\Planetaria\Code\CoordinateSystems\NormalizedCartesianCoordinates.cs" />

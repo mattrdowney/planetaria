@@ -48,6 +48,13 @@ namespace Planetaria
             return arc_angle;
         }
 
+        public GeospatialCircle circle(float extrusion)
+        {
+            Vector3 center = pole(extrusion);
+            float radius = elevation(extrusion);
+            return GeospatialCircle.circle(center, radius);
+        }
+
         public static float closest_normal(Arc arc, Vector3 normal, int precision = Precision.float_bits)
         {
             return closest_heuristic(arc, normal_heuristic, normal, precision);
@@ -79,29 +86,6 @@ namespace Planetaria
             bool correct_angle = Miscellaneous.count_true_booleans(inside_beginning, inside_end, reflex_angle) >= 2;
 
             return correct_latitude && correct_angle;
-        }
-
-        /// <summary>
-        /// Inspector - Determine the elevation of the extruded radius compared to its pole.
-        /// </summary>
-        /// <param name="extrusion">The radius to extrude the arc.</param>
-        /// <returns>
-        /// For poles towards the normal, returns a negative number [-PI/2, 0]
-        /// representing the angle of decline of the extruded point from the pole.
-        /// For poles away from the normal, returns a positive number [0, PI/2]
-        /// representing the angle of incline of the extruded point from the pole. 
-        /// </returns>
-        public float elevation(float extrusion = 0f)
-        {
-            float latitude = arc_latitude + extrusion;
-        
-            if (latitude >= 0f) // pole towards normal
-            {
-                return latitude - Mathf.PI/2; // elevation is zero or negative 
-            }
-
-            // pole away from normal
-            return latitude + Mathf.PI/2; // elevation is positive
         }
 
         /// <summary>
@@ -176,23 +160,6 @@ namespace Planetaria
         public Vector3 normal(float angle, float extrusion = 0f)
         {
             return position(angle, extrusion + Mathf.PI/2);
-        }
-
-        /// <summary>
-        /// Inspector - Returns the axis perpendicular to all movement along the arc.
-        /// Returns the closer pole, so the pole can be above or below the arc (with respect to the normal).
-        /// </summary>
-        /// <returns>The closest pole, which is perpendicular to the axes of motion.</returns>
-        public Vector3 pole(float extrusion = 0f)
-        {
-            float latitude = arc_latitude + extrusion;
-
-            if (latitude >= 0)
-            {
-                return center_axis;
-            }
-        
-            return -center_axis;
         }
 
         /// <summary>
@@ -289,6 +256,46 @@ namespace Planetaria
             result.arc_latitude = -Mathf.PI/2;
 
             return result;
+        }
+
+        /// <summary>
+        /// Inspector - Determine the elevation of the extruded radius compared to its pole.
+        /// </summary>
+        /// <param name="extrusion">The radius to extrude the arc.</param>
+        /// <returns>
+        /// For poles towards the normal, returns a negative number [-PI/2, 0]
+        /// representing the angle of decline of the extruded point from the pole.
+        /// For poles away from the normal, returns a positive number [0, PI/2]
+        /// representing the angle of incline of the extruded point from the pole. 
+        /// </returns>
+        private float elevation(float extrusion = 0f)
+        {
+            float latitude = arc_latitude + extrusion;
+        
+            if (latitude >= 0f) // pole towards normal
+            {
+                return latitude - Mathf.PI/2; // elevation is zero or negative 
+            }
+
+            // pole away from normal
+            return latitude + Mathf.PI/2; // elevation is positive
+        }
+
+        /// <summary>
+        /// Inspector - Returns the axis perpendicular to all movement along the arc.
+        /// Returns the closer pole, so the pole can be above or below the arc (with respect to the normal).
+        /// </summary>
+        /// <returns>The closest pole, which is perpendicular to the axes of motion.</returns>
+        private Vector3 pole(float extrusion = 0f)
+        {
+            float latitude = arc_latitude + extrusion;
+
+            if (latitude >= 0)
+            {
+                return center_axis;
+            }
+        
+            return -center_axis;
         }
 
         private static float closest_heuristic(Arc arc, HeuristicFunction distance_heuristic, Vector3 target,
