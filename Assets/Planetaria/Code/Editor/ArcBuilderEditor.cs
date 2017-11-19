@@ -8,9 +8,9 @@ public class ArcBuilderEditor : Editor
     [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
     static void draw_arc_builder_gizmos(ArcBuilder self, GizmoType gizmo_type)
     {
-        if (self.arc.exists)
+        foreach (Arc arc in self.arcs)
         {
-            ArcEditor.draw_arc(self.arc.data);
+            ArcEditor.draw_arc(arc);
         }
     }
 }

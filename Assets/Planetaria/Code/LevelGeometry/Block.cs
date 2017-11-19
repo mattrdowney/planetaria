@@ -3,27 +3,20 @@ using UnityEngine;
 
 [System.Serializable]
 [ExecuteInEditMode]
-public class Block : MonoBehaviour // Consider: class Shape : List<Arc> : IEnumerable<Arc>
+public class Block : MonoBehaviour
 {
     /// <summary>
-    /// Constructor (default) - Creates an empty block
+    /// Constructor - Creates a block matching a curves list.
     /// </summary>
-    /// <returns>An empty block with zero arcs and zero corners</returns>
-    public static GameObject block()
+    /// <returns>A block matching its blueprint.</returns>
+    public static GameObject block(List<GeospatialCurve> curves)
     {
         GameObject result = new GameObject("Shape");
         Block block = result.AddComponent<Block>();
+        block.curve_list = curves;
+        block.generate_arcs();
 
         return result;
-    }
-
-    public void add(GeospatialCurve curve)
-    {
-        if (!Application.isPlaying)
-        {
-            curve_list.Add(curve);
-            generate_arcs();
-        }
     }
 
     /// <summary>
@@ -76,12 +69,9 @@ public class Block : MonoBehaviour // Consider: class Shape : List<Arc> : IEnume
     {
         active = true;
         generate_arcs();
-        if (Application.isPlaying)
-        {
-            effects = this.GetComponents<BlockActor>();
-            transform = new PlanetariaTransform(this.GetComponent<Transform>());
-            PlanetariaCache.cache(this);
-        }
+        effects = this.GetComponents<BlockActor>();
+        transform = new PlanetariaTransform(this.GetComponent<Transform>());
+        PlanetariaCache.cache(this);
     }
 
     private void Reset()
@@ -91,10 +81,7 @@ public class Block : MonoBehaviour // Consider: class Shape : List<Arc> : IEnume
 
     private void OnDestroy()
     {
-        if (Application.isPlaying)
-        {
-            PlanetariaCache.uncache(this);
-        }
+        PlanetariaCache.uncache(this);
     }
 
     [SerializeField] private List<GeospatialCurve> curve_list = new List<GeospatialCurve>();

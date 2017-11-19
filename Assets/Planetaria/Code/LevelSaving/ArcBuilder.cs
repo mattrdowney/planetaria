@@ -1,13 +1,15 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 [ExecuteInEditMode]
 public class ArcBuilder : MonoBehaviour
 {
     public static ArcBuilder arc_builder(Vector3 original_point)
     {
-        GameObject block = Block.block();
-        ArcBuilder result = block.AddComponent<ArcBuilder>();
+        GameObject game_object = new GameObject("Arc Builder");
+        ArcBuilder result = game_object.AddComponent<ArcBuilder>();
         result.point = result.original_point = original_point;
+        result.arcs.Add(Arc.line(original_point, original_point));
         return result;
     }
 
@@ -16,14 +18,13 @@ public class ArcBuilder : MonoBehaviour
         if (state == CreationState.SetSlope)
         {
             slope = vector;
-            arc = Arc.line(point, slope);
-            
+            arcs[arcs.Count-1] = Arc.line(point, slope);
         }
         else // CreationState.SetPoint
         {
-            if (arc.exists)
+            if (arcs.Count != 0)
             {
-                arc = Arc.curve(arc.data.position(0), slope, point);
+                arcs[arcs.Count-1] = Arc.curve(arcs[arcs.Count-1].position(0), slope, point);
             }
             point = vector;
         }
@@ -40,22 +41,21 @@ public class ArcBuilder : MonoBehaviour
 
     public void finalize()
     {
-        Block block = this.gameObject.GetComponent<Block>();
-        block.add(GeospatialCurve.curve(point, slope));
-        UnityEditor.EditorUtility.SetDirty(block.gameObject);
+        curves.Add(GeospatialCurve.curve(point, slope));
+        arcs.Add(arcs[arcs.Count-1]);
+        UnityEditor.EditorUtility.SetDirty(this.gameObject);
         point = slope; // point should always be defined
     }
 
     public void close_shape()
     {
-        GameObject shape = this.gameObject;
-        Block block = this.gameObject.GetComponent<Block>();
         if (state == CreationState.SetSlope)
         {
-            block.add(GeospatialCurve.curve(point, original_point));
+            curves.Add(GeospatialCurve.curve(point, original_point));
         }
-        UnityEditor.EditorUtility.SetDirty(block.gameObject);
 
+        GameObject shape = Block.block(curves);
+        Block block = shape.GetComponent<Block>();
         optional<TextAsset> svg_file = BlockRenderer.render(block);
         OctahedronMesh mesh = shape.AddComponent<OctahedronMesh>();
         Renderer renderer = shape.GetComponent<Renderer>();
@@ -63,12 +63,13 @@ public class ArcBuilder : MonoBehaviour
         {
             //renderer.material = RenderVectorGraphics.render(svg_file.data);
         }
-        DestroyImmediate(this);
+        DestroyImmediate(this.gameObject);
     }
     
+    public List<Arc> arcs = new List<Arc>();
+    private List<GeospatialCurve> curves = new List<GeospatialCurve>();
     private enum CreationState { SetSlope = 0, SetPoint = 1 }
     private CreationState state = CreationState.SetSlope;
-    public optional<Arc> arc { get; private set; }
     private Vector3 point { get; set; }
     private Vector3 slope { get; set; }
     private Vector3 original_point;
