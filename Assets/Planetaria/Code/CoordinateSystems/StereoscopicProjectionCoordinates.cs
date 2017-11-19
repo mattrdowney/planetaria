@@ -33,8 +33,6 @@ namespace Planetaria
 
             return new NormalizedCartesianCoordinates(new Vector3(x, y, z));
         }
-
-        // TODO: implement remainder of conversions
     }
 }
 

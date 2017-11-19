@@ -20,7 +20,17 @@ namespace Planetaria
             data_variable = new Vector2(u, v);
             normalize();
         }
-    
+        
+        /// <summary>
+        /// Inspector - Converts octahedron UV coordinates into normalized cartesian coordinates.
+        /// </summary>
+        /// <param name="uv">The coordinates in octahedral UV space that will be converted</param>
+        /// <returns>The normalized cartesian coordinates.</returns>
+        public static implicit operator NormalizedCartesianCoordinates(OctahedralUVCoordinates uv)
+        {
+            return uv; // implicit chains of length three won't automatically work so convert OctahedralUVCoordinates -> NormalizedOctahedralCoordinates -> NormalizedCartesianCoordinates
+        }
+
         /// <summary>
         /// Inspector - Converts octahedron UV coordinates into octahedral coordinates.
         /// </summary>
@@ -28,29 +38,8 @@ namespace Planetaria
         /// <returns>The octahedral coordinates.</returns> 
         public static implicit operator NormalizedOctahedralCoordinates(OctahedralUVCoordinates uv)
         {
-            return new NormalizedOctahedralCoordinates(Octahedron.uv_to_cartesian(uv.data));
-        }
-
-        /// <summary>
-        /// Inspector - Converts octahedron UV coordinates into Cartesian coordinates.
-        /// </summary>
-        /// <param name="uv">The coordinates in octahedral UV space that will be converted</param>
-        /// <returns>The Cartesian coordinates.</returns> 
-        public static implicit operator NormalizedCartesianCoordinates(OctahedralUVCoordinates uv)
-        {
-            NormalizedOctahedralCoordinates octahedral = uv;
-            return octahedral;
-        }
-
-        /// <summary>
-        /// Inspector - Converts octahedron UV coordinates into spherical coordinates.
-        /// </summary>
-        /// <param name="uv">The coordinates in octahedral UV space that will be converted</param>
-        /// <returns>The spherical coordinates.</returns> 
-        public static implicit operator NormalizedSphericalCoordinates(OctahedralUVCoordinates uv)
-        {
-            NormalizedCartesianCoordinates cartesian = uv;
-            return cartesian;
+            Vector3 cartesian = Octahedron.uv_to_cartesian(uv.data);
+            return new NormalizedOctahedralCoordinates(cartesian);
         }
 
         private Vector2 data_variable;

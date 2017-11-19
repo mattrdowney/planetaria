@@ -29,7 +29,7 @@ namespace Planetaria
         {
             return new NormalizedCartesianCoordinates(octahedral.data);
         }
-
+        
         /// <summary>
         /// Inspector - Converts octahedral coordinates into octahedron UV coordinates.
         /// </summary>
@@ -39,17 +39,6 @@ namespace Planetaria
         {
             Vector2 uv = Octahedron.cartesian_to_uv(octahedral.data);
             return new OctahedralUVCoordinates(uv.x, uv.y);
-        }
-    
-        /// <summary>
-        /// Inspector - Converts octahedral coordinates into spherical coordinates.
-        /// </summary>
-        /// <param name="octahedral">The octahedral that will be converted</param>
-        /// <returns>The spherical coordinates.</returns> 
-        public static implicit operator NormalizedSphericalCoordinates(NormalizedOctahedralCoordinates octahedral)
-        {
-            NormalizedCartesianCoordinates cartesian = octahedral;
-            return cartesian;
         }
 
         /// <summary>

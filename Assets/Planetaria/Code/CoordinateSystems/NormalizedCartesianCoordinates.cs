@@ -49,8 +49,7 @@ namespace Planetaria
         /// <returns>The UV coordinates for an octahedron.</returns> 
         public static implicit operator OctahedralUVCoordinates(NormalizedCartesianCoordinates cartesian)
         {
-            NormalizedOctahedralCoordinates octahedral = cartesian;
-            return octahedral;
+            return cartesian; // implicit chains of length three won't automatically work so convert NormalizedCartesianCoordinates -> NormalizedOctahedralCoordinates -> OctahedralUVCoordinates
         }
 
         /// <summary>

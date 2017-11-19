@@ -36,39 +36,6 @@ namespace Planetaria
         }
 
         /// <summary>
-        /// Inspector - Converts spherical coordinates into octahedral coordinates.
-        /// </summary>
-        /// <param name="spherical">The spherical coordinates that will be converted</param>
-        /// <returns>The octahedral coordinates.</returns> 
-        public static implicit operator NormalizedOctahedralCoordinates(NormalizedSphericalCoordinates spherical)
-        {
-            NormalizedCartesianCoordinates cartesian = spherical;
-            return cartesian;
-        }
-
-        /// <summary>
-        /// Inspector - Converts spherical coordinates into octahedron UV space.
-        /// </summary>
-        /// 7
-        /// <returns>The UV coordinates for an octahedron.</returns> 
-        public static implicit operator OctahedralUVCoordinates(NormalizedSphericalCoordinates spherical)
-        {
-            NormalizedCartesianCoordinates cartesian = spherical;
-            return cartesian;
-        }
-
-        /// <summary>
-        /// Inspector - Converts spherical coordinates into Stereoscopic projection coordinates.
-        /// </summary>
-        /// <param name="spherical">The spherical coordinates that will be converted</param>
-        /// <returns>The Stereoscopic projection.</returns> 
-        public static implicit operator StereoscopicProjectionCoordinates(NormalizedSphericalCoordinates spherical)
-        {
-            NormalizedCartesianCoordinates cartesian = spherical;
-            return cartesian;
-        }
-
-        /// <summary>
         /// Mutator - Wrap elevation and azimuth so they are within [0, PI] and [0, 2*PI) respectively. 
         /// </summary>
         private void normalize()
