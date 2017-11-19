@@ -1,88 +1,91 @@
 ﻿using UnityEngine;
 
-// FIXME: find a way to serialize
-public class PlanetariaTransform
+namespace Planetaria
 {
-    public PlanetariaTransform(Transform internal_transform)
+    // FIXME: find a way to serialize
+    public class PlanetariaTransform
     {
-        cartesian_transform = internal_transform;
+        public PlanetariaTransform(Transform internal_transform)
+        {
+            cartesian_transform = internal_transform;
+        }
+
+        public NormalizedCartesianCoordinates position
+        {
+            get
+            {
+                return position_variable;
+            }
+
+            set
+            {
+                dirty_position = true;
+                previous_position = position_variable;
+                position_variable = value;
+            }
+        }
+
+        public NormalizedCartesianCoordinates previous_position { get; private set; }
+
+        public float rotation
+        {
+            get
+            {
+                return rotation_variable;
+            }
+
+            set
+            {
+                dirty_rotation = true;
+                rotation_variable = value;
+            }
+        }
+
+        public float scale
+        {
+            get
+            {
+                return scale_variable;
+            }
+
+            set
+            {
+                dirty_scale = true;
+                scale_variable = value;
+            }
+        }
+
+        public void move()
+        {
+            if (dirty_position)
+            {
+                cartesian_transform.position = position.data;
+                dirty_position = false;
+            }
+
+            if (dirty_rotation)
+            {
+                Vector3 up = new Vector3(Mathf.Cos(rotation), Mathf.Sin(rotation));
+                cartesian_transform.rotation = Quaternion.LookRotation(position.data, up);
+                dirty_rotation = false;
+            }
+
+            if (dirty_scale)
+            {
+                cartesian_transform.localScale = Mathf.Sin(scale)*Vector3.one;
+                dirty_scale = false;
+            }
+        }
+
+        private Transform cartesian_transform;
+        private NormalizedCartesianCoordinates position_variable;
+        private float rotation_variable;
+        private float scale_variable;
+
+        private bool dirty_position;
+        private bool dirty_rotation;
+        private bool dirty_scale;
     }
-
-    public NormalizedCartesianCoordinates position
-    {
-        get
-        {
-            return position_variable;
-        }
-
-        set
-        {
-            dirty_position = true;
-            previous_position = position_variable;
-            position_variable = value;
-        }
-    }
-
-    public NormalizedCartesianCoordinates previous_position { get; private set; }
-
-    public float rotation
-    {
-        get
-        {
-            return rotation_variable;
-        }
-
-        set
-        {
-            dirty_rotation = true;
-            rotation_variable = value;
-        }
-    }
-
-    public float scale
-    {
-        get
-        {
-            return scale_variable;
-        }
-
-        set
-        {
-            dirty_scale = true;
-            scale_variable = value;
-        }
-    }
-
-    public void move()
-    {
-        if (dirty_position)
-        {
-            cartesian_transform.position = position.data;
-            dirty_position = false;
-        }
-
-        if (dirty_rotation)
-        {
-            Vector3 up = new Vector3(Mathf.Cos(rotation), Mathf.Sin(rotation));
-            cartesian_transform.rotation = Quaternion.LookRotation(position.data, up);
-            dirty_rotation = false;
-        }
-
-        if (dirty_scale)
-        {
-            cartesian_transform.localScale = Mathf.Sin(scale)*Vector3.one;
-            dirty_scale = false;
-        }
-    }
-
-    private Transform cartesian_transform;
-    private NormalizedCartesianCoordinates position_variable;
-    private float rotation_variable;
-    private float scale_variable;
-
-    private bool dirty_position;
-    private bool dirty_rotation;
-    private bool dirty_scale;
 }
 
 /*

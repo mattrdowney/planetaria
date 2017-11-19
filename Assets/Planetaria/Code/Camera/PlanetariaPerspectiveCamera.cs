@@ -1,12 +1,15 @@
 ﻿using UnityEngine;
 
-public class PlanetariaPerspectiveCamera : PlanetariaCamera
+namespace Planetaria
 {
-    private void Awake()
-	{
-        internal_camera = GameObject.FindObjectOfType<Camera>();
-        transform = new PlanetariaTransform(internal_camera.transform.parent);
-	}
+    public class PlanetariaPerspectiveCamera : PlanetariaCamera
+    {
+        private void Awake()
+	    {
+            internal_camera = GameObject.FindObjectOfType<Camera>();
+            transform = new PlanetariaTransform(internal_camera.transform.parent);
+	    }
+    }
 }
 
 /*

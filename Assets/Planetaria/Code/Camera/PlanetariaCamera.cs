@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 
-public abstract class PlanetariaCamera : MonoBehaviour //FIXME: Component // Tracker needn't be coupled.
+namespace Planetaria
 {
-    protected new PlanetariaTransform transform;
-    protected Camera internal_camera;
+    public abstract class PlanetariaCamera : MonoBehaviour //FIXME: Component // Tracker needn't be coupled.
+    {
+        protected new PlanetariaTransform transform;
+        protected Camera internal_camera;
+    }
 }
 
 /*

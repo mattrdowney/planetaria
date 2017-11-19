@@ -1,49 +1,52 @@
 ﻿using UnityEngine;
 
-public class RegularPolygonCameraShutter : PlanetariaCameraShutter
+namespace Planetaria
 {
-    public override void initialize()
+    public class RegularPolygonCameraShutter : PlanetariaCameraShutter
     {
-        Camera camera = GameObject.Find("/MainCamera").GetComponent<Camera>();
-
-        shutter_edges = new GameObject[edges];
-
-        for (int edge_index = 0; edge_index < edges; ++edge_index)
+        public override void initialize()
         {
-            shutter_edges[edge_index] = (GameObject) Instantiate(Resources.Load("PrimaryEdge"), new Vector3(0, 0, 0.5f), Quaternion.Euler(0, 0, edge_index*360f/edges), camera.transform);
+            Camera camera = GameObject.Find("/MainCamera").GetComponent<Camera>();
 
-            float x = PlanetariaMath.cone_radius(0.5f, camera.fieldOfView*Mathf.Deg2Rad);
-            float y = x * camera.aspect;
-            float z = 0.5f;
-            
-            StereoscopicProjectionCoordinates stereoscopic_projection = new NormalizedCartesianCoordinates(new Vector3(x, y, z));
+            shutter_edges = new GameObject[edges];
 
-            shutter_edges[edge_index].transform.localScale = Vector3.one * stereoscopic_projection.data.magnitude; // FIXME: VR FOV
+            for (int edge_index = 0; edge_index < edges; ++edge_index)
+            {
+                shutter_edges[edge_index] = (GameObject) Instantiate(Resources.Load("PrimaryEdge"), new Vector3(0, 0, 0.5f), Quaternion.Euler(0, 0, edge_index*360f/edges), camera.transform);
+
+                float x = PlanetariaMath.cone_radius(0.5f, camera.fieldOfView*Mathf.Deg2Rad);
+                float y = x * camera.aspect;
+                float z = 0.5f;
             
-            //shutter_edges[edge_index].transform.localScale = Vector3.one * 4 * PlanetariaMath.cone_radius(0.5f, camera.fieldOfView*Mathf.Deg2Rad) * Mathf.Sqrt(1 + (camera.aspect * camera.aspect)); // FIXME: VR FOV
+                StereoscopicProjectionCoordinates stereoscopic_projection = new NormalizedCartesianCoordinates(new Vector3(x, y, z));
+
+                shutter_edges[edge_index].transform.localScale = Vector3.one * stereoscopic_projection.data.magnitude; // FIXME: VR FOV
+            
+                //shutter_edges[edge_index].transform.localScale = Vector3.one * 4 * PlanetariaMath.cone_radius(0.5f, camera.fieldOfView*Mathf.Deg2Rad) * Mathf.Sqrt(1 + (camera.aspect * camera.aspect)); // FIXME: VR FOV
+            }
         }
-    }
 
-    public override void set(float interpolation_factor)
-    {
-        interpolation_factor = Mathf.Clamp01(interpolation_factor);
-
-        for (int edge_index = 0; edge_index < edges; ++edge_index)
+        public override void set(float interpolation_factor)
         {
-            shutter_edges[edge_index].SetActive(interpolation_factor != 0);
-            shutter_edges[edge_index].transform.localRotation = Quaternion.Euler(0, 0, edge_index*360f/edges + interpolation_factor*angle_to_center*rotation_adjustor/2);
-            shutter_edges[edge_index].transform.GetChild(0).localRotation = Quaternion.Euler(0, 0, interpolation_factor*angle_to_center);
+            interpolation_factor = Mathf.Clamp01(interpolation_factor);
+
+            for (int edge_index = 0; edge_index < edges; ++edge_index)
+            {
+                shutter_edges[edge_index].SetActive(interpolation_factor != 0);
+                shutter_edges[edge_index].transform.localRotation = Quaternion.Euler(0, 0, edge_index*360f/edges + interpolation_factor*angle_to_center*rotation_adjustor/2);
+                shutter_edges[edge_index].transform.GetChild(0).localRotation = Quaternion.Euler(0, 0, interpolation_factor*angle_to_center);
+            }
         }
+
+        public int edges;
+        public float rotation_adjustor;
+
+        /// <summary>Reference to transparent cutout-textured quadrilateral planes that create camera shutter.</summary>
+        private GameObject[] shutter_edges;
+
+        /// <summary>The angle two semicircles must each turn to intersect at their old center.</summary>
+        private const float angle_to_center = 60f;
     }
-
-    public int edges;
-    public float rotation_adjustor;
-
-    /// <summary>Reference to transparent cutout-textured quadrilateral planes that create camera shutter.</summary>
-    private GameObject[] shutter_edges;
-
-    /// <summary>The angle two semicircles must each turn to intersect at their old center.</summary>
-    private const float angle_to_center = 60f;
 }
 
 /*

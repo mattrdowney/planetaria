@@ -1,37 +1,40 @@
 ﻿using UnityEngine;
 
-public static class RendererUtility
+namespace Planetaria
 {
-    /// <summary>
-    /// Inspector - Draws an arc on the surface of a unit sphere.
-    /// </summary>
-    /// <param name="arc">The arc that will be rendered.</param>
-    /// <param name="color">The color of the drawn arc.</param>
-    public static void draw_arc(Arc arc, float extrusion, Color color)
+    public static class RendererUtility
     {
-        Vector3 from = arc.position(0, extrusion);
-        Vector3 normal = arc.pole(extrusion);
-        Vector3 center = Vector3.Project(from, normal);
-        normal *= -Mathf.Sign(arc.elevation(0));
-        float angle = arc.angle()*Mathf.Rad2Deg;
-        float radius = (from - center).magnitude;
+        /// <summary>
+        /// Inspector - Draws an arc on the surface of a unit sphere.
+        /// </summary>
+        /// <param name="arc">The arc that will be rendered.</param>
+        /// <param name="color">The color of the drawn arc.</param>
+        public static void draw_arc(Arc arc, float extrusion, Color color)
+        {
+            Vector3 from = arc.position(0, extrusion);
+            Vector3 normal = arc.pole(extrusion);
+            Vector3 center = Vector3.Project(from, normal);
+            normal *= -Mathf.Sign(arc.elevation(0));
+            float angle = arc.angle()*Mathf.Rad2Deg;
+            float radius = (from - center).magnitude;
 
-        UnityEditor.Handles.color = color;
-        UnityEditor.Handles.DrawWireArc(center, normal, from - center, angle, radius);
-    }
+            UnityEditor.Handles.color = color;
+            UnityEditor.Handles.DrawWireArc(center, normal, from - center, angle, radius);
+        }
 
-    /// <summary>
-    /// Inspector - Draws an arc on the surface of a unit sphere.
-    /// </summary>
-    /// <param name="from">The starting point of the arc.</param>
-    /// <param name="from_tangent">The rightward tangent/gradient/slope along the sphere at "from".</param>
-    /// <param name="to">The ending point of the arc.</param>
-    /// <param name="color">The color of the drawn arc.</param>
-    public static void draw_arc(Vector3 from, Vector3 slope, Vector3 to, Color color)
-    {
-        Arc arc = Arc.curve(from, slope, to);
+        /// <summary>
+        /// Inspector - Draws an arc on the surface of a unit sphere.
+        /// </summary>
+        /// <param name="from">The starting point of the arc.</param>
+        /// <param name="from_tangent">The rightward tangent/gradient/slope along the sphere at "from".</param>
+        /// <param name="to">The ending point of the arc.</param>
+        /// <param name="color">The color of the drawn arc.</param>
+        public static void draw_arc(Vector3 from, Vector3 slope, Vector3 to, Color color)
+        {
+            Arc arc = Arc.curve(from, slope, to);
 
-        draw_arc(arc, 0, color);
+            draw_arc(arc, 0, color);
+        }
     }
 }
 

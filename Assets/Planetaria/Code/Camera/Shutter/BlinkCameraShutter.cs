@@ -1,42 +1,45 @@
 ﻿using UnityEngine;
 
-public class BlinkCameraShutter : PlanetariaCameraShutter
+namespace Planetaria
 {
-    public override void initialize()
+    public class BlinkCameraShutter : PlanetariaCameraShutter
     {
-        Camera camera = GameObject.Find("/MainCamera").GetComponent<Camera>();
-
-        shutter_edges = new GameObject[edges];
-
-        screen_height = PlanetariaMath.cone_radius(0.5f, camera.fieldOfView*Mathf.Deg2Rad)*2;
-        screen_width = screen_height*camera.aspect;
-
-        for (int edge_index = 0; edge_index < edges; ++edge_index)
+        public override void initialize()
         {
-            shutter_edges[edge_index] = (GameObject) Instantiate(Resources.Load("BlinkShutter"),
-                    new Vector3(0, screen_height*Mathf.Cos(edge_index*Mathf.PI), 0.5f),
-                    Quaternion.Euler(0, 0, edge_index*180f), camera.transform);
-            shutter_edges[edge_index].transform.localScale = new Vector3(screen_width, screen_height, 1);
+            Camera camera = GameObject.Find("/MainCamera").GetComponent<Camera>();
+
+            shutter_edges = new GameObject[edges];
+
+            screen_height = PlanetariaMath.cone_radius(0.5f, camera.fieldOfView*Mathf.Deg2Rad)*2;
+            screen_width = screen_height*camera.aspect;
+
+            for (int edge_index = 0; edge_index < edges; ++edge_index)
+            {
+                shutter_edges[edge_index] = (GameObject) Instantiate(Resources.Load("BlinkShutter"),
+                        new Vector3(0, screen_height*Mathf.Cos(edge_index*Mathf.PI), 0.5f),
+                        Quaternion.Euler(0, 0, edge_index*180f), camera.transform);
+                shutter_edges[edge_index].transform.localScale = new Vector3(screen_width, screen_height, 1);
+            }
         }
-    }
 
-    public override void set(float interpolation_factor)
-    {
-        interpolation_factor = Mathf.Clamp01(interpolation_factor);
-
-        for (int edge_index = 0; edge_index < edges; ++edge_index)
+        public override void set(float interpolation_factor)
         {
-            shutter_edges[edge_index].SetActive(interpolation_factor != 0);
-            shutter_edges[edge_index].transform.localPosition = new Vector3(0, screen_height*(1-interpolation_factor)*Mathf.Cos(edge_index*Mathf.PI), 0.5f);
+            interpolation_factor = Mathf.Clamp01(interpolation_factor);
+
+            for (int edge_index = 0; edge_index < edges; ++edge_index)
+            {
+                shutter_edges[edge_index].SetActive(interpolation_factor != 0);
+                shutter_edges[edge_index].transform.localPosition = new Vector3(0, screen_height*(1-interpolation_factor)*Mathf.Cos(edge_index*Mathf.PI), 0.5f);
+            }
         }
+
+        private GameObject[] shutter_edges;
+
+        private const int edges = 2;
+
+        private float screen_height;
+        private float screen_width;
     }
-
-    private GameObject[] shutter_edges;
-
-    private const int edges = 2;
-
-    private float screen_height;
-    private float screen_width;
 }
 
 /*

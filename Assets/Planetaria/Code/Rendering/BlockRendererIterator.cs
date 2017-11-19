@@ -1,98 +1,101 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
-public static class BlockRendererIterator
+namespace Planetaria
 {
-    private static void add_intersections(Arc arc, NormalizedCartesianCoordinates[] positions)
+    [ExecuteInEditMode]
+    public static class BlockRendererIterator
     {
-        for (int intersection_index = 0; intersection_index < positions.Length; ++intersection_index)
+        private static void add_intersections(Arc arc, NormalizedCartesianCoordinates[] positions)
         {
-            add_intersection(arc, positions[intersection_index]);
-        }
-    }
-
-    private static void add_intersection(Arc arc, NormalizedCartesianCoordinates position)
-    {
-        if (position.data.y <= 0) // FIXME:
-        {
-            if (!discontinuities.ContainsKey(arc))
+            for (int intersection_index = 0; intersection_index < positions.Length; ++intersection_index)
             {
-                discontinuities.Add(arc, new List<Discontinuity>());
+                add_intersection(arc, positions[intersection_index]);
             }
-
-            discontinuities[arc].Add(new Discontinuity(arc, position));
         }
-    }
 
-    /// <summary>
-    /// Mutator - find all intersections along x=0 or z=0 arcs in southern hemisphere.
-    /// </summary>
-    /// <param name="block">The block (set of arcs) to be inspected.</param>
-    private static void find_discontinuities(Block block)
-    {
-        foreach (optional<Arc> arc in block.iterator())
+        private static void add_intersection(Arc arc, NormalizedCartesianCoordinates position)
         {
-            for (int dimension = 0; dimension < 2; ++dimension) // Intersect already gets quadrants 3-4 by proxy
+            if (position.data.y <= 0) // FIXME:
             {
-                if (arc.exists)
+                if (!discontinuities.ContainsKey(arc))
                 {
-                    float angle = (Mathf.PI/2)*dimension;
-                    NormalizedCartesianCoordinates begin = new NormalizedCartesianCoordinates(new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)));
-                    NormalizedCartesianCoordinates end = new NormalizedCartesianCoordinates(Vector3.down);
-                    NormalizedCartesianCoordinates[] intersections = PlanetariaIntersection.arc_path_intersections(arc.data, begin, end, 0);
-                    add_intersections(arc.data, intersections);
+                    discontinuities.Add(arc, new List<Discontinuity>());
+                }
+
+                discontinuities[arc].Add(new Discontinuity(arc, position));
+            }
+        }
+
+        /// <summary>
+        /// Mutator - find all intersections along x=0 or z=0 arcs in southern hemisphere.
+        /// </summary>
+        /// <param name="block">The block (set of arcs) to be inspected.</param>
+        private static void find_discontinuities(Block block)
+        {
+            foreach (optional<Arc> arc in block.iterator())
+            {
+                for (int dimension = 0; dimension < 2; ++dimension) // Intersect already gets quadrants 3-4 by proxy
+                {
+                    if (arc.exists)
+                    {
+                        float angle = (Mathf.PI/2)*dimension;
+                        NormalizedCartesianCoordinates begin = new NormalizedCartesianCoordinates(new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)));
+                        NormalizedCartesianCoordinates end = new NormalizedCartesianCoordinates(Vector3.down);
+                        NormalizedCartesianCoordinates[] intersections = PlanetariaIntersection.arc_path_intersections(arc.data, begin, end, 0);
+                        add_intersections(arc.data, intersections);
+                    }
                 }
             }
         }
-    }
 
-    public static void prepare(Block block)
-    {
-        discontinuities = new Dictionary<Arc, List<Discontinuity>>();
-        find_discontinuities(block);
-        sort_discontinuities();
-        block_variable = block;
-    }
-
-    /// <summary>
-    /// Mutator - Sort the Discontinuity lists in non-decreasing order (with respect to angle)
-    /// </summary>
-    private static void sort_discontinuities()
-    {
-        foreach (KeyValuePair<Arc, List<Discontinuity>> discontinuity in discontinuities)
+        public static void prepare(Block block)
         {
-            discontinuity.Value.Sort((left_hand_side, right_hand_side) => left_hand_side.angle.CompareTo(right_hand_side.angle));
+            discontinuities = new Dictionary<Arc, List<Discontinuity>>();
+            find_discontinuities(block);
+            sort_discontinuities();
+            block_variable = block;
         }
-    }
 
-    public static IEnumerable<ArcIterator> arc_iterator()
-    {
-        foreach (optional<Arc> arc in block_variable.iterator())
-        { 
-            if (!arc.exists)
+        /// <summary>
+        /// Mutator - Sort the Discontinuity lists in non-decreasing order (with respect to angle)
+        /// </summary>
+        private static void sort_discontinuities()
+        {
+            foreach (KeyValuePair<Arc, List<Discontinuity>> discontinuity in discontinuities)
             {
-                continue;
+                discontinuity.Value.Sort((left_hand_side, right_hand_side) => left_hand_side.angle.CompareTo(right_hand_side.angle));
             }
-            
-            float begin_angle = 0;
+        }
 
-            if (discontinuities.ContainsKey(arc.data))
-            {
-                for (int list_index = 0; list_index < discontinuities[arc.data].Count; ++list_index)
+        public static IEnumerable<ArcIterator> arc_iterator()
+        {
+            foreach (optional<Arc> arc in block_variable.iterator())
+            { 
+                if (!arc.exists)
                 {
-                    float end_angle = discontinuities[arc.data][list_index].angle;
-                    yield return new ArcIterator(arc.data, begin_angle, end_angle);
-                    begin_angle = end_angle;
+                    continue;
                 }
-            }
             
-            yield return new ArcIterator(arc.data, begin_angle, arc.data.angle());
-        }
-    }
+                float begin_angle = 0;
 
-    private static Block block_variable;
-    private static Dictionary<Arc, List<Discontinuity>> discontinuities;
+                if (discontinuities.ContainsKey(arc.data))
+                {
+                    for (int list_index = 0; list_index < discontinuities[arc.data].Count; ++list_index)
+                    {
+                        float end_angle = discontinuities[arc.data][list_index].angle;
+                        yield return new ArcIterator(arc.data, begin_angle, end_angle);
+                        begin_angle = end_angle;
+                    }
+                }
+            
+                yield return new ArcIterator(arc.data, begin_angle, arc.data.angle());
+            }
+        }
+
+        private static Block block_variable;
+        private static Dictionary<Arc, List<Discontinuity>> discontinuities;
+    }
 }
 
 /*

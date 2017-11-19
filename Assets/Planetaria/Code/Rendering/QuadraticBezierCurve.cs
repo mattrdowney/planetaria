@@ -1,16 +1,19 @@
 ﻿using UnityEngine;
 
-public struct QuadraticBezierCurve
+namespace Planetaria
 {
-    public Vector2 begin_uv { get; private set; }
-    public Vector2 control_uv { get; private set; }
-    public Vector2 end_uv { get; private set; }
-
-    public QuadraticBezierCurve(Vector2 begin_uv, Vector2 control_uv, Vector2 end_uv)
+    public struct QuadraticBezierCurve
     {
-        this.begin_uv = begin_uv;
-        this.control_uv = control_uv;
-        this.end_uv = end_uv;
+        public Vector2 begin_uv { get; private set; }
+        public Vector2 control_uv { get; private set; }
+        public Vector2 end_uv { get; private set; }
+
+        public QuadraticBezierCurve(Vector2 begin_uv, Vector2 control_uv, Vector2 end_uv)
+        {
+            this.begin_uv = begin_uv;
+            this.control_uv = control_uv;
+            this.end_uv = end_uv;
+        }
     }
 }
 

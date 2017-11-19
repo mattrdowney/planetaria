@@ -1,6 +1,9 @@
-﻿public class PlanetariaRigidbody
+﻿namespace Planetaria
 {
-    private NormalizedSphericalCoordinates velocity;
+    public class PlanetariaRigidbody
+    {
+        private NormalizedSphericalCoordinates velocity;
+    }
 }
 
 /*

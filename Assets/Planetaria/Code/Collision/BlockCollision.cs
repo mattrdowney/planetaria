@@ -1,63 +1,65 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class BlockCollision
+namespace Planetaria
 {
-    public static optional<BlockCollision> block_collision(Arc arc, Block block, Vector3 last_position, Vector3 current_position, float extrusion)
+    public class BlockCollision
     {
-        optional<ArcVisitor> arc_visitor = block.arc_visitor(arc);
-        if (!arc_visitor.exists)
+        public static optional<BlockCollision> block_collision(Arc arc, Block block, Vector3 last_position, Vector3 current_position, float extrusion)
         {
-            return new optional<BlockCollision>();
+            optional<ArcVisitor> arc_visitor = block.arc_visitor(arc);
+            if (!arc_visitor.exists)
+            {
+                return new optional<BlockCollision>();
+            }
+            NormalizedCartesianCoordinates begin = new NormalizedCartesianCoordinates(last_position);
+            NormalizedCartesianCoordinates end = new NormalizedCartesianCoordinates(current_position);
+            optional<Vector3> intersection_point = PlanetariaIntersection.arc_path_intersection(arc, begin, end, extrusion); //TODO: check .data
+            if (!intersection_point.exists)
+            {
+                return new optional<BlockCollision>();
+            }
+            BlockCollision result = new BlockCollision();
+            float angle = arc.position_to_angle(intersection_point.data);
+            result.geometry_visitor = GeometryVisitor.geometry_visitor(arc_visitor.data, angle, extrusion);
+            result.distance = (intersection_point.data - current_position).sqrMagnitude;
+            result.block = block;
+            result.active = true;
+            return result;
         }
-        NormalizedCartesianCoordinates begin = new NormalizedCartesianCoordinates(last_position);
-        NormalizedCartesianCoordinates end = new NormalizedCartesianCoordinates(current_position);
-        optional<Vector3> intersection_point = PlanetariaIntersection.arc_path_intersection(arc, begin, end, extrusion); //TODO: check .data
-        if (!intersection_point.exists)
+
+        public void move(float delta_length, float extrusion)
         {
-            return new optional<BlockCollision>();
+            geometry_visitor = geometry_visitor.move_position(delta_length, extrusion);
         }
-        BlockCollision result = new BlockCollision();
-        float angle = arc.position_to_angle(intersection_point.data);
-        result.geometry_visitor = GeometryVisitor.geometry_visitor(arc_visitor.data, angle, extrusion);
-        result.distance = (intersection_point.data - current_position).sqrMagnitude;
-        result.block = block;
-        result.active = true;
-        return result;
-    }
 
-    public void move(float delta_length, float extrusion)
-    {
-        geometry_visitor = geometry_visitor.move_position(delta_length, extrusion);
-    }
+        public NormalizedCartesianCoordinates position()
+        {
+            return new NormalizedCartesianCoordinates(geometry_visitor.position());
+        }
 
-    public NormalizedCartesianCoordinates position()
-    {
-        return new NormalizedCartesianCoordinates(geometry_visitor.position());
-    }
-
-    public NormalizedCartesianCoordinates normal()
-    {
-        return new NormalizedCartesianCoordinates(geometry_visitor.normal());
-    }
+        public NormalizedCartesianCoordinates normal()
+        {
+            return new NormalizedCartesianCoordinates(geometry_visitor.normal());
+        }
     
-    public bool active
-    {
-        get
+        public bool active
         {
-            return block.active && active_variable;
+            get
+            {
+                return block.active && active_variable;
+            }
+            private set
+            {
+                active_variable = value;
+            }
         }
-        private set
-        {
-            active_variable = value;
-        }
+
+        public Block block { get; private set; }
+        public float distance { get; private set; }
+        public GeometryVisitor geometry_visitor { get; private set; }
+
+        private bool active_variable;
     }
-
-    public Block block { get; private set; }
-    public float distance { get; private set; }
-    public GeometryVisitor geometry_visitor { get; private set; }
-
-    private bool active_variable;
 }
 
 /*

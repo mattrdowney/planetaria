@@ -1,6 +1,9 @@
-﻿public abstract class PlanetariaTiltingStrategy : PlanetariaTrackingStrategy
+﻿namespace Planetaria
 {
+    public abstract class PlanetariaTiltingStrategy : PlanetariaTrackingStrategy
+    {
 
+    }
 }
 
 /*

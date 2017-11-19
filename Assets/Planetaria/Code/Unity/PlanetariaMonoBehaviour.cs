@@ -1,38 +1,41 @@
 ﻿using UnityEngine;
 
-public abstract class PlanetariaMonoBehaviour : MonoBehaviour
+namespace Planetaria
 {
-    public new PlanetariaTransform transform;
+    public abstract class PlanetariaMonoBehaviour : MonoBehaviour
+    {
+        public new PlanetariaTransform transform;
 
-    protected delegate void ActionDelegate();
-    protected delegate void CollisionDelegate(BlockCollision block_information);
-    protected delegate void TriggerDelegate(Field field_information);
+        protected delegate void ActionDelegate();
+        protected delegate void CollisionDelegate(BlockCollision block_information);
+        protected delegate void TriggerDelegate(Field field_information);
 
-    protected optional<ActionDelegate> on_first_exists = null;
-    protected optional<ActionDelegate> on_time_zero = null; // XXX: use at your own risk
-    protected optional<ActionDelegate> on_every_frame = null;
+        protected optional<ActionDelegate> on_first_exists = null;
+        protected optional<ActionDelegate> on_time_zero = null; // XXX: use at your own risk
+        protected optional<ActionDelegate> on_every_frame = null;
 
-    protected optional<CollisionDelegate> on_block_enter = null;
-    protected optional<CollisionDelegate> on_block_exit = null;
-    protected optional<CollisionDelegate> on_block_stay = null;
+        protected optional<CollisionDelegate> on_block_enter = null;
+        protected optional<CollisionDelegate> on_block_exit = null;
+        protected optional<CollisionDelegate> on_block_stay = null;
     
-    protected optional<TriggerDelegate> on_field_enter = null;
-    protected optional<TriggerDelegate> on_field_exit = null;
-    protected optional<TriggerDelegate> on_field_stay = null;
+        protected optional<TriggerDelegate> on_field_enter = null;
+        protected optional<TriggerDelegate> on_field_exit = null;
+        protected optional<TriggerDelegate> on_field_stay = null;
 
-    protected abstract void Awake();
-    protected abstract void Start();
-    protected abstract void Update();
-    protected abstract void LateUpdate();
-    protected abstract void FixedUpdate();
+        protected abstract void Awake();
+        protected abstract void Start();
+        protected abstract void Update();
+        protected abstract void LateUpdate();
+        protected abstract void FixedUpdate();
 
-    protected abstract void OnTriggerEnter(Collider collider);
-    protected abstract void OnTriggerStay(Collider collider);
-    protected abstract void OnTriggerExit(Collider collider);
+        protected abstract void OnTriggerEnter(Collider collider);
+        protected abstract void OnTriggerStay(Collider collider);
+        protected abstract void OnTriggerExit(Collider collider);
 
-    protected abstract void OnCollisionEnter(Collision collision);
-    protected abstract void OnCollisionStay(Collision collision);
-    protected abstract void OnCollisionExit(Collision collision);
+        protected abstract void OnCollisionEnter(Collision collision);
+        protected abstract void OnCollisionStay(Collision collision);
+        protected abstract void OnCollisionExit(Collision collision);
+    }
 }
 
 /*

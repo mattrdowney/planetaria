@@ -1,14 +1,17 @@
-﻿public struct ArcIterator
+﻿namespace Planetaria
 {
-    public Arc arc { get; private set; }
-    public float begin { get; private set; }
-    public float end { get; private set; }
-
-    public ArcIterator(Arc arc, float begin, float end)
+    public struct ArcIterator
     {
-        this.arc = arc;
-        this.begin = begin;
-        this.end = end;
+        public Arc arc { get; private set; }
+        public float begin { get; private set; }
+        public float end { get; private set; }
+
+        public ArcIterator(Arc arc, float begin, float end)
+        {
+            this.arc = arc;
+            this.begin = begin;
+            this.end = end;
+        }
     }
 }
 

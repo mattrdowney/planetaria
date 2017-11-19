@@ -2,102 +2,105 @@
 using System.Linq;
 using UnityEngine;
 
-/// <summary>
-/// A group of miscellaneous helper functions.
-/// </summary>
-public static class Miscellaneous
+namespace Planetaria
 {
     /// <summary>
-    /// Counts the true booleans in a sequence. E.g. count_true_booleans(true, false, true) returns 2.
+    /// A group of miscellaneous helper functions.
     /// </summary>
-    /// <param name="boolean_list">A comma separated list of (or array of) booleans.</param>
-    /// <returns>The number of true values in the sequence.</returns>
-    public static int count_true_booleans(params bool[] boolean_list)
+    public static class Miscellaneous
     {
-       return boolean_list.Count(is_true => is_true);
-    }
-
-    public static optional<Texture2D> fetch_image(string image_file)
-    {
-        optional<Texture2D> texture = new optional<Texture2D>();
-        if (File.Exists(image_file))
+        /// <summary>
+        /// Counts the true booleans in a sequence. E.g. count_true_booleans(true, false, true) returns 2.
+        /// </summary>
+        /// <param name="boolean_list">A comma separated list of (or array of) booleans.</param>
+        /// <returns>The number of true values in the sequence.</returns>
+        public static int count_true_booleans(params bool[] boolean_list)
         {
-             byte[] raw_file_binary = File.ReadAllBytes(image_file);
-             texture = new Texture2D(0,0);
-             texture.data.LoadImage(raw_file_binary);
+           return boolean_list.Count(is_true => is_true);
         }
-        return texture;
-    }
 
-	public static Subtype GetOrAddComponent<Subtype>(this Component self) where Subtype : Component
-    {
-		optional<Subtype> result = self.GetComponent<Subtype>();
-		if (!result.exists)
+        public static optional<Texture2D> fetch_image(string image_file)
         {
-			result = self.gameObject.AddComponent<Subtype>();
-		}
-		return result.data;
-	}
-
-    /// <summary>
-    /// Inspector - finds the last instance of inner_text between prefix and suffix, if it exists, and returns it.
-    /// </summary>
-    /// <param name="text">The text that will be searched.</param>
-    /// <param name="prefix">The prefix before the desired text.</param>
-    /// <param name="suffix">The suffix after the desired text.</param>
-    /// <returns>The last instance of text between prefix and suffix (including neither prefix phrase nor suffix phrase).</returns>
-    public static optional<string> inner_text(string text, string prefix, string suffix)
-    {
-        int end_index = text.LastIndexOf(suffix);
-        if (end_index != -1)
-        {
-            int start_index = text.LastIndexOf(prefix, end_index-1);
-            if (start_index != -1)
+            optional<Texture2D> texture = new optional<Texture2D>();
+            if (File.Exists(image_file))
             {
-                start_index += prefix.Length;
-                int length = end_index - start_index; // off by one? start==0, end==1 (e.g. "A\0") has length (1-0) 
-                return text.Substring(start_index, length);
+                 byte[] raw_file_binary = File.ReadAllBytes(image_file);
+                 texture = new Texture2D(0,0);
+                 texture.data.LoadImage(raw_file_binary);
             }
+            return texture;
         }
-        return new optional<string>();
-    }
 
-    /// <summary>
-    /// Mutator (Operating System level) - Writes (or overwrites!) the file at location "file" with the string "text_contents". 
-    /// </summary>
-    /// <param name="file">The relative file path starting in the Unity directory (e.g. "Assets/important_file.txt"). Note: will be overwritten.</param>
-    /// <param name="text_contents">The contents that will be placed in the file (overwrites file).</param>
-    /// <param name="add_global_unique_identifier">Adds "_[0-9a-f]{32}" before file extension (last dot) in "file".</param>
-    public static optional<TextAsset> write_file(string file, string text_contents, bool add_global_unique_identifier)
-    {
-        using (StreamWriter writer = new StreamWriter(file, false))
+	    public static Subtype GetOrAddComponent<Subtype>(this Component self) where Subtype : Component
         {
-            string suffix = "";
-            writer.Write(text_contents);
-            if (add_global_unique_identifier)
+		    optional<Subtype> result = self.GetComponent<Subtype>();
+		    if (!result.exists)
             {
-                writer.Dispose();
+			    result = self.gameObject.AddComponent<Subtype>();
+		    }
+		    return result.data;
+	    }
+
+        /// <summary>
+        /// Inspector - finds the last instance of inner_text between prefix and suffix, if it exists, and returns it.
+        /// </summary>
+        /// <param name="text">The text that will be searched.</param>
+        /// <param name="prefix">The prefix before the desired text.</param>
+        /// <param name="suffix">The suffix after the desired text.</param>
+        /// <returns>The last instance of text between prefix and suffix (including neither prefix phrase nor suffix phrase).</returns>
+        public static optional<string> inner_text(string text, string prefix, string suffix)
+        {
+            int end_index = text.LastIndexOf(suffix);
+            if (end_index != -1)
+            {
+                int start_index = text.LastIndexOf(prefix, end_index-1);
+                if (start_index != -1)
+                {
+                    start_index += prefix.Length;
+                    int length = end_index - start_index; // off by one? start==0, end==1 (e.g. "A\0") has length (1-0) 
+                    return text.Substring(start_index, length);
+                }
+            }
+            return new optional<string>();
+        }
+
+        /// <summary>
+        /// Mutator (Operating System level) - Writes (or overwrites!) the file at location "file" with the string "text_contents". 
+        /// </summary>
+        /// <param name="file">The relative file path starting in the Unity directory (e.g. "Assets/important_file.txt"). Note: will be overwritten.</param>
+        /// <param name="text_contents">The contents that will be placed in the file (overwrites file).</param>
+        /// <param name="add_global_unique_identifier">Adds "_[0-9a-f]{32}" before file extension (last dot) in "file".</param>
+        public static optional<TextAsset> write_file(string file, string text_contents, bool add_global_unique_identifier)
+        {
+            using (StreamWriter writer = new StreamWriter(file, false))
+            {
+                string suffix = "";
+                writer.Write(text_contents);
+                if (add_global_unique_identifier)
+                {
+                    writer.Dispose();
+                    UnityEditor.AssetDatabase.Refresh();
+                    string global_unique_identifier = UnityEditor.AssetDatabase.AssetPathToGUID(file);
+                    suffix = "_" + global_unique_identifier;
+                    optional<string> name = Miscellaneous.inner_text(file, "/", ".");
+                    if (name.exists)
+                    {
+                        UnityEditor.AssetDatabase.RenameAsset(file, name.data + suffix); // FIXME: INVESTIGATE: why does optional<string> + string work? (for safety reasons, it shouldn't)
+                    }
+                    else
+                    {
+                        Debug.Log("Critical Error");
+                    }
+                }
                 UnityEditor.AssetDatabase.Refresh();
-                string global_unique_identifier = UnityEditor.AssetDatabase.AssetPathToGUID(file);
-                suffix = "_" + global_unique_identifier;
-                optional<string> name = Miscellaneous.inner_text(file, "/", ".");
-                if (name.exists)
+                optional<string> resource = Miscellaneous.inner_text(file, "/Resources/", ".");
+                if (resource.exists)
                 {
-                    UnityEditor.AssetDatabase.RenameAsset(file, name.data + suffix); // FIXME: INVESTIGATE: why does optional<string> + string work? (for safety reasons, it shouldn't)
+                    resource = resource.data + suffix;
+                    return Resources.Load<TextAsset>(resource.data);
                 }
-                else
-                {
-                    Debug.Log("Critical Error");
-                }
+                return new optional<TextAsset>();
             }
-            UnityEditor.AssetDatabase.Refresh();
-            optional<string> resource = Miscellaneous.inner_text(file, "/Resources/", ".");
-            if (resource.exists)
-            {
-                resource = resource.data + suffix;
-                return Resources.Load<TextAsset>(resource.data);
-            }
-            return new optional<TextAsset>();
         }
     }
 }

@@ -1,16 +1,18 @@
-﻿using UnityEngine;
-using UnityEditor;
+﻿using UnityEditor;
 
-[CustomEditor(typeof(ArcBuilder))]
-[System.Serializable]
-public class ArcBuilderEditor : Editor
+namespace Planetaria
 {
-    [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
-    static void draw_arc_builder_gizmos(ArcBuilder self, GizmoType gizmo_type)
+    [CustomEditor(typeof(ArcBuilder))]
+    [System.Serializable]
+    public class ArcBuilderEditor : Editor
     {
-        foreach (Arc arc in self.arcs)
+        [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
+        static void draw_arc_builder_gizmos(ArcBuilder self, GizmoType gizmo_type)
         {
-            ArcEditor.draw_arc(arc);
+            foreach (Arc arc in self.arcs)
+            {
+                ArcEditor.draw_arc(arc);
+            }
         }
     }
 }

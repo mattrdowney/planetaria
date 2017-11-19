@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 
-public abstract class PlanetariaTrackingStrategy : MonoBehaviour
+namespace Planetaria
 {
-    public abstract void Update();
-    public abstract void Teleport();
+    public abstract class PlanetariaTrackingStrategy : MonoBehaviour
+    {
+        public abstract void Update();
+        public abstract void Teleport();
+    }
 }
 
 /*

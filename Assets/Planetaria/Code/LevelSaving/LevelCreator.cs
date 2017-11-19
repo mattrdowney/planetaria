@@ -1,11 +1,14 @@
 ﻿using UnityEngine;
 
-public class LevelCreator : MonoBehaviour
+namespace Planetaria
 {
-	private void Start()
+    public class LevelCreator : MonoBehaviour
     {
+	    private void Start()
+        {
 		
-	}
+	    }
+    }
 }
 
 /*

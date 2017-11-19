@@ -1,71 +1,74 @@
 ﻿using UnityEngine;
 
-public struct NormalizedOctahedralCoordinates
+namespace Planetaria
 {
-    public Vector3 data
+    public struct NormalizedOctahedralCoordinates
     {
-        get { return data_variable; }
-        set { data_variable = value; normalize(); }
-    }
-
-    /// <summary>
-    /// Constructor - Stores octahedral coordinates in a wrapper class.
-    /// </summary>
-    /// <param name="octahedral">The octahedral coordinates. Note: matches Unity's default Vector3 definition.</param>
-    public NormalizedOctahedralCoordinates(Vector3 octahedral)
-    {
-        data_variable = octahedral;
-        normalize();
-    }
-
-    /// <summary>
-    /// Inspector - Converts octahedral coordinates into Cartesian coordinates.
-    /// </summary>
-    /// <param name="octahedral">The octahedral that will be converted</param>
-    /// <returns>The Cartesian coordinates.</returns> 
-    public static implicit operator NormalizedCartesianCoordinates(NormalizedOctahedralCoordinates octahedral)
-    {
-        return new NormalizedCartesianCoordinates(octahedral.data);
-    }
-
-    /// <summary>
-    /// Inspector - Converts octahedral coordinates into octahedron UV coordinates.
-    /// </summary>
-    /// <param name="octahedral">The octahedral that will be converted</param>
-    /// <returns>The UV coordinates of an octahedron.</returns> 
-    public static implicit operator OctahedralUVCoordinates(NormalizedOctahedralCoordinates octahedral)
-    {
-        Vector2 uv = Octahedron.cartesian_to_uv(octahedral.data);
-        return new OctahedralUVCoordinates(uv.x, uv.y);
-    }
-    
-    /// <summary>
-    /// Inspector - Converts octahedral coordinates into spherical coordinates.
-    /// </summary>
-    /// <param name="octahedral">The octahedral that will be converted</param>
-    /// <returns>The spherical coordinates.</returns> 
-    public static implicit operator NormalizedSphericalCoordinates(NormalizedOctahedralCoordinates octahedral)
-    {
-        NormalizedCartesianCoordinates cartesian = octahedral;
-        return cartesian;
-    }
-
-    /// <summary>
-    /// Mutator - Normalizes Cartesian vector using Manhattan distance
-    /// </summary>
-    private void normalize()
-    {
-        float length = PlanetariaMath.manhattan_distance(data_variable);
-        float absolute_error = Mathf.Abs(length-1);
-        if (absolute_error < Precision.tolerance)
+        public Vector3 data
         {
-            return;
+            get { return data_variable; }
+            set { data_variable = value; normalize(); }
         }
 
-        data_variable /= length;
-    }
+        /// <summary>
+        /// Constructor - Stores octahedral coordinates in a wrapper class.
+        /// </summary>
+        /// <param name="octahedral">The octahedral coordinates. Note: matches Unity's default Vector3 definition.</param>
+        public NormalizedOctahedralCoordinates(Vector3 octahedral)
+        {
+            data_variable = octahedral;
+            normalize();
+        }
 
-    private Vector3 data_variable;
+        /// <summary>
+        /// Inspector - Converts octahedral coordinates into Cartesian coordinates.
+        /// </summary>
+        /// <param name="octahedral">The octahedral that will be converted</param>
+        /// <returns>The Cartesian coordinates.</returns> 
+        public static implicit operator NormalizedCartesianCoordinates(NormalizedOctahedralCoordinates octahedral)
+        {
+            return new NormalizedCartesianCoordinates(octahedral.data);
+        }
+
+        /// <summary>
+        /// Inspector - Converts octahedral coordinates into octahedron UV coordinates.
+        /// </summary>
+        /// <param name="octahedral">The octahedral that will be converted</param>
+        /// <returns>The UV coordinates of an octahedron.</returns> 
+        public static implicit operator OctahedralUVCoordinates(NormalizedOctahedralCoordinates octahedral)
+        {
+            Vector2 uv = Octahedron.cartesian_to_uv(octahedral.data);
+            return new OctahedralUVCoordinates(uv.x, uv.y);
+        }
+    
+        /// <summary>
+        /// Inspector - Converts octahedral coordinates into spherical coordinates.
+        /// </summary>
+        /// <param name="octahedral">The octahedral that will be converted</param>
+        /// <returns>The spherical coordinates.</returns> 
+        public static implicit operator NormalizedSphericalCoordinates(NormalizedOctahedralCoordinates octahedral)
+        {
+            NormalizedCartesianCoordinates cartesian = octahedral;
+            return cartesian;
+        }
+
+        /// <summary>
+        /// Mutator - Normalizes Cartesian vector using Manhattan distance
+        /// </summary>
+        private void normalize()
+        {
+            float length = PlanetariaMath.manhattan_distance(data_variable);
+            float absolute_error = Mathf.Abs(length-1);
+            if (absolute_error < Precision.tolerance)
+            {
+                return;
+            }
+
+            data_variable /= length;
+        }
+
+        private Vector3 data_variable;
+    }
 }
 
 /*

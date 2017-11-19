@@ -1,78 +1,81 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-[ExecuteInEditMode]
-public class ArcBuilder : MonoBehaviour
+namespace Planetaria
 {
-    public static ArcBuilder arc_builder(Vector3 original_point)
+    [ExecuteInEditMode]
+    public class ArcBuilder : MonoBehaviour
     {
-        GameObject game_object = new GameObject("Arc Builder");
-        ArcBuilder result = game_object.AddComponent<ArcBuilder>();
-        result.point = result.original_point = original_point;
-        result.arcs.Add(Arc.line(original_point, original_point));
-        return result;
-    }
-
-    public void receive_vector(Vector3 vector)
-    {
-        if (state == CreationState.SetSlope)
+        public static ArcBuilder arc_builder(Vector3 original_point)
         {
-            slope = vector;
-            arcs[arcs.Count-1] = Arc.line(point, slope);
+            GameObject game_object = new GameObject("Arc Builder");
+            ArcBuilder result = game_object.AddComponent<ArcBuilder>();
+            result.point = result.original_point = original_point;
+            result.arcs.Add(Arc.line(original_point, original_point));
+            return result;
         }
-        else // CreationState.SetPoint
+
+        public void receive_vector(Vector3 vector)
         {
-            if (arcs.Count != 0)
+            if (state == CreationState.SetSlope)
             {
-                arcs[arcs.Count-1] = Arc.curve(arcs[arcs.Count-1].position(0), slope, point);
+                slope = vector;
+                arcs[arcs.Count-1] = Arc.line(point, slope);
             }
-            point = vector;
+            else // CreationState.SetPoint
+            {
+                if (arcs.Count != 0)
+                {
+                    arcs[arcs.Count-1] = Arc.curve(arcs[arcs.Count-1].position(0), slope, point);
+                }
+                point = vector;
+            }
         }
-    }
 
-    public void next()
-    {
-        if (state == CreationState.SetSlope)
+        public void next()
         {
-            finalize();
+            if (state == CreationState.SetSlope)
+            {
+                finalize();
+            }
+            state = (state == CreationState.SetSlope ? CreationState.SetPoint : CreationState.SetSlope); // state = !state;
         }
-        state = (state == CreationState.SetSlope ? CreationState.SetPoint : CreationState.SetSlope); // state = !state;
-    }
 
-    public void finalize()
-    {
-        curves.Add(GeospatialCurve.curve(point, slope));
-        arcs.Add(arcs[arcs.Count-1]);
-        UnityEditor.EditorUtility.SetDirty(this.gameObject);
-        point = slope; // point should always be defined
-    }
-
-    public void close_shape()
-    {
-        if (state == CreationState.SetSlope)
+        public void finalize()
         {
-            curves.Add(GeospatialCurve.curve(point, original_point));
+            curves.Add(GeospatialCurve.curve(point, slope));
+            arcs.Add(arcs[arcs.Count-1]);
+            UnityEditor.EditorUtility.SetDirty(this.gameObject);
+            point = slope; // point should always be defined
         }
 
-        GameObject shape = Block.block(curves);
-        Block block = shape.GetComponent<Block>();
-        optional<TextAsset> svg_file = BlockRenderer.render(block);
-        OctahedronMesh mesh = shape.AddComponent<OctahedronMesh>();
-        Renderer renderer = shape.GetComponent<Renderer>();
-        if (svg_file.exists)
+        public void close_shape()
         {
-            //renderer.material = RenderVectorGraphics.render(svg_file.data);
+            if (state == CreationState.SetSlope)
+            {
+                curves.Add(GeospatialCurve.curve(point, original_point));
+            }
+
+            GameObject shape = Block.block(curves);
+            Block block = shape.GetComponent<Block>();
+            optional<TextAsset> svg_file = BlockRenderer.render(block);
+            OctahedronMesh mesh = shape.AddComponent<OctahedronMesh>();
+            Renderer renderer = shape.GetComponent<Renderer>();
+            if (svg_file.exists)
+            {
+                //renderer.material = RenderVectorGraphics.render(svg_file.data);
+            }
+            DestroyImmediate(this.gameObject);
         }
-        DestroyImmediate(this.gameObject);
-    }
     
-    public List<Arc> arcs = new List<Arc>();
-    private List<GeospatialCurve> curves = new List<GeospatialCurve>();
-    private enum CreationState { SetSlope = 0, SetPoint = 1 }
-    private CreationState state = CreationState.SetSlope;
-    private Vector3 point { get; set; }
-    private Vector3 slope { get; set; }
-    private Vector3 original_point;
+        public List<Arc> arcs = new List<Arc>();
+        private List<GeospatialCurve> curves = new List<GeospatialCurve>();
+        private enum CreationState { SetSlope = 0, SetPoint = 1 }
+        private CreationState state = CreationState.SetSlope;
+        private Vector3 point { get; set; }
+        private Vector3 slope { get; set; }
+        private Vector3 original_point;
+    }
 }
 
 /*

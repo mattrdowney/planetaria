@@ -1,23 +1,25 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-[ExecuteInEditMode]
-public static class BlockRenderer
+namespace Planetaria
 {
-    public static optional<TextAsset> render(Block block)
+    [ExecuteInEditMode]
+    public static class BlockRenderer
     {
-        VectorGraphicsWriter.begin_canvas();
-        VectorGraphicsWriter.begin_shape();
-
-        BlockRendererIterator.prepare(block);
-
-        foreach (ArcIterator arc_iterator in BlockRendererIterator.arc_iterator())
+        public static optional<TextAsset> render(Block block)
         {
-            ShapeRenderer.partition_arc(arc_iterator.arc, arc_iterator.begin, arc_iterator.end);
-        }
+            VectorGraphicsWriter.begin_canvas();
+            VectorGraphicsWriter.begin_shape();
 
-        VectorGraphicsWriter.end_shape(Color.black);
-        return VectorGraphicsWriter.end_canvas();
+            BlockRendererIterator.prepare(block);
+
+            foreach (ArcIterator arc_iterator in BlockRendererIterator.arc_iterator())
+            {
+                ShapeRenderer.partition_arc(arc_iterator.arc, arc_iterator.begin, arc_iterator.end);
+            }
+
+            VectorGraphicsWriter.end_shape(Color.black);
+            return VectorGraphicsWriter.end_canvas();
+        }
     }
 }
 

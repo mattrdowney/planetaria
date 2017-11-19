@@ -1,17 +1,20 @@
 ﻿using UnityEngine;
 
-public struct Discontinuity
+namespace Planetaria
 {
-    public Arc arc { get; private set; }
-    public Vector3 position { get; private set; }
-    public float angle { get; private set; }
-
-    public Discontinuity(Arc arc, NormalizedCartesianCoordinates position)
+    public struct Discontinuity
     {
-        this.arc = arc;
-        this.position = position.data;
-        this.angle = arc.position_to_angle(this.position);
-        Debug.Assert(angle < 0 || angle > arc.angle());
+        public Arc arc { get; private set; }
+        public Vector3 position { get; private set; }
+        public float angle { get; private set; }
+
+        public Discontinuity(Arc arc, NormalizedCartesianCoordinates position)
+        {
+            this.arc = arc;
+            this.position = position.data;
+            this.angle = arc.position_to_angle(this.position);
+            Debug.Assert(angle < 0 || angle > arc.angle());
+        }
     }
 }
 

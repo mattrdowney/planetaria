@@ -1,93 +1,96 @@
 ﻿using UnityEngine;
 
-public class NormalizedSphericalCoordinates
+namespace Planetaria
 {
-    public Vector2 data
+    public class NormalizedSphericalCoordinates
     {
-        get { return data_variable; }
-        set { data_variable = value; normalize(); }
-    }
-
-    /// <summary>
-    /// Constructor - Stores a set of spherical coordinates on a unit sphere (i.e. rho=1) in a wrapper class.
-    /// </summary>
-    /// <param name="elevation">The angle in radians between the negative y-axis and the vector in Cartesian space.</param>
-    /// <param name="azimuth">The angle in radians between the positive x-axis and the vector in Cartian space measured counterclockwise around the y-axis (viewing angle is downward along y-axis).</param>
-    public NormalizedSphericalCoordinates(float elevation, float azimuth)
-    {
-        data_variable = new Vector2(elevation, azimuth);
-        normalize();
-    }
-
-    /// <summary>
-    /// Inspector - Converts spherical coordinates into Cartesian coordinates.
-    /// </summary>
-    /// <param name="spherical">The spherical coordinates that will be converted</param>
-    /// <returns>The Cartesian coordinates.</returns> 
-    public static implicit operator NormalizedCartesianCoordinates(NormalizedSphericalCoordinates spherical)
-    {
-        Vector3 cartesian = new Vector3();
-        cartesian.x = -Mathf.Sin(spherical.data.x) * Mathf.Cos(spherical.data.y);
-        cartesian.y = -Mathf.Cos(spherical.data.x);
-        cartesian.z = Mathf.Sin(spherical.data.x) * Mathf.Sin(spherical.data.y);
-        return new NormalizedCartesianCoordinates(cartesian);
-    }
-
-    /// <summary>
-    /// Inspector - Converts spherical coordinates into octahedral coordinates.
-    /// </summary>
-    /// <param name="spherical">The spherical coordinates that will be converted</param>
-    /// <returns>The octahedral coordinates.</returns> 
-    public static implicit operator NormalizedOctahedralCoordinates(NormalizedSphericalCoordinates spherical)
-    {
-        NormalizedCartesianCoordinates cartesian = spherical;
-        return cartesian;
-    }
-
-    /// <summary>
-    /// Inspector - Converts spherical coordinates into octahedron UV space.
-    /// </summary>
-    /// 7
-    /// <returns>The UV coordinates for an octahedron.</returns> 
-    public static implicit operator OctahedralUVCoordinates(NormalizedSphericalCoordinates spherical)
-    {
-        NormalizedCartesianCoordinates cartesian = spherical;
-        return cartesian;
-    }
-
-    /// <summary>
-    /// Inspector - Converts spherical coordinates into Stereoscopic projection coordinates.
-    /// </summary>
-    /// <param name="spherical">The spherical coordinates that will be converted</param>
-    /// <returns>The Stereoscopic projection.</returns> 
-    public static implicit operator StereoscopicProjectionCoordinates(NormalizedSphericalCoordinates spherical)
-    {
-        NormalizedCartesianCoordinates cartesian = spherical;
-        return cartesian;
-    }
-
-    /// <summary>
-    /// Mutator - Wrap elevation and azimuth so they are within [0, PI] and [0, 2*PI) respectively. 
-    /// </summary>
-    private void normalize()
-    {
-        if (data_variable.x < 0 || data_variable.x > Mathf.PI)
+        public Vector2 data
         {
-            data_variable.x %= 2*Mathf.PI;
-            if (data_variable.x > Mathf.PI)
+            get { return data_variable; }
+            set { data_variable = value; normalize(); }
+        }
+
+        /// <summary>
+        /// Constructor - Stores a set of spherical coordinates on a unit sphere (i.e. rho=1) in a wrapper class.
+        /// </summary>
+        /// <param name="elevation">The angle in radians between the negative y-axis and the vector in Cartesian space.</param>
+        /// <param name="azimuth">The angle in radians between the positive x-axis and the vector in Cartian space measured counterclockwise around the y-axis (viewing angle is downward along y-axis).</param>
+        public NormalizedSphericalCoordinates(float elevation, float azimuth)
+        {
+            data_variable = new Vector2(elevation, azimuth);
+            normalize();
+        }
+
+        /// <summary>
+        /// Inspector - Converts spherical coordinates into Cartesian coordinates.
+        /// </summary>
+        /// <param name="spherical">The spherical coordinates that will be converted</param>
+        /// <returns>The Cartesian coordinates.</returns> 
+        public static implicit operator NormalizedCartesianCoordinates(NormalizedSphericalCoordinates spherical)
+        {
+            Vector3 cartesian = new Vector3();
+            cartesian.x = -Mathf.Sin(spherical.data.x) * Mathf.Cos(spherical.data.y);
+            cartesian.y = -Mathf.Cos(spherical.data.x);
+            cartesian.z = Mathf.Sin(spherical.data.x) * Mathf.Sin(spherical.data.y);
+            return new NormalizedCartesianCoordinates(cartesian);
+        }
+
+        /// <summary>
+        /// Inspector - Converts spherical coordinates into octahedral coordinates.
+        /// </summary>
+        /// <param name="spherical">The spherical coordinates that will be converted</param>
+        /// <returns>The octahedral coordinates.</returns> 
+        public static implicit operator NormalizedOctahedralCoordinates(NormalizedSphericalCoordinates spherical)
+        {
+            NormalizedCartesianCoordinates cartesian = spherical;
+            return cartesian;
+        }
+
+        /// <summary>
+        /// Inspector - Converts spherical coordinates into octahedron UV space.
+        /// </summary>
+        /// 7
+        /// <returns>The UV coordinates for an octahedron.</returns> 
+        public static implicit operator OctahedralUVCoordinates(NormalizedSphericalCoordinates spherical)
+        {
+            NormalizedCartesianCoordinates cartesian = spherical;
+            return cartesian;
+        }
+
+        /// <summary>
+        /// Inspector - Converts spherical coordinates into Stereoscopic projection coordinates.
+        /// </summary>
+        /// <param name="spherical">The spherical coordinates that will be converted</param>
+        /// <returns>The Stereoscopic projection.</returns> 
+        public static implicit operator StereoscopicProjectionCoordinates(NormalizedSphericalCoordinates spherical)
+        {
+            NormalizedCartesianCoordinates cartesian = spherical;
+            return cartesian;
+        }
+
+        /// <summary>
+        /// Mutator - Wrap elevation and azimuth so they are within [0, PI] and [0, 2*PI) respectively. 
+        /// </summary>
+        private void normalize()
+        {
+            if (data_variable.x < 0 || data_variable.x > Mathf.PI)
             {
-                data_variable.x = 2*Mathf.PI - data_variable.x;
-                data_variable.y += Mathf.PI; // going through a pole changes the azimuth
+                data_variable.x %= 2*Mathf.PI;
+                if (data_variable.x > Mathf.PI)
+                {
+                    data_variable.x = 2*Mathf.PI - data_variable.x;
+                    data_variable.y += Mathf.PI; // going through a pole changes the azimuth
+                }
+            }
+
+            if (data_variable.y < 0 || data_variable.y >= 2*Mathf.PI)
+            {
+                data_variable.y = PlanetariaMath.modolo_using_euclidean_division(data_variable.y, 2*Mathf.PI);
             }
         }
 
-        if (data_variable.y < 0 || data_variable.y >= 2*Mathf.PI)
-        {
-            data_variable.y = PlanetariaMath.modolo_using_euclidean_division(data_variable.y, 2*Mathf.PI);
-        }
+        private Vector2 data_variable;
     }
-
-    private Vector2 data_variable;
 }
 
 /*

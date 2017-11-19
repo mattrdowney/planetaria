@@ -1,33 +1,36 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(PlanetariaCameraShutter))]
-public class PlanetariaShutterMotor : MonoBehaviour
+namespace Planetaria
 {
-    private void Start()
+    [RequireComponent(typeof(PlanetariaCameraShutter))]
+    public class PlanetariaShutterMotor : MonoBehaviour
     {
-        shutter = gameObject.GetComponent<PlanetariaCameraShutter>() as PlanetariaCameraShutter;
-        shutter.initialize();
-        shutter.set(0f);
-    }
-
-    private void LateUpdate()
-    {
-        float interpolation_factor = Time.time % blink_interval;
-
-        if (interpolation_factor > blink_duration)
+        private void Start()
         {
-            interpolation_factor = 0f;
+            shutter = gameObject.GetComponent<PlanetariaCameraShutter>() as PlanetariaCameraShutter;
+            shutter.initialize();
+            shutter.set(0f);
         }
 
-        interpolation_factor = Mathf.PingPong(interpolation_factor, blink_duration/2)/(blink_duration/2);
+        private void LateUpdate()
+        {
+            float interpolation_factor = Time.time % blink_interval;
 
-        shutter.set(interpolation_factor);
+            if (interpolation_factor > blink_duration)
+            {
+                interpolation_factor = 0f;
+            }
+
+            interpolation_factor = Mathf.PingPong(interpolation_factor, blink_duration/2)/(blink_duration/2);
+
+            shutter.set(interpolation_factor);
+        }
+
+        public float blink_duration = 0.3f;
+        public float blink_interval = 5f;
+
+        private PlanetariaCameraShutter shutter;
     }
-
-    public float blink_duration = 0.3f;
-    public float blink_interval = 5f;
-
-    private PlanetariaCameraShutter shutter;
 }
 
 /*

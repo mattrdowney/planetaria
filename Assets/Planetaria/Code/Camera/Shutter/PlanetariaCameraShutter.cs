@@ -1,12 +1,15 @@
 ﻿using UnityEngine;
 
-public abstract class PlanetariaCameraShutter : MonoBehaviour
+namespace Planetaria
 {
-    public delegate void OnShutterBlink();
-    public static event OnShutterBlink blink;
+    public abstract class PlanetariaCameraShutter : MonoBehaviour
+    {
+        public delegate void OnShutterBlink();
+        public static event OnShutterBlink blink;
 
-    public abstract void initialize();
-    public abstract void set(float interpolation_factor);
+        public abstract void initialize();
+        public abstract void set(float interpolation_factor);
+    }
 }
 
 /*

@@ -1,71 +1,74 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Field : MonoBehaviour
-{   
-    /// <summary>
-    /// Constructor - Generates a field using a .ssvg file.
-    /// </summary>
-    /// <param name="ssvg_file">
-    /// The .ssvg (spherical scalable vector graphics) file that will generate the field.
-    /// Special note: the .ssvg MUST be convex or all behavior is undefined.
-    /// </param>
-    /// <returns>The GameObject reference with an attached Field component.</returns>
-    public static GameObject CreateZone(string ssvg_file) // TODO: add convex check asserts.
-    {
-        GameObject result = new GameObject();
-        Field field = result.AddComponent<Field>();
-
-        field.plane_list = new List<Plane>();
-
-        return result;
-    }
-
-    /// <summary>
-    /// Checks if the center of mass (position) is below all of the planes. 
-    /// Special note: if a portion of the extruded volume is inside all planes, this function might still return false.
-    /// </summary>
-    /// <param name="position">A position on a unit-sphere.</param>
-    /// <param name="radius">The radius [0,PI/2] to extrude.</param>
-    /// <returns>True if position is below (inside) all of the planes; false otherwise.</returns>
-    public bool contains(Vector3 position, float radius = 0f)
-    {
-        if (!active)
+namespace Planetaria
+{
+    public class Field : MonoBehaviour
+    {   
+        /// <summary>
+        /// Constructor - Generates a field using a .ssvg file.
+        /// </summary>
+        /// <param name="ssvg_file">
+        /// The .ssvg (spherical scalable vector graphics) file that will generate the field.
+        /// Special note: the .ssvg MUST be convex or all behavior is undefined.
+        /// </param>
+        /// <returns>The GameObject reference with an attached Field component.</returns>
+        public static GameObject CreateZone(string ssvg_file) // TODO: add convex check asserts.
         {
-            return false;
+            GameObject result = new GameObject();
+            Field field = result.AddComponent<Field>();
+
+            field.plane_list = new List<Plane>();
+
+            return result;
         }
 
-        foreach (Plane plane in plane_list)
+        /// <summary>
+        /// Checks if the center of mass (position) is below all of the planes. 
+        /// Special note: if a portion of the extruded volume is inside all planes, this function might still return false.
+        /// </summary>
+        /// <param name="position">A position on a unit-sphere.</param>
+        /// <param name="radius">The radius [0,PI/2] to extrude.</param>
+        /// <returns>True if position is below (inside) all of the planes; false otherwise.</returns>
+        public bool contains(Vector3 position, float radius = 0f)
         {
-            if (plane.GetSide(position))
+            if (!active)
             {
                 return false;
             }
+
+            foreach (Plane plane in plane_list)
+            {
+                if (plane.GetSide(position))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
-        return true;
-    }
+        /// <summary>
+        /// Mutable? - 
+        /// </summary>
+        /// <returns>The list of planes that make the field.</returns>
+        public List<Plane> get_plane_list()
+        {
+            return plane_list;
+        }
 
-    /// <summary>
-    /// Mutable? - 
-    /// </summary>
-    /// <returns>The list of planes that make the field.</returns>
-    public List<Plane> get_plane_list()
-    {
-        return plane_list;
-    }
+        private void Start()
+        {
+            effects = this.GetComponents<FieldActor>(); // TODO: check null is properly set
+            transform = new PlanetariaTransform(this.GetComponent<Transform>());
+        }
 
-    private void Start()
-    {
-        effects = this.GetComponents<FieldActor>(); // TODO: check null is properly set
-        transform = new PlanetariaTransform(this.GetComponent<Transform>());
-    }
-
-    public bool active { get; set; }
+        public bool active { get; set; }
     
-    private FieldActor[] effects; // previously FieldActor
-    private List<Plane> plane_list; // FIXME: System.Collection.Immutable.ImmutableArray<Plane> not supported in current Unity version?
-    [SerializeField] private new PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
+        private FieldActor[] effects; // previously FieldActor
+        private List<Plane> plane_list; // FIXME: System.Collection.Immutable.ImmutableArray<Plane> not supported in current Unity version?
+        [SerializeField] private new PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
+    }
 }
 
 /*

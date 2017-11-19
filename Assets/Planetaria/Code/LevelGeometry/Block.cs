@@ -1,93 +1,96 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-[ExecuteInEditMode]
-public class Block : MonoBehaviour
+namespace Planetaria
 {
-    /// <summary>
-    /// Constructor - Creates a block matching a curves list.
-    /// </summary>
-    /// <returns>A block matching its blueprint.</returns>
-    public static GameObject block(List<GeospatialCurve> curves)
+    [System.Serializable]
+    [ExecuteInEditMode]
+    public class Block : MonoBehaviour
     {
-        GameObject result = new GameObject("Shape");
-        Block block = result.AddComponent<Block>();
-        block.curve_list = curves;
-        block.generate_arcs();
-
-        return result;
-    }
-
-    /// <summary>
-    /// Returns the index of any existing arc within the block that matches the external reference. Null arcs are never found.
-    /// </summary>
-    /// <param name="arc">The reference to the external arc that will be compared to the block's arc list.</param>
-    /// <returns>The index of the match if the arc exists in the container and is not null; a nonexistent index otherwise.</returns>
-    public optional<ArcVisitor> arc_visitor(Arc arc)
-    {
-        int arc_list_index = arc_list.IndexOf(arc);
-
-        if (arc_list_index == -1)
+        /// <summary>
+        /// Constructor - Creates a block matching a curves list.
+        /// </summary>
+        /// <returns>A block matching its blueprint.</returns>
+        public static GameObject block(List<GeospatialCurve> curves)
         {
-            return new optional<ArcVisitor>();
+            GameObject result = new GameObject("Shape");
+            Block block = result.AddComponent<Block>();
+            block.curve_list = curves;
+            block.generate_arcs();
+
+            return result;
         }
 
-        return ArcVisitor.arc_visitor(arc_list, arc_list_index);
-    }
-
-    public IEnumerable<optional<Arc>> iterator()
-    {
-        return arc_list;
-    }
-
-    public bool active { get; set; }
-
-    public bool empty()
-    {
-        return curve_list.Count == 0;
-    }
-
-    private void generate_arcs()
-    {
-        arc_list = new List<optional<Arc>>();
-        for (int edge = 0; edge < curve_list.Count; ++edge)
+        /// <summary>
+        /// Returns the index of any existing arc within the block that matches the external reference. Null arcs are never found.
+        /// </summary>
+        /// <param name="arc">The reference to the external arc that will be compared to the block's arc list.</param>
+        /// <returns>The index of the match if the arc exists in the container and is not null; a nonexistent index otherwise.</returns>
+        public optional<ArcVisitor> arc_visitor(Arc arc)
         {
-            GeospatialCurve[] circles = new GeospatialCurve[3];
-            for (int circle = 0; circle < 3; ++circle)
+            int arc_list_index = arc_list.IndexOf(arc);
+
+            if (arc_list_index == -1)
             {
-                circles[circle] = curve_list[(edge+circle)%curve_list.Count];
+                return new optional<ArcVisitor>();
             }
-            Arc left_arc = Arc.curve(circles[0].point, circles[0].slope, circles[1].point);
-            Arc right_arc = Arc.curve(circles[1].point, circles[1].slope, circles[2].point);
-            arc_list.Add(left_arc);
-            arc_list.Add(Arc.corner(left_arc, right_arc));
+
+            return ArcVisitor.arc_visitor(arc_list, arc_list_index);
         }
-    }
 
-    private void Awake()
-    {
-        active = true;
-        generate_arcs();
-        effects = this.GetComponents<BlockActor>();
-        transform = new PlanetariaTransform(this.GetComponent<Transform>());
-        PlanetariaCache.cache(this);
-    }
+        public IEnumerable<optional<Arc>> iterator()
+        {
+            return arc_list;
+        }
 
-    private void Reset()
-    {
-        generate_arcs();
-    }
+        public bool active { get; set; }
 
-    private void OnDestroy()
-    {
-        PlanetariaCache.uncache(this);
-    }
+        public bool empty()
+        {
+            return curve_list.Count == 0;
+        }
 
-    [SerializeField] private List<GeospatialCurve> curve_list = new List<GeospatialCurve>();
-    [System.NonSerialized] private BlockActor[] effects; // previously optional<BlockActor>
-    [System.NonSerialized] private new PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
-    [System.NonSerialized] private List<optional<Arc>> arc_list;
+        private void generate_arcs()
+        {
+            arc_list = new List<optional<Arc>>();
+            for (int edge = 0; edge < curve_list.Count; ++edge)
+            {
+                GeospatialCurve[] circles = new GeospatialCurve[3];
+                for (int circle = 0; circle < 3; ++circle)
+                {
+                    circles[circle] = curve_list[(edge+circle)%curve_list.Count];
+                }
+                Arc left_arc = Arc.curve(circles[0].point, circles[0].slope, circles[1].point);
+                Arc right_arc = Arc.curve(circles[1].point, circles[1].slope, circles[2].point);
+                arc_list.Add(left_arc);
+                arc_list.Add(Arc.corner(left_arc, right_arc));
+            }
+        }
+
+        private void Awake()
+        {
+            active = true;
+            generate_arcs();
+            effects = this.GetComponents<BlockActor>();
+            transform = new PlanetariaTransform(this.GetComponent<Transform>());
+            PlanetariaCache.cache(this);
+        }
+
+        private void Reset()
+        {
+            generate_arcs();
+        }
+
+        private void OnDestroy()
+        {
+            PlanetariaCache.uncache(this);
+        }
+
+        [SerializeField] private List<GeospatialCurve> curve_list = new List<GeospatialCurve>();
+        [System.NonSerialized] private BlockActor[] effects; // previously optional<BlockActor>
+        [System.NonSerialized] private new PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
+        [System.NonSerialized] private List<optional<Arc>> arc_list;
+    }
 }
 
 /*

@@ -1,6 +1,9 @@
-﻿public abstract class PlanetariaLookingStrategy : PlanetariaTrackingStrategy
+﻿namespace Planetaria
 {
+    public abstract class PlanetariaLookingStrategy : PlanetariaTrackingStrategy
+    {
 
+    }
 }
 
 /*

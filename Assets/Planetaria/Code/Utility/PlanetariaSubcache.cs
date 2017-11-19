@@ -1,33 +1,36 @@
 ﻿using System.Collections.Generic;
 
-public class PlanetariaSubcache<Key, Value>
+namespace Planetaria
 {
-    public void cache(Key key, Value value)
+    public class PlanetariaSubcache<Key, Value>
     {
-        map_cache.Add(key, value);
-    }
-
-    public void uncache(Key key)
-    {
-        map_cache.Remove(key);
-    }
-
-    public optional<Value> get(Key key)
-    {
-        if (!map_cache.ContainsKey(key))
+        public void cache(Key key, Value value)
         {
-            return new optional<Value>();
+            map_cache.Add(key, value);
         }
 
-        return map_cache[key];
-    }
+        public void uncache(Key key)
+        {
+            map_cache.Remove(key);
+        }
 
-    public void clear()
-    {
-        map_cache.Clear();
-    }
+        public optional<Value> get(Key key)
+        {
+            if (!map_cache.ContainsKey(key))
+            {
+                return new optional<Value>();
+            }
 
-    private Dictionary<Key, Value> map_cache = new Dictionary<Key, Value>();
+            return map_cache[key];
+        }
+
+        public void clear()
+        {
+            map_cache.Clear();
+        }
+
+        private Dictionary<Key, Value> map_cache = new Dictionary<Key, Value>();
+    }
 }
 
 /*

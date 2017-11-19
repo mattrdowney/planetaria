@@ -1,12 +1,13 @@
-﻿using UnityEngine;
-
-public abstract class FieldActor : PlanetariaActor
+﻿namespace Planetaria
 {
-    /// <summary>
-    /// Mutator - Changes other object.
-    /// </summary>
-    /// <param name="other">The object that is being manipulated by the field.</param>
-    public abstract void on_field_stay(PlanetariaActor other);
+    public abstract class FieldActor : PlanetariaActor
+    {
+        /// <summary>
+        /// Mutator - Changes other object.
+        /// </summary>
+        /// <param name="other">The object that is being manipulated by the field.</param>
+        public abstract void on_field_stay(PlanetariaActor other);
+    }
 }
 
 /*

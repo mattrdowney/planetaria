@@ -1,25 +1,28 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public abstract class LevelLoader : MonoBehaviour
+namespace Planetaria
 {
-    public static LoadingStrategy loader { set; private get; }
-
-    private void Awake()
+    public abstract class LevelLoader : MonoBehaviour
     {
-        loader = new BasicLoadingStrategy();
+        public static LoadingStrategy loader { set; private get; }
 
-        loader.request_level(initial_level);
+        private void Awake()
+        {
+            loader = new BasicLoadingStrategy();
 
-        wait(initial_level);
+            loader.request_level(initial_level);
+
+            wait(initial_level);
+        }
+
+        IEnumerator wait(int level_index)
+        {
+            yield return new WaitUntil(() => loader.fraction_loaded(level_index) == 1f);
+        }
+
+        private int initial_level = 0;
     }
-
-    IEnumerator wait(int level_index)
-    {
-        yield return new WaitUntil(() => loader.fraction_loaded(level_index) == 1f);
-    }
-
-    private int initial_level = 0;
 }
 
 /*

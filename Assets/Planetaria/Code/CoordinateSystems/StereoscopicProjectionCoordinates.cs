@@ -1,38 +1,41 @@
 ﻿using UnityEngine;
 
-public class StereoscopicProjectionCoordinates
+namespace Planetaria
 {
-    public Vector2 data { get; set; }
-
-    /// <summary>
-    /// Constructor - Stores stereoscopic projection coordinates in a wrapper class.
-    /// </summary>
-    /// <param name="stereoscopic_projection">The stereoscopic projection coordinates on plane z=0.</param>
-    public StereoscopicProjectionCoordinates(Vector2 stereoscopic_projection)
+    public class StereoscopicProjectionCoordinates
     {
-        data = stereoscopic_projection;
+        public Vector2 data { get; set; }
+
+        /// <summary>
+        /// Constructor - Stores stereoscopic projection coordinates in a wrapper class.
+        /// </summary>
+        /// <param name="stereoscopic_projection">The stereoscopic projection coordinates on plane z=0.</param>
+        public StereoscopicProjectionCoordinates(Vector2 stereoscopic_projection)
+        {
+            data = stereoscopic_projection;
+        }
+
+        /// <summary>
+        /// Inspector - Converts from stereoscopic projection coordinates to Cartesian coordinates.
+        /// </summary>
+        /// <param name="stereoscopic_projection">The coordinates of the stereoscopic projection on plane z=0 with focus (0,0,-1).</param>
+        /// <returns>The normalized Cartesian coordinates.</returns> 
+        public static implicit operator NormalizedCartesianCoordinates(StereoscopicProjectionCoordinates stereoscopic_projection)
+        {
+            Vector2 projection = stereoscopic_projection.data;
+
+            float magnitude_squared = Mathf.Pow(projection.x, 2) + Mathf.Pow(projection.y, 2);
+            float denominator = (1 + magnitude_squared);
+
+            float x = (2 * projection.x) / denominator;
+            float y = (2 * projection.y) / denominator;
+            float z = (-1 + magnitude_squared) / denominator;
+
+            return new NormalizedCartesianCoordinates(new Vector3(x, y, z));
+        }
+
+        // TODO: implement remainder of conversions
     }
-
-    /// <summary>
-    /// Inspector - Converts from stereoscopic projection coordinates to Cartesian coordinates.
-    /// </summary>
-    /// <param name="stereoscopic_projection">The coordinates of the stereoscopic projection on plane z=0 with focus (0,0,-1).</param>
-    /// <returns>The normalized Cartesian coordinates.</returns> 
-    public static implicit operator NormalizedCartesianCoordinates(StereoscopicProjectionCoordinates stereoscopic_projection)
-    {
-        Vector2 projection = stereoscopic_projection.data;
-
-        float magnitude_squared = Mathf.Pow(projection.x, 2) + Mathf.Pow(projection.y, 2);
-        float denominator = (1 + magnitude_squared);
-
-        float x = (2 * projection.x) / denominator;
-        float y = (2 * projection.y) / denominator;
-        float z = (-1 + magnitude_squared) / denominator;
-
-        return new NormalizedCartesianCoordinates(new Vector3(x, y, z));
-    }
-
-    // TODO: implement remainder of conversions
 }
 
 /*

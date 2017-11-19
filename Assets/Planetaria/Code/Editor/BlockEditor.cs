@@ -1,17 +1,19 @@
-﻿using UnityEngine;
-using UnityEditor;
+﻿using UnityEditor;
 
-[CustomEditor(typeof(Block))]
-public class BlockEditor : Editor
+namespace Planetaria
 {
-    [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
-    private static void draw_block_gizmos(Block self, GizmoType gizmo_type)
+    [CustomEditor(typeof(Block))]
+    public class BlockEditor : Editor
     {
-        foreach (optional<Arc> arc in self.iterator())
+        [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
+        private static void draw_block_gizmos(Block self, GizmoType gizmo_type)
         {
-            if (arc.exists)
+            foreach (optional<Arc> arc in self.iterator())
             {
-                ArcEditor.draw_arc(arc.data);
+                if (arc.exists)
+                {
+                    ArcEditor.draw_arc(arc.data);
+                }
             }
         }
     }

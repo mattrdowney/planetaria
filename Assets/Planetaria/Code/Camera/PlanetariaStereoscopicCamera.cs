@@ -1,30 +1,33 @@
 ﻿using UnityEngine;
 
-public class PlanetariaStereoscopicCamera : PlanetariaCamera
+namespace Planetaria
 {
-	private void Awake()
-	{
-        internal_camera = GameObject.FindObjectOfType<Camera>();
-        transform = new PlanetariaTransform(internal_camera.transform.parent);
+    public class PlanetariaStereoscopicCamera : PlanetariaCamera
+    {
+	    private void Awake()
+	    {
+            internal_camera = GameObject.FindObjectOfType<Camera>();
+            transform = new PlanetariaTransform(internal_camera.transform.parent);
 
-		OVRCameraRig camera = GameObject.FindObjectOfType<OVRCameraRig>();
+		    OVRCameraRig camera = GameObject.FindObjectOfType<OVRCameraRig>();
 
-		if (camera)
-        {
-			camera.UpdatedAnchors += lock_camera;
-        }
-	}
+		    if (camera)
+            {
+			    camera.UpdatedAnchors += lock_camera;
+            }
+	    }
 
-	private void lock_camera(OVRCameraRig camera)
-	{
-		camera.trackingSpace.FromOVRPose(camera.centerEyeAnchor.ToOVRPose(true).Inverse(), true); // undo all headtracking (by reverting the changes)
+	    private void lock_camera(OVRCameraRig camera)
+	    {
+		    camera.trackingSpace.FromOVRPose(camera.centerEyeAnchor.ToOVRPose(true).Inverse(), true); // undo all headtracking (by reverting the changes)
 
-		camera.leftEyeAnchor.FromOVRPose(OVRPose.identity); // reset all relative positions to origin
-		camera.rightEyeAnchor.FromOVRPose(OVRPose.identity);
-		camera.leftHandAnchor.FromOVRPose(OVRPose.identity);
-		camera.rightHandAnchor.FromOVRPose(OVRPose.identity);
-		camera.trackerAnchor.FromOVRPose(OVRPose.identity);
-	}
+		    camera.leftEyeAnchor.FromOVRPose(OVRPose.identity); // reset all relative positions to origin
+		    camera.rightEyeAnchor.FromOVRPose(OVRPose.identity);
+		    camera.leftHandAnchor.FromOVRPose(OVRPose.identity);
+		    camera.rightHandAnchor.FromOVRPose(OVRPose.identity);
+		    camera.trackerAnchor.FromOVRPose(OVRPose.identity);
+	    }
+    }
 }
 
 /*

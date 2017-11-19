@@ -2,25 +2,28 @@
 using UnityEditor;
 using System.Collections.Generic;
 
-[CustomEditor(typeof(Field))]
-public class FieldEditor : Editor
+namespace Planetaria
 {
-    Field field;
-    PlanetariaTransform transform; // TODO: make fields relative (for moving fields)
-
-    private void Awake()
+    [CustomEditor(typeof(Field))]
+    public class FieldEditor : Editor
     {
-        List<Plane> plane_list = field.get_plane_list();
+        Field field;
+        PlanetariaTransform transform; // TODO: make fields relative (for moving fields)
 
-        //for all planes...
-        //  PlanetariaIntersection.circle_circle_intersection(
-        //  add to container of field arcs
-    }
+        private void Awake()
+        {
+            List<Plane> plane_list = field.get_plane_list();
 
-    private void OnSceneGUI()
-    {
-        //for all field arcs
-        //  RendererUtility.draw_arc(
+            //for all planes...
+            //  PlanetariaIntersection.circle_circle_intersection(
+            //  add to container of field arcs
+        }
+
+        private void OnSceneGUI()
+        {
+            //for all field arcs
+            //  RendererUtility.draw_arc(
+        }
     }
 }
 

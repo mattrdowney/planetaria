@@ -1,33 +1,33 @@
-﻿using UnityEngine;
-using UnityEditor;
-
-public class DrawSSVG // TODO: rename SSVG because they are not "scalable"
+﻿namespace Planetaria
 {
-    /// <summary>
-    /// Inspector - Creates a ".ssvg" (spherical scalable vector format) from a Block. Based on quadratic bezier curve of the ".svg" file format.
-    /// </summary>
-    /// <param name="shape">The Block that will be serialized.</param>
-    /// <returns>A textual representation of a Block as a "spherical" scalable vector graphic (.ssvg file format). Format "Mx.xx y.yy z.zz S (a.aa b.bb c.cc, x.xx y.yy z.zz, )+" where M indicates mouse cursor down; S indicates spherical mode; (x,y,z) is a physical point; (a,b,c) is a cutting normal. E.g. "M0 0 1 S 0 1 0, 1 0 0, 0 1 0, 0 0 1".</returns>
-    public static string ShapeToSSVG(Block shape)
+    public class DrawSSVG // TODO: rename SSVG because they are not "scalable"
     {
-        return "M0 0 0 S 0 0 0, 0 0 0";
+        /// <summary>
+        /// Inspector - Creates a ".ssvg" (spherical scalable vector format) from a Block. Based on quadratic bezier curve of the ".svg" file format.
+        /// </summary>
+        /// <param name="shape">The Block that will be serialized.</param>
+        /// <returns>A textual representation of a Block as a "spherical" scalable vector graphic (.ssvg file format). Format "Mx.xx y.yy z.zz S (a.aa b.bb c.cc, x.xx y.yy z.zz, )+" where M indicates mouse cursor down; S indicates spherical mode; (x,y,z) is a physical point; (a,b,c) is a cutting normal. E.g. "M0 0 1 S 0 1 0, 1 0 0, 0 1 0, 0 0 1".</returns>
+        public static string ShapeToSSVG(Block shape)
+        {
+            return "M0 0 0 S 0 0 0, 0 0 0";
+        }
+
+        /// <summary>
+        /// Inspector - Creates a Block from a ".ssvg" (spherical scalable vector format). Based on quadratic bezier curve of the ".svg" file format.
+        /// </summary>
+        /// <param name="spherical_scalable_vector_graphic">A textual representation of a Block as a "spherical" scalable vector graphic (.svg file format). Format "Mx.xx y.yy z.zz S (a.aa b.bb c.cc, x.xx y.yy z.zz, )+" where M indicates mouse cursor down; S indicates spherical mode; (x,y,z) is a physical point; (a,b,c) is a cutting normal. E.g. "M0 0 1 S 0 1 0, 1 0 0, 0 1 0, 0 0 1".</param>
+        /// <returns>A Block that is equivalent to the textual ".ssvg".</returns>
+        public static Block SSVGToShape(string spherical_scalable_vector_graphic)
+        {
+            return new Block();
+        }
+
+        //<path d="M0.866 0.5 0 S 0 1 0, 0.5 0.866 0">
+
+        // M[begin position] S [cutting normal], [end position]
+
+        // where [begin position] cross-product [cutting normal] defines the sweeping direction.
     }
-
-    /// <summary>
-    /// Inspector - Creates a Block from a ".ssvg" (spherical scalable vector format). Based on quadratic bezier curve of the ".svg" file format.
-    /// </summary>
-    /// <param name="spherical_scalable_vector_graphic">A textual representation of a Block as a "spherical" scalable vector graphic (.svg file format). Format "Mx.xx y.yy z.zz S (a.aa b.bb c.cc, x.xx y.yy z.zz, )+" where M indicates mouse cursor down; S indicates spherical mode; (x,y,z) is a physical point; (a,b,c) is a cutting normal. E.g. "M0 0 1 S 0 1 0, 1 0 0, 0 1 0, 0 0 1".</param>
-    /// <returns>A Block that is equivalent to the textual ".ssvg".</returns>
-    public static Block SSVGToShape(string spherical_scalable_vector_graphic)
-    {
-        return new Block();
-    }
-
-    //<path d="M0.866 0.5 0 S 0 1 0, 0.5 0.866 0">
-
-    // M[begin position] S [cutting normal], [end position]
-
-    // where [begin position] cross-product [cutting normal] defines the sweeping direction.
 }
 
 /*

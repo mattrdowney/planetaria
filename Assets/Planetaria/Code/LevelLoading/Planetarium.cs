@@ -1,45 +1,48 @@
 ﻿using UnityEngine;
 
-public struct Planetarium
+namespace Planetaria
 {
-    public static Planetarium planetarium(int level_identifier)
+    public struct Planetarium
     {
-        Planetarium result = new Planetarium();
-
-        result.level_index = level_identifier;
-
-        return result;
-    }
-
-    public void load_room()
-    {
-        toggle_room(level_index, true);
-    }
-
-    public void unload_room()
-    {
-        toggle_room(level_index, false);
-    }
-
-    private static void toggle_room(int level_index, bool state)
-    {
-        GameObject geometry_root = GameObject.Find("/" + level_index.ToString()); // TODO: make this more elegant...
-        GameObject graphics_root = GameObject.Find("/" + level_index.ToString() + "g");
-
-        // geometry
-        for (int geometry_index = 0; geometry_index < geometry_root.transform.childCount; geometry_index++)
+        public static Planetarium planetarium(int level_identifier)
         {
-            geometry_root.transform.GetChild(geometry_index).gameObject.SetActive(state);
+            Planetarium result = new Planetarium();
+
+            result.level_index = level_identifier;
+
+            return result;
         }
 
-        // graphics
-        for (int graphics_index = 0; graphics_index < graphics_root.transform.childCount; graphics_index++)
+        public void load_room()
         {
-            graphics_root.transform.GetChild(graphics_index).gameObject.SetActive(state);
+            toggle_room(level_index, true);
         }
-    }
 
-    private int level_index;
+        public void unload_room()
+        {
+            toggle_room(level_index, false);
+        }
+
+        private static void toggle_room(int level_index, bool state)
+        {
+            GameObject geometry_root = GameObject.Find("/" + level_index.ToString()); // TODO: make this more elegant...
+            GameObject graphics_root = GameObject.Find("/" + level_index.ToString() + "g");
+
+            // geometry
+            for (int geometry_index = 0; geometry_index < geometry_root.transform.childCount; geometry_index++)
+            {
+                geometry_root.transform.GetChild(geometry_index).gameObject.SetActive(state);
+            }
+
+            // graphics
+            for (int graphics_index = 0; graphics_index < graphics_root.transform.childCount; graphics_index++)
+            {
+                graphics_root.transform.GetChild(graphics_index).gameObject.SetActive(state);
+            }
+        }
+
+        private int level_index;
+    }
 }
 
 /*

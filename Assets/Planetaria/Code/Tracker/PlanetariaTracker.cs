@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public class PlanetariaTracker
+namespace Planetaria
 {
-    private Action teleport;
-    protected List<PlanetariaTrackingStrategy> tracking_strategies;
+    public class PlanetariaTracker
+    {
+        private Action teleport;
+        protected List<PlanetariaTrackingStrategy> tracking_strategies;
+    }
 }
 
 /*

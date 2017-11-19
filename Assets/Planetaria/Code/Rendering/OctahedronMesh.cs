@@ -1,15 +1,18 @@
 ﻿using UnityEngine;
 
-[ExecuteInEditMode]
-[RequireComponent(typeof(MeshFilter))]
-[RequireComponent(typeof(MeshRenderer))]
-public class OctahedronMesh : MonoBehaviour
+namespace Planetaria
 {
-	private void Awake()
+    [ExecuteInEditMode]
+    [RequireComponent(typeof(MeshFilter))]
+    [RequireComponent(typeof(MeshRenderer))]
+    public class OctahedronMesh : MonoBehaviour
     {
-        MeshFilter mesh_filter = this.gameObject.GetComponent<MeshFilter>();
-        mesh_filter.sharedMesh = Octahedron.octahedron_mesh();
-	}
+	    private void Awake()
+        {
+            MeshFilter mesh_filter = this.gameObject.GetComponent<MeshFilter>();
+            mesh_filter.sharedMesh = Octahedron.octahedron_mesh();
+	    }
+    }
 }
 
 /*

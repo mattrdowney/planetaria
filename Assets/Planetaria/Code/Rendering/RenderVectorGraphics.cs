@@ -1,22 +1,25 @@
 ﻿using UnityEngine;
 
-public static class RenderVectorGraphics
+namespace Planetaria
 {
-    public static Material render(TextAsset svg)
+    public static class RenderVectorGraphics
     {
-        Material result = new Material(Shader.Find("Unlit/Transparent"));
+        public static Material render(TextAsset svg)
+        {
+            Material result = new Material(Shader.Find("Unlit/Transparent"));
 
-        ISVGDevice rendering_device = new SVGDeviceFast();
-        Implement rendering_implementation = new Implement(svg, rendering_device);
-        rendering_implementation.StartProcess();
+            ISVGDevice rendering_device = new SVGDeviceFast();
+            Implement rendering_implementation = new Implement(svg, rendering_device);
+            rendering_implementation.StartProcess();
 
-        Texture2D renderered_svg = rendering_implementation.GetTexture();
-        renderered_svg.wrapMode   = TextureWrapMode.Clamp;
-        renderered_svg.filterMode =  FilterMode.Bilinear;
-        renderered_svg.anisoLevel = 0;
-        result.mainTexture = renderered_svg;
+            Texture2D renderered_svg = rendering_implementation.GetTexture();
+            renderered_svg.wrapMode   = TextureWrapMode.Clamp;
+            renderered_svg.filterMode =  FilterMode.Bilinear;
+            renderered_svg.anisoLevel = 0;
+            result.mainTexture = renderered_svg;
 
-        return result;
+            return result;
+        }
     }
 }
 

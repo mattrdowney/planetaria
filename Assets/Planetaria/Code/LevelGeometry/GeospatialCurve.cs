@@ -1,44 +1,47 @@
 ﻿using UnityEngine;
 
-[System.Serializable]
-public struct GeospatialCurve
+namespace Planetaria
 {
-    public static GeospatialCurve curve(Vector3 point, Vector3 slope)
+    [System.Serializable]
+    public struct GeospatialCurve
     {
-        point.Normalize();
-        slope = Vector3.ProjectOnPlane(slope, point);
-        slope.Normalize();
-
-        Debug.Assert(point != slope);
-        return new GeospatialCurve(point, slope);
-    }
-
-    /// <summary>Property - the start point of the geospatial circle.</summary>
-    public Vector3 point
-    {
-        get
+        public static GeospatialCurve curve(Vector3 point, Vector3 slope)
         {
-            return point_variable;
-        }
-    }
+            point.Normalize();
+            slope = Vector3.ProjectOnPlane(slope, point);
+            slope.Normalize();
 
-    /// <summary>Property - the rightward slope of GeospatialCircle at start point.</summary>
-    public Vector3 slope
-    {
-        get
+            Debug.Assert(point != slope);
+            return new GeospatialCurve(point, slope);
+        }
+
+        /// <summary>Property - the start point of the geospatial circle.</summary>
+        public Vector3 point // Normally auto-properties would be used, but I need serialization
         {
-            return slope_variable;
+            get
+            {
+                return point_variable;
+            }
         }
-    }
 
-    private GeospatialCurve(Vector3 point, Vector3 slope)
-    {
-        point_variable = point;
-        slope_variable = slope;
-    }
+        /// <summary>Property - the rightward slope of GeospatialCircle at start point.</summary>
+        public Vector3 slope
+        {
+            get
+            {
+                return slope_variable;
+            }
+        }
 
-    [SerializeField] private Vector3 point_variable;
-    [SerializeField] private Vector3 slope_variable;
+        private GeospatialCurve(Vector3 point, Vector3 slope)
+        {
+            point_variable = point;
+            slope_variable = slope;
+        }
+
+        [SerializeField] private Vector3 point_variable; // used because properties can't be serialized
+        [SerializeField] private Vector3 slope_variable;
+    }
 }
 
 /*

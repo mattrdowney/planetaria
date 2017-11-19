@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Planetaria;
 
 public class PlanetariaCharacter : PlanetariaActor
 {

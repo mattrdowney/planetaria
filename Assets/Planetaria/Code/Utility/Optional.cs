@@ -1,59 +1,62 @@
-﻿public struct optional<Type>
+﻿namespace Planetaria
 {
-    public bool exists { get; private set; }
-
-    public Type data
+    public struct optional<Type>
     {
-        get
+        public bool exists { get; private set; }
+
+        public Type data
+        {
+            get
+            {
+                if (!exists)
+                {
+                    throw new System.NullReferenceException();
+                }
+                return data_variable;
+            }
+            set
+            {
+                data_variable = value;
+                exists = (value != null);
+            }
+        }
+
+        public optional(Type original)
+        {
+            data_variable = original;
+            exists = (original != null);
+        }
+
+        public static implicit operator optional<Type>(Type original)
+        {
+            return new optional<Type>(original);
+        } 
+
+        public static bool operator ==(optional<Type> left, optional<Type> right)
+        {
+            bool inequal_existance = (left.exists != right.exists);
+            bool inequal_value = (left.exists && right.exists && !left.data.Equals(right.data));
+            bool inequal = inequal_existance || inequal_value;
+            return !inequal;
+        }
+
+        public static bool operator !=(optional<Type> left, optional<Type> right)
+        {
+            return !(left == right);
+        }
+
+        public override string ToString()
         {
             if (!exists)
             {
-                throw new System.NullReferenceException();
+                return "nonexistent " + typeof(Type).Name;
             }
-            return data_variable;
+
+            return data.ToString();
         }
-        set
-        {
-            data_variable = value;
-            exists = (value != null);
-        }
-    }
-
-    public optional(Type original)
-    {
-        data_variable = original;
-        exists = (original != null);
-    }
-
-    public static implicit operator optional<Type>(Type original)
-    {
-        return new optional<Type>(original);
-    } 
-
-    public static bool operator ==(optional<Type> left, optional<Type> right)
-    {
-        bool inequal_existance = (left.exists != right.exists);
-        bool inequal_value = (left.exists && right.exists && !left.data.Equals(right.data));
-        bool inequal = inequal_existance || inequal_value;
-        return !inequal;
-    }
-
-    public static bool operator !=(optional<Type> left, optional<Type> right)
-    {
-        return !(left == right);
-    }
-
-    public override string ToString()
-    {
-        if (!exists)
-        {
-            return "nonexistent " + typeof(Type).Name;
-        }
-
-        return data.ToString();
-    }
     
-    private Type data_variable;
+        private Type data_variable;
+    }
 }
 
 /*
