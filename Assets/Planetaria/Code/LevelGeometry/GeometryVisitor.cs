@@ -12,13 +12,18 @@ namespace Planetaria
 
         public GeometryVisitor move_position(float delta_length, float extrusion)
         {
-            recalculate(delta_length, extrusion);
+            if (extrusion != last_extrusion)
+            {
+                upkeep(delta_length, extrusion);
+                last_extrusion = extrusion;
+            }
             float delta_angle = delta_length * (arc_angle/arc_length);
             return set_position(angular_position + delta_angle, extrusion);
         }
 
         public Vector3 normal()
         {
+            Debug.DrawRay(cached_position, cached_normal, Color.blue);
             return cached_normal;
         }
 
@@ -64,15 +69,6 @@ namespace Planetaria
         {
             GeometryVisitor visitor = geometry_visitor(arc_visitor.left(), extrusion);
             return visitor.set_position(visitor.right_angle_boundary - leftward_length_from_boundary*(visitor.arc_angle/visitor.arc_length), extrusion);
-        }
-
-        private void recalculate(float delta_length, float extrusion)
-        {
-            if (extrusion != last_extrusion)
-            {
-                upkeep(delta_length, extrusion);
-                last_extrusion = extrusion;
-            }
         }
 
         private GeometryVisitor set_position(float angular_position, float extrusion)
@@ -132,7 +128,7 @@ namespace Planetaria
             float floor_length = center_arc.arc.data.length(); // edge case
             float ceiling_length = center_arc.arc.data.length(2*center_of_mass_extrusion); // corner case
             arc_length = Mathf.Max(floor_length, ceiling_length); // use longer distance to make movement feel consistent
-        
+
             if (!right_arc.arc.exists && delta_length > 0) // set right boundary
             {
                 Vector3 intersection = PlanetariaIntersection.arc_arc_intersection(center_arc.arc.data, right_of_right_arc.arc.data, center_of_mass_extrusion);
@@ -149,7 +145,6 @@ namespace Planetaria
         {
             cached_position = center_arc.arc.data.position(angular_position, last_extrusion);
             cached_normal = center_arc.arc.data.normal(angular_position, last_extrusion);
-            Debug.DrawRay(cached_position, cached_normal, Color.blue);
         }
 
         ArcVisitor left_of_left_arc;
@@ -162,6 +157,9 @@ namespace Planetaria
 
         protected override void initialize()
         {
+            left_normal = left_arc.arc.data.normal(left_arc.arc.data.angle()); // intentionally no extrusion
+            right_normal = right_arc.arc.data.normal(0); // these normals will be overwritten
+            arc_angle = Vector3.Angle(left_normal, right_normal)*Mathf.Deg2Rad; // doesn't vary (in theory) // TODO: verify
             left_angle_boundary = 0;
             right_angle_boundary = arc_angle;
         }
@@ -174,7 +172,6 @@ namespace Planetaria
             float right_angle = right_arc.arc.data.position_to_angle(cached_position);
             left_normal = left_arc.arc.data.normal(left_angle, center_of_mass_extrusion);
             right_normal = right_arc.arc.data.normal(right_angle, center_of_mass_extrusion);
-            arc_angle = Mathf.PI - Vector3.Angle(left_normal, right_normal); // doesn't vary (in theory)
         }
 
         protected override void calculate_location()
