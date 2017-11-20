@@ -15,7 +15,9 @@ namespace Planetaria
         public static Vector3 arc_arc_intersection(Arc a, Arc b, float extrusion)
         {
             Vector3[] intersections = circle_circle_intersections(a.circle(extrusion), b.circle(extrusion));
-            return valid_arc_intersections(a, intersections)[0]; // FIXME: verify that checking against a implicitly verifies against b (it has to, right?)
+            intersections = valid_arc_intersections(a, intersections);
+            intersections = valid_arc_intersections(b, intersections);
+            return intersections[0];
         }
 
         public static Vector3[] arc_path_intersections(Arc arc, NormalizedCartesianCoordinates begin, NormalizedCartesianCoordinates end, float extrusion)
