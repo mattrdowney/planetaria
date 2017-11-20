@@ -121,6 +121,7 @@ namespace Planetaria
                 if (temporary_arc.exists)
                 {
                     temporary_arc.data.close_shape();
+                    Debug.Log("Happening");
                     temporary_arc = new optional<ArcBuilder>();
                 }
                 return draw_first_point;

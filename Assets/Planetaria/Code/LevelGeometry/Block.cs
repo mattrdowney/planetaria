@@ -63,7 +63,10 @@ namespace Planetaria
                 Arc left_arc = Arc.curve(curves[0].point, curves[0].slope, curves[1].point);
                 Arc right_arc = Arc.curve(curves[1].point, curves[1].slope, curves[2].point);
                 arc_list.Add(left_arc);
-                arc_list.Add(Arc.corner(left_arc, right_arc));
+                if (Vector3.Angle(left_arc.normal(left_arc.angle()), right_arc.normal(0)) > Precision.tolerance)
+                {
+                    arc_list.Add(Arc.corner(left_arc, right_arc));
+                }
             }
         }
 

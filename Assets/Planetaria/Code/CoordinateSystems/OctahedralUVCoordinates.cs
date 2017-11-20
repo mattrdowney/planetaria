@@ -28,7 +28,7 @@ namespace Planetaria
         /// <returns>The normalized cartesian coordinates.</returns>
         public static implicit operator NormalizedCartesianCoordinates(OctahedralUVCoordinates uv)
         {
-            return uv; // implicit chains of length three won't automatically work so convert OctahedralUVCoordinates -> NormalizedOctahedralCoordinates -> NormalizedCartesianCoordinates
+            return (NormalizedOctahedralCoordinates) uv; // implicit chains of length three won't automatically work so convert OctahedralUVCoordinates -> NormalizedOctahedralCoordinates -> NormalizedCartesianCoordinates
         }
 
         /// <summary>

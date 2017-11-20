@@ -166,7 +166,7 @@ namespace Planetaria
 
         protected override void upkeep(float delta_length, float center_of_mass_extrusion)
         {
-            arc_length = (2*center_of_mass_extrusion) / Mathf.Cos(arc_angle / 2);
+            arc_length = arc_angle * center_of_mass_extrusion * 2; // TODO: verify
             cached_position = PlanetariaIntersection.arc_arc_intersection(left_arc.arc.data, right_arc.arc.data, center_of_mass_extrusion);
             float left_angle = left_arc.arc.data.position_to_angle(cached_position);
             float right_angle = right_arc.arc.data.position_to_angle(cached_position);
