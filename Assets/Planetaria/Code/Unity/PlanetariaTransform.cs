@@ -8,6 +8,8 @@ namespace Planetaria
         public PlanetariaTransform(Transform internal_transform)
         {
             cartesian_transform = internal_transform;
+            internal_collider = internal_transform.GetComponent<PlanetariaCollider>();
+            internal_renderer = internal_transform.GetComponent<PlanetariaRenderer>();
         }
 
         public NormalizedCartesianCoordinates position
@@ -16,7 +18,6 @@ namespace Planetaria
             {
                 return position_variable;
             }
-
             set
             {
                 dirty_position = true;
@@ -33,7 +34,6 @@ namespace Planetaria
             {
                 return rotation_variable;
             }
-
             set
             {
                 dirty_rotation = true;
@@ -47,7 +47,6 @@ namespace Planetaria
             {
                 return scale_variable;
             }
-
             set
             {
                 dirty_scale = true;
@@ -55,29 +54,59 @@ namespace Planetaria
             }
         }
 
+        public Planetarium planetarium
+        {
+            get
+            {
+                return planetarium_variable;
+            }
+            set
+            {
+                dirty_planetarium = true;
+                planetarium_variable = value;
+            }
+        }
+
         public void move()
         {
             if (dirty_position)
             {
-                cartesian_transform.position = position.data;
-                dirty_position = false;
+                internal_position = Quaternion.LookRotation(position.data);
             }
 
             if (dirty_rotation)
             {
-                Vector3 up = new Vector3(Mathf.Cos(rotation), Mathf.Sin(rotation));
-                cartesian_transform.rotation = Quaternion.LookRotation(position.data, up);
-                dirty_rotation = false;
+                internal_rotation = Quaternion.Euler(0, 0, rotation*Mathf.Rad2Deg);
+            }
+
+            if (dirty_position || dirty_rotation)
+            {
+                cartesian_transform.rotation = internal_position * internal_rotation;
+                dirty_position = dirty_rotation = false;
             }
 
             if (dirty_scale)
             {
-                cartesian_transform.localScale = Mathf.Sin(scale)*Vector3.one;
+                if (internal_collider.exists)
+                {
+                    internal_collider.data.scale = Mathf.Sin(scale)*Vector3.one;
+                }
+                if (internal_renderer.exists)
+                {
+                    internal_renderer.data.scale = scale;
+                }
                 dirty_scale = false;
             }
         }
 
         private Transform cartesian_transform;
+        private optional<PlanetariaCollider> internal_collider; // Observer pattern would be more elegant but slower
+        private optional<PlanetariaRenderer> internal_renderer;
+
+        private Quaternion internal_position;
+        private Quaternion internal_rotation;
+
+        private Planetarium planetarium_variable;
         private NormalizedCartesianCoordinates position_variable;
         private float rotation_variable;
         private float scale_variable;
@@ -85,6 +114,7 @@ namespace Planetaria
         private bool dirty_position;
         private bool dirty_rotation;
         private bool dirty_scale;
+        private bool dirty_planetarium;
     }
 }
 

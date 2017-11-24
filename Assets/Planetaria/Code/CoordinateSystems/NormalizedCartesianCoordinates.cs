@@ -17,7 +17,7 @@ namespace Planetaria
         public NormalizedCartesianCoordinates(Vector3 cartesian) // Note: this is an example of where there is ambiguity between variables and types under new naming convention
         {
             data_variable = cartesian;
-            normalize(); 
+            normalize();
         }
 
         /// <summary>
