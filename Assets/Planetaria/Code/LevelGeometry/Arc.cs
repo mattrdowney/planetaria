@@ -346,8 +346,7 @@ namespace Planetaria
             }
             return closest_angle;
         }
-
-        // New naming convention: data types are proper CamelCase and variables are lowercase with underscores.
+        
         private delegate float HeuristicFunction(Arc arc, Vector3 operand, float angle);
 
         private static float normal_heuristic(Arc arc, Vector3 desired_normal, float angle)

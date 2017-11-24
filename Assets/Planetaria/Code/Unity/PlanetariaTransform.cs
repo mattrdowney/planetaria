@@ -3,7 +3,7 @@
 namespace Planetaria
 {
     // FIXME: find a way to serialize
-    public class PlanetariaTransform
+    public class PlanetariaTransform // CONSIDER: extend MonoBehaviour so component can be found easily / without accidents
     {
         public PlanetariaTransform(Transform internal_transform)
         {
@@ -69,16 +69,20 @@ namespace Planetaria
 
         public void move()
         {
+            if (dirty_planetarium)
+            {
+                cartesian_transform.position = planetarium.position;
+                dirty_planetarium = false;
+            }
+
             if (dirty_position)
             {
                 internal_position = Quaternion.LookRotation(position.data);
             }
-
             if (dirty_rotation)
             {
                 internal_rotation = Quaternion.Euler(0, 0, rotation*Mathf.Rad2Deg);
             }
-
             if (dirty_position || dirty_rotation)
             {
                 cartesian_transform.rotation = internal_position * internal_rotation;
@@ -89,11 +93,11 @@ namespace Planetaria
             {
                 if (internal_collider.exists)
                 {
-                    internal_collider.data.scale = Mathf.Sin(scale)*Vector3.one;
+                    internal_collider.data.scale = Mathf.Sin(scale); // TODO: check
                 }
                 if (internal_renderer.exists)
                 {
-                    internal_renderer.data.scale = scale;
+                    internal_renderer.data.scale = scale; // TODO: check
                 }
                 dirty_scale = false;
             }

@@ -140,7 +140,10 @@
      <Compile Include="Assets\Planetaria\Code\Tracker\PlanetariaTracker.cs" />
      <Compile Include="Assets\Planetaria\Code\Tracker\PlanetariaTrackingStrategy.cs" />
      <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaActor.cs" />
+     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaAudioSource.cs" />
+     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaCollider.cs" />
      <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaMonoBehaviour.cs" />
+     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaRenderer.cs" />
      <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaRigidbody.cs" />
      <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaTransform.cs" />
      <Compile Include="Assets\Planetaria\Code\Utility\Miscellaneous.cs" />
@@ -230,6 +233,7 @@
      <None Include="Assets\OVR\Resources\OVRMRUnlitTransparent.shader" />
      <None Include="Assets\OVR\Resources\OVRMRChromaKey.cginc" />
      <None Include="Assets\OVR\Editor\AndroidManifest.OVRSubmission.xml" />
+     <None Include="Assets\Planetaria\Code\Shaders\TransparentLit.shader" />
      <None Include="Assets\OVR\Shaders\OVRColorRampAlpha.shader" />
      <None Include="Assets\OVR\Resources\OVRMRUnlit.shader" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_bc189c7665c3b7c44be03cd25d9dfe9f.txt" />

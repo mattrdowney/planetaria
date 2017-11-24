@@ -102,6 +102,18 @@ namespace Planetaria
                 return new optional<TextAsset>();
             }
         }
+
+        // according to: https://www.sjbaker.org/steve/omniv/love_your_z_buffer.html
+        // z_buffer_value = z_buffer_digits * ( a + b / z )
+        // therefore: distance = b / (z_buffer_value * z_buffer_digits - a);
+        public static float layer_to_distance(short layer)
+        {
+            int z_buffer = layer - short.MinValue; // ensure z_buffer is non-negative
+            z_buffer = (short.MaxValue - short.MinValue) - z_buffer; // z_buffer has reversed order
+            float distance = Precision.clip_b / (z_buffer * Precision.z_buffer_digits - Precision.clip_a);
+            return distance / Precision.octahedron_face_distance; // if e.g. 0.5f was returned then the true distance would be 0.5f*octahedron_face_distance, which would not be rendered
+            // FIXME: invert results?
+        }
     }
 }
 

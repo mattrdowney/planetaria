@@ -14,7 +14,7 @@ namespace Planetaria
         /// Constructor - Stores Cartesian coordinates in a wrapper class.
         /// </summary>
         /// <param name="cartesian">The Cartesian coordinates. Note: matches Unity's default Vector3 definition.</param>
-        public NormalizedCartesianCoordinates(Vector3 cartesian) // Note: this is an example of where there is ambiguity between variables and types under new naming convention
+        public NormalizedCartesianCoordinates(Vector3 cartesian)
         {
             data_variable = cartesian;
             normalize();

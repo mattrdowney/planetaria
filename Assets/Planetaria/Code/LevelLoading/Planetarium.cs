@@ -42,6 +42,7 @@ namespace Planetaria
         }
 
         private int level_index;
+        public Vector3 position { get; private set; }
     }
 }
 
