@@ -8,56 +8,17 @@ namespace Planetaria
 
         private void Reset()
         {
-            optional<Transform> transformation = this.gameObject.transform.Find("Renderer");
-            if (!transformation.exists)
-            {
-                GameObject child = new GameObject("Renderer");
-                transformation = child.GetComponent<Transform>();
-            }
-            internal_transformation = transformation.data;
-            
-            optional<Renderer> renderer = internal_transformation.GetComponent<Renderer>();
-            mesh_filter = internal_transformation.GetComponent<MeshFilter>();
-            if (mesh_filter.exists)
-            {
-                if (!renderer.exists || renderer.data.GetType() != typeof(MeshRenderer))
-                {
-                    if (renderer.exists)
-                    {
-                        DestroyImmediate(renderer.data);
-                    }
-                    internal_renderer = this.GetOrAddComponent<MeshRenderer>();
-                }
-            }
-            else
-            {
-                if (!renderer.exists || renderer.data.GetType() != typeof(SpriteRenderer))
-                {
-                    if (renderer.exists)
-                    {
-                        DestroyImmediate(renderer.data);
-                    }
-                    internal_renderer = this.GetOrAddComponent<SpriteRenderer>();
-                }
-            }
-            internal_renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            internal_renderer.receiveShadows = false;
-            internal_renderer.material.shader = Shader.Find("Planetaria/Transparent Lit");
+            set_transformation();
+            set_renderer();
+            set_layer();
+            set_renderer_values();
         }
 
-        public short layer // there are two choice: leave layer alone (z-fighting will happen) or do a startup prepass to determine unique layers (but runtime will still have issues)
-        {
-            get
-            {
-                return layer_variable;
-            }
-            set
-            {
-                layer_variable = value;
-                float scale = Miscellaneous.layer_to_distance(value);
-                internal_transformation.localScale = Vector3.one*scale;
-            }
-        }
+        /// <summary>
+        /// Property - layer is a number [-128, 127] that determines drawing order (-128 = background, 127 = foreground).
+        /// Up to 256 objects can be created on the same layer without z-fighting (but z-fighting might happen with fewer if objects are destroyed at runtime).
+        /// </summary>
+        [SerializeField] public sbyte layer = 0;
 
         public optional<MeshFilter> mesh_filter;
         public float scale { get; set; } // FIXME: 
@@ -69,9 +30,59 @@ namespace Planetaria
             }
         }
 
+        private void set_layer()
+        {
+            float scale = Miscellaneous.layer_to_distance(layer) * Octahedron.octahedron_face_distance;
+            scale = Mathf.Clamp(scale, PlanetariaCamera.near_clip_plane, PlanetariaCamera.far_clip_plane);
+            internal_transformation.localScale = Vector3.one*scale;
+        }
+
+        private void set_renderer()
+        {
+            optional<Renderer> renderer = internal_transformation.GetComponent<Renderer>();
+            mesh_filter = internal_transformation.GetComponent<MeshFilter>();
+            if (mesh_filter.exists)
+            {
+                set_renderer(renderer, typeof(MeshRenderer));
+            }
+            else
+            {
+                set_renderer(renderer, typeof(SpriteRenderer));
+            }
+        }
+
+        private void set_renderer(optional<Renderer> renderer, System.Type type)
+        {
+            if (!renderer.exists || renderer.data.GetType() != type)
+            {
+                if (renderer.exists)
+                {
+                    DestroyImmediate(renderer.data);
+                }
+                internal_renderer = this.gameObject.AddComponent(type) as Renderer;
+            }
+        }
+
+        private void set_renderer_values()
+        {
+            internal_renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            internal_renderer.receiveShadows = false;
+            internal_renderer.material.shader = Shader.Find("Planetaria/Transparent Lit");
+        }
+
+        private void set_transformation()
+        {
+            optional<Transform> transformation = this.gameObject.transform.Find("Renderer");
+            if (!transformation.exists)
+            {
+                GameObject child = new GameObject("Renderer");
+                transformation = child.GetComponent<Transform>();
+            }
+            internal_transformation = transformation.data;
+        }
+
         private Transform internal_transformation;
         private Renderer internal_renderer;
-        private short layer_variable;
     }
 }
 

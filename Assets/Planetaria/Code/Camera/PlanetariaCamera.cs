@@ -4,6 +4,12 @@ namespace Planetaria
 {
     public abstract class PlanetariaCamera : MonoBehaviour //FIXME: Component // Tracker needn't be coupled.
     {
+        public const float near_clip_plane = 0.5f;
+        public const float far_clip_plane = 2.0f;
+        public const float clip_a = far_clip_plane / ( far_clip_plane - near_clip_plane );
+        public const float clip_b = far_clip_plane * near_clip_plane / ( near_clip_plane - far_clip_plane );
+        public const int z_buffer_digits = (1 << sizeof(short));
+
         protected new PlanetariaTransform transform;
         protected Camera internal_camera;
     }

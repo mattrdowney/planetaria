@@ -4,6 +4,8 @@ namespace Planetaria
 {
     public static class Octahedron
     {
+        public static readonly float octahedron_face_distance = 1/Mathf.Sqrt(3);
+
         /// <summary>
         /// Singleton - Fetch the octahedron mesh.
         /// </summary>
