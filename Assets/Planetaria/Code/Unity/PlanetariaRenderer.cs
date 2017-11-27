@@ -2,7 +2,7 @@
 
 namespace Planetaria
 {
-    public class PlanetariaRenderer : MonoBehaviour
+    public abstract class PlanetariaRenderer : MonoBehaviour
     {
         public enum RenderType { Sprite, Model }
 
@@ -41,7 +41,7 @@ namespace Planetaria
         {
             optional<Renderer> renderer = internal_transformation.GetComponent<Renderer>();
             mesh_filter = internal_transformation.GetComponent<MeshFilter>();
-            if (mesh_filter.exists)
+            if (mesh_filter.exists) // Doesn't quite work, since there are three versions: Mesh, Sprite (Quad), Octahedron
             {
                 set_renderer(renderer, typeof(MeshRenderer));
             }
@@ -68,6 +68,7 @@ namespace Planetaria
             internal_renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             internal_renderer.receiveShadows = false;
             internal_renderer.material.shader = Shader.Find("Planetaria/Transparent Lit");
+            internal_renderer.motionVectorGenerationMode = MotionVectorGenerationMode.ForceNoMotion;
         }
 
         private void set_transformation()
