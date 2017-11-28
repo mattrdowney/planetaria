@@ -2,6 +2,7 @@
 
 namespace Planetaria
 {
+    [ExecuteInEditMode] // FIXME: scene file stores a new Renderer reference each save due to implementation, ISerializationCallbackReceiver can't delete objects either
     public abstract class PlanetariaRenderer : MonoBehaviour
     {
         protected abstract void set_renderer();
@@ -26,6 +27,7 @@ namespace Planetaria
         {
             GameObject child = new GameObject(name);
             child.transform.parent = this.transform;
+            child.hideFlags = HideFlags.HideInHierarchy;
             internal_transformation = child.GetComponent<Transform>();
         }
 

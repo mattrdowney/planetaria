@@ -2,6 +2,7 @@
 
 namespace Planetaria
 {
+    [ExecuteInEditMode]
     public class PlanetRenderer : PlanetariaRenderer
     {
         private void Awake()

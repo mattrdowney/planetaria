@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlanetariaCollider : MonoBehaviour
+namespace Planetaria
 {
-    public float scale { get; set; }
+    public class PlanetariaCollider : MonoBehaviour
+    {
+        public float scale { get; set; }
+    }
 }
 
 /*

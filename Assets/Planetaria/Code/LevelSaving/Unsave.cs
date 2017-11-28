@@ -1,26 +1,25 @@
 ﻿using UnityEngine;
+using UnityEditor;
 
-namespace Planetaria
+public class Unsave : UnityEditor.AssetModificationProcessor
 {
-    [ExecuteInEditMode]
-    public class AreaRenderer : PlanetariaRenderer
+    static string[] OnWillSaveAssets(string[] paths)
     {
-        private void Awake()
+        MeshRenderer[] mesh_renderers = GameObject.FindObjectsOfType<MeshRenderer>();
+        foreach (MeshRenderer mesh_renderer in mesh_renderers)
         {
-            set_transformation("AreaRenderer");
-            set_renderer();
-            set_renderer_values();
-            set_layer();
-            internal_renderer.sharedMaterial = material;
-            internal_transformation.position = Vector3.forward;
-            scalable = true;
+            GameObject.DestroyImmediate(mesh_renderer.gameObject);
         }
-
-        protected sealed override void set_renderer()
+        SpriteRenderer[] sprite_renderers = GameObject.FindObjectsOfType<SpriteRenderer>();
+        foreach (SpriteRenderer sprite_renderer in sprite_renderers)
         {
-            internal_renderer = internal_transformation.gameObject.AddComponent<SpriteRenderer>();
+            GameObject.DestroyImmediate(sprite_renderer.gameObject);
         }
+        Debug.Log("Happening");
+        return paths;
     }
+
+    //static void destroy_all_of_type(System.Type type) // TODO: figure out how to do this // C# extensions?
 }
 
 /*
