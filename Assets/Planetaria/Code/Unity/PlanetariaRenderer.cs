@@ -15,28 +15,14 @@ namespace Planetaria
             {
                 drawing_order = next_available_order(sorting_layer.id);
             }
-            internal_renderer.sortingLayerID = sorting_layer.id;
-        }
-
-        protected void set_renderer(optional<Renderer> renderer, System.Type type)
-        {
-            if (!renderer.exists || renderer.data.GetType() != type)
-            {
-                if (renderer.exists)
-                {
-                    DestroyImmediate(renderer.data);
-                }
-                internal_renderer = internal_transformation.gameObject.AddComponent(type) as Renderer;
-            }
+            //internal_renderer.sortingLayerID = sorting_layer.id;
         }
 
         protected void set_renderer_values(string shader)
         {
             internal_renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             internal_renderer.receiveShadows = false;
-            internal_renderer.material.shader = Shader.Find(shader);
             internal_renderer.motionVectorGenerationMode = MotionVectorGenerationMode.ForceNoMotion;
-            internal_renderer.sharedMaterial = material;
         }
 
         protected void set_transformation(string name)
@@ -69,7 +55,7 @@ namespace Planetaria
                 sorting_order = value;
                 if (sorting_order.exists)
                 {
-                    internal_renderer.sortingOrder = sorting_order.data;
+                    //internal_renderer.sortingOrder = sorting_order.data;
                 }
             }
         }
@@ -77,13 +63,27 @@ namespace Planetaria
         /// <summary>
         /// Property - the radius as an angle (in radians) along the surface of the sphere.
         /// </summary>
-        public float scale { get; set; } // FIXME: 
+        public float scale
+        {
+            get
+            {
+                return scale_variable;
+            }
+            set
+            {
+                scale_variable = value;
+                if (scalable)
+                {
+                    internal_transformation.localScale = Vector3.one * scale;
+                }
+            }
+        } // FIXME: 
 
         [SerializeField] public Material material;
 
         [SerializeField] protected optional<short> sorting_order;
-        protected Transform internal_transformation;
-        protected Renderer internal_renderer;
+        [SerializeField] protected Transform internal_transformation;
+        [SerializeField] protected Renderer internal_renderer;
 
         protected static short next_available_order(int layer_identifier)
         {
@@ -100,6 +100,8 @@ namespace Planetaria
         }
 
         private static short order_identifier = short.MinValue; // CONSIDER: use layer map again if convenient
+        protected bool scalable;
+        private float scale_variable;
     }
 }
 

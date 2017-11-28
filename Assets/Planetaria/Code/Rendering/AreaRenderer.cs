@@ -8,6 +8,9 @@ namespace Planetaria
         private void Awake()
         {
             set_layer();
+            internal_renderer.sharedMaterial = material;
+            internal_transformation.position = Vector3.forward;
+            scalable = true;
         }
 
         private void Reset()
@@ -19,8 +22,7 @@ namespace Planetaria
 
         protected sealed override void set_renderer()
         {
-            optional<Renderer> renderer = internal_transformation.GetComponent<Renderer>();
-            set_renderer(renderer, typeof(SpriteRenderer));
+            internal_renderer = internal_transformation.GetOrAddComponent<SpriteRenderer>();
         }
     }
 }

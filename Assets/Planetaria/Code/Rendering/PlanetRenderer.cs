@@ -8,6 +8,8 @@ namespace Planetaria
         private void Awake()
         {
             set_layer();
+            internal_renderer.sharedMaterial = material;
+            scalable = false;
         }
 
         private void Reset()
@@ -19,14 +21,13 @@ namespace Planetaria
 
         protected sealed override void set_renderer()
         {
-            optional<Renderer> renderer = internal_transformation.GetComponent<Renderer>();
-            set_renderer(renderer, typeof(MeshRenderer));
+            internal_renderer = internal_transformation.GetOrAddComponent<MeshRenderer>();
 
             internal_mesh_filter = internal_transformation.GetOrAddComponent<MeshFilter>();
             internal_mesh_filter.sharedMesh = Octahedron.octahedron_mesh();
         }
 
-        private MeshFilter internal_mesh_filter;
+        [SerializeField] private MeshFilter internal_mesh_filter;
     }
 }
 

@@ -25,20 +25,19 @@
             {
                 exists_variable = !(value == null);
                 data_variable = value;
-                UnityEngine.Debug.Log("data: " + this.ToString());
             }
         }
 
-        public optional(Type original)
+        public optional(Type original) // FIXME: (?) This is far more expensive than it used to be
         {
             exists_variable = !(original == null);
             data_variable = original;
-            if (original.GetType().IsSubclassOf(typeof(UnityEngine.Object))) // https://blogs.unity3d.com/2014/05/16/custom-operator-should-we-keep-it/
+
+            // Unity overrides the definition of nullity, so check for Unity-specific "nulls"
+            if (original != null && original.GetType().IsSubclassOf(typeof(UnityEngine.Object))) // https://blogs.unity3d.com/2014/05/16/custom-operator-should-we-keep-it/
             {
-                UnityEngine.Debug.Log(original.GetType());
-                exists_variable = ((original as UnityEngine.Object) != null);
+                exists_variable = !((original as UnityEngine.Object) == null);
             }
-            UnityEngine.Debug.Log((original == null ? "definitely null" : original.ToString()) + " ----------> " + this.ToString() + " " + this.exists);
         }
 
         public static implicit operator optional<Type>(Type original)
