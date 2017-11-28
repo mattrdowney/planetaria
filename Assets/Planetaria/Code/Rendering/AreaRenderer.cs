@@ -2,24 +2,25 @@
 
 namespace Planetaria
 {
-    public class PlanetariaPerspectiveCamera : PlanetariaCamera
+    [ExecuteInEditMode]
+    public class AreaRenderer : PlanetariaRenderer
     {
         private void Awake()
-	    {
-            internal_camera = GameObject.FindObjectOfType<Camera>();
-            transform = new PlanetariaTransform(internal_camera.transform.parent);
-            internal_camera.useOcclusionCulling = false;
-            limit_draw_distance();
-	    }
-        
-        private void limit_draw_distance()
         {
-            float[] draw_distance = new float[32];
-            for (int layer = 0; layer < draw_distance.Length; ++layer)
-            {
-                draw_distance[layer] = PlanetariaCamera.far_clip_plane;
-            }
-            internal_camera.layerCullDistances = draw_distance;
+            set_layer();
+        }
+
+        private void Reset()
+        {
+            set_transformation("AreaRenderer");
+            set_renderer();
+            set_renderer_values("Planetaria/Transparent Lit");
+        }
+
+        protected sealed override void set_renderer()
+        {
+            optional<Renderer> renderer = internal_transformation.GetComponent<Renderer>();
+            set_renderer(renderer, typeof(SpriteRenderer));
         }
     }
 }

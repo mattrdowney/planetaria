@@ -59,8 +59,7 @@ namespace Planetaria
             GameObject shape = Block.block(curves);
             Block block = shape.GetComponent<Block>();
             optional<TextAsset> svg_file = BlockRenderer.render(block);
-            OctahedronMesh mesh = shape.AddComponent<OctahedronMesh>();
-            Renderer renderer = shape.GetComponent<Renderer>();
+            PlanetariaRenderer renderer = shape.AddComponent<PlanetRenderer>();
             if (svg_file.exists)
             {
                 //renderer.material = RenderVectorGraphics.render(svg_file.data);

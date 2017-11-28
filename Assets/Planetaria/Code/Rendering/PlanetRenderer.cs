@@ -3,15 +3,30 @@
 namespace Planetaria
 {
     [ExecuteInEditMode]
-    [RequireComponent(typeof(MeshFilter))]
-    [RequireComponent(typeof(MeshRenderer))]
-    public class OctahedronMesh : MonoBehaviour
+    public class PlanetRenderer : PlanetariaRenderer
     {
-	    private void Awake()
+        private void Awake()
         {
-            MeshFilter mesh_filter = this.gameObject.GetComponent<MeshFilter>();
-            mesh_filter.sharedMesh = Octahedron.octahedron_mesh();
-	    }
+            set_layer();
+        }
+
+        private void Reset()
+        {
+            set_transformation("PlanetRenderer");
+            set_renderer();
+            set_renderer_values("Planetaria/Transparent Lit");
+        }
+
+        protected sealed override void set_renderer()
+        {
+            optional<Renderer> renderer = internal_transformation.GetComponent<Renderer>();
+            set_renderer(renderer, typeof(MeshRenderer));
+
+            internal_mesh_filter = internal_transformation.GetOrAddComponent<MeshFilter>();
+            internal_mesh_filter.sharedMesh = Octahedron.octahedron_mesh();
+        }
+
+        private MeshFilter internal_mesh_filter;
     }
 }
 

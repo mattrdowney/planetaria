@@ -2,56 +2,23 @@
 
 namespace Planetaria
 {
+    [ExecuteInEditMode]
     public abstract class PlanetariaRenderer : MonoBehaviour
     {
-        public enum RenderType { Sprite, Model }
+        //private void Reset() //AddComponent might be smarter than the Reset() editor strat' even though it incurs some runtime penalty.
 
-        private void Reset()
+        protected abstract void set_renderer();
+
+        protected void set_layer()
         {
-            set_transformation();
-            set_renderer();
-            set_layer();
-            set_renderer_values();
-        }
-
-        /// <summary>
-        /// Property - layer is a number [-128, 127] that determines drawing order (-128 = background, 127 = foreground).
-        /// Up to 256 objects can be created on the same layer without z-fighting (but z-fighting might happen with fewer if objects are destroyed at runtime).
-        /// </summary>
-        [SerializeField] public sbyte layer = 0;
-
-        public optional<MeshFilter> mesh_filter;
-        public float scale { get; set; } // FIXME: 
-        public RenderType render_type
-        {
-            get
+            if (!drawing_order.exists)
             {
-                return mesh_filter.exists ? RenderType.Model : RenderType.Sprite;
+                drawing_order = next_available_order(sorting_layer.id);
             }
+            internal_renderer.sortingLayerID = sorting_layer.id;
         }
 
-        private void set_layer()
-        {
-            float scale = Miscellaneous.layer_to_distance(layer) * Octahedron.octahedron_face_distance;
-            scale = Mathf.Clamp(scale, PlanetariaCamera.near_clip_plane, PlanetariaCamera.far_clip_plane);
-            internal_transformation.localScale = Vector3.one*scale;
-        }
-
-        private void set_renderer()
-        {
-            optional<Renderer> renderer = internal_transformation.GetComponent<Renderer>();
-            mesh_filter = internal_transformation.GetComponent<MeshFilter>();
-            if (mesh_filter.exists) // Doesn't quite work, since there are three versions: Mesh, Sprite (Quad), Octahedron
-            {
-                set_renderer(renderer, typeof(MeshRenderer));
-            }
-            else
-            {
-                set_renderer(renderer, typeof(SpriteRenderer));
-            }
-        }
-
-        private void set_renderer(optional<Renderer> renderer, System.Type type)
+        protected void set_renderer(optional<Renderer> renderer, System.Type type)
         {
             if (!renderer.exists || renderer.data.GetType() != type)
             {
@@ -63,27 +30,76 @@ namespace Planetaria
             }
         }
 
-        private void set_renderer_values()
+        protected void set_renderer_values(string shader)
         {
             internal_renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             internal_renderer.receiveShadows = false;
-            internal_renderer.material.shader = Shader.Find("Planetaria/Transparent Lit");
+            internal_renderer.material.shader = Shader.Find(shader);
             internal_renderer.motionVectorGenerationMode = MotionVectorGenerationMode.ForceNoMotion;
+            internal_renderer.sharedMaterial = material;
         }
 
-        private void set_transformation()
+        protected void set_transformation(string name)
         {
-            optional<Transform> transformation = this.gameObject.transform.Find("Renderer");
+            optional<Transform> transformation = this.gameObject.transform.Find(name);
             if (!transformation.exists)
             {
-                GameObject child = new GameObject("Renderer");
+                GameObject child = new GameObject(name);
+                child.transform.parent = this.transform;
                 transformation = child.GetComponent<Transform>();
             }
             internal_transformation = transformation.data;
         }
 
-        private Transform internal_transformation;
-        private Renderer internal_renderer;
+        [SerializeField] public SortingLayer sorting_layer;
+
+        /// <summary>
+        /// Property - A number [-32768, 32767] that determines drawing order (-32768 = background, 32767 = foreground).
+        /// Up to 65536 objects can be created on the same layer without z-fighting (but z-fighting might happen with fewer if objects are destroyed at runtime).
+        /// If undefined, it will be arbitrarily chosen.
+        /// </summary>
+        public optional<short> drawing_order
+        {
+            get
+            {
+                return sorting_order;
+            }
+            set
+            {
+                sorting_order = value;
+                if (sorting_order.exists)
+                {
+                    internal_renderer.sortingOrder = sorting_order.data;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Property - the radius as an angle (in radians) along the surface of the sphere.
+        /// </summary>
+        public float scale { get; set; } // FIXME: 
+
+        [SerializeField] public Material material;
+
+        [SerializeField] protected optional<short> sorting_order;
+        protected Transform internal_transformation;
+        protected Renderer internal_renderer;
+
+        protected static short next_available_order(int layer_identifier)
+        {
+            short order = order_identifier;
+            if (order == short.MaxValue)
+            {
+                order_identifier = short.MinValue;
+            }
+            else
+            {
+                ++order_identifier;
+            }
+            return order;
+        }
+
+        private static short order_identifier = short.MinValue; // CONSIDER: use layer map again if convenient
     }
 }
 

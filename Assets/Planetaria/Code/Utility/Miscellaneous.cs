@@ -102,33 +102,6 @@ namespace Planetaria
                 return new optional<TextAsset>();
             }
         }
-
-        // according to: https://www.sjbaker.org/steve/omniv/love_your_z_buffer.html
-        // z_buffer_value = z_buffer_digits * ( a + b / z )
-        // therefore: distance = b / (z_buffer_value * z_buffer_digits - a);
-        public static float z_buffer_to_distance(short z_buffer_value, bool centered = false)
-        {
-            float z_buffer = z_buffer_value; // z_buffer value is actually an int, but this allows for finding center position
-            z_buffer = z_buffer - short.MinValue; // ensure z_buffer is non-negative
-            z_buffer = (short.MaxValue - short.MinValue) - z_buffer; // z_buffer has reversed order
-            z_buffer += (centered ? 0.5f : 0); // .5f will (typically?) be truncated by z_buffer calculations in certain cases
-            return PlanetariaCamera.clip_b / (z_buffer * PlanetariaCamera.z_buffer_digits - PlanetariaCamera.clip_a);
-            // TODO: check if results are accidentally inverted
-        }
-
-        public static float layer_to_distance(sbyte layer, bool centered = false)
-        {
-            int byte_layer = layer - (int) sbyte.MinValue;
-            int extra_layer = layer_cache[byte_layer];
-            if (extra_layer > byte.MaxValue)
-            {
-                layer_cache[byte_layer] = 0;
-            }
-            int z_buffer = layer * (byte.MaxValue+1) + extra_layer;
-            return z_buffer_to_distance((short)z_buffer, centered);
-        }
-
-        static int[] layer_cache = new int[sbyte.MaxValue - sbyte.MinValue + 1];
     }
 }
 

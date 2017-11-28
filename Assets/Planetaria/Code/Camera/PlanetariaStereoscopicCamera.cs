@@ -7,7 +7,7 @@ namespace Planetaria
 	    private void Awake()
 	    {
             internal_camera = GameObject.FindObjectOfType<Camera>();
-            transform = new PlanetariaTransform(internal_camera.transform.parent);
+            transform = new PlanetariaTransform(internal_camera.transform);
             internal_camera.useOcclusionCulling = false;
 
 		    OVRCameraRig camera = GameObject.FindObjectOfType<OVRCameraRig>();
