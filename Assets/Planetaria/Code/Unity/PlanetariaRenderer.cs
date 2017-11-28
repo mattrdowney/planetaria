@@ -26,7 +26,7 @@ namespace Planetaria
                 {
                     DestroyImmediate(renderer.data);
                 }
-                internal_renderer = this.gameObject.AddComponent(type) as Renderer;
+                internal_renderer = internal_transformation.gameObject.AddComponent(type) as Renderer;
             }
         }
 

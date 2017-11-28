@@ -1,8 +1,15 @@
 ﻿namespace Planetaria
 {
-    public struct optional<Type>
+    [System.Serializable]
+    public struct optional<Type> // https://stackoverflow.com/questions/16199227/optional-return-in-c-net
     {
-        public bool exists { get; private set; }
+        public bool exists
+        {
+            get
+            {
+                return exists_variable;
+            }
+        }
 
         public Type data
         {
@@ -16,15 +23,22 @@
             }
             set
             {
+                exists_variable = !(value == null);
                 data_variable = value;
-                exists = (value != null);
+                UnityEngine.Debug.Log("data: " + this.ToString());
             }
         }
 
         public optional(Type original)
         {
+            exists_variable = !(original == null);
             data_variable = original;
-            exists = (original != null);
+            if (original.GetType().IsSubclassOf(typeof(UnityEngine.Object))) // https://blogs.unity3d.com/2014/05/16/custom-operator-should-we-keep-it/
+            {
+                UnityEngine.Debug.Log(original.GetType());
+                exists_variable = ((original as UnityEngine.Object) != null);
+            }
+            UnityEngine.Debug.Log((original == null ? "definitely null" : original.ToString()) + " ----------> " + this.ToString() + " " + this.exists);
         }
 
         public static implicit operator optional<Type>(Type original)
@@ -55,7 +69,8 @@
             return data.ToString();
         }
     
-        private Type data_variable;
+        [UnityEngine.SerializeField] private bool exists_variable;
+        [UnityEngine.SerializeField] private Type data_variable;
     }
 }
 
