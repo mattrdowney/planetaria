@@ -2,11 +2,8 @@
 
 namespace Planetaria
 {
-    [ExecuteInEditMode]
     public abstract class PlanetariaRenderer : MonoBehaviour
     {
-        //private void Reset() //AddComponent might be smarter than the Reset() editor strat' even though it incurs some runtime penalty.
-
         protected abstract void set_renderer();
 
         protected void set_layer()
@@ -18,7 +15,7 @@ namespace Planetaria
             //internal_renderer.sortingLayerID = sorting_layer.id;
         }
 
-        protected void set_renderer_values(string shader)
+        protected void set_renderer_values()
         {
             internal_renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             internal_renderer.receiveShadows = false;
@@ -27,17 +24,10 @@ namespace Planetaria
 
         protected void set_transformation(string name)
         {
-            optional<Transform> transformation = this.gameObject.transform.Find(name);
-            if (!transformation.exists)
-            {
-                GameObject child = new GameObject(name);
-                child.transform.parent = this.transform;
-                transformation = child.GetComponent<Transform>();
-            }
-            internal_transformation = transformation.data;
+            GameObject child = new GameObject(name);
+            child.transform.parent = this.transform;
+            internal_transformation = child.GetComponent<Transform>();
         }
-
-        [SerializeField] public SortingLayer sorting_layer;
 
         /// <summary>
         /// Property - A number [-32768, 32767] that determines drawing order (-32768 = background, 32767 = foreground).
@@ -77,13 +67,17 @@ namespace Planetaria
                     internal_transformation.localScale = Vector3.one * scale;
                 }
             }
-        } // FIXME: 
+        }
 
         [SerializeField] public Material material;
-
+        [SerializeField] public SortingLayer sorting_layer;
         [SerializeField] protected optional<short> sorting_order;
-        [SerializeField] protected Transform internal_transformation;
-        [SerializeField] protected Renderer internal_renderer;
+        
+        private float scale_variable;
+        protected bool scalable;
+
+        protected Transform internal_transformation;
+        protected Renderer internal_renderer;
 
         protected static short next_available_order(int layer_identifier)
         {
@@ -100,8 +94,6 @@ namespace Planetaria
         }
 
         private static short order_identifier = short.MinValue; // CONSIDER: use layer map again if convenient
-        protected bool scalable;
-        private float scale_variable;
     }
 }
 

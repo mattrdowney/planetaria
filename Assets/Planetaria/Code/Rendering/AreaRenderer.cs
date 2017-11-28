@@ -2,27 +2,22 @@
 
 namespace Planetaria
 {
-    [ExecuteInEditMode]
     public class AreaRenderer : PlanetariaRenderer
     {
         private void Awake()
         {
+            set_transformation("AreaRenderer");
+            set_renderer();
+            set_renderer_values();
             set_layer();
             internal_renderer.sharedMaterial = material;
             internal_transformation.position = Vector3.forward;
             scalable = true;
         }
 
-        private void Reset()
-        {
-            set_transformation("AreaRenderer");
-            set_renderer();
-            set_renderer_values("Planetaria/Transparent Lit");
-        }
-
         protected sealed override void set_renderer()
         {
-            internal_renderer = internal_transformation.GetOrAddComponent<SpriteRenderer>();
+            internal_renderer = internal_transformation.gameObject.AddComponent<SpriteRenderer>();
         }
     }
 }

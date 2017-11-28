@@ -2,32 +2,26 @@
 
 namespace Planetaria
 {
-    [ExecuteInEditMode]
     public class PlanetRenderer : PlanetariaRenderer
     {
         private void Awake()
         {
+            set_transformation("PlanetRenderer");
+            set_renderer();
+            set_renderer_values();
             set_layer();
             internal_renderer.sharedMaterial = material;
             scalable = false;
         }
 
-        private void Reset()
-        {
-            set_transformation("PlanetRenderer");
-            set_renderer();
-            set_renderer_values("Planetaria/Transparent Lit");
-        }
-
         protected sealed override void set_renderer()
         {
-            internal_renderer = internal_transformation.GetOrAddComponent<MeshRenderer>();
-
-            internal_mesh_filter = internal_transformation.GetOrAddComponent<MeshFilter>();
+            internal_renderer = internal_transformation.gameObject.AddComponent<MeshRenderer>();
+            internal_mesh_filter = internal_transformation.gameObject.AddComponent<MeshFilter>();
             internal_mesh_filter.sharedMesh = Octahedron.octahedron_mesh();
         }
 
-        [SerializeField] private MeshFilter internal_mesh_filter;
+        private MeshFilter internal_mesh_filter;
     }
 }
 
