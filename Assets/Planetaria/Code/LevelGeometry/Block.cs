@@ -75,7 +75,7 @@ namespace Planetaria
             active = true;
             generate_arcs();
             effects = this.GetComponents<BlockActor>();
-            transform = new PlanetariaTransform(this.GetComponent<Transform>());
+            transform = this.GetOrAddComponent<PlanetariaTransform>();
             PlanetariaCache.cache(this);
         }
 

@@ -7,20 +7,20 @@ namespace Planetaria
         public new PlanetariaTransform transform;
 
         protected delegate void ActionDelegate();
-        protected delegate void CollisionDelegate(BlockCollision block_information);
-        protected delegate void TriggerDelegate(Field field_information);
+        public delegate void CollisionDelegate(BlockCollision block_information);  // FIXME: this is JANK af
+        public delegate void TriggerDelegate(Field field_information);  // FIXME: this is JANK af
 
         protected optional<ActionDelegate> on_first_exists = null;
         protected optional<ActionDelegate> on_time_zero = null; // XXX: use at your own risk
         protected optional<ActionDelegate> on_every_frame = null;
 
-        protected optional<CollisionDelegate> on_block_enter = null;
-        protected optional<CollisionDelegate> on_block_exit = null;
-        protected optional<CollisionDelegate> on_block_stay = null;
+        public optional<CollisionDelegate> on_block_enter = null; // FIXME: this is JANK af
+        public optional<CollisionDelegate> on_block_exit = null;
+        public optional<CollisionDelegate> on_block_stay = null;
     
-        protected optional<TriggerDelegate> on_field_enter = null;
-        protected optional<TriggerDelegate> on_field_exit = null;
-        protected optional<TriggerDelegate> on_field_stay = null;
+        public optional<TriggerDelegate> on_field_enter = null;  // FIXME: this is JANK af
+        public optional<TriggerDelegate> on_field_exit = null;
+        public optional<TriggerDelegate> on_field_stay = null;
 
         protected abstract void Awake();
         protected abstract void Start();

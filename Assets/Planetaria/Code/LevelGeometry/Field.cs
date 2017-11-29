@@ -60,7 +60,7 @@ namespace Planetaria
         private void Start()
         {
             effects = this.GetComponents<FieldActor>(); // TODO: check null is properly set
-            transform = new PlanetariaTransform(this.GetComponent<Transform>());
+            transform = this.GetOrAddComponent<PlanetariaTransform>();
         }
 
         public bool active { get; set; }

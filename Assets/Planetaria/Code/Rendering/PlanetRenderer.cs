@@ -3,7 +3,7 @@
 namespace Planetaria
 {
     [ExecuteInEditMode]
-    public class PlanetRenderer : PlanetariaRenderer
+    public class PlanetRenderer : PlanetariaRenderer // CONSIDER: rename SphereRenderer or SurfaceRenderer?
     {
         private void Awake()
         {

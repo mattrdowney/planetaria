@@ -3,6 +3,8 @@ using Planetaria;
 
 public class PlanetariaCharacter : PlanetariaActor
 {
+    private /*JANKER*/ PlanetariaCollider JANK_COLLIDER; // FIXME: JANK af
+
     protected override void set_delegates()
     {
         on_first_exists.data = initialize;
@@ -12,6 +14,7 @@ public class PlanetariaCharacter : PlanetariaActor
 
     void initialize()
     {
+        JANK_COLLIDER = this.GetOrAddComponent<PlanetariaCollider>();
         transform.scale = .1f;
     }
 
@@ -22,9 +25,9 @@ public class PlanetariaCharacter : PlanetariaActor
 
     void main2()
     {
-        current_collision.data.move(0.4f*Time.deltaTime*Input.GetAxis("Horizontal"), transform.scale/2);
-        transform.position = current_collision.data.position();
-        transform.rotation = Bearing.angle(current_collision.data.position().data, current_collision.data.normal().data);
+        JANK_COLLIDER.current_collision.data.move(0.4f*Time.deltaTime*Input.GetAxis("Horizontal"), transform.scale/2);
+        transform.position = JANK_COLLIDER.current_collision.data.position();
+        transform.rotation = Bearing.angle(JANK_COLLIDER.current_collision.data.position().data, JANK_COLLIDER.current_collision.data.normal().data);
     }
 
     void collide(BlockCollision collision)

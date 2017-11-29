@@ -27,7 +27,7 @@ namespace Planetaria
         {
             GameObject child = new GameObject(name);
             child.transform.parent = this.transform;
-            child.hideFlags = HideFlags.HideInHierarchy;
+            //child.hideFlags = HideFlags.HideInHierarchy;
             internal_transformation = child.GetComponent<Transform>();
         }
 
@@ -66,7 +66,7 @@ namespace Planetaria
                 scale_variable = value;
                 if (scalable)
                 {
-                    internal_transformation.localScale = Vector3.one * scale;
+                    internal_transformation.localScale = Vector3.one * scale_variable;
                 }
             }
         }

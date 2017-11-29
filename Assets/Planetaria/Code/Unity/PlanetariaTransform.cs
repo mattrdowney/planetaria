@@ -3,13 +3,14 @@
 namespace Planetaria
 {
     // FIXME: find a way to serialize
-    public class PlanetariaTransform // CONSIDER: extend MonoBehaviour so component can be found easily / without accidents
+    public class PlanetariaTransform : MonoBehaviour
     {
-        public PlanetariaTransform(Transform internal_transform)
+        private void Awake()
         {
-            cartesian_transform = internal_transform;
-            internal_collider = internal_transform.GetComponent<PlanetariaCollider>();
-            internal_renderer = internal_transform.GetComponent<PlanetariaRenderer>();
+            Transform internal_transformation = this.GetComponent<Transform>();
+            cartesian_transform = internal_transformation;
+            internal_collider = internal_transformation.GetComponent<PlanetariaCollider>();
+            internal_renderer = internal_transformation.GetComponent<PlanetariaRenderer>();
         }
 
         public NormalizedCartesianCoordinates position
