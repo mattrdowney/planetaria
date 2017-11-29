@@ -30,14 +30,9 @@
 
         public optional(Type original) // FIXME: (?) This is far more expensive than it used to be
         {
-            exists_variable = !(original == null);
-            data_variable = original;
-
             // Unity overrides the definition of nullity, so check for Unity-specific "nulls"
-            if (original != null && original.GetType().IsSubclassOf(typeof(UnityEngine.Object))) // https://blogs.unity3d.com/2014/05/16/custom-operator-should-we-keep-it/
-            {
-                exists_variable = !((original as UnityEngine.Object) == null);
-            }
+            exists_variable = original != null && !original.Equals(null); // 2nd half isn't redundant: // https://blogs.unity3d.com/2014/05/16/custom-operator-should-we-keep-it/
+            data_variable = original;
         }
 
         public static implicit operator optional<Type>(Type original)
