@@ -15,7 +15,6 @@ public class Unsave : UnityEditor.AssetModificationProcessor
         {
             GameObject.DestroyImmediate(sprite_renderer.gameObject);
         }
-        Debug.Log("Happening");
         return paths;
     }
 

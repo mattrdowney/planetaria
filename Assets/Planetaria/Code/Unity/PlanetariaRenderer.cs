@@ -25,10 +25,15 @@ namespace Planetaria
 
         protected void set_transformation(string name)
         {
-            GameObject child = new GameObject(name);
-            child.transform.parent = this.transform;
-            //child.hideFlags = HideFlags.HideInHierarchy;
-            internal_transformation = child.GetComponent<Transform>();
+            optional<Transform> child = this.transform.Find(name);
+            if (!child.exists)
+            {
+                child = new GameObject(name).transform;
+                child.data.parent = this.transform;
+                child.data.hideFlags = HideFlags.DontSave;
+                //child.data.hideFlags |= HideFlags.HideInHierarchy; // FIXME: when Planetaria goes to 1.0, this should be added.
+            }
+            internal_transformation = child.data.GetComponent<Transform>();
         }
 
         /// <summary>

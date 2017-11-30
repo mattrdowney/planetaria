@@ -8,15 +8,24 @@ namespace Planetaria
     // Definitely needs the observer pattern for all attached PlanetariaMonoBehaviours
     public class PlanetariaCollider : MonoBehaviour
     {
-        private /*JANK super-temp*/ PlanetariaActor SUPER_TEMP; // FIXME:
+        public void register(PlanetariaActor listener) // FIXME: registered late bugs...
+        {
+            listeners.Add(listener);
+            // Foreach on stay event...
+        }
+
+        public void unregister(PlanetariaActor listener)
+        {
+            listeners.Remove(listener);
+        }
 
         private void Awake()
         {
+            listeners.AddRange(this.GetComponentsInParent<PlanetariaActor>());
             GameObject child_for_collision = new GameObject("PlanetariaCollider");
             child_for_collision.transform.localPosition = Vector3.forward;
             child_for_collision.transform.parent = this.gameObject.transform;
             internal_collider = child_for_collision.transform.GetOrAddComponent<SphereCollider>();
-            SUPER_TEMP = this.GetComponent<PlanetariaCharacter>();
             transform = this.GetOrAddComponent<PlanetariaTransform>();
             // add to collision_map and trigger_map for all objects currently intersecting (via Physics.OverlapBox()) // CONSIDER: I think Unity Fixed this, right?
             StartCoroutine(post_fixed_update());
@@ -32,23 +41,32 @@ namespace Planetaria
                 {
                     if (current_collision.exists)
                     {
-                        if (SUPER_TEMP.on_block_exit.exists)
+                        foreach (PlanetariaActor listener in listeners)
                         {
-                            SUPER_TEMP.on_block_exit.data(current_collision.data);
+                            if (listener.on_block_exit.exists)
+                            {
+                                listener.on_block_exit.data(current_collision.data);
+                            }
                         }
                     }
-                    if (SUPER_TEMP.on_block_enter.exists)
+                    foreach (PlanetariaActor listener in listeners)
                     {
-                        SUPER_TEMP.on_block_enter.data(next_collision.data);
+                        if (listener.on_block_enter.exists)
+                        {
+                            listener.on_block_enter.data(current_collision.data);
+                        }
                     }
                     current_collision = next_collision;
                 }
                 // I feel like this doesn't account for a forced on_block_exit inside on_block_enter call
                 if (current_collision.exists)
                 {
-                    if (SUPER_TEMP.on_block_stay.exists)
+                    foreach (PlanetariaActor listener in listeners)
                     {
-                        SUPER_TEMP.on_block_stay.data(current_collision.data);
+                        if (listener.on_block_stay.exists)
+                        {
+                            listener.on_block_stay.data(current_collision.data);
+                        }
                     }
                 }
                 transform.move();
@@ -111,9 +129,12 @@ namespace Planetaria
             if (!trigger_set.Contains(field) && field.contains(position.data, transform.scale))
             {
                 trigger_set.Add(field);
-                if (SUPER_TEMP.on_field_enter.exists)
+                foreach (PlanetariaActor listener in listeners)
                 {
-                    SUPER_TEMP.on_field_enter.data(field);
+                    if (listener.on_field_enter.exists)
+                    {
+                        listener.on_field_enter.data(field);
+                    }
                 }
             }
         }
@@ -122,9 +143,12 @@ namespace Planetaria
         {
             if (trigger_set.Contains(field))
             {
-                if (SUPER_TEMP.on_field_stay.exists)
+                foreach (PlanetariaActor listener in listeners)
                 {
-                    SUPER_TEMP.on_field_stay.data(field);
+                    if (listener.on_field_stay.exists)
+                    {
+                        listener.on_field_stay.data(field);
+                    }
                 }
             }
         }
@@ -134,9 +158,12 @@ namespace Planetaria
             if (trigger_set.Contains(field) && !field.contains(position.data, transform.scale))
             {
                 trigger_set.Remove(field);
-                if (SUPER_TEMP.on_field_exit.exists)
+                foreach (PlanetariaActor listener in listeners)
                 {
-                    SUPER_TEMP.on_field_exit.data(field);
+                    if (listener.on_field_exit.exists)
+                    {
+                        listener.on_field_exit.data(field);
+                    }
                 }
             }
         }
@@ -155,7 +182,8 @@ namespace Planetaria
         }
 
         private new PlanetariaTransform transform;
-            
+        private List<PlanetariaActor> listeners = new List<PlanetariaActor>();
+
         public optional<BlockCollision> current_collision = new optional<BlockCollision>(); // FIXME: JANK
         private List<BlockCollision> collision_candidates = new List<BlockCollision>();
         private List<Field> trigger_set = new List<Field>();

@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Planetaria
 {
@@ -10,7 +7,6 @@ namespace Planetaria
         protected sealed override void Awake()
         {
             set_delegates();
-            Debug.Log("Happened");
             transform = this.GetOrAddComponent<PlanetariaTransform>();
             if (on_first_exists.exists)
             {
@@ -32,6 +28,8 @@ namespace Planetaria
             {
                 on_every_frame.data();
             }
+            // FIXME: before or after?
+            // on_stay events cached here
         }
 
         protected abstract void set_delegates();

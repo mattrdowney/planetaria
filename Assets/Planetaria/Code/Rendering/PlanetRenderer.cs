@@ -17,8 +17,8 @@ namespace Planetaria
 
         protected sealed override void set_renderer()
         {
-            internal_renderer = internal_transformation.gameObject.AddComponent<MeshRenderer>();
-            internal_mesh_filter = internal_transformation.gameObject.AddComponent<MeshFilter>();
+            internal_renderer = internal_transformation.GetOrAddComponent<MeshRenderer>();
+            internal_mesh_filter = internal_transformation.GetOrAddComponent<MeshFilter>();
             internal_mesh_filter.sharedMesh = Octahedron.octahedron_mesh();
         }
 

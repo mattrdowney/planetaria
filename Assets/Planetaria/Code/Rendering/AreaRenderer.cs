@@ -18,7 +18,7 @@ namespace Planetaria
 
         protected sealed override void set_renderer()
         {
-            internal_renderer = internal_transformation.gameObject.AddComponent<SpriteRenderer>();
+            internal_renderer = internal_transformation.GetOrAddComponent<SpriteRenderer>();
         }
     }
 }
