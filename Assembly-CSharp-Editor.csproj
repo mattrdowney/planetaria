@@ -66,6 +66,7 @@
      <Compile Include="Assets\Planetaria\Code\Editor\FieldEditor.cs" />
      <Compile Include="Assets\Planetaria\Code\Editor\GridUtility.cs" />
      <Compile Include="Assets\Planetaria\Code\Editor\LevelCreatorEditor.cs" />
+     <Compile Include="Assets\Planetaria\Code\Editor\PlanetariaColliderEditor.cs" />
      <Compile Include="Assets\Planetaria\Code\Editor\RendererUtility.cs" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_d0d2724012d574048a6356bfa367e88b.txt" />
      <None Include="Assets\OVR\Resources\OVRMRUnlitTransparent.shader" />

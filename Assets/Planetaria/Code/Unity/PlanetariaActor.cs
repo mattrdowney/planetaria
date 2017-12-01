@@ -43,7 +43,7 @@ namespace Planetaria
         {
             if (on_field_stay.exists)
             {
-                foreach (Field field in fields)
+                foreach (PlanetariaCollider field in fields)
                 {
                     on_field_stay.data(field);
                 }
@@ -89,7 +89,7 @@ namespace Planetaria
             }
         }
 
-        public void enter_field(Field field)
+        public void enter_field(PlanetariaCollider field)
         {
             fields.Add(field);
             if (on_field_enter.exists)
@@ -98,7 +98,7 @@ namespace Planetaria
             }
         }
 
-        public void exit_field(Field field)
+        public void exit_field(PlanetariaCollider field)
         {
             if (fields.Remove(field))
             {
@@ -134,7 +134,7 @@ namespace Planetaria
         protected sealed override void OnCollisionExit(Collision collision) { }
 
         private optional<BlockCollision> current_collision = new optional<BlockCollision>();
-        private List<Field> fields = new List<Field>();
+        private List<PlanetariaCollider> fields = new List<PlanetariaCollider>();
     }
 }
 

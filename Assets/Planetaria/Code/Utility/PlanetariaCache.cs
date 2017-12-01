@@ -2,7 +2,7 @@
 
 namespace Planetaria
 {
-    // TODO: Multiton Design Pattern for multiple levels
+    // TODO: Multiton Design Pattern for multiple levels?
     public static class PlanetariaCache
     {
         public static void cache(Block block)
@@ -24,18 +24,19 @@ namespace Planetaria
 
                         PlanetariaCache.arc_cache.cache(collider, arc.data);
                         PlanetariaCache.block_cache.cache(collider, block);
+                        PlanetariaCache.collider_cache.cache(collider, planetaria_collider);
                     }
                 }
             }
         }
 
-        public static void uncache(Field field)
+        public static void uncache(PlanetariaCollider field)
         {
             if (Application.isPlaying)
             {
-                foreach (BoxCollider collider in field.gameObject.GetComponentsInChildren<BoxCollider>())
+                foreach (SphereCollider collider in field.gameObject.GetComponentsInChildren<SphereCollider>()) // TODO: CONSIDER: only one removed?
                 {
-                    PlanetariaCache.field_cache.uncache(collider);
+                    PlanetariaCache.collider_cache.uncache(collider);
                 }
             }
         }
@@ -44,20 +45,18 @@ namespace Planetaria
         {
             if (Application.isPlaying)
             {
-                foreach (BoxCollider collider in block.gameObject.GetComponentsInChildren<BoxCollider>())
+                foreach (SphereCollider collider in block.gameObject.GetComponentsInChildren<SphereCollider>())
                 {
                     PlanetariaCache.arc_cache.uncache(collider);
-                }
-                foreach (BoxCollider collider in block.gameObject.GetComponentsInChildren<BoxCollider>())
-                {
                     PlanetariaCache.block_cache.uncache(collider);
+                    PlanetariaCache.collider_cache.uncache(collider);
                 }
             }
         }
     
-        [System.NonSerialized] public static PlanetariaSubcache<BoxCollider, Arc> arc_cache = new PlanetariaSubcache<BoxCollider, Arc>();
-        [System.NonSerialized] public static PlanetariaSubcache<BoxCollider, Block> block_cache = new PlanetariaSubcache<BoxCollider, Block>();
-        [System.NonSerialized] public static PlanetariaSubcache<BoxCollider, Field> field_cache = new PlanetariaSubcache<BoxCollider, Field>();
+        [System.NonSerialized] public static PlanetariaSubcache<SphereCollider, Arc> arc_cache = new PlanetariaSubcache<SphereCollider, Arc>();
+        [System.NonSerialized] public static PlanetariaSubcache<SphereCollider, Block> block_cache = new PlanetariaSubcache<SphereCollider, Block>();
+        [System.NonSerialized] public static PlanetariaSubcache<SphereCollider, PlanetariaCollider> collider_cache = new PlanetariaSubcache<SphereCollider, PlanetariaCollider>();
     }
 }
 

@@ -8,7 +8,7 @@ namespace Planetaria
 
         protected delegate void ActionDelegate();
         protected delegate void CollisionDelegate(BlockCollision block_information);
-        protected delegate void TriggerDelegate(Field field_information);
+        protected delegate void TriggerDelegate(PlanetariaCollider field_information);
 
         protected optional<ActionDelegate> on_first_exists = null;
         protected optional<ActionDelegate> on_time_zero = null; // XXX: use at your own risk

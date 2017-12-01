@@ -103,6 +103,7 @@
      <Compile Include="Assets\Planetaria\Code\Collision\BlockCollision.cs" />
      <Compile Include="Assets\Planetaria\Code\Collision\GeospatialCircle.cs" />
      <Compile Include="Assets\Planetaria\Code\Collision\PlanetariaIntersection.cs" />
+     <Compile Include="Assets\Planetaria\Code\Collision\Sphere.cs" />
      <Compile Include="Assets\Planetaria\Code\CoordinateSystems\Bearing.cs" />
      <Compile Include="Assets\Planetaria\Code\CoordinateSystems\NormalizedCartesianCoordinates.cs" />
      <Compile Include="Assets\Planetaria\Code\CoordinateSystems\NormalizedOctahedralCoordinates.cs" />

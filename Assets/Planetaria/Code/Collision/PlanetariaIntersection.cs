@@ -97,6 +97,28 @@ namespace Planetaria
             return intersections;
         }
 
+        public static bool field_field_intersection(Sphere[] left, Sphere[] right)
+        {
+            foreach (Sphere element in left)
+            {
+                foreach (Sphere sub_element in right)
+                {
+                    if (!sphere_sphere_intersection(element, sub_element))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        public static bool sphere_sphere_intersection(Sphere left, Sphere right)
+        {
+            float magnitude_squared = (right.center - left.center).sqrMagnitude;
+            float sum_of_radii = left.radius + right.radius;
+            return magnitude_squared < sum_of_radii*sum_of_radii;
+        }
+
         public static Vector3[] valid_arc_intersections(Arc arc, Vector3[] intersections)
         {
             Vector3[] results = new Vector3[0];

@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -24,7 +23,7 @@ namespace Planetaria
         public void register(PlanetariaActor listener)
         {
             listeners.Add(listener);
-            foreach (Field field in field_set)
+            foreach (PlanetariaCollider field in field_set)
             {
                 listener.enter_field(field);
             }
@@ -37,7 +36,7 @@ namespace Planetaria
         public void unregister(PlanetariaActor listener)
         {
             listeners.Remove(listener);
-            foreach (Field field in field_set)
+            foreach (PlanetariaCollider field in field_set)
             {
                 listener.exit_field(field);
             }
@@ -85,7 +84,7 @@ namespace Planetaria
             }
             else // field
             {
-                optional<Field> field = PlanetariaCache.field_cache.get(sphere_collider.data);
+                optional<PlanetariaCollider> field = PlanetariaCache.collider_cache.get(sphere_collider.data);
                 if (!field.exists)
                 {
                     Debug.LogError("This is likely an Err0r or setup issue.");
@@ -120,7 +119,7 @@ namespace Planetaria
         {
             foreach (PlanetariaActor listener in listeners)
             {
-                foreach (Field field in fields_entered)
+                foreach (PlanetariaCollider field in fields_entered)
                 {
                     listener.enter_field(field);
                 }
@@ -128,7 +127,7 @@ namespace Planetaria
             fields_entered.Clear();
             foreach (PlanetariaActor listener in listeners)
             {
-                foreach (Field field in fields_exited)
+                foreach (PlanetariaCollider field in fields_exited)
                 {
                     listener.exit_field(field);
                 }
@@ -152,18 +151,18 @@ namespace Planetaria
             }
         }
         
-        private void exit_field(Field field, NormalizedCartesianCoordinates position)
+        private void enter_field(PlanetariaCollider field, NormalizedCartesianCoordinates position)
         {
-            if (!field_set.Contains(field) && field.contains(position.data, transform.scale))
+            if (!field_set.Contains(field) && PlanetariaIntersection.field_field_intersection(this.colliders, field.colliders))
             {
                 field_set.Add(field);
                 fields_entered.Add(field);
             }
         }
 
-        private void enter_field(Field field, NormalizedCartesianCoordinates position)
+        private void exit_field(PlanetariaCollider field, NormalizedCartesianCoordinates position)
         {
-            if (field_set.Contains(field) && !field.contains(position.data, transform.scale))
+            if (field_set.Contains(field) && !PlanetariaIntersection.field_field_intersection(this.colliders, field.colliders))
             {
                 field_set.Remove(field);
                 fields_exited.Add(field);
@@ -172,14 +171,15 @@ namespace Planetaria
 
         private new PlanetariaTransform transform;
         private SphereCollider internal_collider; // FIXME: collider list
+        public Sphere[] colliders = new Sphere[0];
         private List<PlanetariaActor> listeners = new List<PlanetariaActor>();
         float scale_variable;
 
         public optional<BlockCollision> current_collision = new optional<BlockCollision>(); // FIXME: JANK
         private List<BlockCollision> collision_candidates = new List<BlockCollision>();
-        private List<Field> field_set = new List<Field>();
-        private List<Field> fields_entered = new List<Field>();
-        private List<Field> fields_exited = new List<Field>();
+        private List<PlanetariaCollider> field_set = new List<PlanetariaCollider>();
+        private List<PlanetariaCollider> fields_entered = new List<PlanetariaCollider>();
+        private List<PlanetariaCollider> fields_exited = new List<PlanetariaCollider>();
     }
 }
 
