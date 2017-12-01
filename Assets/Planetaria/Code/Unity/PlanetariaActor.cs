@@ -9,6 +9,11 @@ namespace Planetaria
         {
             set_delegates();
             transform = this.GetOrAddComponent<PlanetariaTransform>();
+            foreach (PlanetariaCollider channel in this.GetComponentsInChildren<PlanetariaCollider>())
+            {
+                channel.register(this);
+            }
+            // FIXME: still need to cache (properly)
             if (on_first_exists.exists)
             {
                 on_first_exists.data();
@@ -36,6 +41,19 @@ namespace Planetaria
             if (on_before_physics.exists)
             {
                 on_before_physics.data();
+            }
+        }
+
+        protected sealed override void OnDestroy()
+        {
+            if (on_destroy.exists)
+            {
+                on_destroy.data();
+            }
+            // FIXME: still need to un-cache (properly)
+            foreach (PlanetariaCollider channel in this.GetComponentsInChildren<PlanetariaCollider>())
+            {
+                channel.unregister(this);
             }
         }
 

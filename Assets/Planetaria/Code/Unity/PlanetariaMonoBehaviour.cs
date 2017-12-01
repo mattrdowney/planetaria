@@ -11,9 +11,10 @@ namespace Planetaria
         protected delegate void TriggerDelegate(PlanetariaCollider field_information);
 
         protected optional<ActionDelegate> on_first_exists = null;
-        protected optional<ActionDelegate> on_time_zero = null; // XXX: use at your own risk
+        protected optional<ActionDelegate> on_time_zero = null; // XXX: use on_time_zero (Start) at your own risk
         protected optional<ActionDelegate> on_every_frame = null;
         protected optional<ActionDelegate> on_before_physics = null;
+        protected optional<ActionDelegate> on_destroy = null;
 
         protected optional<CollisionDelegate> on_block_enter = null;
         protected optional<CollisionDelegate> on_block_exit = null;
@@ -28,6 +29,7 @@ namespace Planetaria
         protected abstract void Update();
         protected abstract void LateUpdate();
         protected abstract void FixedUpdate();
+        protected abstract void OnDestroy();
 
         protected abstract void OnTriggerEnter();
         protected abstract void OnTriggerStay();

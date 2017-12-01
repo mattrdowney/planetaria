@@ -4,8 +4,7 @@ using UnityEngine;
 
 namespace Planetaria
 {
-    // Definitely needs the observer pattern for all attached PlanetariaMonoBehaviours
-    public class PlanetariaCollider : MonoBehaviour
+    public class PlanetariaCollider : MonoBehaviour // FIXME: while not incredibly complicated, I think there might be a way to simplify this
     {
         public float scale
         {
@@ -48,6 +47,18 @@ namespace Planetaria
 
         private void Awake()
         {
+            if (!force_collision_hack.exists)
+            {
+                GameObject game_object = new GameObject("HACK");
+                game_object.hideFlags = HideFlags.DontSave;
+                //game_object.hideFlags |= HideFlags.HideInHierarchy;
+                force_collision_hack = game_object.AddComponent<SphereCollider>();
+                Rigidbody rigidbody = game_object.AddComponent<Rigidbody>();
+                rigidbody.useGravity = false;
+                rigidbody.isKinematic = false;
+                rigidbody.mass = Mathf.Infinity;
+                force_collision_hack.data.radius = Mathf.Infinity;
+            }
             listeners.AddRange(this.GetComponentsInParent<PlanetariaActor>());
             GameObject child_for_collision = new GameObject("PlanetariaCollider");
             child_for_collision.transform.localPosition = Vector3.forward;
@@ -97,7 +108,10 @@ namespace Planetaria
 
         private void block_notifications()
         {
-            optional<BlockCollision> next_collision = collision_candidates.Min((collision) => collision);
+            optional<BlockCollision> next_collision = collision_candidates.Aggregate(
+                    (closest, next_candidate) =>
+                    closest.distance < next_candidate.distance ? closest : next_candidate);
+
             if (next_collision.exists)
             {
                 if (current_collision.exists)
@@ -180,6 +194,8 @@ namespace Planetaria
         private List<PlanetariaCollider> field_set = new List<PlanetariaCollider>();
         private List<PlanetariaCollider> fields_entered = new List<PlanetariaCollider>();
         private List<PlanetariaCollider> fields_exited = new List<PlanetariaCollider>();
+
+        private static optional<SphereCollider> force_collision_hack;
     }
 }
 
