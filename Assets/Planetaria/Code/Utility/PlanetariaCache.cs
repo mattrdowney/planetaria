@@ -22,6 +22,9 @@ namespace Planetaria
                         collider.size = axis_aligned_bounding_box.size;
                         collider.isTrigger = true;
 
+                        game_object.hideFlags = HideFlags.DontSave;
+                        //game_object.hideFlags |= HideFlags.HideInHierarchy;
+
                         PlanetariaCache.arc_cache.cache(collider, arc.data);
                         PlanetariaCache.block_cache.cache(collider, block);
                         PlanetariaCache.collider_cache.cache(collider, planetaria_collider);
