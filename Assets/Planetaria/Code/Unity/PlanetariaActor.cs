@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Planetaria
 {
@@ -22,20 +23,107 @@ namespace Planetaria
             }
         }
     
-        protected sealed override void FixedUpdate() // always calling FixedUpdate is less than ideal
+        protected sealed override void Update() // always calling Update is less than ideal
         {
             if (on_every_frame.exists)
             {
                 on_every_frame.data();
             }
-            // FIXME: before or after?
-            // on_stay events cached here
+        }
+
+        protected sealed override void FixedUpdate() // always calling FixedUpdate is less than ideal
+        {
+            if (on_before_physics.exists)
+            {
+                on_before_physics.data();
+            }
+        }
+
+        protected sealed override void OnCollisionStay()
+        {
+            if (on_field_stay.exists)
+            {
+                foreach (Field field in fields)
+                {
+                    on_field_stay.data(field);
+                }
+            }
+            if (on_block_stay.exists)
+            {
+                if (current_collision.exists)
+                {
+                    on_block_stay.data(current_collision.data);
+                }
+            }
+        }
+
+        public void enter_block(BlockCollision collision)
+        {
+            if (!current_collision.exists)
+            {
+                if (on_block_enter.exists)
+                {
+                    on_block_enter.data(collision);
+                }
+                current_collision = collision;
+            }
+            else
+            {
+                Debug.Log("Critical Error");
+            }
+        }
+
+        public void exit_block(BlockCollision collision)
+        {
+            if (current_collision.exists && collision == current_collision.data) // FIXME: probably have to create proper equality function
+            {
+                if (on_block_exit.exists)
+                {
+                    on_block_exit.data(current_collision.data);
+                }
+                current_collision = new optional<BlockCollision>();
+            }
+            else
+            {
+                Debug.Log("Critical Error");
+            }
+        }
+
+        public void enter_field(Field field)
+        {
+            fields.Add(field);
+            if (on_field_enter.exists)
+            {
+                on_field_enter.data(field);
+            }
+        }
+
+        public void exit_field(Field field)
+        {
+            if (fields.Remove(field))
+            {
+                if (on_field_exit.exists)
+                {
+                    on_field_exit.data(field);
+                }
+            }
+            else
+            {
+                Debug.Log("Critical Error");
+            }
         }
 
         protected abstract void set_delegates();
-
-        protected sealed override void Update() { }
+        
         protected sealed override void LateUpdate() { }
+
+        protected sealed override void OnTriggerEnter() { }
+        protected sealed override void OnTriggerStay() { }
+        protected sealed override void OnTriggerExit() { }
+
+        protected sealed override void OnCollisionEnter() { }
+        //protected sealed override void OnCollisionStay() { } // used as a post-physics-update
+        protected sealed override void OnCollisionExit() { }
 
         protected sealed override void OnTriggerEnter(Collider collider) { }
         protected sealed override void OnTriggerStay(Collider collider) { }
@@ -44,6 +132,9 @@ namespace Planetaria
         protected sealed override void OnCollisionEnter(Collision collision) { }
         protected sealed override void OnCollisionStay(Collision collision) { }
         protected sealed override void OnCollisionExit(Collision collision) { }
+
+        private optional<BlockCollision> current_collision = new optional<BlockCollision>();
+        private List<Field> fields = new List<Field>();
     }
 }
 

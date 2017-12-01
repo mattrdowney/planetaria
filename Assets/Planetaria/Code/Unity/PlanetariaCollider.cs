@@ -8,15 +8,43 @@ namespace Planetaria
     // Definitely needs the observer pattern for all attached PlanetariaMonoBehaviours
     public class PlanetariaCollider : MonoBehaviour
     {
-        public void register(PlanetariaActor listener) // FIXME: registered late bugs...
+        public float scale
+        {
+            get
+            {
+                return scale_variable;
+            }
+            set
+            {
+                scale_variable = value;
+                internal_collider.radius = scale_variable;
+            }
+        }
+
+        public void register(PlanetariaActor listener)
         {
             listeners.Add(listener);
-            // Foreach on stay event...
+            foreach (Field field in field_set)
+            {
+                listener.enter_field(field);
+            }
+            if (current_collision.exists)
+            {
+                listener.enter_block(current_collision.data);
+            }
         }
 
         public void unregister(PlanetariaActor listener)
         {
             listeners.Remove(listener);
+            foreach (Field field in field_set)
+            {
+                listener.exit_field(field);
+            }
+            if (current_collision.exists)
+            {
+                listener.exit_block(current_collision.data);
+            }
         }
 
         private void Awake()
@@ -28,87 +56,87 @@ namespace Planetaria
             internal_collider = child_for_collision.transform.GetOrAddComponent<SphereCollider>();
             transform = this.GetOrAddComponent<PlanetariaTransform>();
             // add to collision_map and trigger_map for all objects currently intersecting (via Physics.OverlapBox()) // CONSIDER: I think Unity Fixed this, right?
-            StartCoroutine(post_fixed_update());
         }
 
-        private IEnumerator post_fixed_update()
+        private void OnCollisionStay()
         {
-            while (true)
-            {
-                yield return new WaitForFixedUpdate();
-                optional<BlockCollision> next_collision = collision_candidates.Min((collision) => collision);
-                if (next_collision.exists)
-                {
-                    if (current_collision.exists)
-                    {
-                        foreach (PlanetariaActor listener in listeners)
-                        {
-                            if (listener.on_block_exit.exists)
-                            {
-                                listener.on_block_exit.data(current_collision.data);
-                            }
-                        }
-                    }
-                    foreach (PlanetariaActor listener in listeners)
-                    {
-                        if (listener.on_block_enter.exists)
-                        {
-                            listener.on_block_enter.data(current_collision.data);
-                        }
-                    }
-                    current_collision = next_collision;
-                }
-                // I feel like this doesn't account for a forced on_block_exit inside on_block_enter call
-                if (current_collision.exists)
-                {
-                    foreach (PlanetariaActor listener in listeners)
-                    {
-                        if (listener.on_block_stay.exists)
-                        {
-                            listener.on_block_stay.data(current_collision.data);
-                        }
-                    }
-                }
-                transform.move();
-            }
+            field_notifications();
+            block_notifications();
         }
 
         private void OnTriggerStay(Collider collider)
         {
-            optional<BoxCollider> box_collider = collider as BoxCollider;
-            if (!box_collider.exists)
+            optional<SphereCollider> sphere_collider = collider as SphereCollider;
+            if (!sphere_collider.exists)
             {
                 return;
             }
             NormalizedCartesianCoordinates position = transform.position;
-            optional<Arc> arc = PlanetariaCache.arc_cache.get(box_collider.data); // C++17 if statements are so pretty compared to this...
+            optional<Arc> arc = PlanetariaCache.arc_cache.get(sphere_collider.data); // C++17 if statements are so pretty compared to this...
             if (arc.exists)
             {
-                optional<Block> block = PlanetariaCache.block_cache.get(box_collider.data);
+                optional<Block> block = PlanetariaCache.block_cache.get(sphere_collider.data);
                 if (!block.exists)
                 {
                     Debug.LogError("Critical Err0r.");
                     return;
                 }
-                collision_enter(arc.data, block.data, position);
-                // collision_exit(arc.data, block.data); // collisions are handled at stage: post_fixed_update()
-                // collision_stay(arc.data, block.data); // enter vs. exit behaviour handled by last_collision_set vs. collision_set continuity
+                enter_block(arc.data, block.data, position); // block collisions are handled in OnCollisionStay(): notification stage
             }
             else // field
             {
-                optional<Field> field = PlanetariaCache.field_cache.get(box_collider.data);
+                optional<Field> field = PlanetariaCache.field_cache.get(sphere_collider.data);
                 if (!field.exists)
                 {
                     Debug.LogError("This is likely an Err0r or setup issue.");
                     return;
                 }
-                field_enter(field.data, position);
-                field_exit(field.data, position);
-                field_stay(field.data);
+                exit_field(field.data, position); // field triggering is handled in OnCollisionStay(): notification stage
+                enter_field(field.data, position);
             }
         }
 
-        private void collision_enter(Arc arc, Block block, NormalizedCartesianCoordinates position)
+        private void block_notifications()
+        {
+            optional<BlockCollision> next_collision = collision_candidates.Min((collision) => collision);
+            if (next_collision.exists)
+            {
+                if (current_collision.exists)
+                {
+                    foreach (PlanetariaActor listener in listeners)
+                    {
+                        listener.exit_block(current_collision.data);
+                    }
+                }
+                foreach (PlanetariaActor listener in listeners)
+                {
+                    listener.enter_block(current_collision.data);
+                }
+                current_collision = next_collision;
+            }
+        }
+
+        private void field_notifications()
+        {
+            foreach (PlanetariaActor listener in listeners)
+            {
+                foreach (Field field in fields_entered)
+                {
+                    listener.enter_field(field);
+                }
+            }
+            fields_entered.Clear();
+            foreach (PlanetariaActor listener in listeners)
+            {
+                foreach (Field field in fields_exited)
+                {
+                    listener.exit_field(field);
+                }
+            }
+            fields_exited.Clear();
+        }
+
+        private void enter_block(Arc arc, Block block, NormalizedCartesianCoordinates position)
         {
             if (!current_collision.exists || current_collision.data.block != block)
             {
@@ -123,72 +151,35 @@ namespace Planetaria
                 }
             }
         }
-
-        private void field_enter(Field field, NormalizedCartesianCoordinates position)
+        
+        private void exit_field(Field field, NormalizedCartesianCoordinates position)
         {
-            if (!trigger_set.Contains(field) && field.contains(position.data, transform.scale))
+            if (!field_set.Contains(field) && field.contains(position.data, transform.scale))
             {
-                trigger_set.Add(field);
-                foreach (PlanetariaActor listener in listeners)
-                {
-                    if (listener.on_field_enter.exists)
-                    {
-                        listener.on_field_enter.data(field);
-                    }
-                }
+                field_set.Add(field);
+                fields_entered.Add(field);
             }
         }
 
-        private void field_stay(Field field)
+        private void enter_field(Field field, NormalizedCartesianCoordinates position)
         {
-            if (trigger_set.Contains(field))
+            if (field_set.Contains(field) && !field.contains(position.data, transform.scale))
             {
-                foreach (PlanetariaActor listener in listeners)
-                {
-                    if (listener.on_field_stay.exists)
-                    {
-                        listener.on_field_stay.data(field);
-                    }
-                }
-            }
-        }
-
-        private void field_exit(Field field, NormalizedCartesianCoordinates position)
-        {
-            if (trigger_set.Contains(field) && !field.contains(position.data, transform.scale))
-            {
-                trigger_set.Remove(field);
-                foreach (PlanetariaActor listener in listeners)
-                {
-                    if (listener.on_field_exit.exists)
-                    {
-                        listener.on_field_exit.data(field);
-                    }
-                }
-            }
-        }
-
-        public float scale
-        {
-            get
-            {
-                return scale_variable;
-            }
-            set
-            {
-                scale_variable = value;
-                internal_collider.radius = scale_variable;
+                field_set.Remove(field);
+                fields_exited.Add(field);
             }
         }
 
         private new PlanetariaTransform transform;
+        private SphereCollider internal_collider; // FIXME: collider list
         private List<PlanetariaActor> listeners = new List<PlanetariaActor>();
+        float scale_variable;
 
         public optional<BlockCollision> current_collision = new optional<BlockCollision>(); // FIXME: JANK
         private List<BlockCollision> collision_candidates = new List<BlockCollision>();
-        private List<Field> trigger_set = new List<Field>();
-        private SphereCollider internal_collider; // FIXME: collider list
-        float scale_variable;
+        private List<Field> field_set = new List<Field>();
+        private List<Field> fields_entered = new List<Field>();
+        private List<Field> fields_exited = new List<Field>();
     }
 }
 

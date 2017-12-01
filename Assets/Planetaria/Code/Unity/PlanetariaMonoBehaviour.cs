@@ -7,26 +7,35 @@ namespace Planetaria
         public new PlanetariaTransform transform;
 
         protected delegate void ActionDelegate();
-        public delegate void CollisionDelegate(BlockCollision block_information);  // FIXME: this is JANK af
-        public delegate void TriggerDelegate(Field field_information);  // FIXME: this is JANK af
+        protected delegate void CollisionDelegate(BlockCollision block_information);
+        protected delegate void TriggerDelegate(Field field_information);
 
         protected optional<ActionDelegate> on_first_exists = null;
         protected optional<ActionDelegate> on_time_zero = null; // XXX: use at your own risk
         protected optional<ActionDelegate> on_every_frame = null;
+        protected optional<ActionDelegate> on_before_physics = null;
 
-        public optional<CollisionDelegate> on_block_enter = null; // FIXME: this is JANK af
-        public optional<CollisionDelegate> on_block_exit = null;
-        public optional<CollisionDelegate> on_block_stay = null;
+        protected optional<CollisionDelegate> on_block_enter = null;
+        protected optional<CollisionDelegate> on_block_exit = null;
+        protected optional<CollisionDelegate> on_block_stay = null;
     
-        public optional<TriggerDelegate> on_field_enter = null;  // FIXME: this is JANK af
-        public optional<TriggerDelegate> on_field_exit = null;
-        public optional<TriggerDelegate> on_field_stay = null;
+        protected optional<TriggerDelegate> on_field_enter = null;
+        protected optional<TriggerDelegate> on_field_exit = null;
+        protected optional<TriggerDelegate> on_field_stay = null;
 
         protected abstract void Awake();
         protected abstract void Start();
         protected abstract void Update();
         protected abstract void LateUpdate();
         protected abstract void FixedUpdate();
+
+        protected abstract void OnTriggerEnter();
+        protected abstract void OnTriggerStay();
+        protected abstract void OnTriggerExit();
+
+        protected abstract void OnCollisionEnter();
+        protected abstract void OnCollisionStay();
+        protected abstract void OnCollisionExit();
 
         protected abstract void OnTriggerEnter(Collider collider);
         protected abstract void OnTriggerStay(Collider collider);
