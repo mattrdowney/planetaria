@@ -3,30 +3,40 @@ using Planetaria;
 
 public class PlanetariaCharacter : PlanetariaMonoBehaviour
 {
-    private /*JANKER*/ PlanetariaCollider JANK_COLLIDER; // FIXME: JANK af
-
-    void initialize()
+    void Start()
     {
-        JANK_COLLIDER = this.GetOrAddComponent<PlanetariaCollider>();
         transform.scale = .1f;
+        OnBlockStay.data = on_block_stay;
+        OnBlockEnter.data = on_block_enter;
+        OnBlockExit.data = on_block_exit;
     }
 
-    void main()
+    void Update()
     {
-        transform.position = new NormalizedSphericalCoordinates(Mathf.PI - Time.time*.5f, Mathf.PI/2);
+        if (!grounded)
+        {
+            transform.position = new NormalizedSphericalCoordinates(Mathf.PI - Time.time*.5f, Mathf.PI/2);
+        }
     }
 
-    void main2()
+    void on_block_stay(BlockCollision collision)
     {
-        JANK_COLLIDER.current_collision.data.move(0.4f*Time.deltaTime*Input.GetAxis("Horizontal"), transform.scale/2);
-        transform.position = JANK_COLLIDER.current_collision.data.position();
-        transform.rotation = Bearing.angle(JANK_COLLIDER.current_collision.data.position().data, JANK_COLLIDER.current_collision.data.normal().data);
+        collision.move(0.4f*Time.deltaTime*Input.GetAxis("Horizontal"), transform.scale/2);
+        transform.position = collision.position();
+        transform.rotation = Bearing.angle(collision.position().data, collision.normal().data);
     }
 
-    void collide(BlockCollision collision)
+    void on_block_enter(BlockCollision collision)
     {
-        on_every_frame.data = main2;
+        grounded = true;
     }
+
+    void on_block_exit(BlockCollision collision)
+    {
+        grounded = false;
+    }
+
+    bool grounded = false;
 }
 
 /*

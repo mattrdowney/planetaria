@@ -5,8 +5,12 @@ namespace Planetaria
 {
     public abstract class PlanetariaMonoBehaviour : MonoBehaviour
     {
+        protected delegate void ActionDelegate();
         protected delegate void CollisionDelegate(BlockCollision block_information);
         protected delegate void TriggerDelegate(PlanetariaCollider field_information);
+
+        protected optional<ActionDelegate> OnConstruction = null;
+        protected optional<ActionDelegate> OnDestruction = null;
 
         protected optional<CollisionDelegate> OnBlockEnter = null;
         protected optional<CollisionDelegate> OnBlockExit = null;
@@ -34,55 +38,50 @@ namespace Planetaria
             }
         }
 
-        protected virtual void Awake()
+        private void Awake()
         {
-            foreach (PlanetariaCollider channel in this.GetComponentsInChildren<PlanetariaCollider>())
+            transform = this.GetOrAddComponent<PlanetariaTransform>();
+            foreach (PlanetariaCollider collider in this.GetComponentsInChildren<PlanetariaCollider>())
             {
-                channel.register(this);
+                collider.register(this);
             }
             // FIXME: still need to cache (properly)
+            if (OnConstruction.exists)
+            {
+                OnConstruction.data();
+            }
         }
 
-        protected virtual void OnDestroy()
+        private void OnDestroy()
         {
+            if (OnDestruction.exists)
+            {
+                OnDestruction.data();
+            }
             // FIXME: still need to un-cache (properly)
-            foreach (PlanetariaCollider channel in this.GetComponentsInChildren<PlanetariaCollider>())
+            foreach (PlanetariaCollider collider in this.GetComponentsInChildren<PlanetariaCollider>())
             {
-                channel.unregister(this);
+                collider.unregister(this);
             }
         }
 
-
-        public void enter_block(BlockCollision collision)
+        public void enter_block(optional<BlockCollision> collision)
         {
-            if (!current_collision.exists)
-            {
-                if (OnBlockEnter.exists)
-                {
-                    OnBlockEnter.data(collision);
-                }
-                current_collision = collision;
-            }
-            else
-            {
-                Debug.Log("Critical Error");
-            }
-        }
-
-        public void exit_block(BlockCollision collision)
-        {
-            if (current_collision.exists && collision == current_collision.data) // FIXME: probably have to create proper equality function
+            if (current_collision.exists)
             {
                 if (OnBlockExit.exists)
                 {
                     OnBlockExit.data(current_collision.data);
                 }
-                current_collision = new optional<BlockCollision>();
             }
-            else
+            if (collision.exists)
             {
-                Debug.Log("Critical Error");
+                if (OnBlockEnter.exists)
+                {
+                    OnBlockEnter.data(collision.data);
+                }
             }
+            current_collision = collision;
         }
 
         public void enter_field(PlanetariaCollider field)
@@ -109,7 +108,7 @@ namespace Planetaria
             }
         }
 
-        public new PlanetariaTransform transform = this.GetOrAddComponent<PlanetariaTransform>();
+        public new PlanetariaTransform transform;
         private optional<BlockCollision> current_collision = new optional<BlockCollision>();
         private List<PlanetariaCollider> fields = new List<PlanetariaCollider>();
     }

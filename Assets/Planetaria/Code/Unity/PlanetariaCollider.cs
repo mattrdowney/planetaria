@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -41,43 +42,41 @@ namespace Planetaria
             }
             if (current_collision.exists)
             {
-                listener.exit_block(current_collision.data);
+                listener.enter_block(new optional<BlockCollision>());
             }
         }
 
         private void Awake()
         {
-            if (!force_collision_hack.exists)
-            {
-                GameObject game_object = new GameObject("HACK");
-                game_object.hideFlags = HideFlags.DontSave;
-                //game_object.hideFlags |= HideFlags.HideInHierarchy;
-                force_collision_hack = game_object.AddComponent<SphereCollider>();
-                Rigidbody rigidbody = game_object.AddComponent<Rigidbody>();
-                rigidbody.useGravity = false;
-                rigidbody.isKinematic = false;
-                rigidbody.mass = Mathf.Infinity;
-                force_collision_hack.data.radius = Mathf.Infinity;
-            }
             listeners.AddRange(this.GetComponentsInParent<PlanetariaMonoBehaviour>());
             GameObject child_for_collision = new GameObject("PlanetariaCollider");
             child_for_collision.transform.localPosition = Vector3.forward;
             child_for_collision.transform.parent = this.gameObject.transform;
             internal_collider = child_for_collision.transform.GetOrAddComponent<SphereCollider>();
             transform = this.GetOrAddComponent<PlanetariaTransform>();
+            StartCoroutine(notify());
             // add to collision_map and trigger_map for all objects currently intersecting (via Physics.OverlapBox()) // CONSIDER: I think Unity Fixed this, right?
         }
 
-        private void OnCollisionStay()
+        private IEnumerator notify()
         {
-            field_notifications();
-            block_notifications();
+            while (true)
+            {
+                yield return new WaitForFixedUpdate();
+                field_notifications();
+                block_notifications();
+            }
         }
 
         private void OnTriggerStay(Collider collider)
         {
             optional<SphereCollider> sphere_collider = collider as SphereCollider;
             if (!sphere_collider.exists)
+            {
+                return;
+            }
+            optional<PlanetariaCollider> planetaria_collider = PlanetariaCache.collider_cache.get(sphere_collider.data);
+            if (!planetaria_collider.exists)
             {
                 return;
             }
@@ -91,7 +90,7 @@ namespace Planetaria
                     Debug.LogError("Critical Err0r.");
                     return;
                 }
-                enter_block(arc.data, block.data, position); // block collisions are handled in OnCollisionStay(): notification stage
+                enter_block(arc.data, block.data, planetaria_collider.data, position); // block collisions are handled in OnCollisionStay(): notification stage
             }
             else // field
             {
@@ -114,17 +113,19 @@ namespace Planetaria
 
             if (next_collision.exists)
             {
-                if (current_collision.exists)
-                {
-                    foreach (PlanetariaMonoBehaviour listener in listeners)
-                    {
-                        listener.exit_block(current_collision.data);
-                    }
-                }
+                block_notification(next_collision);
+            }
+        }
+        
+        private void block_notification(optional<BlockCollision> next_collision)
+        {
+            if (next_collision.exists)
+            {
                 foreach (PlanetariaMonoBehaviour listener in listeners)
                 {
-                    listener.enter_block(current_collision.data);
+                    listener.enter_block(next_collision.data);
                 }
+                next_collision.data.collider.block_notification(next_collision);
                 current_collision = next_collision;
             }
         }
@@ -149,14 +150,14 @@ namespace Planetaria
             fields_exited.Clear();
         }
 
-        private void enter_block(Arc arc, Block block, NormalizedCartesianCoordinates position)
+        private void enter_block(Arc arc, Block block, PlanetariaCollider collider, NormalizedCartesianCoordinates position)
         {
             if (!current_collision.exists || current_collision.data.block != block)
             {
                 if (block.active && arc.contains(position.data, transform.scale/2))
                 {
                     float half_height = transform.scale / 2;
-                    optional<BlockCollision> collision = BlockCollision.block_collision(arc, block, transform.previous_position.data, transform.position.data, half_height);
+                    optional<BlockCollision> collision = BlockCollision.block_collision(arc, block, collider, transform.previous_position.data, transform.position.data, half_height);
                     if (collision.exists)
                     {
                         collision_candidates.Add(collision.data);
@@ -194,8 +195,6 @@ namespace Planetaria
         private List<PlanetariaCollider> field_set = new List<PlanetariaCollider>();
         private List<PlanetariaCollider> fields_entered = new List<PlanetariaCollider>();
         private List<PlanetariaCollider> fields_exited = new List<PlanetariaCollider>();
-
-        private static optional<SphereCollider> force_collision_hack;
     }
 }
 
