@@ -19,7 +19,7 @@ namespace Planetaria
             }
         }
 
-        public void register(PlanetariaActor listener)
+        public void register(PlanetariaMonoBehaviour listener)
         {
             listeners.Add(listener);
             foreach (PlanetariaCollider field in field_set)
@@ -32,7 +32,7 @@ namespace Planetaria
             }
         }
 
-        public void unregister(PlanetariaActor listener)
+        public void unregister(PlanetariaMonoBehaviour listener)
         {
             listeners.Remove(listener);
             foreach (PlanetariaCollider field in field_set)
@@ -59,7 +59,7 @@ namespace Planetaria
                 rigidbody.mass = Mathf.Infinity;
                 force_collision_hack.data.radius = Mathf.Infinity;
             }
-            listeners.AddRange(this.GetComponentsInParent<PlanetariaActor>());
+            listeners.AddRange(this.GetComponentsInParent<PlanetariaMonoBehaviour>());
             GameObject child_for_collision = new GameObject("PlanetariaCollider");
             child_for_collision.transform.localPosition = Vector3.forward;
             child_for_collision.transform.parent = this.gameObject.transform;
@@ -116,12 +116,12 @@ namespace Planetaria
             {
                 if (current_collision.exists)
                 {
-                    foreach (PlanetariaActor listener in listeners)
+                    foreach (PlanetariaMonoBehaviour listener in listeners)
                     {
                         listener.exit_block(current_collision.data);
                     }
                 }
-                foreach (PlanetariaActor listener in listeners)
+                foreach (PlanetariaMonoBehaviour listener in listeners)
                 {
                     listener.enter_block(current_collision.data);
                 }
@@ -131,7 +131,7 @@ namespace Planetaria
 
         private void field_notifications()
         {
-            foreach (PlanetariaActor listener in listeners)
+            foreach (PlanetariaMonoBehaviour listener in listeners)
             {
                 foreach (PlanetariaCollider field in fields_entered)
                 {
@@ -139,7 +139,7 @@ namespace Planetaria
                 }
             }
             fields_entered.Clear();
-            foreach (PlanetariaActor listener in listeners)
+            foreach (PlanetariaMonoBehaviour listener in listeners)
             {
                 foreach (PlanetariaCollider field in fields_exited)
                 {
@@ -186,7 +186,7 @@ namespace Planetaria
         private new PlanetariaTransform transform;
         private SphereCollider internal_collider; // FIXME: collider list
         public Sphere[] colliders = new Sphere[0];
-        private List<PlanetariaActor> listeners = new List<PlanetariaActor>();
+        private List<PlanetariaMonoBehaviour> listeners = new List<PlanetariaMonoBehaviour>();
         float scale_variable;
 
         public optional<BlockCollision> current_collision = new optional<BlockCollision>(); // FIXME: JANK

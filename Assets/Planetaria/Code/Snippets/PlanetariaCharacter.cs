@@ -1,16 +1,9 @@
 ﻿using UnityEngine;
 using Planetaria;
 
-public class PlanetariaCharacter : PlanetariaActor
+public class PlanetariaCharacter : PlanetariaMonoBehaviour
 {
     private /*JANKER*/ PlanetariaCollider JANK_COLLIDER; // FIXME: JANK af
-
-    protected override void set_delegates()
-    {
-        on_first_exists.data = initialize;
-        on_every_frame.data = main;
-        on_block_enter.data = collide;
-    }
 
     void initialize()
     {

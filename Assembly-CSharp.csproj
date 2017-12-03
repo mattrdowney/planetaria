@@ -142,7 +142,6 @@
      <Compile Include="Assets\Planetaria\Code\Tracker\PlanetariaTiltingStrategy.cs" />
      <Compile Include="Assets\Planetaria\Code\Tracker\PlanetariaTracker.cs" />
      <Compile Include="Assets\Planetaria\Code\Tracker\PlanetariaTrackingStrategy.cs" />
-     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaActor.cs" />
      <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaAudioSource.cs" />
      <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaCollider.cs" />
      <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaMonoBehaviour.cs" />

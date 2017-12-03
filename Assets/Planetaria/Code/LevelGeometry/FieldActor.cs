@@ -1,12 +1,12 @@
 ﻿namespace Planetaria
 {
-    public abstract class FieldActor : PlanetariaActor
+    public abstract class FieldActor : PlanetariaMonoBehaviour
     {
         /// <summary>
         /// Mutator - Changes other object.
         /// </summary>
         /// <param name="other">The object that is being manipulated by the field.</param>
-        public abstract void on_field_stay(PlanetariaActor other);
+        public abstract void on_field_stay(PlanetariaMonoBehaviour other);
     }
 }
 

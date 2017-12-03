@@ -1,51 +1,117 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Planetaria
 {
     public abstract class PlanetariaMonoBehaviour : MonoBehaviour
     {
-        public new PlanetariaTransform transform;
-
-        protected delegate void ActionDelegate();
         protected delegate void CollisionDelegate(BlockCollision block_information);
         protected delegate void TriggerDelegate(PlanetariaCollider field_information);
 
-        protected optional<ActionDelegate> on_first_exists = null;
-        protected optional<ActionDelegate> on_time_zero = null; // XXX: use on_time_zero (Start) at your own risk
-        protected optional<ActionDelegate> on_every_frame = null;
-        protected optional<ActionDelegate> on_before_physics = null;
-        protected optional<ActionDelegate> on_destroy = null;
-
-        protected optional<CollisionDelegate> on_block_enter = null;
-        protected optional<CollisionDelegate> on_block_exit = null;
-        protected optional<CollisionDelegate> on_block_stay = null;
+        protected optional<CollisionDelegate> OnBlockEnter = null;
+        protected optional<CollisionDelegate> OnBlockExit = null;
+        protected optional<CollisionDelegate> OnBlockStay = null;
     
-        protected optional<TriggerDelegate> on_field_enter = null;
-        protected optional<TriggerDelegate> on_field_exit = null;
-        protected optional<TriggerDelegate> on_field_stay = null;
+        protected optional<TriggerDelegate> OnFieldEnter = null;
+        protected optional<TriggerDelegate> OnFieldExit = null;
+        protected optional<TriggerDelegate> OnFieldStay = null;
 
-        protected abstract void Awake();
-        protected abstract void Start();
-        protected abstract void Update();
-        protected abstract void LateUpdate();
-        protected abstract void FixedUpdate();
-        protected abstract void OnDestroy();
+        private void OnCollisionStay()
+        {
+            if (OnFieldStay.exists)
+            {
+                foreach (PlanetariaCollider field in fields)
+                {
+                    OnFieldStay.data(field);
+                }
+            }
+            if (OnBlockStay.exists)
+            {
+                if (current_collision.exists)
+                {
+                    OnBlockStay.data(current_collision.data);
+                }
+            }
+        }
 
-        protected abstract void OnTriggerEnter();
-        protected abstract void OnTriggerStay();
-        protected abstract void OnTriggerExit();
+        protected virtual void Awake()
+        {
+            foreach (PlanetariaCollider channel in this.GetComponentsInChildren<PlanetariaCollider>())
+            {
+                channel.register(this);
+            }
+            // FIXME: still need to cache (properly)
+        }
 
-        protected abstract void OnCollisionEnter();
-        protected abstract void OnCollisionStay();
-        protected abstract void OnCollisionExit();
+        protected virtual void OnDestroy()
+        {
+            // FIXME: still need to un-cache (properly)
+            foreach (PlanetariaCollider channel in this.GetComponentsInChildren<PlanetariaCollider>())
+            {
+                channel.unregister(this);
+            }
+        }
 
-        protected abstract void OnTriggerEnter(Collider collider);
-        protected abstract void OnTriggerStay(Collider collider);
-        protected abstract void OnTriggerExit(Collider collider);
 
-        protected abstract void OnCollisionEnter(Collision collision);
-        protected abstract void OnCollisionStay(Collision collision);
-        protected abstract void OnCollisionExit(Collision collision);
+        public void enter_block(BlockCollision collision)
+        {
+            if (!current_collision.exists)
+            {
+                if (OnBlockEnter.exists)
+                {
+                    OnBlockEnter.data(collision);
+                }
+                current_collision = collision;
+            }
+            else
+            {
+                Debug.Log("Critical Error");
+            }
+        }
+
+        public void exit_block(BlockCollision collision)
+        {
+            if (current_collision.exists && collision == current_collision.data) // FIXME: probably have to create proper equality function
+            {
+                if (OnBlockExit.exists)
+                {
+                    OnBlockExit.data(current_collision.data);
+                }
+                current_collision = new optional<BlockCollision>();
+            }
+            else
+            {
+                Debug.Log("Critical Error");
+            }
+        }
+
+        public void enter_field(PlanetariaCollider field)
+        {
+            fields.Add(field);
+            if (OnFieldEnter.exists)
+            {
+                OnFieldEnter.data(field);
+            }
+        }
+
+        public void exit_field(PlanetariaCollider field)
+        {
+            if (fields.Remove(field))
+            {
+                if (OnFieldExit.exists)
+                {
+                    OnFieldExit.data(field);
+                }
+            }
+            else
+            {
+                Debug.Log("Critical Error");
+            }
+        }
+
+        public new PlanetariaTransform transform = this.GetOrAddComponent<PlanetariaTransform>();
+        private optional<BlockCollision> current_collision = new optional<BlockCollision>();
+        private List<PlanetariaCollider> fields = new List<PlanetariaCollider>();
     }
 }
 
