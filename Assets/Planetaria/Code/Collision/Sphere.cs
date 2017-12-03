@@ -4,11 +4,9 @@ namespace Planetaria
 {
     public class Sphere
     {
-        public Sphere(optional<Transform> transformation, Vector3 center, float radius)
+        public static Sphere sphere(Transform transformation, Vector3 position, float radius)
         {
-            this.transformation = transformation;
-            this.center = center;
-            this.radius = radius;
+            return new Sphere(transformation, position, radius);
         }
 
         public float radius { get; private set; }
@@ -44,6 +42,13 @@ namespace Planetaria
                 }
                 return center_variable;
             }
+        }
+
+        private Sphere(optional<Transform> transformation, Vector3 center, float radius)
+        {
+            this.transformation = transformation;
+            this.center = center;
+            this.radius = radius;
         }
 
         private optional<Transform> transformation { get; set; }

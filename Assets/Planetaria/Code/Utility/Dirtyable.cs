@@ -40,6 +40,11 @@
             return new dirtyable<Type>(original);
         }
 
+        public static implicit operator Type(dirtyable<Type> original)
+        {
+            return original.data;
+        }
+
         [UnityEngine.SerializeField] private bool dirty_variable;
         [UnityEngine.SerializeField] private Type data_variable;
     }

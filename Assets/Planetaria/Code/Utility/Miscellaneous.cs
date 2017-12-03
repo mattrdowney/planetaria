@@ -102,6 +102,12 @@ namespace Planetaria
                 return new optional<TextAsset>();
             }
         }
+
+        public static Sphere sphere(Transform transformation, Vector3 axis, float planetaria_radius)
+        {
+            float radius = 2 - Mathf.Sin(planetaria_radius); // FIXME: this is definitely wrong, if only because it doesn't include Precision.*
+            return Sphere.sphere(transformation, axis*radius, 2);
+        }
     }
 }
 

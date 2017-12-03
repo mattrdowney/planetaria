@@ -17,6 +17,7 @@ namespace Planetaria
             {
                 scale_variable = value;
                 internal_collider.radius = scale_variable;
+                colliders = new Sphere[] { new Sphere(transform, Vector3.forward, 2) };
             }
         }
 
@@ -53,7 +54,8 @@ namespace Planetaria
             child_for_collision.transform.localPosition = Vector3.forward;
             child_for_collision.transform.parent = this.gameObject.transform;
             internal_collider = child_for_collision.transform.GetOrAddComponent<SphereCollider>();
-            transform = this.GetOrAddComponent<PlanetariaTransform>();
+            internal_transform = this.GetOrAddComponent<Transform>();
+            planetaria_transform = this.GetOrAddComponent<PlanetariaTransform>();
             StartCoroutine(notify());
             // add to collision_map and trigger_map for all objects currently intersecting (via Physics.OverlapBox()) // CONSIDER: I think Unity Fixed this, right?
         }
@@ -73,35 +75,41 @@ namespace Planetaria
             optional<SphereCollider> sphere_collider = collider as SphereCollider;
             if (!sphere_collider.exists)
             {
+                Debug.LogError("This should never happen");
                 return;
             }
-            optional<PlanetariaCollider> planetaria_collider = PlanetariaCache.collider_cache.get(sphere_collider.data);
-            if (!planetaria_collider.exists)
+            optional<PlanetariaCollider> other_collider = PlanetariaCache.collider_cache.get(sphere_collider.data);
+            if (!other_collider.exists)
             {
+                Debug.LogError("This should never happen");
                 return;
             }
-            NormalizedCartesianCoordinates position = transform.position;
-            optional<Arc> arc = PlanetariaCache.arc_cache.get(sphere_collider.data); // C++17 if statements are so pretty compared to this...
-            if (arc.exists)
+
+            if (PlanetariaIntersection.field_field_intersection(this.colliders, other_collider.data.colliders))
             {
-                optional<Block> block = PlanetariaCache.block_cache.get(sphere_collider.data);
-                if (!block.exists)
+                NormalizedCartesianCoordinates position = transform.position;
+                optional<Arc> arc = PlanetariaCache.arc_cache.get(sphere_collider.data); // C++17 if statements are so pretty compared to this...
+                if (arc.exists)
                 {
-                    Debug.LogError("Critical Err0r.");
-                    return;
+                    optional<Block> block = PlanetariaCache.block_cache.get(sphere_collider.data);
+                    if (!block.exists)
+                    {
+                        Debug.LogError("Critical Err0r.");
+                        return;
+                    }
+                    enter_block(arc.data, block.data, other_collider.data, position); // block collisions are handled in OnCollisionStay(): notification stage
                 }
-                enter_block(arc.data, block.data, planetaria_collider.data, position); // block collisions are handled in OnCollisionStay(): notification stage
-            }
-            else // field
-            {
-                optional<PlanetariaCollider> field = PlanetariaCache.collider_cache.get(sphere_collider.data);
-                if (!field.exists)
+                else // field
                 {
-                    Debug.LogError("This is likely an Err0r or setup issue.");
-                    return;
+                    optional<PlanetariaCollider> field = PlanetariaCache.collider_cache.get(sphere_collider.data);
+                    if (!field.exists)
+                    {
+                        Debug.LogError("This is likely an Err0r or setup issue.");
+                        return;
+                    }
+                    exit_field(field.data, position); // field triggering is handled in OnCollisionStay(): notification stage
+                    enter_field(field.data, position);
                 }
-                exit_field(field.data, position); // field triggering is handled in OnCollisionStay(): notification stage
-                enter_field(field.data, position);
             }
         }
 
@@ -184,7 +192,8 @@ namespace Planetaria
             }
         }
 
-        private new PlanetariaTransform transform;
+        private Transform internal_transform;
+        private PlanetariaTransform planetaria_transform;
         private SphereCollider internal_collider; // FIXME: collider list
         public Sphere[] colliders = new Sphere[0];
         private List<PlanetariaMonoBehaviour> listeners = new List<PlanetariaMonoBehaviour>();
