@@ -57,7 +57,7 @@ namespace Planetaria
             }
         }
 
-        public Planetarium planetarium
+        /*public Planetarium planetarium
         {
             get
             {
@@ -67,15 +67,15 @@ namespace Planetaria
             {
                 planetarium_variable = value;
             }
-        }
+        }*/
 
         public void move()
         {
-            if (planetarium_variable.dirty)
+            /*if (planetarium_variable.dirty)
             {
                 cartesian_transform.position = planetarium.position;
                 planetarium_variable.clear();
-            }
+            }*/
 
             if (position_variable.dirty)
             {
@@ -113,7 +113,7 @@ namespace Planetaria
         private Quaternion internal_position;
         private Quaternion internal_rotation;
 
-        private dirtyable<Planetarium> planetarium_variable;
+        //private dirtyable<Planetarium> planetarium_variable;
         private dirtyable<NormalizedCartesianCoordinates> position_variable;
         private dirtyable<float> rotation_variable;
         private dirtyable<float> scale_variable;

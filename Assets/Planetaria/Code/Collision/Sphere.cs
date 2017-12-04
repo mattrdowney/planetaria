@@ -94,6 +94,9 @@ namespace Planetaria
             this.transformation = transformation;
             this.center = center;
             this.radius = radius;
+
+            this.cached_rotation = transformation.exists ? transformation.data.rotation : Quaternion.identity;
+            this.cached_center = cached_rotation * center_variable;
         }
 
         private optional<Transform> transformation { get; set; }

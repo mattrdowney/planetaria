@@ -48,6 +48,22 @@ namespace Planetaria
             }
         }
 
+        public SphereCollider get_sphere_collider()
+        {
+            return internal_collider;
+        }
+
+        public void set_colliders(Sphere[] colliders)
+        {
+            this.colliders = colliders;
+            Sphere furthest_collider = colliders.Aggregate(
+                    (furthest, next_candidate) =>
+                    furthest.center.sqrMagnitude > next_candidate.center.sqrMagnitude ? furthest : next_candidate);
+
+            internal_collider.center = furthest_collider.center;
+            internal_collider.radius = furthest_collider.radius;
+        }
+
         private void Awake()
         {
             listeners.AddRange(this.GetComponentsInParent<PlanetariaMonoBehaviour>());
@@ -194,8 +210,8 @@ namespace Planetaria
 
         private Transform internal_transform;
         private PlanetariaTransform planetaria_transform;
-        private SphereCollider internal_collider; // FIXME: collider list
-        public Sphere[] colliders = new Sphere[0];
+        private SphereCollider internal_collider;
+        [SerializeField] public Sphere[] colliders = new Sphere[0]; // FIXME: private
         private List<PlanetariaMonoBehaviour> listeners = new List<PlanetariaMonoBehaviour>();
         float scale_variable;
 

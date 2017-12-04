@@ -88,12 +88,12 @@ namespace Planetaria
         {
             PlanetariaCache.uncache(this);
         }
-
+        
+        public bool is_dynamic { get; private set; }
         [SerializeField] private List<GeospatialCurve> curve_list = new List<GeospatialCurve>();
         [System.NonSerialized] private BlockActor[] effects; // previously optional<BlockActor>
         [System.NonSerialized] private new PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
         [System.NonSerialized] private List<optional<Arc>> arc_list;
-        [System.NonSerialized] private bool is_dynamic;
     }
 }
 

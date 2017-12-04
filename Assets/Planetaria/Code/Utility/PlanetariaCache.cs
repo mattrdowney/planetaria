@@ -14,27 +14,20 @@ namespace Planetaria
                 {
                     if (arc.exists)
                     {
-                        GameObject game_object = new GameObject("Collider");
-                        game_object.transform.parent = block.gameObject.transform;
-
-                        SphereCollider collider = game_object.AddComponent<SphereCollider>();
-                        optional<Transform> transformation = (block.is_dynamic ? block.gameObject.transform : null);
-
-                        Sphere[] colliders = Arc.get_colliders(transformation, arc.data);
-                        Sphere furthest_collider = colliders.Aggregate(
-                                (furthest, next_candidate) =>
-                                furthest.center.sqrMagnitude > next_candidate.center.sqrMagnitude ? furthest : next_candidate);
-
-                        collider.center = furthest_collider.center;
-                        collider.radius = furthest_collider.radius;
-                        collider.isTrigger = true;
-
+                        GameObject game_object = new GameObject("Planetaria Collider");
+                        game_object.transform.parent = block.transform;
                         game_object.hideFlags = HideFlags.DontSave;
-                        //game_object.hideFlags |= HideFlags.HideInHierarchy;
 
-                        PlanetariaCache.arc_cache.cache(collider, arc.data);
-                        PlanetariaCache.block_cache.cache(collider, block);
-                        PlanetariaCache.collider_cache.cache(collider, planetaria_collider);
+                        PlanetariaCollider collider = game_object.AddComponent<PlanetariaCollider>();
+                        SphereCollider sphere_collider = collider.get_sphere_collider();
+
+                        optional<Transform> transformation = (block.is_dynamic ? block.gameObject.transform : null);
+                        Sphere[] colliders = Arc.get_colliders(transformation, arc.data);
+                        collider.set_colliders(colliders);
+
+                        PlanetariaCache.arc_cache.cache(sphere_collider, arc.data);
+                        PlanetariaCache.block_cache.cache(sphere_collider, block);
+                        PlanetariaCache.collider_cache.cache(sphere_collider, collider);
                     }
                 }
             }
