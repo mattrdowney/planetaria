@@ -93,6 +93,7 @@ namespace Planetaria
         [System.NonSerialized] private BlockActor[] effects; // previously optional<BlockActor>
         [System.NonSerialized] private new PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
         [System.NonSerialized] private List<optional<Arc>> arc_list;
+        [System.NonSerialized] private bool is_dynamic;
     }
 }
 

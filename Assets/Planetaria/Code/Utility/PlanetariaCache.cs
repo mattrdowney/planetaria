@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 namespace Planetaria
 {
@@ -16,10 +17,16 @@ namespace Planetaria
                         GameObject game_object = new GameObject("Collider");
                         game_object.transform.parent = block.gameObject.transform;
 
-                        BoxCollider collider = game_object.AddComponent<BoxCollider>();
-                        Bounds axis_aligned_bounding_box = Arc.get_axis_aligned_bounding_box(arc.data);
-                        collider.center = axis_aligned_bounding_box.center;
-                        collider.size = axis_aligned_bounding_box.size;
+                        SphereCollider collider = game_object.AddComponent<SphereCollider>();
+                        optional<Transform> transformation = (block.is_dynamic ? block.gameObject.transform : null);
+
+                        Sphere[] colliders = Arc.get_colliders(transformation, arc.data);
+                        Sphere furthest_collider = colliders.Aggregate(
+                                (furthest, next_candidate) =>
+                                furthest.center.sqrMagnitude > next_candidate.center.sqrMagnitude ? furthest : next_candidate);
+
+                        collider.center = furthest_collider.center;
+                        collider.radius = furthest_collider.radius;
                         collider.isTrigger = true;
 
                         game_object.hideFlags = HideFlags.DontSave;

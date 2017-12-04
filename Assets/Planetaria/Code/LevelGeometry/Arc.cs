@@ -68,13 +68,13 @@ namespace Planetaria
             float planetaria_radius = arc.elevation();
             Vector3 axis = arc.pole();
 
-            colliders[0] = Miscellaneous.collider(transformation, axis, planetaria_radius);
-            colliders[1] = Miscellaneous.collider(transformation, axis, Mathf.PI - planetaria_radius);
+            colliders[0] = Sphere.collider(transformation, axis, planetaria_radius);
+            colliders[1] = Sphere.collider(transformation, axis, Mathf.PI - planetaria_radius);
 
             planetaria_radius = arc.angle()/2;
             axis = arc.position(planetaria_radius);
 
-            colliders[2] = Miscellaneous.collider(transformation, axis, planetaria_radius);
+            colliders[2] = Sphere.collider(transformation, axis, planetaria_radius);
 
             return colliders;
         }

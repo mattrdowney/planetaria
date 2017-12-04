@@ -16,8 +16,9 @@ namespace Planetaria
             set
             {
                 scale_variable = value;
-                internal_collider.radius = scale_variable;
-                colliders = new Sphere[] { Miscellaneous.sphere(internal_transform, Vector3.forward, value) };
+                colliders = new Sphere[] { Sphere.collider(internal_transform, Vector3.forward, value) };
+                internal_collider.center = colliders[0].center; // FIXME: move to correct Planetarium
+                internal_collider.radius = colliders[0].radius;
             }
         }
 
@@ -87,7 +88,7 @@ namespace Planetaria
 
             if (PlanetariaIntersection.field_field_intersection(this.colliders, other_collider.data.colliders))
             {
-                NormalizedCartesianCoordinates position = transform.position;
+                /*NormalizedCartesianCoordinates position = transform.position;
                 optional<Arc> arc = PlanetariaCache.arc_cache.get(sphere_collider.data); // C++17 if statements are so pretty compared to this...
                 if (arc.exists)
                 {
@@ -109,7 +110,7 @@ namespace Planetaria
                     }
                     exit_field(field.data, position); // field triggering is handled in OnCollisionStay(): notification stage
                     enter_field(field.data, position);
-                }
+                }*/
             }
         }
 
@@ -162,10 +163,9 @@ namespace Planetaria
         {
             if (!current_collision.exists || current_collision.data.block != block)
             {
-                if (block.active && arc.contains(position.data, transform.scale/2))
+                if (block.active)
                 {
-                    float half_height = transform.scale / 2;
-                    optional<BlockCollision> collision = BlockCollision.block_collision(arc, block, collider, transform.previous_position.data, transform.position.data, half_height);
+                    optional<BlockCollision> collision = BlockCollision.block_collision(arc, block, collider, planetaria_transform.previous_position.data, planetaria_transform.position.data, scale);
                     if (collision.exists)
                     {
                         collision_candidates.Add(collision.data);
