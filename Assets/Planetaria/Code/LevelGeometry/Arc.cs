@@ -74,7 +74,7 @@ namespace Planetaria
         /// True if a collision is detected;
         /// False otherwise.
         /// </returns>
-        public bool contains(Vector3 position, float radius = 0f)
+        public bool contains(Vector3 position, float radius = 0f) // FIXME: remove
         {
             bool above_floor = Vector3.Dot(position, center_axis) >= Mathf.Sin(arc_latitude); // XXX: potential bug
             bool below_ceiling = Vector3.Dot(position, center_axis) <= Mathf.Sin(arc_latitude + radius);
@@ -93,7 +93,7 @@ namespace Planetaria
         /// </summary>
         /// <param name="arc">The arc that should be surrounded by an AABB.</param>
         /// <returns>Bounds struct AKA axis-aligned bounding box (AABB).</returns>
-        public static Bounds get_axis_aligned_bounding_box(Arc arc)
+        public static Bounds get_axis_aligned_bounding_box(Arc arc) // FIXME: remove
         {
             float x_min = arc.position(closest_point(arc, Vector3.left   )).x;
             float x_max = arc.position(closest_point(arc, Vector3.right  )).x;
@@ -111,6 +111,24 @@ namespace Planetaria
                     z_max - z_min);
 
             return new Bounds(center, size);
+        }
+
+        public static Sphere[] get_colliders(Transform transformation, Arc arc)
+        {
+            Sphere[] colliders = new Sphere[3];
+
+            float planetaria_radius = arc.elevation();
+            Vector3 axis = arc.pole();
+
+            colliders[0] = Miscellaneous.collider(transformation, axis, planetaria_radius);
+            colliders[1] = Miscellaneous.collider(transformation, axis, Mathf.PI - planetaria_radius);
+
+            planetaria_radius = arc.angle()/2;
+            axis = arc.position(planetaria_radius);
+
+            colliders[2] = Miscellaneous.collider(transformation, axis, planetaria_radius);
+
+            return colliders;
         }
 
         /// <summary>
@@ -383,7 +401,7 @@ namespace Planetaria
         /// <summary>A binormal to center_axis and forward_axis. Determines points after the beginning of the arc.</summary>
         [SerializeField] private Vector3 right_axis;
         /// <summary>Determines points before the end of the arc. This is normal to center_axis.</summary>
-        [SerializeField] private Vector3 before_end;
+        [SerializeField] private Vector3 before_end; // FIXME: remove
     
         /// <summary>The length of the arc</summary>
         [SerializeField] private float arc_angle;

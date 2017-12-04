@@ -103,10 +103,55 @@ namespace Planetaria
             }
         }
 
-        public static Sphere sphere(Transform transformation, Vector3 axis, float planetaria_radius)
+        /// <summary>
+        /// The Sphere collider that envelops a axial "point" with a given planetaria_radius.
+        /// </summary>
+        /// <param name="transformation">An optional Transform that will be used to shift the center (if moved).</param>
+        /// <param name="axis">The center of the circle (both a point and an axis).</param>
+        /// <param name="planetaria_radius">The angle along the surface from circle center to circle boundary.</param>
+        /// <returns>A Sphere that can be used as a collider.</returns>
+        public static Sphere collider(optional<Transform> transformation, Vector3 axis, float planetaria_radius)
         {
-            float radius = 2 - Mathf.Sin(planetaria_radius); // FIXME: this is definitely wrong, if only because it doesn't include Precision.*
-            return Sphere.sphere(transformation, axis*radius, 2);
+            // Background:
+            // imagine two spheres:
+            // "left" sphere is of radius 1 and placed at the origin (0,0,0).
+            // "right" sphere is of radius 2 and is placed at (3,0,0).
+            // These spheres intersect at a point (1,0,0).
+            // If slid closer together they will intersect at a circle of radius (0,1].
+            // The goal is to find the distance between spheres to create a collider along a given circle.
+
+            // Derivation:
+            // I created four variables:
+            // left_height = sin(left_angle)
+            // left_distance = 1 - cos(left_angle)
+            // right_height = 2sin(right_angle)
+            // right_distance = 2 - 2cos(right_angle)
+
+            // While we are trying to find 3 - sum(distances), we know that left_height must equal right_height for the intersection to be valid
+            // Therefore sin(left_angle) = left_height = right_height = 2sin(right_angle)
+            // Since left_angle is the planetaria_radius (because we are dealing with a unit sphere) we can solve for right_angle:
+            // right_angle = arcsin(sin(left_angle)/2)
+            
+            // Now that we know right_angle and left_angle we can solve all formulas:
+            // left_distance = 1 - cos(left_angle)
+            // right_distance = 2 - 2cos(arcsin(sin(left_angle)/2))
+            // Next we just subtract these differences from 3 (the radii sum):
+            // axial_distance = 3 - [1 - cos(left_angle)] - [2 - 2cos(arcsin(sin(left_angle)/2))]
+            // axial_distance = 3 - 1 + cos(left_angle) - 2 + 2cos(arcsin(sin(left_angle)/2))
+            // axial_distance = cos(left_angle) + 2cos(arcsin(sin(left_angle)/2))
+            // which, according to Wolfram Alpha is: cos(left_angle) + sqrt(sin2(left_angle) + 3)
+
+            planetaria_radius += Precision.collider_extrusion; // Collisions can theoretically (and practically) be missed due to rounding errors.
+
+            if (planetaria_radius > Mathf.PI/2) // Flip to other hemisphere when circle is on the other hemisphere
+            {
+                planetaria_radius = Mathf.PI - planetaria_radius;
+                axis *= -1;
+            }
+
+            float x = Mathf.Cos(planetaria_radius);
+            float axial_distance = x + Mathf.Sqrt(x*x + 3);
+            return Sphere.sphere(transformation, axis*axial_distance, 2);
         }
     }
 }

@@ -4,7 +4,7 @@ namespace Planetaria
 {
     public class Sphere
     {
-        public static Sphere sphere(Transform transformation, Vector3 position, float radius)
+        public static Sphere sphere(optional<Transform> transformation, Vector3 position, float radius)
         {
             return new Sphere(transformation, position, radius);
         }

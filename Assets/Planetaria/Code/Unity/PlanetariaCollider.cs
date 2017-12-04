@@ -17,7 +17,7 @@ namespace Planetaria
             {
                 scale_variable = value;
                 internal_collider.radius = scale_variable;
-                colliders = new Sphere[] { new Sphere(transform, Vector3.forward, 2) };
+                colliders = new Sphere[] { Miscellaneous.sphere(internal_transform, Vector3.forward, value) };
             }
         }
 
