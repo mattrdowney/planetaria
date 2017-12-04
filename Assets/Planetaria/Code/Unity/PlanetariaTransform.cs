@@ -11,6 +11,10 @@ namespace Planetaria
             cartesian_transform = internal_transformation;
             internal_collider = internal_transformation.GetComponent<PlanetariaCollider>();
             internal_renderer = internal_transformation.GetComponent<PlanetariaRenderer>();
+
+            position = previous_position = new NormalizedCartesianCoordinates(cartesian_transform.position);
+            rotation = 0;
+            scale = 0.1f;
         }
 
         private void FixedUpdate() // FIXME: move into PlanetariaGameLoop?
@@ -96,7 +100,7 @@ namespace Planetaria
             {
                 if (internal_collider.exists)
                 {
-                    internal_collider.data.scale = Mathf.Sin(scale); // TODO: check
+                    internal_collider.data.scale = scale; // TODO: check
                 }
                 if (internal_renderer.exists)
                 {
@@ -114,7 +118,7 @@ namespace Planetaria
         private Quaternion internal_rotation;
 
         //private dirtyable<Planetarium> planetarium_variable;
-        private dirtyable<NormalizedCartesianCoordinates> position_variable;
+        private dirtyable<NormalizedCartesianCoordinates> position_variable = new dirtyable<NormalizedCartesianCoordinates>();
         private dirtyable<float> rotation_variable;
         private dirtyable<float> scale_variable;
     }

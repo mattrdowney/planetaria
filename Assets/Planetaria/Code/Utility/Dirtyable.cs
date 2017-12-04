@@ -29,6 +29,12 @@
             dirty_variable = false;
         }
 
+        public dirtyable()
+        {
+            dirty_variable = true;
+            data_variable = default(Type);
+        }
+
         public dirtyable(Type original)
         {
             dirty_variable = true;

@@ -63,6 +63,11 @@ namespace Planetaria
         /// <returns>A set of three Spheres that define an arc collision.</returns>
         public static Sphere[] get_colliders(optional<Transform> transformation, Arc arc)
         {
+            if(Mathf.Abs(arc.elevation()) < Precision.tolerance)
+            {
+                return new Sphere[] { Sphere.sphere(transformation, arc.pole(), Mathf.Abs(arc.elevation()) + Precision.collider_extrusion) };
+            }
+
             Sphere[] colliders = new Sphere[3];
 
             float planetaria_radius = arc.elevation();

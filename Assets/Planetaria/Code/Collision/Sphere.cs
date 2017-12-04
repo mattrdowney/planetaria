@@ -54,6 +54,11 @@ namespace Planetaria
             return new Sphere(transformation, axis*axial_distance, 2);
         }
 
+        public static Sphere sphere(optional<Transform> transformation, Vector3 center, float radius)
+        {
+            return new Sphere(transformation, center, radius);
+        }
+
         public float radius { get; private set; }
         public Vector3 center
         {

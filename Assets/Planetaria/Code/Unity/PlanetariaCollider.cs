@@ -16,9 +16,12 @@ namespace Planetaria
             set
             {
                 scale_variable = value;
-                colliders = new Sphere[] { Sphere.collider(internal_transform, Vector3.forward, value) };
-                internal_collider.center = colliders[0].center; // FIXME: move to correct Planetarium
-                internal_collider.radius = colliders[0].radius;
+                if (scalable)
+                {
+                    colliders = new Sphere[] { Sphere.collider(internal_transform, Vector3.forward, value) };
+                    internal_collider.center = colliders[0].center; // FIXME: move to correct Planetarium
+                    internal_collider.radius = colliders[0].radius;
+                }
             }
         }
 
@@ -67,7 +70,7 @@ namespace Planetaria
         private void Awake()
         {
             listeners.AddRange(this.GetComponentsInParent<PlanetariaMonoBehaviour>());
-            GameObject child_for_collision = new GameObject("PlanetariaCollider");
+            GameObject child_for_collision = new GameObject("SphereCollider");
             child_for_collision.transform.localPosition = Vector3.forward;
             child_for_collision.transform.parent = this.gameObject.transform;
             internal_collider = child_for_collision.transform.GetOrAddComponent<SphereCollider>();
@@ -132,9 +135,14 @@ namespace Planetaria
 
         private void block_notifications()
         {
-            optional<BlockCollision> next_collision = collision_candidates.Aggregate(
-                    (closest, next_candidate) =>
-                    closest.distance < next_candidate.distance ? closest : next_candidate);
+            optional<BlockCollision> next_collision = new optional<BlockCollision>();
+
+            if (collision_candidates.Count > 0)
+            {
+                next_collision = collision_candidates.Aggregate(
+                        (closest, next_candidate) =>
+                        closest.distance < next_candidate.distance ? closest : next_candidate);
+            }
 
             if (next_collision.exists)
             {
@@ -214,6 +222,7 @@ namespace Planetaria
         [SerializeField] public Sphere[] colliders = new Sphere[0]; // FIXME: private
         private List<PlanetariaMonoBehaviour> listeners = new List<PlanetariaMonoBehaviour>();
         float scale_variable;
+        bool scalable = false;
 
         public optional<BlockCollision> current_collision = new optional<BlockCollision>(); // FIXME: JANK
         private List<BlockCollision> collision_candidates = new List<BlockCollision>();

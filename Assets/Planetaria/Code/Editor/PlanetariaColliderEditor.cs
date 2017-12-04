@@ -9,11 +9,9 @@ namespace Planetaria
         [DrawGizmo(GizmoType.Selected)]
         private static void draw_planetaria_collider_gizmos(PlanetariaCollider self, GizmoType gizmo_type)
         {
-            Debug.Log("Happening");
             foreach (Sphere sphere in self.colliders)
             {
                 Gizmos.color = Color.green;
-                Debug.Log("at " + sphere.debug_center + " radius " + sphere.radius);
                 Gizmos.DrawWireSphere(sphere.debug_center, sphere.radius);
             }
         }
