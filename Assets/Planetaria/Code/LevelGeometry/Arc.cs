@@ -55,65 +55,13 @@ namespace Planetaria
             return GeospatialCircle.circle(center, radius);
         }
 
-        public static float closest_normal(Arc arc, Vector3 normal, int precision = Precision.float_bits)
-        {
-            return closest_heuristic(arc, normal_heuristic, normal, precision);
-        }
-
-        public static float closest_point(Arc arc, Vector3 point, int precision = Precision.float_bits)
-        {
-            return closest_heuristic(arc, position_heuristic, point, precision);
-        }
-
         /// <summary>
-        /// Inspector - Determine if a circle is inside the arc / Determine if a point is inside the arc extruded by radius.
+        /// The intersection of two spheres is a circle, and adding a third sphere generates a set of colliders that define an arc
         /// </summary>
-        /// <param name="position">The position (on a unit sphere) of the circle's center.</param>
-        /// <param name="radius">The radius of the circle.</param>
-        /// <returns>
-        /// True if a collision is detected;
-        /// False otherwise.
-        /// </returns>
-        public bool contains(Vector3 position, float radius = 0f) // FIXME: remove
-        {
-            bool above_floor = Vector3.Dot(position, center_axis) >= Mathf.Sin(arc_latitude); // XXX: potential bug
-            bool below_ceiling = Vector3.Dot(position, center_axis) <= Mathf.Sin(arc_latitude + radius);
-            bool correct_latitude = above_floor && below_ceiling;
-
-            bool inside_beginning = Vector3.Dot(position, right_axis) >= 0;
-            bool inside_end = Vector3.Dot(position, before_end) >= 0;
-            bool reflex_angle = arc_angle > Mathf.PI;
-            bool correct_angle = Miscellaneous.count_true_booleans(inside_beginning, inside_end, reflex_angle) >= 2;
-
-            return correct_latitude && correct_angle;
-        }
-
-        /// <summary>
-        /// Inspector - Get an AABB that contains a circular arc.
-        /// </summary>
-        /// <param name="arc">The arc that should be surrounded by an AABB.</param>
-        /// <returns>Bounds struct AKA axis-aligned bounding box (AABB).</returns>
-        public static Bounds get_axis_aligned_bounding_box(Arc arc) // FIXME: remove
-        {
-            float x_min = arc.position(closest_point(arc, Vector3.left   )).x;
-            float x_max = arc.position(closest_point(arc, Vector3.right  )).x;
-            float y_min = arc.position(closest_point(arc, Vector3.down   )).y;
-            float y_max = arc.position(closest_point(arc, Vector3.up     )).y;
-            float z_min = arc.position(closest_point(arc, Vector3.back   )).z;
-            float z_max = arc.position(closest_point(arc, Vector3.forward)).z;
-
-            Vector3 center = new Vector3((x_max + x_min) / 2,
-                    (y_max + y_min) / 2,
-                    (z_max + z_min) / 2);
-
-            Vector3 size = new Vector3(x_max - x_min,
-                    y_max - y_min,
-                    z_max - z_min);
-
-            return new Bounds(center, size);
-        }
-
-        public static Sphere[] get_colliders(Transform transformation, Arc arc)
+        /// <param name="transformation">For static objects no transform is better, otherwise the Transform-relative movement will be considered for dynamic objects.</param>
+        /// <param name="arc">The arc for which the colliders will be generated.</param>
+        /// <returns>A set of three Spheres that define an arc collision.</returns>
+        public static Sphere[] get_colliders(optional<Transform> transformation, Arc arc)
         {
             Sphere[] colliders = new Sphere[3];
 
@@ -226,8 +174,6 @@ namespace Planetaria
             Vector3 center = elevation * center_axis;
 
             Vector3 end_axis = (to - center).normalized;
-            before_end = -Vector3.Cross(center_axis, end_axis).normalized;
-
             bool long_path = Vector3.Dot(right_axis, end_axis) < 0;
             arc_angle = Vector3.Angle(from - center, to - center)*Mathf.Deg2Rad;
             arc_latitude = Mathf.PI/2 - Mathf.Acos(elevation);
@@ -316,69 +262,6 @@ namespace Planetaria
             return -center_axis;
         }
 
-        private static float closest_heuristic(Arc arc, HeuristicFunction distance_heuristic, Vector3 target,
-                int precision = Precision.float_bits)
-        {
-            float closest_angle = 0; // use a valid angle for when arc.angle() returns 0!
-            float closest_heuristic = Mathf.Infinity;
-
-            // calculate per each 4 quadrants, e.g. because the angle 2*PI become ambiguous because left == right
-            float quadrants = Mathf.Ceil(arc.angle() / (Mathf.PI / 2f)); //maximum of 4, always integral
-            for (float quadrant = 0; quadrant < quadrants; ++quadrant)
-            {
-                float left_angle = Mathf.Lerp(0, arc.angle(), quadrant/quadrants); // beginning of quadrant e.g. 0.00,0.25,0.50,0.75
-                float right_angle = Mathf.Lerp(0, arc.angle(), (quadrant+1)/quadrants); // end of quadrant e.g. 0.25,0.50,0.75,1.00
-
-                float left_heuristic = distance_heuristic(arc, target, left_angle); //lower h(x) implies closer to target
-                float right_heuristic = distance_heuristic(arc, target, right_angle);
-
-                // A type of binary search
-                // 1) find the distance heuristics for left and right side
-                // 2) take the greater heuristic and ignore that half (since it's further away from target)
-                for (int iteration = 0; iteration < precision; ++iteration) // when using floats, more precision often helps
-                {
-                    float midpoint = (left_angle + right_angle) / 2;
-                    if (left_heuristic < right_heuristic) // answer is within left half of arc
-                    {
-                        right_angle = midpoint; //throw out the right half (since it's further from target)
-                        right_heuristic = distance_heuristic(arc, target, right_angle);
-                    }
-                    else // answer is within right half of arc
-                    {
-                        left_angle = midpoint; //throw out the left half (since it's further from target)
-                        left_heuristic = distance_heuristic(arc, target, left_angle);
-                    }
-                }
-
-                // find out if this quadrant has a closer point to the target
-                if (right_heuristic < closest_heuristic)
-                {
-                    closest_angle = right_angle;
-                    closest_heuristic = right_heuristic;
-                }
-                if (left_heuristic < closest_heuristic)
-                {
-                    closest_angle = left_angle;
-                    closest_heuristic = left_heuristic;
-                }
-            }
-            return closest_angle;
-        }
-        
-        private delegate float HeuristicFunction(Arc arc, Vector3 operand, float angle);
-
-        private static float normal_heuristic(Arc arc, Vector3 desired_normal, float angle)
-        {
-            // return [0,1] for the hell of it, the dot product would suffice, though
-            return (Vector3.Dot(arc.normal(angle), -desired_normal) + 1f) / 2;
-        }
-
-        private static float position_heuristic(Arc arc, Vector3 desired_position, float angle)
-        {
-            // return [0,1] for the hell of it, the dot product would suffice, though
-            return (Vector3.Dot(arc.position(angle), -desired_position) + 1f) / 2;
-        }
-
         private static Arc validify(Vector3 from, Vector3 slope, Vector3 to)
         {
             if (from == slope)
@@ -400,8 +283,6 @@ namespace Planetaria
         [SerializeField] private Vector3 forward_axis;
         /// <summary>A binormal to center_axis and forward_axis. Determines points after the beginning of the arc.</summary>
         [SerializeField] private Vector3 right_axis;
-        /// <summary>Determines points before the end of the arc. This is normal to center_axis.</summary>
-        [SerializeField] private Vector3 before_end; // FIXME: remove
     
         /// <summary>The length of the arc</summary>
         [SerializeField] private float arc_angle;
