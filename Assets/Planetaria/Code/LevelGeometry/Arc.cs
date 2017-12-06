@@ -74,8 +74,8 @@ namespace Planetaria
             Vector3 axis = arc.pole();
 
             colliders[0] = Sphere.collider(transformation, axis, planetaria_radius);
-            colliders[1] = Sphere.collider(transformation, axis, Mathf.PI - planetaria_radius);
-
+            colliders[1] = Sphere.collider(transformation, axis, Mathf.PI - planetaria_radius, true);
+            
             planetaria_radius = arc.angle()/2;
             axis = arc.position(planetaria_radius);
 

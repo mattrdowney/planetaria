@@ -11,7 +11,7 @@ namespace Planetaria
         public const float threshold = 1e-5f;
         public const float tolerance = 1e-6f;
         public const int float_bits = 8 * sizeof(float);
-        public const float collider_extrusion = 3e-6f;
+        public const float collider_extrusion = .05f;//3e-6f;
     }
 }
 

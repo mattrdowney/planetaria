@@ -11,7 +11,7 @@ namespace Planetaria
         /// <param name="axis">The center of the circle (both a point and an axis).</param>
         /// <param name="planetaria_radius">The angle along the surface from circle center to circle boundary.</param>
         /// <returns>A Sphere that can be used as a collider.</returns>
-        public static Sphere collider(optional<Transform> transformation, Vector3 axis, float planetaria_radius)
+        public static Sphere collider(optional<Transform> transformation, Vector3 axis, float planetaria_radius, bool southern_hemisphere = false)
         {
             // Background:
             // imagine two spheres:
@@ -42,12 +42,9 @@ namespace Planetaria
             // axial_distance = cos(left_angle) + 2cos(arcsin(sin(left_angle)/2))
             // which, according to Wolfram Alpha is: cos(left_angle) + sqrt(sin2(left_angle) + 3)
 
-            float hemisphere = Mathf.Sign(Mathf.PI/2 - planetaria_radius); // determines orientation of sphere collisions
-            if (hemisphere == -1)
-            {
-                planetaria_radius = Mathf.PI - planetaria_radius; // get supplementary angle (on other hemisphere)
-            }
-            planetaria_radius += Precision.collider_extrusion; // Collisions can theoretically (and practically) be missed due to rounding errors.
+            int hemisphere = (southern_hemisphere ? -1 : +1);
+
+            planetaria_radius += hemisphere*Precision.collider_extrusion; // Collisions can theoretically (and practically) be missed due to rounding errors.
 
             float x = Mathf.Cos(planetaria_radius);
             float axial_distance = x + hemisphere*Mathf.Sqrt(x*x + 3);

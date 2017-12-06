@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEditor;
 
 namespace Planetaria
@@ -6,15 +7,39 @@ namespace Planetaria
     [CustomEditor(typeof(PlanetariaCollider))]
     public class PlanetariaColliderEditor : Editor
     {
+        public static List<int> hidden_colliders = new List<int>();
         [DrawGizmo(GizmoType.Selected)]
         private static void draw_planetaria_collider_gizmos(PlanetariaCollider self, GizmoType gizmo_type)
         {
-            foreach (Sphere sphere in self.colliders)
+            for (int sphere_index = 0; sphere_index < self.colliders.Length; ++sphere_index)
             {
-                Gizmos.color = Color.green;
-                Gizmos.DrawWireSphere(sphere.debug_center, sphere.radius);
+                if (sphere_index != mask[0] && sphere_index != mask[1])
+                {
+                    Sphere sphere = self.colliders[sphere_index];
+                    Gizmos.color = new Color(0,1,0,0.5f); // translucent green
+                    Gizmos.DrawSphere(sphere.debug_center, sphere.radius); // consider drawing a higher precision mesh
+                    Gizmos.color = Color.green;
+                    Gizmos.DrawWireSphere(sphere.debug_center, sphere.radius);
+                }
             }
         }
+
+        public override void OnInspectorGUI()
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label(" Collider Mask 1 ");
+            mask[0] = EditorGUILayout.IntField(mask[0], GUILayout.Width(50));
+            GUILayout.EndHorizontal();
+     
+            GUILayout.BeginHorizontal();
+            GUILayout.Label(" Collider Mask 2 ");
+            mask[1] = EditorGUILayout.IntField(mask[1], GUILayout.Width(50));
+            GUILayout.EndHorizontal();
+     
+            SceneView.RepaintAll();
+        }
+
+        private static int[] mask = new int[2] {-1, -1 };
     }
 }
 

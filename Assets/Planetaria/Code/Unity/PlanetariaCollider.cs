@@ -63,7 +63,7 @@ namespace Planetaria
                     (furthest, next_candidate) =>
                     furthest.center.sqrMagnitude > next_candidate.center.sqrMagnitude ? furthest : next_candidate);
 
-            internal_collider.center = furthest_collider.center;
+            internal_collider.center = furthest_collider.debug_center;
             internal_collider.radius = furthest_collider.radius;
         }
 
@@ -71,7 +71,6 @@ namespace Planetaria
         {
             listeners.AddRange(this.GetComponentsInParent<PlanetariaMonoBehaviour>());
             GameObject child_for_collision = new GameObject("SphereCollider");
-            child_for_collision.transform.localPosition = Vector3.forward;
             child_for_collision.transform.parent = this.gameObject.transform;
             internal_collider = child_for_collision.transform.GetOrAddComponent<SphereCollider>();
             internal_transform = this.GetOrAddComponent<Transform>();
