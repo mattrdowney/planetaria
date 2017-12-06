@@ -65,7 +65,8 @@ namespace Planetaria
         {
             if(Mathf.Abs(arc.elevation()) < Precision.tolerance)
             {
-                return new Sphere[] { Sphere.sphere(transformation, arc.pole(), Mathf.Abs(arc.elevation()) + Precision.collider_extrusion) };
+                // I think only one sphere collider is required with position at the focal point of a conic section that makes the "filled circle"
+                return new Sphere[] { Sphere.collider(transformation, arc.pole(), Mathf.Abs(arc.elevation()) + Precision.collider_extrusion) }; // can't be a radius=2 collider because two adjacent colliders would intersect // FIXME: find a way to get a "filled circle" collider without false positives // FIXME: there's some theoretical minor precision issues here
             }
 
             Sphere[] colliders = new Sphere[3];
