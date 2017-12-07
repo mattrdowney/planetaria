@@ -1,9 +1,59 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Planetaria
 {
     public class Sphere
     {
+        /// <summary>
+        /// The intersection of two spheres is a circle, and adding a third sphere generates a set of colliders that define an arc
+        /// </summary>
+        /// <param name="transformation">For static objects no transform is better, otherwise the Transform-relative movement will be considered for dynamic objects.</param>
+        /// <param name="arc">The arc for which the colliders will be generated.</param>
+        /// <returns>A set of three Spheres that define an arc collision.</returns>
+        public static Sphere[] arc_collider(optional<Transform> transformation, Arc arc) // FIXME: delegation, remove redundancy
+        {
+            GeospatialCircle circle = arc.circle();
+            Sphere[] boundary_colliders = boundary_collider(transformation,
+                    arc.position(0), arc.position(arc.angle()/2), arc.position(arc.angle()));
+            Sphere[] circle_colliders = circle_collider(transformation, circle.center, circle.radius);
+            Sphere[] colliders = new Sphere[boundary_colliders.Length + circle_colliders.Length];
+            Array.Copy(circle_colliders, colliders, circle_colliders.Length);
+            Array.Copy(boundary_colliders, 0, colliders, circle_colliders.Length, boundary_colliders.Length);
+            return colliders;
+        }
+
+        private static Sphere[] circle_collider(optional<Transform> transformation, Vector3 axis, float planetaria_radius)
+        {
+            bool convex = Mathf.Sign(planetaria_radius) == +1; // no concave edges
+            planetaria_radius = Mathf.Abs(planetaria_radius);
+            bool within_planetarium = planetaria_radius < Precision.max_sphere_radius; // so collisions don't happen with other planetariums
+
+            if (convex && within_planetarium)
+            {
+                return new Sphere[1] { Sphere.filled_circle(transformation, axis, planetaria_radius) };
+            }
+            Sphere[] colliders = new Sphere[2];
+            colliders[0] = Sphere.collider(transformation, axis, planetaria_radius);
+            colliders[1] = Sphere.collider(transformation, axis, planetaria_radius, true);
+            return colliders;
+        }
+
+        private static Sphere[] boundary_collider(optional<Transform> transformation, Vector3 left, Vector3 midpoint, Vector3 right)
+        {
+            Vector3 center = Vector3.zero;
+            float radius = 0;
+
+            // FIXME: implement
+
+            if (radius < Precision.tolerance)
+            {
+                return new Sphere[0];
+            }
+            return new Sphere[1] { new Sphere(transformation, center, radius + Precision.collider_extrusion) };
+        }
+
+
         /// <summary>
         /// The Sphere collider that envelops a axial "point" with a given planetaria_radius.
         /// </summary>
@@ -11,7 +61,7 @@ namespace Planetaria
         /// <param name="axis">The center of the circle (both a point and an axis).</param>
         /// <param name="planetaria_radius">The angle along the surface from circle center to circle boundary.</param>
         /// <returns>A Sphere that can be used as a collider.</returns>
-        public static Sphere collider(optional<Transform> transformation, Vector3 axis, float planetaria_radius, bool northern_hemisphere = false)
+        private static Sphere collider(optional<Transform> transformation, Vector3 axis, float planetaria_radius, bool northern_hemisphere = false)
         {
             // Background:
             // imagine two spheres:
@@ -51,7 +101,7 @@ namespace Planetaria
             return new Sphere(transformation, axis*axial_distance, 2);
         }
 
-        public static Sphere sphere_collider(optional<Transform> transformation, Vector3 axis, float planetaria_radius)
+        public static Sphere filled_circle(optional<Transform> transformation, Vector3 axis, float planetaria_radius)
         {
             planetaria_radius += Precision.collider_extrusion;
 
@@ -61,11 +111,6 @@ namespace Planetaria
             // This collider has the special property that all sphere colliders will only collide if the planetaria sphere is intersecting
             // This is because the sphere is formed using a "conic section" from the planetaria sphere's tangent lines.
             return new Sphere(transformation, axis*secant, tangent);
-        }
-
-        public static Sphere sphere(optional<Transform> transformation, Vector3 center, float radius)
-        {
-            return new Sphere(transformation, center, radius);
         }
 
         public float radius { get; private set; }

@@ -18,7 +18,7 @@ namespace Planetaria
                 scale_variable = value;
                 if (scalable)
                 {
-                    colliders = new Sphere[] { Sphere.collider(internal_transform, Vector3.forward, value) };
+                    colliders = new Sphere[] { Sphere.filled_circle(internal_transform, Vector3.forward, value) };
                     internal_collider.center = colliders[0].center; // FIXME: move to correct Planetarium
                     internal_collider.radius = colliders[0].radius;
                 }

@@ -48,41 +48,11 @@ namespace Planetaria
             return arc_angle;
         }
 
-        public GeospatialCircle circle(float extrusion)
+        public GeospatialCircle circle(float extrusion = 0)
         {
             Vector3 center = pole(extrusion);
             float radius = elevation(extrusion);
             return GeospatialCircle.circle(center, radius);
-        }
-
-        /// <summary>
-        /// The intersection of two spheres is a circle, and adding a third sphere generates a set of colliders that define an arc
-        /// </summary>
-        /// <param name="transformation">For static objects no transform is better, otherwise the Transform-relative movement will be considered for dynamic objects.</param>
-        /// <param name="arc">The arc for which the colliders will be generated.</param>
-        /// <returns>A set of three Spheres that define an arc collision.</returns>
-        public static Sphere[] get_colliders(optional<Transform> transformation, Arc arc) // FIXME: delegation, remove redundancy
-        {
-            Sphere[] colliders;
-            float planetaria_radius = Mathf.Abs(arc.elevation());
-            if (planetaria_radius < Precision.tolerance)
-            {
-                colliders = new Sphere[1] { Sphere.sphere_collider(transformation, arc.pole(), planetaria_radius) };
-            }
-            else if (planetaria_radius < Precision.max_sphere_radius) // OPTIMIZATION: using new conic section method these two colliders can be turned into one when angle isn't too steep. // FIXME: don't include concave edges!
-            {
-                colliders = new Sphere[2];
-                colliders[0] = Sphere.sphere_collider(transformation, arc.pole(), planetaria_radius);
-                colliders[1] = Sphere.collider(transformation, arc.position(arc.angle()/2), arc.angle()/2); // FIXME: odd behaviour when non-equatorial.
-            }
-            else
-            {
-                colliders = new Sphere[3];
-                colliders[0] = Sphere.collider(transformation, arc.pole(), planetaria_radius);
-                colliders[1] = Sphere.collider(transformation, arc.pole(), planetaria_radius, true);
-                colliders[2] = Sphere.collider(transformation, arc.position(arc.angle()/2), arc.angle()/2); // FIXME: odd behaviour when non-equatorial.
-            }
-            return colliders;
         }
 
         /// <summary>

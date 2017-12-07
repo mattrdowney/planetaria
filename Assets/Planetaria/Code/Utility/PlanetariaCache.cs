@@ -21,7 +21,7 @@ namespace Planetaria
                         SphereCollider sphere_collider = collider.get_sphere_collider();
 
                         optional<Transform> transformation = (block.is_dynamic ? block.gameObject.transform : null);
-                        Sphere[] colliders = Arc.get_colliders(transformation, arc.data);
+                        Sphere[] colliders = Sphere.arc_collider(transformation, arc.data);
                         collider.set_colliders(colliders);
 
                         PlanetariaCache.arc_cache.cache(sphere_collider, arc.data);
