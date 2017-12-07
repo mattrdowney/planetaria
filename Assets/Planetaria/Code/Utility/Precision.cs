@@ -11,7 +11,8 @@ namespace Planetaria
         public const float threshold = 1e-5f;
         public const float tolerance = 1e-6f;
         public const int float_bits = 8 * sizeof(float);
-        public const float collider_extrusion = .05f;//3e-6f;
+        public const float collider_extrusion = .05f;//3e-6f; // Try to ensure collider_extrusion is sufficiently large for 5^3 planetariums (max distance being sqrt(3*pow(2*planetarium_size, 2)))
+        public static readonly float max_sphere_radius = Mathf.Acos(1/Planetarium.max_secant_distance) - collider_extrusion;
     }
 }
 

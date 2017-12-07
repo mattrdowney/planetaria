@@ -43,6 +43,10 @@ namespace Planetaria
 
         private int level_index;
         public Vector3 position { get; private set; }
+
+        public const float minimum_planetarium_size = 1 + 2*2 + 1; // 10 is minimum size for r=1 + 4*r=2 + r=1,
+        public const float planetarium_size = 16f; // but secant colliders can go further out (Note: secant colliders are the only useful representation of "filled circle" colliders.
+        public const float max_secant_distance = 1 + (planetarium_size - minimum_planetarium_size) / 2 * Precision.just_below_one; // 1 for implicit radius, and half of the remaining length i.e. 
     }
 }
 

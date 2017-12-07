@@ -51,6 +51,18 @@ namespace Planetaria
             return new Sphere(transformation, axis*axial_distance, 2);
         }
 
+        public static Sphere sphere_collider(optional<Transform> transformation, Vector3 axis, float planetaria_radius)
+        {
+            planetaria_radius += Precision.collider_extrusion;
+
+            float tangent = Mathf.Tan(planetaria_radius);
+            float secant = 1/Mathf.Cos(planetaria_radius);
+
+            // This collider has the special property that all sphere colliders will only collide if the planetaria sphere is intersecting
+            // This is because the sphere is formed using a "conic section" from the planetaria sphere's tangent lines.
+            return new Sphere(transformation, axis*secant, tangent);
+        }
+
         public static Sphere sphere(optional<Transform> transformation, Vector3 center, float radius)
         {
             return new Sphere(transformation, center, radius);
