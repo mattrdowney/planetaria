@@ -14,8 +14,7 @@ namespace Planetaria
         public static Sphere[] arc_collider(optional<Transform> transformation, Arc arc) // FIXME: delegation, remove redundancy
         {
             GeospatialCircle circle = arc.circle();
-            Sphere[] boundary_colliders = boundary_collider(transformation,
-                    arc.position(0), arc.position(arc.angle()/2), arc.position(arc.angle()));
+            Sphere[] boundary_colliders = boundary_collider(transformation, arc);
             Sphere[] circle_colliders = circle_collider(transformation, circle.center, circle.radius);
             Sphere[] colliders = new Sphere[boundary_colliders.Length + circle_colliders.Length];
             Array.Copy(circle_colliders, colliders, circle_colliders.Length);
@@ -39,18 +38,33 @@ namespace Planetaria
             return colliders;
         }
 
-        private static Sphere[] boundary_collider(optional<Transform> transformation, Vector3 left, Vector3 midpoint, Vector3 right)
+        private static Sphere[] boundary_collider(optional<Transform> transformation, Arc arc)
         {
-            Vector3 center = Vector3.zero;
-            float radius = 0;
+            Sphere result;
 
-            // FIXME: implement
+            float planetaria_radius = arc.angle()/2 + Precision.collider_extrusion;
+            if (planetaria_radius < Mathf.PI/2) // use a r<=1 sphere
+            {
+                float left_angle = 0 - Precision.collider_extrusion;
+                float right_angle = arc.angle() + Precision.collider_extrusion;
 
-            if (radius < Precision.tolerance)
+                Vector3 left_corner = arc.position(left_angle);
+                Vector3 right_corner = arc.position(right_angle);
+
+                Vector3 center = (left_corner + right_corner) / 2;
+                float radius = Vector3.Distance(center, left_corner);
+                result = new Sphere(transformation, center, radius);
+            }
+            else // use r=2 sphere
+            {
+                result = collider(transformation, arc.position(arc.angle()/2), planetaria_radius);
+            }
+
+            if (result.radius < Precision.tolerance)
             {
                 return new Sphere[0];
             }
-            return new Sphere[1] { new Sphere(transformation, center, radius + Precision.collider_extrusion) };
+            return new Sphere[1] { result };
         }
 
 
