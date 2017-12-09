@@ -41,25 +41,16 @@ namespace Planetaria
         private static Sphere[] boundary_collider(optional<Transform> transformation, Arc arc)
         {
             Sphere result;
+            Vector3 corner = arc.position(0);
+            Vector3 center = arc.position(arc.angle()/2);
 
-            float planetaria_radius = arc.angle()/2 + Precision.collider_extrusion;
-            if (planetaria_radius < Mathf.PI/2) // use a r<=1 sphere
+            float real_angle = Vector3.Angle(center, corner) * Mathf.Deg2Rad;
+            if (real_angle < Precision.max_sphere_radius) // use a r<=1 sphere
             {
-                float left_angle = 0 - Precision.collider_extrusion;
-                float right_angle = arc.angle() + Precision.collider_extrusion;
-
-                Vector3 left_corner = arc.position(left_angle);
-                Vector3 right_corner = arc.position(right_angle);
-
-                Vector3 center = (left_corner + right_corner) / 2;
-                float radius = Vector3.Distance(center, left_corner);
-                result = new Sphere(transformation, center, radius);
+                result = filled_circle(transformation, center, real_angle);
             }
             else // use r=2 sphere
             {
-                Vector3 corner = arc.position(0);
-                Vector3 center = arc.position(arc.angle()/2);
-                float real_angle = Vector3.Angle(center, corner) * Mathf.Deg2Rad;
                 result = collider(transformation, center, real_angle);
             }
 
