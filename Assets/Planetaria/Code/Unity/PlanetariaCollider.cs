@@ -61,7 +61,7 @@ namespace Planetaria
             this.colliders = colliders;
             Sphere furthest_collider = colliders.Aggregate(
                     (furthest, next_candidate) =>
-                    furthest.center.sqrMagnitude > next_candidate.center.sqrMagnitude ? furthest : next_candidate);
+                    furthest.center.magnitude - furthest.radius > next_candidate.center.magnitude - next_candidate.radius ? furthest : next_candidate);
 
             internal_collider.center = furthest_collider.debug_center;
             internal_collider.radius = furthest_collider.radius;
