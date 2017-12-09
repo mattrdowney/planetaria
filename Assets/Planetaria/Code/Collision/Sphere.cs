@@ -57,10 +57,13 @@ namespace Planetaria
             }
             else // use r=2 sphere
             {
-                result = collider(transformation, arc.position(arc.angle()/2), planetaria_radius);
+                Vector3 corner = arc.position(0);
+                Vector3 center = arc.position(arc.angle()/2);
+                float real_angle = Vector3.Angle(center, corner) * Mathf.Deg2Rad;
+                result = collider(transformation, center, real_angle);
             }
 
-            if (result.radius < Precision.tolerance)
+            if (result.radius < Precision.threshold)
             {
                 return new Sphere[0];
             }
@@ -186,7 +189,6 @@ in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
