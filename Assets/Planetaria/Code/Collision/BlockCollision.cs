@@ -4,15 +4,16 @@ namespace Planetaria
 {
     public class BlockCollision
     {
-        public static optional<BlockCollision> block_collision(Arc arc, Block block, PlanetariaCollider collider, Vector3 last_position, Vector3 current_position, float extrusion)
+        public static optional<BlockCollision> block_collision(Arc arc, Block block, PlanetariaCollider collider, PlanetariaTransform transformation)
         {
             optional<ArcVisitor> arc_visitor = block.arc_visitor(arc);
             if (!arc_visitor.exists)
             {
                 return new optional<BlockCollision>();
             }
-            NormalizedCartesianCoordinates begin = new NormalizedCartesianCoordinates(last_position);
-            NormalizedCartesianCoordinates end = new NormalizedCartesianCoordinates(current_position);
+            NormalizedCartesianCoordinates begin = transformation.previous_position;
+            NormalizedCartesianCoordinates end = transformation.position;
+            float extrusion = transformation.scale;
             optional<Vector3> intersection_point = PlanetariaIntersection.arc_path_intersection(arc, begin, end, extrusion); //TODO: check .data
             if (!intersection_point.exists)
             {
@@ -21,7 +22,7 @@ namespace Planetaria
             BlockCollision result = new BlockCollision();
             float angle = arc.position_to_angle(intersection_point.data);
             result.geometry_visitor = GeometryVisitor.geometry_visitor(arc_visitor.data, angle, extrusion);
-            result.distance = (intersection_point.data - current_position).sqrMagnitude;
+            result.distance = (intersection_point.data - transformation.position.data).sqrMagnitude;
             result.block = block;
             result.collider = collider;
             result.active = true;

@@ -35,7 +35,7 @@ namespace Planetaria
             }
         }
 
-        public NormalizedCartesianCoordinates previous_position { get; private set; }
+        public NormalizedCartesianCoordinates previous_position { get; private set; } // FIXME: only set based on FixedUpdate last position
 
         public float rotation
         {

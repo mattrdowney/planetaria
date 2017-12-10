@@ -1,111 +1,155 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public class CollisionObserver
+namespace Planetaria
 {
-    public CollisionObserver(PlanetariaMonoBehaviour[] observers)
+    public class CollisionObserver
     {
-        this.observers = observers;
-        StartCoroutine(notify());
-    }
-
-    private IEnumerator notify()
-    {
-        while (true)
+        public CollisionObserver(PlanetariaTransform planetaria_transformation, PlanetariaMonoBehaviour[] observers)
         {
-            yield return new WaitForFixedUpdate();
-            field_notifications();
-            block_notifications();
-        }
-    }
-
-    private void block_notifications()
-    {
-        optional<BlockCollision> next_collision = new optional<BlockCollision>();
-
-        if (collision_candidates.Count > 0)
-        {
-            next_collision = collision_candidates.Aggregate(
-                    (closest, next_candidate) =>
-                    closest.distance < next_candidate.distance ? closest : next_candidate);
-        }
-
-        if (next_collision.exists)
-        {
-            block_notification(next_collision);
-        }
-    }
-
-    private void field_notifications()
-    {
-        foreach (PlanetariaMonoBehaviour listener in listeners)
-        {
-            foreach (PlanetariaCollider field in fields_entered)
+            this.planetaria_transformation = planetaria_transformation;
+            this.planetaria_rigidbody = planetaria_transformation.GetComponent<PlanetariaRigidbody>();
+            foreach (PlanetariaMonoBehaviour observer in observers)
             {
-                listener.enter_field(field);
+                this.observers.Add(observer);
+            }
+            planetaria_transformation.StartCoroutine(notify());
+        }
+
+        private IEnumerator notify()
+        {
+            while (true)
+            {
+                yield return new WaitForFixedUpdate();
+                field_notifications();
+                block_notifications();
             }
         }
-        fields_entered.Clear();
-        foreach (PlanetariaMonoBehaviour listener in listeners)
+
+        private void block_notifications()
         {
-            foreach (PlanetariaCollider field in fields_exited)
+            optional<BlockCollision> next_collision = new optional<BlockCollision>();
+
+            if (collision_candidates.Count > 0)
             {
-                listener.exit_field(field);
+                next_collision = collision_candidates.Aggregate(
+                        (closest, next_candidate) =>
+                        closest.distance < next_candidate.distance ? closest : next_candidate);
+            }
+
+            if (next_collision.exists)
+            {
+                block_notification(next_collision);
             }
         }
-        fields_exited.Clear();
-    }
 
-    public void register(PlanetariaMonoBehaviour observer)
-    {
-        observers.Add(observer);
-        foreach (PlanetariaCollider field in field_set)
+        private void field_notifications()
         {
-            observer.enter_field(field);
+            foreach (PlanetariaMonoBehaviour observer in observers)
+            {
+                foreach (PlanetariaCollider field in fields_entered)
+                {
+                    observer.enter_field(field);
+                }
+            }
+            fields_entered.Clear();
+            foreach (PlanetariaMonoBehaviour observer in observers)
+            {
+                foreach (PlanetariaCollider field in fields_exited)
+                {
+                    observer.exit_field(field);
+                }
+            }
+            fields_exited.Clear();
         }
-        foreach (BlockCollision collision in current_collisions)
-        {
-            observer.enter_block(collision);
-        }
-    }
 
-    public void unregister(PlanetariaMonoBehaviour observer)
-    {
-        observers.Remove(observer);
-        foreach (PlanetariaCollider field in field_set)
+        public void register(PlanetariaMonoBehaviour observer)
         {
-            observer.exit_field(field);
+            observers.Add(observer);
+            foreach (PlanetariaCollider field in field_set)
+            {
+                observer.enter_field(field);
+            }
+            foreach (BlockCollision collision in current_collisions)
+            {
+                observer.enter_block(collision);
+            }
         }
-        foreach (BlockCollision collision in current_collisions)
-        {
-            observer.exit_block(collision);
-        }
-    }
 
-    public void enter_field(PlanetariaCollider field)
-    {
-        if (!field_set.Contains(other_collider.data)) // field triggering is handled in notify() stage
+        public void unregister(PlanetariaMonoBehaviour observer)
         {
-            field_set.Add(other_collider.data);
-            fields_entered.Add(other_collider.data);
+            observers.Remove(observer);
+            foreach (PlanetariaCollider field in field_set)
+            {
+                observer.exit_field(field);
+            }
+            foreach (BlockCollision collision in current_collisions)
+            {
+                observer.exit_block(collision);
+            }
         }
-    }
 
-    public void exit_field(PlanetariaCollider field)
-    {
-        if (field_set.Contains(other_collider.data))
+        public void enter_field(PlanetariaCollider field)
         {
-            field_set.Remove(other_collider.data);
-            fields_exited.Add(other_collider.data);
+            if (!field_set.Contains(field)) // field triggering is handled in notify() stage
+            {
+                field_set.Add(field);
+                fields_entered.Add(field);
+            }
         }
-    }
 
-    private List<PlanetariaMonoBehaviour> observers = new List<PlanetariaMonoBehaviour>();
-    private List<BlockCollision> current_collisions = new List<BlockCollision>();
-    private List<BlockCollision> collision_candidates = new List<BlockCollision>();
-    private List<PlanetariaCollider> field_set = new List<PlanetariaCollider>();
-    private List<PlanetariaCollider> fields_entered = new List<PlanetariaCollider>();
-    private List<PlanetariaCollider> fields_exited = new List<PlanetariaCollider>();
+        public void exit_field(PlanetariaCollider field)
+        {
+            if (field_set.Contains(field))
+            {
+                field_set.Remove(field);
+                fields_exited.Add(field);
+            }
+        }
+
+        public void enter_block(Arc arc, Block block, PlanetariaCollider collider)
+        {
+            if (planetaria_rigidbody.exists)
+            {
+                if (current_collisions.Count > 0 || current_collisions[0].block != block)
+                {
+                    if (block.active)
+                    {
+                        optional<BlockCollision> collision = BlockCollision.block_collision(arc, block, collider, planetaria_transformation);
+                        if (collision.exists)
+                        {
+                            collision_candidates.Add(collision.data);
+                        }
+                    }
+                }
+            }
+        }
+
+        public void block_notification(optional<BlockCollision> next_collision)
+        {
+            if (next_collision.exists)
+            {
+                foreach (PlanetariaMonoBehaviour observer in observers)
+                {
+                    observer.enter_block(next_collision.data);
+                }
+                next_collision.data.collider.block_notification(next_collision);
+                current_collisions.Clear();
+                current_collisions.Add(next_collision.data);
+            }
+        }
+
+        private PlanetariaTransform planetaria_transformation;
+        private optional<PlanetariaRigidbody> planetaria_rigidbody;
+        private List<PlanetariaMonoBehaviour> observers = new List<PlanetariaMonoBehaviour>();
+        private List<BlockCollision> current_collisions = new List<BlockCollision>();
+        private List<BlockCollision> collision_candidates = new List<BlockCollision>();
+        private List<PlanetariaCollider> field_set = new List<PlanetariaCollider>();
+        private List<PlanetariaCollider> fields_entered = new List<PlanetariaCollider>();
+        private List<PlanetariaCollider> fields_exited = new List<PlanetariaCollider>();
+    }
 }
 
 /*

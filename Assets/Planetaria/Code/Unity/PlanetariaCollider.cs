@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Linq;
+﻿using System.Linq;
 using UnityEngine;
 
 namespace Planetaria
@@ -66,13 +65,13 @@ namespace Planetaria
 
         private void Awake()
         {
-            observer = new CollisionObserver(this.GetComponentsInParent<PlanetariaMonoBehaviour>());
             GameObject child_for_collision = new GameObject("SphereCollider");
             child_for_collision.transform.parent = this.gameObject.transform;
             internal_collider = child_for_collision.transform.GetOrAddComponent<SphereCollider>();
             internal_transform = this.GetOrAddComponent<Transform>();
             planetaria_transform = this.GetOrAddComponent<PlanetariaTransform>();
             rigidbody = this.GetComponent<PlanetariaRigidbody>();
+            observer = new CollisionObserver(planetaria_transform, this.GetComponentsInParent<PlanetariaMonoBehaviour>());
             // add to collision_map and trigger_map for all objects currently intersecting (via Physics.OverlapBox()) // CONSIDER: I think Unity Fixed this, right?
         }
 
@@ -101,7 +100,7 @@ namespace Planetaria
                     }
                     else // block collision
                     {
-                        if (rigidbody.exists && !other_collider.data.rigidbody.exists)
+                        if (rigidbody.exists)
                         {
                             optional<Arc> arc = PlanetariaCache.arc_cache.get(sphere_collider.data); // C++17 if statements are so pretty compared to this...
                             if (arc.exists)
@@ -112,7 +111,7 @@ namespace Planetaria
                                     Debug.LogError("Critical Err0r.");
                                     return;
                                 }
-                                enter_block(arc.data, block.data, other_collider.data); // block collisions are handled in OnCollisionStay(): notification stage
+                                observer.enter_block(arc.data, block.data, other_collider.data); // block collisions are handled in OnCollisionStay(): notification stage
                             }
                         }
                     }
@@ -122,38 +121,6 @@ namespace Planetaria
                     if (this.is_field || other_collider.data.is_field)
                     {
                         observer.exit_field(other_collider.data);
-                    }
-                }
-            }
-        }
-        
-        private void block_notification(optional<BlockCollision> next_collision)
-        {
-            if (next_collision.exists)
-            {
-                foreach (PlanetariaMonoBehaviour listener in listeners)
-                {
-                    listener.enter_block(next_collision.data);
-                }
-                next_collision.data.collider.block_notification(next_collision);
-                current_collisions.Clear();
-                current_collisions.Add(next_collision.data);
-            }
-        }
-
-        private void enter_block(Arc arc, Block block, PlanetariaCollider collider)
-        {
-            if (rigidbody.exists)
-            {
-                if (current_collisions.Count > 0 || current_collisions[0].block != block)
-                {
-                    if (block.active)
-                    {
-                        optional<BlockCollision> collision = BlockCollision.block_collision(arc, block, collider, planetaria_transform.previous_position.data, planetaria_transform.position.data, scale);
-                        if (collision.exists)
-                        {
-                            collision_candidates.Add(collision.data);
-                        }
                     }
                 }
             }
@@ -168,8 +135,6 @@ namespace Planetaria
         private float scale_variable;
         private bool scalable = false;
         private bool is_field_variable = false;
-
-        
     }
 }
 
