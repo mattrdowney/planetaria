@@ -24,14 +24,14 @@ namespace Planetaria
         {
             if (OnFieldStay.exists)
             {
-                foreach (PlanetariaCollider field in observer.fields)
+                foreach (PlanetariaCollider field in observer.fields())
                 {
                     OnFieldStay.data(field);
                 }
             }
             if (OnBlockStay.exists)
             {
-                foreach (BlockCollision collision in observer.collisions)
+                foreach (BlockCollision collision in observer.collisions())
                 {
                     OnBlockStay.data(collision);
                 }

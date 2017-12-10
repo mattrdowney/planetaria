@@ -7,7 +7,11 @@ namespace Planetaria
 {
     public class CollisionObserver
     {
-        public CollisionObserver(PlanetariaTransform planetaria_transformation, PlanetariaMonoBehaviour[] observers)
+        public CollisionObserver()
+        {
+        }
+
+        public void initialize (PlanetariaTransform planetaria_transformation, PlanetariaMonoBehaviour[] observers)
         {
             this.planetaria_transformation = planetaria_transformation;
             this.planetaria_rigidbody = planetaria_transformation.GetComponent<PlanetariaRigidbody>();
@@ -41,7 +45,13 @@ namespace Planetaria
 
             if (next_collision.exists)
             {
-                block_notification(next_collision);
+                foreach (BlockCollision collision in current_collisions) // should only remove 1
+                {
+                    collision.collider.get_observer().exit_block(collision);
+                    this.exit_block(collision);
+                }
+                next_collision.data.collider.get_observer().enter_block(next_collision.data);
+                this.enter_block(next_collision.data);
             }
         }
 
@@ -127,18 +137,32 @@ namespace Planetaria
             }
         }
 
-        public void block_notification(optional<BlockCollision> next_collision)
+        public void enter_block(BlockCollision collision)
         {
-            if (next_collision.exists)
+            current_collisions.Add(collision);
+            foreach (PlanetariaMonoBehaviour observer in observers)
             {
-                foreach (PlanetariaMonoBehaviour observer in observers)
-                {
-                    observer.enter_block(next_collision.data);
-                }
-                next_collision.data.collider.block_notification(next_collision);
-                current_collisions.Clear();
-                current_collisions.Add(next_collision.data);
+                observer.enter_block(collision);
             }
+        }
+
+        public void exit_block(BlockCollision collision)
+        {
+            current_collisions.Remove(collision);
+            foreach (PlanetariaMonoBehaviour observer in observers)
+            {
+                observer.exit_block(collision);
+            }
+        }
+
+        public IEnumerable<BlockCollision> collisions()
+        {
+            return current_collisions;
+        }
+
+        public IEnumerable<PlanetariaCollider> fields()
+        {
+            return field_set;
         }
 
         private PlanetariaTransform planetaria_transformation;

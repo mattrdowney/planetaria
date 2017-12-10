@@ -1,6 +1,8 @@
-﻿namespace Planetaria
+﻿using UnityEngine;
+
+namespace Planetaria
 {
-    public class PlanetariaRigidbody
+    public class PlanetariaRigidbody : MonoBehaviour
     {
         private NormalizedSphericalCoordinates velocity;
     }

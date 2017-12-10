@@ -33,6 +33,11 @@ namespace Planetaria
             observer.unregister(listener);
         }
 
+        public CollisionObserver get_observer()
+        {
+            return observer;
+        }
+
         public SphereCollider get_sphere_collider()
         {
             return internal_collider;
@@ -71,7 +76,7 @@ namespace Planetaria
             internal_transform = this.GetOrAddComponent<Transform>();
             planetaria_transform = this.GetOrAddComponent<PlanetariaTransform>();
             rigidbody = this.GetComponent<PlanetariaRigidbody>();
-            observer = new CollisionObserver(planetaria_transform, this.GetComponentsInParent<PlanetariaMonoBehaviour>());
+            observer.initialize(planetaria_transform, this.GetComponentsInParent<PlanetariaMonoBehaviour>());
             // add to collision_map and trigger_map for all objects currently intersecting (via Physics.OverlapBox()) // CONSIDER: I think Unity Fixed this, right?
         }
 
@@ -126,7 +131,7 @@ namespace Planetaria
             }
         }
 
-        private CollisionObserver observer;
+        private CollisionObserver observer = new CollisionObserver();
         private Transform internal_transform;
         private PlanetariaTransform planetaria_transform;
         private SphereCollider internal_collider;
