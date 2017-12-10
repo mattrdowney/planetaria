@@ -108,8 +108,7 @@ namespace Planetaria
         }
 
         public new PlanetariaTransform transform;
-        private List<BlockCollision> collisions = new List<BlockCollision>();
-        private List<PlanetariaCollider> fields = new List<PlanetariaCollider>();
+        private CollisionObserver 
     }
 }
 

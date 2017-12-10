@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -25,30 +24,14 @@ namespace Planetaria
             }
         }
 
-        public void register(PlanetariaMonoBehaviour listener)
+        public void register(PlanetariaMonoBehaviour listener) 
         {
-            listeners.Add(listener);
-            foreach (PlanetariaCollider field in field_set)
-            {
-                listener.enter_field(field);
-            }
-            foreach (BlockCollision collision in current_collisions)
-            {
-                listener.enter_block(collision);
-            }
+            observer.register(listener);
         }
 
         public void unregister(PlanetariaMonoBehaviour listener)
         {
-            listeners.Remove(listener);
-            foreach (PlanetariaCollider field in field_set)
-            {
-                listener.exit_field(field);
-            }
-            foreach (BlockCollision collision in current_collisions)
-            {
-                listener.exit_block(collision);
-            }
+            observer.unregister(listener);
         }
 
         public SphereCollider get_sphere_collider()
@@ -83,25 +66,14 @@ namespace Planetaria
 
         private void Awake()
         {
-            listeners.AddRange(this.GetComponentsInParent<PlanetariaMonoBehaviour>());
+            observer = new CollisionObserver(this.GetComponentsInParent<PlanetariaMonoBehaviour>());
             GameObject child_for_collision = new GameObject("SphereCollider");
             child_for_collision.transform.parent = this.gameObject.transform;
             internal_collider = child_for_collision.transform.GetOrAddComponent<SphereCollider>();
             internal_transform = this.GetOrAddComponent<Transform>();
             planetaria_transform = this.GetOrAddComponent<PlanetariaTransform>();
             rigidbody = this.GetComponent<PlanetariaRigidbody>();
-            StartCoroutine(notify());
             // add to collision_map and trigger_map for all objects currently intersecting (via Physics.OverlapBox()) // CONSIDER: I think Unity Fixed this, right?
-        }
-
-        private IEnumerator notify()
-        {
-            while (true)
-            {
-                yield return new WaitForFixedUpdate();
-                field_notifications();
-                block_notifications();
-            }
         }
 
         private void OnTriggerStay(Collider collider)
@@ -125,11 +97,7 @@ namespace Planetaria
                 {
                     if (this.is_field || other_collider.data.is_field) // field collision
                     {
-                        if (!field_set.Contains(other_collider.data)) // field triggering is handled in OnCollisionStay(): notification stage
-                        {
-                            field_set.Add(other_collider.data);
-                            fields_entered.Add(other_collider.data);
-                        }
+                        observer.enter_field(other_collider.data);
                     }
                     else // block collision
                     {
@@ -148,37 +116,14 @@ namespace Planetaria
                             }
                         }
                     }
-                    /*
-                    */
                 }
                 else
                 {
                     if (this.is_field || other_collider.data.is_field)
                     {
-                        if (field_set.Contains(other_collider.data))
-                        {
-                            field_set.Remove(other_collider.data);
-                            fields_exited.Add(other_collider.data);
-                        }
+                        observer.exit_field(other_collider.data);
                     }
                 }
-            }
-        }
-
-        private void block_notifications()
-        {
-            optional<BlockCollision> next_collision = new optional<BlockCollision>();
-
-            if (collision_candidates.Count > 0)
-            {
-                next_collision = collision_candidates.Aggregate(
-                        (closest, next_candidate) =>
-                        closest.distance < next_candidate.distance ? closest : next_candidate);
-            }
-
-            if (next_collision.exists)
-            {
-                block_notification(next_collision);
             }
         }
         
@@ -194,26 +139,6 @@ namespace Planetaria
                 current_collisions.Clear();
                 current_collisions.Add(next_collision.data);
             }
-        }
-
-        private void field_notifications()
-        {
-            foreach (PlanetariaMonoBehaviour listener in listeners)
-            {
-                foreach (PlanetariaCollider field in fields_entered)
-                {
-                    listener.enter_field(field);
-                }
-            }
-            fields_entered.Clear();
-            foreach (PlanetariaMonoBehaviour listener in listeners)
-            {
-                foreach (PlanetariaCollider field in fields_exited)
-                {
-                    listener.exit_field(field);
-                }
-            }
-            fields_exited.Clear();
         }
 
         private void enter_block(Arc arc, Block block, PlanetariaCollider collider)
@@ -234,21 +159,17 @@ namespace Planetaria
             }
         }
 
+        private CollisionObserver observer;
         private Transform internal_transform;
         private PlanetariaTransform planetaria_transform;
         private SphereCollider internal_collider;
         private new optional<PlanetariaRigidbody> rigidbody;
         [SerializeField] public Sphere[] colliders = new Sphere[0]; // FIXME: private
-        private List<PlanetariaMonoBehaviour> listeners = new List<PlanetariaMonoBehaviour>();
         private float scale_variable;
         private bool scalable = false;
         private bool is_field_variable = false;
 
-        public List<BlockCollision> current_collisions = new List<BlockCollision>(); // FIXME: JANK
-        private List<BlockCollision> collision_candidates = new List<BlockCollision>(); // FIXME: move to SharedCollision class with notification properties
-        private List<PlanetariaCollider> field_set = new List<PlanetariaCollider>();
-        private List<PlanetariaCollider> fields_entered = new List<PlanetariaCollider>();
-        private List<PlanetariaCollider> fields_exited = new List<PlanetariaCollider>();
+        
     }
 }
 
