@@ -97,7 +97,7 @@ namespace Planetaria
             return intersections;
         }
 
-        public static bool field_field_intersection(Sphere[] left, Sphere[] right)
+        public static bool collider_collider_intersection(Sphere[] left, Sphere[] right)
         {
             foreach (Sphere element in left)
             {
