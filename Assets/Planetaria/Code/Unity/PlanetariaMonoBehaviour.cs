@@ -31,9 +31,9 @@ namespace Planetaria
             }
             if (OnBlockStay.exists)
             {
-                if (current_collision.exists)
+                foreach (BlockCollision collision in collisions)
                 {
-                    OnBlockStay.data(current_collision.data);
+                    OnBlockStay.data(collision);
                 }
             }
         }
@@ -65,23 +65,22 @@ namespace Planetaria
             }
         }
 
-        public void enter_block(optional<BlockCollision> collision)
+        public void enter_block(BlockCollision collision)
         {
-            if (current_collision.exists)
+            if (OnBlockEnter.exists)
             {
-                if (OnBlockExit.exists)
-                {
-                    OnBlockExit.data(current_collision.data);
-                }
+                OnBlockEnter.data(collision);
             }
-            if (collision.exists)
+            collisions.Add(collision);
+        }
+
+        public void exit_block(BlockCollision collision)
+        {
+            if (OnBlockExit.exists)
             {
-                if (OnBlockEnter.exists)
-                {
-                    OnBlockEnter.data(collision.data);
-                }
+                OnBlockExit.data(collision);
             }
-            current_collision = collision;
+            collisions.Remove(collision);
         }
 
         public void enter_field(PlanetariaCollider field)
@@ -109,7 +108,7 @@ namespace Planetaria
         }
 
         public new PlanetariaTransform transform;
-        private optional<BlockCollision> current_collision = new optional<BlockCollision>();
+        private List<BlockCollision> collisions = new List<BlockCollision>();
         private List<PlanetariaCollider> fields = new List<PlanetariaCollider>();
     }
 }

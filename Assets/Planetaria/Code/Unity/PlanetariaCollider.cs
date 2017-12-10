@@ -34,7 +34,7 @@ namespace Planetaria
             }
             foreach (BlockCollision collision in current_collisions)
             {
-                listener.enter_block(current_collision.data);
+                listener.enter_block(collision);
             }
         }
 
@@ -45,9 +45,9 @@ namespace Planetaria
             {
                 listener.exit_field(field);
             }
-            if (current_collision.exists)
+            foreach (BlockCollision collision in current_collisions)
             {
-                listener.enter_block(new optional<BlockCollision>());
+                listener.exit_block(collision);
             }
         }
 
@@ -118,20 +118,7 @@ namespace Planetaria
                 Debug.LogError("This should never happen");
                 return;
             }
-            /*
-             * Collision draft
 
-                Block instantiates as is_field = false
-                Character instantiates as is_field = false
-
-                if (!left.is_field && !right.is_field) collision
-                    dynamic sends collide_with_me message to static
-                    dynamic uses previous_position -> position to generate collision point if it exists
-                    current_collision needs to be augmented so static colliders can register multiple collisions
-
-                if (left.is_field xor right.is_field) field
-                    collide regardless
-            */
             if (!(this.is_field && other_collider.data.is_field)) // fields pass through each other (same as triggers)
             {
                 if (PlanetariaIntersection.collider_collider_intersection(this.colliders, other_collider.data.colliders))
@@ -146,7 +133,7 @@ namespace Planetaria
                     }
                     else // block collision
                     {
-                        if (rigidbody.exists)
+                        if (rigidbody.exists && !other_collider.data.rigidbody.exists)
                         {
                             optional<Arc> arc = PlanetariaCache.arc_cache.get(sphere_collider.data); // C++17 if statements are so pretty compared to this...
                             if (arc.exists)
@@ -157,7 +144,7 @@ namespace Planetaria
                                     Debug.LogError("Critical Err0r.");
                                     return;
                                 }
-                                enter_block(arc.data, block.data, other_collider.data, position); // block collisions are handled in OnCollisionStay(): notification stage
+                                enter_block(arc.data, block.data, other_collider.data); // block collisions are handled in OnCollisionStay(): notification stage
                             }
                         }
                     }
@@ -204,7 +191,8 @@ namespace Planetaria
                     listener.enter_block(next_collision.data);
                 }
                 next_collision.data.collider.block_notification(next_collision);
-                current_collision = next_collision;
+                current_collisions.Clear();
+                current_collisions.Add(next_collision.data);
             }
         }
 
@@ -228,16 +216,19 @@ namespace Planetaria
             fields_exited.Clear();
         }
 
-        private void enter_block(Arc arc, Block block, PlanetariaCollider collider, NormalizedCartesianCoordinates position)
+        private void enter_block(Arc arc, Block block, PlanetariaCollider collider)
         {
-            if (!current_collision.exists || current_collision.data.block != block)
+            if (rigidbody.exists)
             {
-                if (block.active)
+                if (current_collisions.Count > 0 || current_collisions[0].block != block)
                 {
-                    optional<BlockCollision> collision = BlockCollision.block_collision(arc, block, collider, planetaria_transform.previous_position.data, planetaria_transform.position.data, scale);
-                    if (collision.exists)
+                    if (block.active)
                     {
-                        collision_candidates.Add(collision.data);
+                        optional<BlockCollision> collision = BlockCollision.block_collision(arc, block, collider, planetaria_transform.previous_position.data, planetaria_transform.position.data, scale);
+                        if (collision.exists)
+                        {
+                            collision_candidates.Add(collision.data);
+                        }
                     }
                 }
             }
