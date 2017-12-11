@@ -21,6 +21,7 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
 
     void on_block_stay(BlockCollision collision)
     {
+        Debug.Log(Time.time);
         collision.move(0.4f*Time.deltaTime*Input.GetAxis("Horizontal"), transform.scale/2);
         transform.position = collision.position();
         transform.rotation = Bearing.angle(collision.position().data, collision.normal().data);

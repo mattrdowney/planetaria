@@ -26,6 +26,10 @@ namespace Planetaria
             while (true)
             {
                 yield return new WaitForFixedUpdate();
+                foreach (CollisionObserver observer in observers)
+                {
+                    observer.notify();
+                }
                 if (OnFieldStay.exists)
                 {
                     foreach (CollisionObserver observer in observers)

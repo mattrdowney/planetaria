@@ -12,7 +12,9 @@ namespace Planetaria
             internal_collider = internal_transformation.GetComponent<PlanetariaCollider>();
             internal_renderer = internal_transformation.GetComponent<PlanetariaRenderer>();
 
-            position = previous_position = new NormalizedCartesianCoordinates(cartesian_transform.position);
+            previous_position = position = new NormalizedCartesianCoordinates(cartesian_transform.position);
+            Debug.Log(previous_position);
+            Debug.Log(position);
             rotation = 0;
             scale = 0.1f;
         }
@@ -26,11 +28,11 @@ namespace Planetaria
         {
             get
             {
-                return position_variable.data;
+                return position_variable;
             }
             set
             {
-                previous_position = position_variable.data;
+                previous_position = position_variable;
                 position_variable = value;
             }
         }

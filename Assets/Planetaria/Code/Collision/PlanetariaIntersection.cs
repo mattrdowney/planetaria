@@ -34,6 +34,11 @@ namespace Planetaria
             Vector3[] intersections = arc_path_intersections(arc, begin, end, extrusion);
 
             // Note: the collision should be the first in front, but as long as the velocity is capped this is not an issue.
+            if (intersections.Length == 0)
+            {
+                return new optional<Vector3>();
+            }
+
             Vector3 intersection = intersections.Aggregate(
                     (closest_intersection, next_intersection) =>
                     Vector3.Dot(closest_intersection, begin.data) > Vector3.Dot(next_intersection, begin.data) ?

@@ -19,17 +19,12 @@ namespace Planetaria
             {
                 this.observers.Add(observer);
             }
-            planetaria_transformation.StartCoroutine(notify());
         }
 
-        private IEnumerator notify()
+        public void notify()
         {
-            while (true)
-            {
-                yield return new WaitForFixedUpdate();
-                field_notifications();
-                block_notifications();
-            }
+            field_notifications();
+            block_notifications();
         }
 
         private void block_notifications()
@@ -45,10 +40,15 @@ namespace Planetaria
 
             if (next_collision.exists)
             {
-                foreach (BlockCollision collision in current_collisions) // should only remove 1
+                if (current_collisions.Count == 1)
                 {
+                    BlockCollision collision = current_collisions[0];
                     collision.collider.get_observer().exit_block(collision);
                     this.exit_block(collision);
+                }
+                else if (current_collisions.Count > 1)
+                {
+                    Debug.Log("Hmmmmm");
                 }
                 next_collision.data.collider.get_observer().enter_block(next_collision.data);
                 this.enter_block(next_collision.data);
