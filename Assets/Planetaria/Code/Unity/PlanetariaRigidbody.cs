@@ -4,7 +4,16 @@ namespace Planetaria
 {
     public class PlanetariaRigidbody : MonoBehaviour
     {
-        private NormalizedSphericalCoordinates velocity;
+        private void Awake()
+        {
+            internal_rigidbody = this.GetOrAddComponent<Rigidbody>();
+            internal_rigidbody.isKinematic = true;
+            internal_rigidbody.useGravity = false;
+        }
+
+        private NormalizedSphericalCoordinates velocity; // velocity needs to be changed to at least include "direction"/Bearing
+        
+        private Rigidbody internal_rigidbody;
     }
 }
 

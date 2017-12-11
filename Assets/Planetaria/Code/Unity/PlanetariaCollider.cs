@@ -16,7 +16,7 @@ namespace Planetaria
                 scale_variable = value;
                 if (scalable)
                 {
-                    colliders = new Sphere[] { Sphere.filled_circle(internal_transform, Vector3.forward, value) };
+                    colliders = new Sphere[] { Sphere.filled_circle(internal_transform, Vector3.forward, value/2) };
                     internal_collider.center = colliders[0].center;
                     internal_collider.radius = colliders[0].radius;
                 }
@@ -99,6 +99,7 @@ namespace Planetaria
             {
                 if (PlanetariaIntersection.collider_collider_intersection(this.colliders, other_collider.data.colliders))
                 {
+                    Debug.Log(Time.time);
                     if (this.is_field || other_collider.data.is_field) // field collision
                     {
                         observer.enter_field(other_collider.data);
@@ -138,7 +139,7 @@ namespace Planetaria
         private new optional<PlanetariaRigidbody> rigidbody;
         [SerializeField] public Sphere[] colliders = new Sphere[0]; // FIXME: private
         private float scale_variable;
-        private bool scalable = false;
+        public bool scalable = false;
         private bool is_field_variable = false;
     }
 }

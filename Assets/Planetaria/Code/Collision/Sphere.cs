@@ -117,7 +117,7 @@ namespace Planetaria
             float secant = 1/Mathf.Cos(planetaria_radius);
 
             // This collider has the special property that all sphere colliders will only collide if the planetaria sphere is intersecting
-            // This is because the sphere is formed using a "conic section" from the planetaria sphere's tangent lines.
+            // This is because the sphere is formed at the focal point of a cone from the planetaria sphere's tangent lines.
             return new Sphere(transformation, axis*secant, tangent);
         }
 
