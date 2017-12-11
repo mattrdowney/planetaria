@@ -123,7 +123,7 @@ namespace Planetaria
         {
             if (planetaria_rigidbody.exists)
             {
-                if (current_collisions.Count > 0 || current_collisions[0].block != block)
+                if (current_collisions.Count == 0 || current_collisions[0].block != block)
                 {
                     if (block.active)
                     {

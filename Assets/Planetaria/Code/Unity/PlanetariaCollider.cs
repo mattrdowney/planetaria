@@ -23,7 +23,7 @@ namespace Planetaria
             }
         }
 
-        public void register(PlanetariaMonoBehaviour listener) 
+        public void register(PlanetariaMonoBehaviour listener)
         {
             observer.register(listener);
         }
@@ -99,13 +99,14 @@ namespace Planetaria
             {
                 if (PlanetariaIntersection.collider_collider_intersection(this.colliders, other_collider.data.colliders))
                 {
-                    Debug.Log(Time.time);
                     if (this.is_field || other_collider.data.is_field) // field collision
                     {
+                        Debug.Log("Field: " + this.is_field + Time.time);
                         observer.enter_field(other_collider.data);
                     }
                     else // block collision
                     {
+                        Debug.Log("Block: " + Time.time);
                         if (rigidbody.exists)
                         {
                             optional<Arc> arc = PlanetariaCache.arc_cache.get(sphere_collider.data); // C++17 if statements are so pretty compared to this...

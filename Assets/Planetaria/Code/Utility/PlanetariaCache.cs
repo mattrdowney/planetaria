@@ -23,7 +23,7 @@ namespace Planetaria
                         optional<Transform> transformation = (block.is_dynamic ? block.gameObject.transform : null);
                         Sphere[] colliders = Sphere.arc_collider(transformation, arc.data);
                         collider.set_colliders(colliders);
-                        collider.is_field = true;
+                        collider.is_field = false;
                         sphere_collider.isTrigger = true;
 
                         PlanetariaCache.arc_cache.cache(sphere_collider, arc.data);

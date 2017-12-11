@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Planetaria
@@ -20,20 +21,30 @@ namespace Planetaria
         protected optional<TriggerDelegate> OnFieldExit = null;
         protected optional<TriggerDelegate> OnFieldStay = null;
 
-        private void OnCollisionStay()
+        private IEnumerator wait_for_fixed_update()
         {
-            if (OnFieldStay.exists)
+            while (true)
             {
-                foreach (PlanetariaCollider field in observer.fields())
+                yield return new WaitForFixedUpdate();
+                if (OnFieldStay.exists)
                 {
-                    OnFieldStay.data(field);
+                    foreach (CollisionObserver observer in observers)
+                    {
+                        foreach (PlanetariaCollider field in observer.fields())
+                        {
+                            OnFieldStay.data(field);
+                        }
+                    }
                 }
-            }
-            if (OnBlockStay.exists)
-            {
-                foreach (BlockCollision collision in observer.collisions())
+                if (OnBlockStay.exists)
                 {
-                    OnBlockStay.data(collision);
+                    foreach (CollisionObserver observer in observers)
+                    {
+                        foreach (BlockCollision collision in observer.collisions())
+                        {
+                            OnBlockStay.data(collision);
+                        }
+                    }
                 }
             }
         }
@@ -44,12 +55,14 @@ namespace Planetaria
             foreach (PlanetariaCollider collider in this.GetComponentsInChildren<PlanetariaCollider>())
             {
                 collider.register(this);
+                observers.Add(collider.get_observer());
             }
             // FIXME: still need to cache (properly)
             if (OnConstruction.exists)
             {
                 OnConstruction.data();
             }
+            StartCoroutine(wait_for_fixed_update());
         }
 
         private void OnDestroy()
@@ -98,7 +111,7 @@ namespace Planetaria
         }
 
         public new PlanetariaTransform transform;
-        private CollisionObserver observer;
+        private List<CollisionObserver> observers = new List<CollisionObserver>();
     }
 }
 
