@@ -56,7 +56,7 @@ namespace Planetaria
         /// If there are zero or infinite solutions, returns an empty array;
         /// If there are one or two solutions, returns an array with two Cartesian coordinates.
         /// </returns>
-        public static Vector3[] circle_circle_intersections(GeospatialCircle a, GeospatialCircle b)
+        public static Vector3[] circle_circle_intersections(GeospatialCircle a, GeospatialCircle b) // https://gis.stackexchange.com/questions/48937/calculating-intersection-of-two-circles
         {
             float similarity = Vector3.Dot(a.center, b.center);
 
@@ -114,6 +114,13 @@ namespace Planetaria
                     }
                 }
             }
+            foreach (Sphere element in left)
+            {
+                foreach (Sphere sub_element in right)
+                {
+                    Debug.DrawLine(element.center, sub_element.center, Color.yellow, 10f);
+                }
+            }
             return true;
         }
 
@@ -130,7 +137,7 @@ namespace Planetaria
             for (int intersection_index = 0; intersection_index < intersections.Length; ++intersection_index)
             {
                 float angle = arc.position_to_angle(intersections[intersection_index]);
-                if (angle <= arc.angle())
+                if (angle < arc.angle())
                 {
                     System.Array.Resize(ref results, results.Length + 1);
                     results[results.Length-1] = intersections[intersection_index];

@@ -9,20 +9,35 @@ namespace Planetaria
             optional<ArcVisitor> arc_visitor = block.arc_visitor(arc);
             if (!arc_visitor.exists)
             {
+                Debug.LogError("This should never happen");
                 return new optional<BlockCollision>();
             }
             NormalizedCartesianCoordinates begin = transformation.previous_position;
             NormalizedCartesianCoordinates end = transformation.position;
             float extrusion = transformation.scale;
-            optional<Vector3> intersection_point = PlanetariaIntersection.arc_path_intersection(arc, begin, end, extrusion); //TODO: check .data
+            optional<Vector3> intersection_point = PlanetariaIntersection.arc_path_intersection(arc, begin, end, extrusion);
+            if (!intersection_point.exists) // theoretically only happens with moving objects for discrete collision checks
+            {
+                Debug.LogError(transformation.position.data.ToString("F6"));
+                // these functions are general inverses of one another, but also serve to constrain/normalize the position to the arc path.
+                float intersection_angle = arc.position_to_angle(transformation.position.data);
+                Debug.LogError(intersection_angle);
+                Debug.LogError(arc.angle());
+                if (intersection_angle < arc.angle()) // if the intersection is valid
+                {
+                    intersection_point = arc.position(intersection_angle); // set the collision to the extruded collision point
+                }
+            }
             if (!intersection_point.exists)
             {
+                Debug.LogError("Research why this happened.");
                 return new optional<BlockCollision>();
             }
+            Debug.LogError(intersection_point.data);
             BlockCollision result = new BlockCollision();
             float angle = arc.position_to_angle(intersection_point.data);
             result.geometry_visitor = GeometryVisitor.geometry_visitor(arc_visitor.data, angle, extrusion);
-            result.distance = (intersection_point.data - transformation.position.data).sqrMagnitude;
+            result.distance = (intersection_point.data - transformation.position.data).magnitude;
             result.block = block;
             result.collider = collider;
             result.active = true;

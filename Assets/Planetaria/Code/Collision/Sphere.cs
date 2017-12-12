@@ -24,11 +24,8 @@ namespace Planetaria
 
         private static Sphere[] circle_collider(optional<Transform> transformation, Vector3 axis, float planetaria_radius)
         {
-            bool convex = Mathf.Sign(planetaria_radius) == +1; // no concave edges
             planetaria_radius = Mathf.Abs(planetaria_radius);
-            bool within_planetarium = planetaria_radius < Precision.max_sphere_radius; // so collisions don't happen with other planetariums
-
-            if (convex && within_planetarium)
+            if (planetaria_radius < Precision.threshold)
             {
                 return new Sphere[1] { Sphere.filled_circle(transformation, axis, planetaria_radius) };
             }

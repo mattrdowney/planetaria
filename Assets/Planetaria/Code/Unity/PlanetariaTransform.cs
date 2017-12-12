@@ -13,8 +13,6 @@ namespace Planetaria
             internal_renderer = internal_transformation.GetComponent<PlanetariaRenderer>();
 
             previous_position = position = new NormalizedCartesianCoordinates(cartesian_transform.position);
-            Debug.Log(previous_position);
-            Debug.Log(position);
             rotation = 0;
             scale = 0.1f;
         }

@@ -128,7 +128,13 @@ namespace Planetaria
             float x = Vector3.Dot(position, forward_axis);
             float y = Vector3.Dot(position, right_axis);
             float angle = Mathf.Atan2(y,x);
-            return angle >= 0 ? angle : angle + 2*Mathf.PI;
+            float result = (angle >= 0 ? angle : angle + 2*Mathf.PI);
+            if (float.IsNaN(result) || float.IsInfinity(result))
+            {
+                result = this.angle();
+            }
+            Debug.Assert(result >= 0);
+            return result;
         }
 
         /// <summary>

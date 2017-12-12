@@ -106,7 +106,6 @@ namespace Planetaria
                     }
                     else // block collision
                     {
-                        Debug.Log("Block: " + Time.time);
                         if (rigidbody.exists)
                         {
                             optional<Arc> arc = PlanetariaCache.arc_cache.get(sphere_collider.data); // C++17 if statements are so pretty compared to this...
@@ -118,6 +117,9 @@ namespace Planetaria
                                     Debug.LogError("Critical Err0r.");
                                     return;
                                 }
+
+                                Debug.DrawRay(arc.data.position(arc.data.angle()/2), arc.data.normal(arc.data.angle()/2), Color.gray, 10f);
+
                                 observer.enter_block(arc.data, block.data, other_collider.data); // block collisions are handled in OnCollisionStay(): notification stage
                             }
                         }

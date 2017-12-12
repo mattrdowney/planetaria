@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -29,29 +28,25 @@ namespace Planetaria
 
         private void block_notifications()
         {
-            optional<BlockCollision> next_collision = new optional<BlockCollision>();
-
             if (collision_candidates.Count > 0)
             {
-                next_collision = collision_candidates.Aggregate(
+                BlockCollision next_collision = collision_candidates.Aggregate(
                         (closest, next_candidate) =>
                         closest.distance < next_candidate.distance ? closest : next_candidate);
-            }
 
-            if (next_collision.exists)
-            {
-                if (current_collisions.Count == 1)
+                if (current_collisions.Count > 1)
                 {
-                    BlockCollision collision = current_collisions[0];
+                    Debug.LogError("This should never happen.");
+                }
+
+                while (current_collisions.Count > 0)
+                {
+                    BlockCollision collision = current_collisions[current_collisions.Count - 1];
                     collision.collider.get_observer().exit_block(collision);
                     this.exit_block(collision);
                 }
-                else if (current_collisions.Count > 1)
-                {
-                    Debug.Log("Hmmmmm");
-                }
-                next_collision.data.collider.get_observer().enter_block(next_collision.data);
-                this.enter_block(next_collision.data);
+                next_collision.collider.get_observer().enter_block(next_collision);
+                this.enter_block(next_collision);
             }
         }
 
