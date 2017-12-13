@@ -1,39 +1,42 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class SubdividedOctahedronSphere
+namespace Planetaria
 {
-    public static SubdividedOctahedronSphere generate(int level_of_detail)
+    public class SubdividedOctahedronSphere
     {
-        if (level_of_detail > 127)
+        public static SubdividedOctahedronSphere generate(int level_of_detail)
         {
-            Debug.LogError("Maximum resolution limited to 127 due to 65536 vertex constraint");
-            level_of_detail = 127;
+            if (level_of_detail > 127)
+            {
+                Debug.LogError("Maximum resolution limited to 127 due to 65536 vertex constraint");
+                level_of_detail = 127;
+            }
+            else if (level_of_detail < 1)
+            {
+                Debug.LogError("Minimum resolution limited to 1 (i.e. an 8 vertex octahedron)");
+                level_of_detail = 1;
+            }
+            int size = level_of_detail*2;
+            return new SubdividedOctahedronSphere(size);
         }
-        else if (level_of_detail < 1)
+
+        public Mesh get_shared_mesh()
         {
-            Debug.LogError("Minimum resolution limited to 1 (i.e. an 8 vertex octahedron)");
-            level_of_detail = 1;
+            return shared_mesh;
         }
-        int size = level_of_detail*2;
-        return new SubdividedOctahedronSphere(size);
+
+        private SubdividedOctahedronSphere(int size) // size is a positive multiple of 2 for convenience
+        {
+            int triangle_count = 2*size*size; // smallest octahedron is 2*2*2 (or eight faces) [8 triangles in UV coordinates]
+            int vertex_count = (size+1)*(size+1); // smallest octahedron defines up, right, forward, left, back, down x 4 [a 3x3 grid in UV coordinates]
+
+            int identifier = 0;
+            optional<Vertex>[,] vertices = new optional<Vertex>[size+1, size+1];
+
+        }
+
+        private Mesh shared_mesh;
     }
-
-    public Mesh get_shared_mesh()
-    {
-        return shared_mesh;
-    }
-
-    private SubdividedOctahedronSphere(int size) // size is a positive multiple of 2 for convenience
-    {
-        int triangle_count = 2*size*size; // smallest octahedron is 2*2*2 (or eight faces) [8 triangles in UV coordinates]
-        int vertex_count = (size+1)*(size+1); // smallest octahedron defines up, right, forward, left, back, down x 4 [a 3x3 grid in UV coordinates]
-
-
-    }
-
-    private Mesh shared_mesh;
 }
 
 /*

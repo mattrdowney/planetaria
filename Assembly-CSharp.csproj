@@ -138,6 +138,7 @@
      <Compile Include="Assets\Planetaria\Code\Rendering\RenderVectorGraphics.cs" />
      <Compile Include="Assets\Planetaria\Code\Rendering\ShapeRenderer.cs" />
      <Compile Include="Assets\Planetaria\Code\Rendering\VectorGraphicsWriter.cs" />
+     <Compile Include="Assets\Planetaria\Code\Rendering\Vertex.cs" />
      <Compile Include="Assets\Planetaria\Code\Rendering\VolumeRenderer.cs" />
      <Compile Include="Assets\Planetaria\Code\Snippets\PlanetariaCharacter.cs" />
      <Compile Include="Assets\Planetaria\Code\Tracker\PlanetariaLookingStrategy.cs" />
