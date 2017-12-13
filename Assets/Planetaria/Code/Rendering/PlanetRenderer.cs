@@ -22,6 +22,7 @@ namespace Planetaria
             internal_mesh_filter.sharedMesh = Octahedron.octahedron_mesh();
         }
 
+        //private static Mesh shared_mesh_variable; // Needs observer pattern
         private MeshFilter internal_mesh_filter;
     }
 }
