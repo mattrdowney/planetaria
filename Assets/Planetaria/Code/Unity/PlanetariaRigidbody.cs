@@ -11,8 +11,14 @@ namespace Planetaria
             internal_rigidbody.useGravity = false;
         }
 
-        private NormalizedSphericalCoordinates velocity; // velocity needs to be changed to at least include "direction"/Bearing
-        
+        private NormalizedCartesianCoordinates position;
+        private NormalizedCartesianCoordinates gravity_well; // The south pole towards which the object will accelerate
+        private float gravity;
+        private bool orbit_gravity_well; // is the object's velocity relative to gravity_well.
+        private NormalizedCartesianCoordinates velocity_pivot; // used when orbit_gravity_well = false
+        private float horizontal_speed;
+        private float vertical_speed; // used when orbit_gravity_well = true
+
         private Rigidbody internal_rigidbody;
     }
 }
