@@ -16,9 +16,9 @@ namespace Planetaria
             {
                 octahedron = new Mesh();
 
-                octahedron.data.vertices = initialize_vertex_array();
-                octahedron.data.uv = initialize_uv_array();
-                octahedron.data.triangles = initialize_triangle_array();
+                octahedron.data.vertices = vertex_list;
+                octahedron.data.uv = uv_list;
+                octahedron.data.triangles = triangle_list;
 
                 octahedron.data.RecalculateBounds();
                 octahedron.data.RecalculateNormals();
@@ -98,68 +98,50 @@ namespace Planetaria
         }
 
         /// <summary>
-        /// Inspector - Set up the six mesh corners (vertices) of the octahedron.
+        /// the six mesh corners (vertices) of the octahedron.
         /// </summary>
-        /// <returns>List of vertices for an octahedron.</returns>
-        private static Vector3[] initialize_vertex_array()
+        private static readonly Vector3[] vertex_list =
         {
-            Vector3[] vertex_array = new Vector3[9];
-
-            vertex_array[0] = Vector3.up;
-            vertex_array[1] = Vector3.right;
-            vertex_array[2] = Vector3.forward;
-            vertex_array[3] = Vector3.left;
-            vertex_array[4] = Vector3.back;
-            vertex_array[5] = Vector3.down;
-            vertex_array[6] = Vector3.down;
-            vertex_array[7] = Vector3.down;
-            vertex_array[8] = Vector3.down;
-
-            return vertex_array;
-        }
+                Vector3.up,
+                Vector3.right,
+                Vector3.forward,
+                Vector3.left,
+                Vector3.back,
+                Vector3.down, Vector3.down, Vector3.down, Vector3.down
+        };
 
         /// <summary>
-        /// Inspector - Set up the UVs for the six mesh corners (vertices) of the octahedron.
+        /// the UVs for the six mesh corners (vertices) of the octahedron.
         /// </summary>
-        /// <returns>List of UVs for an octahedron.</returns>
-        private static Vector2[] initialize_uv_array()
+        private static readonly Vector2[] uv_list =
         {
-            Vector2[] uv_array = new Vector2[9];
-
-            uv_array[0] = new Vector2(0.5f, 0.5f); // up
-            uv_array[1] = new Vector2(1.0f, 0.5f); // right
-            uv_array[2] = new Vector2(0.5f, 1.0f); // forward
-            uv_array[3] = new Vector2(0.0f, 0.5f); // left
-            uv_array[4] = new Vector2(0.5f, 0.0f); // back
-            uv_array[5] = new Vector2(1.0f, 1.0f); // down
-            uv_array[6] = new Vector2(0.0f, 1.0f); // down
-            uv_array[7] = new Vector2(0.0f, 0.0f); // down
-            uv_array[8] = new Vector2(1.0f, 0.0f); // down
-
-            return uv_array;
-        }
+            new Vector2(0.5f, 0.5f), // up
+            new Vector2(1.0f, 0.5f), // right
+            new Vector2(0.5f, 1.0f), // forward
+            new Vector2(0.0f, 0.5f), // left
+            new Vector2(0.5f, 0.0f), // back
+            new Vector2(1.0f, 1.0f), // down
+            new Vector2(0.0f, 1.0f), // down
+            new Vector2(0.0f, 0.0f), // down
+            new Vector2(1.0f, 0.0f) // down
+        };
 
         /// <summary>
-        /// Inspector - Set up the triplet indices that define the triangles of the octahedron.
+        /// the triplet indices that define the triangles of the octahedron.
         /// </summary>
-        /// <returns>A list of index triplets that define the triangles in the octahedron.</returns>
-        private static int[] initialize_triangle_array()
+        private static readonly int[] triangle_list =
         {
-            int[] triangle_array = new int[3 * 8];
-
             // Note: normally, Unity's winding order is clockwise,
             // this uses counter-clockwise ordering because the octahedron is "inside-out"
-            triangle_array[0] = 0; triangle_array[1] = 1; triangle_array[2] = 2; //+x, +y, +z
-            triangle_array[3] = 0; triangle_array[4] = 2; triangle_array[5] = 3; //-x, +y, +z
-            triangle_array[6] = 5; triangle_array[7] = 2; triangle_array[8] = 1; //+x, -y, +z
-            triangle_array[9] = 6; triangle_array[10] = 3; triangle_array[11] = 2; //-x, -y, +z
-            triangle_array[12] = 0; triangle_array[13] = 4; triangle_array[14] = 1; //+x, +y, -z
-            triangle_array[15] = 0; triangle_array[16] = 3; triangle_array[17]  = 4; //-x, +y, -z
-            triangle_array[18] = 8; triangle_array[19] = 1; triangle_array[20] = 4; //+x, -y, -z
-            triangle_array[21] = 7; triangle_array[22] = 4; triangle_array[23] = 3; //-x, -y, -z
-
-            return triangle_array;
-        }
+            0, 1, 2, //+x, +y, +z
+            0, 2, 3, //-x, +y, +z
+            5, 2, 1, //+x, -y, +z
+            6, 3, 2, //-x, -y, +z
+            0, 4, 1, //+x, +y, -z
+            0, 3, 4, //-x, +y, -z
+            8, 1, 4, //+x, -y, -z
+            7, 4, 3 //-x, -y, -z
+        };
 
         private static Vector3 get_vector<Vector>(Vector vector) // HACK: (I still think this makes the code easier to read than the alternative)
         {

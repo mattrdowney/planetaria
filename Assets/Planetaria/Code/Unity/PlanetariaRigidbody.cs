@@ -11,13 +11,18 @@ namespace Planetaria
             internal_rigidbody.useGravity = false;
         }
 
+        // position
         private NormalizedCartesianCoordinates position;
+
+        // velocity
+        private NormalizedCartesianCoordinates velocity_pivot; // used when orbit_gravity_well = false, recalculates every frame?
+        private float horizontal_velocity;
+        private float vertical_velocity; // used when orbit_gravity_well = true
+
+        // gravity/acceleration
         private NormalizedCartesianCoordinates gravity_well; // The south pole towards which the object will accelerate
-        private float gravity;
+        private float gravity; // gravity is constant
         private bool orbit_gravity_well; // is the object's velocity relative to gravity_well.
-        private NormalizedCartesianCoordinates velocity_pivot; // used when orbit_gravity_well = false
-        private float horizontal_speed;
-        private float vertical_speed; // used when orbit_gravity_well = true
 
         private Rigidbody internal_rigidbody;
     }
