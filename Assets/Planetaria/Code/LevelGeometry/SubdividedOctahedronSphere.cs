@@ -16,8 +16,11 @@ namespace Planetaria
                 Debug.LogError("Minimum resolution limited to 1 (i.e. an 8 vertex octahedron)");
                 level_of_detail = 1;
             }
-            int size = level_of_detail*2;
-            return new SubdividedOctahedronSphere(size);
+
+            SubdividedOctahedronSphere result = new SubdividedOctahedronSphere();
+            result.shared_mesh = SubdividedOctahedronSphereBuilder.generate(level_of_detail);
+
+            return result;
         }
 
         public Mesh get_shared_mesh()
@@ -25,17 +28,88 @@ namespace Planetaria
             return shared_mesh;
         }
 
-        private SubdividedOctahedronSphere(int size) // size is a positive multiple of 2 for convenience
+        private Mesh shared_mesh;
+    }
+
+    internal class SubdividedOctahedronSphereBuilder
+    {
+        public static Mesh generate(int level_of_detail)
         {
-            int triangle_count = 2*size*size; // smallest octahedron is 2*2*2 (or eight faces) [8 triangles in UV coordinates]
-            int vertex_count = (size+1)*(size+1); // smallest octahedron defines up, right, forward, left, back, down x 4 [a 3x3 grid in UV coordinates]
+            quadrant_size = level_of_detail;
+            size = 2*quadrant_size;
+            triangle_count = 2*size*size; // smallest octahedron is 2*2*2 (or eight faces) [8 triangles in UV coordinates]
+            vertex_count = (size+1)*(size+1); // smallest octahedron defines up, right, forward, left, back, down x 4 [a 3x3 grid in UV coordinates]
 
-            int identifier = 0;
-            optional<Vertex>[,] vertices = new optional<Vertex>[size+1, size+1];
+            uvs = new Vector2[size+1, size+1];
+            positions = new Vector3[size+1, size+1];
+            for (int row = 0; row < size+1; ++row)
+            {
+                float v = row / (float) size;
+                for (int column = 0; column < size+1; ++column)
+                {
+                    float u = column / (float) size;
+                    uvs[row, column] = new Vector2(u,v);
+                    positions[row, column] = ((NormalizedCartesianCoordinates) new OctahedralUVCoordinates(u, v)).data;
+                }
+            }
 
+            triangles = new int[triangle_count];
+            identifiers = new optional<ushort>[size+1, size+1];
+            next_identifier = 0;
         }
 
-        private Mesh shared_mesh;
+        private static void create_triangle_strip(Vector2 begin, Vector2 constant_direction, Vector2 variable_direction, int triangles, bool constant_direction_first)
+        {
+            if (constant_direction_first)
+            {
+                constant_first_triangle_strip(begin, constant_direction, variable_direction, triangles);
+            }
+            else
+            {
+                variable_first_triangle_strip(begin, constant_direction, variable_direction, triangles);
+            }
+        }
+
+        private static void constant_first_triangle_strip(Vector2 begin, Vector2 constant_direction, Vector2 variable_direction, int triangles)
+        {
+            Vector2 current_position = begin;
+            while (triangles > 0)
+            {
+                Vector2 triangle_start = current_position;
+                Vector2 triangle_corner = triangle_start + constant_direction;
+                Vector2 triangle_end = triangle_corner + variable_direction;
+
+                //variable_direction = current_position - triangle_end; // ORDER DEPENDENCY
+                current_position = triangle_end; // ORDER DEPENDENCY
+                --triangles;
+            }
+        }
+
+        private static void variable_first_triangle_strip(Vector2 begin, Vector2 constant_direction, Vector2 variable_direction, int triangles)
+        {
+            Vector2 current_position = begin;
+            while (triangles > 0)
+            {
+                Vector2 triangle_start = current_position;
+                Vector2 triangle_corner = triangle_start + variable_direction;
+                Vector2 triangle_end = triangle_corner + constant_direction;
+
+                //first_direction = current_position - triangle_end; // ORDER DEPENDENCY
+                current_position = triangle_end; // ORDER DEPENDENCY
+                --triangles;
+            }
+        }
+
+        private static int quadrant_size;
+        private static int size;
+        private static int triangle_count;
+        private static int vertex_count;
+        private static int next_identifier;
+
+        private static Vector3[,] positions;
+        private static Vector2[,] uvs;
+        private static optional<ushort>[,] identifiers;
+        private static int[] triangles;
     }
 }
 
