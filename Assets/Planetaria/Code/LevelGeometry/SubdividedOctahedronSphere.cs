@@ -65,20 +65,11 @@ namespace Planetaria
         private static void create_tesselated_octahedron_sphere()
         {
             Vector2 current_position = new Vector2(0,0);
-            current_position = create_triangle_wedge_from_apex(current_position, new Vector2
+            current_position = create_triangle_wedge_from_apex(current_position, new Vector2[] { Vector2.left, new Vector2(+1, -1), Vector2.down }, quadrant_size);
+            current_position = create_triangle_wedge_from_base(current_position, new Vector2[] { new Vector2(+1, -1), Vector2.left, Vector2.up }, quadrant_size);
+            current_position = create_triangle_wedge_from_apex(current_position, new Vector2[] { Vector2.right, new Vector2(-1, -1), Vector2.down }, quadrant_size);
+            current_position = create_triangle_wedge_from_apex(current_position, new Vector2[] { new Vector2(-1, -1), Vector3.right, Vector2.up }, quadrant_size);
             current_position = new Vector2(size,size);
-        }
-
-        private static Vector2 create_triangle_wedge(Vector2 begin, Vector2[] direction_triplet, int order, bool increasing)
-        {
-            if (increasing)
-            {
-                return create_triangle_wedge_from_apex(begin, direction_triplet, order);
-            }
-            else
-            {
-                return create_triangle_wedge_from_apex(begin, direction_triplet, order);
-            }
         }
 
         private static Vector2 create_triangle_wedge_from_base(Vector2 begin, Vector2[] direction_triplet, int order)
@@ -86,13 +77,14 @@ namespace Planetaria
             Vector2 current_position = begin;
             for (int row = 0; row < order; ++row)
             {
+                int strip_size = 2*(order-1-row) + 1;
                 if (row % 2 == 0) // even steps
                 {
-                    current_position = create_triangle_strip(current_position, direction_triplet[0], direction_triplet[1], 2*row + 1, true);
+                    current_position = constant_first_triangle_strip(current_position, direction_triplet[0], direction_triplet[1], strip_size);
                 }
                 else // odd steps
                 {
-                    current_position = create_triangle_strip(current_position, -direction_triplet[0], direction_triplet[2], 2*row + 1, true);
+                    current_position = constant_first_triangle_strip(current_position, -direction_triplet[0], direction_triplet[2], strip_size);
                 }
             }
             return current_position;
@@ -103,28 +95,17 @@ namespace Planetaria
             Vector2 current_position = begin;
             for (int row = 0; row < order; ++row)
             {
+                int strip_size = 2*row + 1;
                 if (row % 2 == 0) // even steps
                 {
-                    current_position = create_triangle_strip(current_position, direction_triplet[1], direction_triplet[0], 2*row + 1, false);
+                    current_position = variable_first_triangle_strip(current_position, direction_triplet[1], direction_triplet[0], strip_size);
                 }
                 else // odd steps
                 {
-                    current_position = create_triangle_strip(current_position, -direction_triplet[1], direction_triplet[2], 2*row + 1, false);
+                    current_position = variable_first_triangle_strip(current_position, -direction_triplet[1], direction_triplet[2], strip_size);
                 }
             }
             return current_position;
-        }
-
-        private static Vector2 create_triangle_strip(Vector2 begin, Vector2 constant_direction, Vector2 variable_direction, int triangles, bool constant_direction_first)
-        {
-            if (constant_direction_first)
-            {
-                return constant_first_triangle_strip(begin, constant_direction, variable_direction, triangles);
-            }
-            else
-            {
-                return variable_first_triangle_strip(begin, constant_direction, variable_direction, triangles);
-            }
         }
 
         private static Vector2 constant_first_triangle_strip(Vector2 begin, Vector2 constant_direction, Vector2 variable_direction, int triangles)
