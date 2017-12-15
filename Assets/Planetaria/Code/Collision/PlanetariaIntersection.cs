@@ -114,13 +114,6 @@ namespace Planetaria
                     }
                 }
             }
-            foreach (Sphere element in left)
-            {
-                foreach (Sphere sub_element in right)
-                {
-                    Debug.DrawLine(element.center, sub_element.center, Color.yellow, 10f);
-                }
-            }
             return true;
         }
 

@@ -101,7 +101,6 @@ namespace Planetaria
                 {
                     if (this.is_field || other_collider.data.is_field) // field collision
                     {
-                        Debug.Log("Field: " + this.is_field + Time.time);
                         observer.enter_field(other_collider.data);
                     }
                     else // block collision
@@ -117,9 +116,6 @@ namespace Planetaria
                                     Debug.LogError("Critical Err0r.");
                                     return;
                                 }
-
-                                Debug.DrawRay(arc.data.position(arc.data.angle()/2), arc.data.normal(arc.data.angle()/2), Color.gray, 10f);
-
                                 observer.enter_block(arc.data, block.data, other_collider.data); // block collisions are handled in OnCollisionStay(): notification stage
                             }
                         }

@@ -86,16 +86,17 @@ namespace Planetaria
 
         private static void create_triangle_wedge_from_base(Vector2[] direction_triplet)
         {
+            float direction = (quadrant_size % 2 == 0 ? +1 : -1);
             for (int row = 0; row < quadrant_size; ++row)
             {
                 int strip_size = 2*(quadrant_size-1-row) + 1;
                 if (row % 2 == 0) // even steps
                 {
-                    constant_first_triangle_strip(direction_triplet[0], direction_triplet[1], strip_size);
+                    constant_first_triangle_strip(direction*direction_triplet[0], direction_triplet[1], strip_size);
                 }
                 else // odd steps
                 {
-                    constant_first_triangle_strip(-direction_triplet[0], direction_triplet[2], strip_size);
+                    constant_first_triangle_strip(-direction*direction_triplet[0], direction_triplet[2], strip_size);
                 }
             }
         }
@@ -150,13 +151,10 @@ namespace Planetaria
 
         private static void create_triangle(Vector2[] corners)
         {
-            bool print = true;
             foreach (Vector2 corner in corners)
             {
                 int x = Mathf.RoundToInt(corner.x);
                 int y = Mathf.RoundToInt(corner.y);
-
-                Debug.Log(x + ", " + y);
 
                 Vector3 position = positions[x,y];
                 Vector2 uv = uvs[x,y];
@@ -169,15 +167,6 @@ namespace Planetaria
                 }
                 identifier = identifiers[x,y].data;
                 triangles[next_triangle++] = identifier;
-            }
-
-            if (print)
-            {
-                Color color = Color.HSVToRGB((next_identifier*.1f) % 1, 1, 1);
-                color.a = .6f;
-                Debug.DrawLine(corners[0] + Vector2.up*10, corners[1] + Vector2.up*10, color, 10f);
-                Debug.DrawLine(corners[1] + Vector2.up*10, corners[2] + Vector2.up*10, color, 10f);
-                Debug.DrawLine(corners[2] + Vector2.up*10, corners[0] + Vector2.up*10, color, 10f);
             }
         }
 
