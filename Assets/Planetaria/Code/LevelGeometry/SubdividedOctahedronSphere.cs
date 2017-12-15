@@ -54,63 +54,70 @@ namespace Planetaria
             }
 
             triangles = new int[triangle_count];
-            vertex_uvs = new Vector2[vertex_count];
+            vertex_uv = new Vector2[vertex_count];
             vertex_positions = new Vector3[vertex_count];
 
             identifiers = new optional<ushort>[size+1, size+1];
             next_identifier = 0;
             next_triangle = 0;
+
+            create_tesselated_octahedron_sphere();
+
+            Mesh shared_mesh = new Mesh();
+            shared_mesh.vertices = vertex_positions;
+            shared_mesh.uv = vertex_uv;
+            shared_mesh.triangles = triangles;
+            return shared_mesh;
         }
 
         private static void create_tesselated_octahedron_sphere()
         {
-            Vector2 current_position = new Vector2(0,0);
-            current_position = create_triangle_wedge_from_apex(current_position, new Vector2[] { Vector2.left, new Vector2(+1, -1), Vector2.down }, quadrant_size);
-            current_position = create_triangle_wedge_from_base(current_position, new Vector2[] { new Vector2(+1, -1), Vector2.left, Vector2.up }, quadrant_size);
-            current_position = create_triangle_wedge_from_apex(current_position, new Vector2[] { Vector2.right, new Vector2(-1, -1), Vector2.down }, quadrant_size);
-            current_position = create_triangle_wedge_from_apex(current_position, new Vector2[] { new Vector2(-1, -1), Vector3.right, Vector2.up }, quadrant_size);
+            current_position = Vector2.zero;
+            create_triangle_wedge_from_apex(new Vector2[] { Vector2.right, new Vector2(-1, +1), Vector2.up });
+            create_triangle_wedge_from_base(new Vector2[] { new Vector2(-1, +1), Vector2.right, Vector2.down });
+            create_triangle_wedge_from_apex(new Vector2[] { Vector2.left, new Vector2(+1, +1), Vector2.up });
+            create_triangle_wedge_from_base(new Vector2[] { new Vector2(+1, +1), Vector3.left, Vector2.down });
             current_position = new Vector2(size,size);
+            create_triangle_wedge_from_apex(new Vector2[] { Vector2.left, new Vector2(+1, -1), Vector2.down });
+            create_triangle_wedge_from_base(new Vector2[] { new Vector2(+1, -1), Vector2.left, Vector2.up });
+            create_triangle_wedge_from_apex(new Vector2[] { Vector2.right, new Vector2(-1, -1), Vector2.down });
+            create_triangle_wedge_from_base(new Vector2[] { new Vector2(-1, -1), Vector3.right, Vector2.up });
         }
 
-        private static Vector2 create_triangle_wedge_from_base(Vector2 begin, Vector2[] direction_triplet, int order)
+        private static void create_triangle_wedge_from_base(Vector2[] direction_triplet)
         {
-            Vector2 current_position = begin;
-            for (int row = 0; row < order; ++row)
+            for (int row = 0; row < quadrant_size; ++row)
             {
-                int strip_size = 2*(order-1-row) + 1;
+                int strip_size = 2*(quadrant_size-1-row) + 1;
                 if (row % 2 == 0) // even steps
                 {
-                    current_position = constant_first_triangle_strip(current_position, direction_triplet[0], direction_triplet[1], strip_size);
+                    constant_first_triangle_strip(direction_triplet[0], direction_triplet[1], strip_size);
                 }
                 else // odd steps
                 {
-                    current_position = constant_first_triangle_strip(current_position, -direction_triplet[0], direction_triplet[2], strip_size);
+                    constant_first_triangle_strip(-direction_triplet[0], direction_triplet[2], strip_size);
                 }
             }
-            return current_position;
         }
 
-        private static Vector2 create_triangle_wedge_from_apex(Vector2 begin, Vector2[] direction_triplet, int order)
+        private static void create_triangle_wedge_from_apex(Vector2[] direction_triplet)
         {
-            Vector2 current_position = begin;
-            for (int row = 0; row < order; ++row)
+            for (int row = 0; row < quadrant_size; ++row)
             {
                 int strip_size = 2*row + 1;
                 if (row % 2 == 0) // even steps
                 {
-                    current_position = variable_first_triangle_strip(current_position, direction_triplet[1], direction_triplet[0], strip_size);
+                    variable_first_triangle_strip(direction_triplet[1], direction_triplet[0], strip_size);
                 }
                 else // odd steps
                 {
-                    current_position = variable_first_triangle_strip(current_position, -direction_triplet[1], direction_triplet[2], strip_size);
+                    variable_first_triangle_strip(-direction_triplet[1], direction_triplet[2], strip_size);
                 }
             }
-            return current_position;
         }
 
-        private static Vector2 constant_first_triangle_strip(Vector2 begin, Vector2 constant_direction, Vector2 variable_direction, int triangles)
+        private static void constant_first_triangle_strip(Vector2 constant_direction, Vector2 variable_direction, int triangles)
         {
-            Vector2 current_position = begin;
             while (triangles > 0)
             {
                 Vector2 triangle_start = current_position;
@@ -123,13 +130,10 @@ namespace Planetaria
                 create_triangle(new Vector2[] { triangle_start, triangle_corner, triangle_end });
                 --triangles;
             }
-            
-            return current_position;
         }
 
-        private static Vector2 variable_first_triangle_strip(Vector2 begin, Vector2 constant_direction, Vector2 variable_direction, int triangles)
+        private static void variable_first_triangle_strip(Vector2 constant_direction, Vector2 variable_direction, int triangles)
         {
-            Vector2 current_position = begin;
             while (triangles > 0)
             {
                 Vector2 triangle_start = current_position;
@@ -142,8 +146,6 @@ namespace Planetaria
                 create_triangle(new Vector2[] { triangle_start, triangle_corner, triangle_end });
                 --triangles;
             }
-
-            return current_position;
         }
 
         private static void create_triangle(Vector2[] corners)
@@ -153,6 +155,8 @@ namespace Planetaria
                 int x = Mathf.RoundToInt(corner.x);
                 int y = Mathf.RoundToInt(corner.y);
 
+                Debug.Log(x + ", " + y);
+
                 Vector3 position = positions[x,y];
                 Vector2 uv = uvs[x,y];
                 ushort identifier;
@@ -160,7 +164,7 @@ namespace Planetaria
                 {
                     identifiers[x,y] = identifier = next_identifier++;
                     vertex_positions[identifier] = position;
-                    vertex_uvs[identifier] = uv;
+                    vertex_uv[identifier] = uv;
                 }
                 identifier = identifiers[x,y].data;
                 triangles[next_triangle++] = identifier;
@@ -174,11 +178,13 @@ namespace Planetaria
         private static ushort next_identifier;
         private static int next_triangle;
 
+        private static Vector2 current_position;
+
         private static Vector3[,] positions;
         private static Vector2[,] uvs;
         private static optional<ushort>[,] identifiers;
         private static Vector3[] vertex_positions;
-        private static Vector2[] vertex_uvs;
+        private static Vector2[] vertex_uv;
         private static int[] triangles;
     }
 }
