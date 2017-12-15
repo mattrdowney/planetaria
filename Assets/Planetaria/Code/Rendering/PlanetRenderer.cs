@@ -19,7 +19,7 @@ namespace Planetaria
         {
             internal_renderer = internal_transformation.GetOrAddComponent<MeshRenderer>();
             internal_mesh_filter = internal_transformation.GetOrAddComponent<MeshFilter>();
-            SubdividedOctahedronSphere sphere = SubdividedOctahedronSphere.generate(127);
+            SubdividedOctahedronSphere sphere = SubdividedOctahedronSphere.generate(15);
             internal_mesh_filter.sharedMesh = sphere.get_shared_mesh(); //Octahedron.octahedron_mesh();
         }
 

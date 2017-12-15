@@ -86,17 +86,20 @@ namespace Planetaria
 
         private static void create_triangle_wedge_from_base(Vector2[] direction_triplet)
         {
-            float direction = (quadrant_size % 2 == 0 ? +1 : -1);
+            bool even = (quadrant_size % 2 == 0);
+            Vector2 constant_direction = (even ? direction_triplet[0] : -direction_triplet[0]);
+            Vector2 even_direction = even ? direction_triplet[1] : direction_triplet[2];
+            Vector2 odd_direction = even ? direction_triplet[2] : direction_triplet[1];
             for (int row = 0; row < quadrant_size; ++row)
             {
                 int strip_size = 2*(quadrant_size-1-row) + 1;
                 if (row % 2 == 0) // even steps
                 {
-                    constant_first_triangle_strip(direction*direction_triplet[0], direction_triplet[1], strip_size);
+                    constant_first_triangle_strip(constant_direction, even_direction, strip_size);
                 }
                 else // odd steps
                 {
-                    constant_first_triangle_strip(-direction*direction_triplet[0], direction_triplet[2], strip_size);
+                    constant_first_triangle_strip(-constant_direction, odd_direction, strip_size);
                 }
             }
         }
@@ -168,6 +171,10 @@ namespace Planetaria
                 identifier = identifiers[x,y].data;
                 triangles[next_triangle++] = identifier;
             }
+
+            Debug.DrawLine(corners[0], corners[1], Color.red, 10f);
+            Debug.DrawLine(corners[1], corners[2], Color.red, 10f);
+            Debug.DrawLine(corners[2], corners[0], Color.red, 10f);
         }
 
         private static int quadrant_size;
