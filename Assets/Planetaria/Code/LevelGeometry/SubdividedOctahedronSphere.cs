@@ -53,7 +53,7 @@ namespace Planetaria
                 }
             }
 
-            triangles = new int[triangle_count];
+            triangles = new int[triangle_count*3];
             vertex_uv = new Vector2[vertex_count];
             vertex_positions = new Vector3[vertex_count];
 
@@ -74,14 +74,14 @@ namespace Planetaria
         {
             current_position = Vector2.zero;
             create_triangle_wedge_from_apex(new Vector2[] { Vector2.right, new Vector2(-1, +1), Vector2.up });
-            create_triangle_wedge_from_base(new Vector2[] { new Vector2(-1, +1), Vector2.right, Vector2.down });
+            create_triangle_wedge_from_base(new Vector2[] { new Vector2(-1, +1), Vector2.right, Vector2.up });
             create_triangle_wedge_from_apex(new Vector2[] { Vector2.left, new Vector2(+1, +1), Vector2.up });
-            create_triangle_wedge_from_base(new Vector2[] { new Vector2(+1, +1), Vector3.left, Vector2.down });
+            create_triangle_wedge_from_base(new Vector2[] { new Vector2(+1, +1), Vector3.left, Vector2.up });
             current_position = new Vector2(size,size);
             create_triangle_wedge_from_apex(new Vector2[] { Vector2.left, new Vector2(+1, -1), Vector2.down });
-            create_triangle_wedge_from_base(new Vector2[] { new Vector2(+1, -1), Vector2.left, Vector2.up });
+            create_triangle_wedge_from_base(new Vector2[] { new Vector2(+1, -1), Vector2.left, Vector2.down });
             create_triangle_wedge_from_apex(new Vector2[] { Vector2.right, new Vector2(-1, -1), Vector2.down });
-            create_triangle_wedge_from_base(new Vector2[] { new Vector2(-1, -1), Vector3.right, Vector2.up });
+            create_triangle_wedge_from_base(new Vector2[] { new Vector2(-1, -1), Vector3.right, Vector2.down });
         }
 
         private static void create_triangle_wedge_from_base(Vector2[] direction_triplet)
@@ -124,7 +124,7 @@ namespace Planetaria
                 Vector2 triangle_corner = triangle_start + constant_direction;
                 Vector2 triangle_end = triangle_corner + variable_direction;
 
-                variable_direction = triangle_end - triangle_start; // ORDER DEPENDENCY
+                variable_direction = triangle_start - triangle_end; // ORDER DEPENDENCY
                 current_position = triangle_end; // ORDER DEPENDENCY
 
                 create_triangle(new Vector2[] { triangle_start, triangle_corner, triangle_end });
@@ -150,6 +150,7 @@ namespace Planetaria
 
         private static void create_triangle(Vector2[] corners)
         {
+            bool print = true;
             foreach (Vector2 corner in corners)
             {
                 int x = Mathf.RoundToInt(corner.x);
@@ -168,6 +169,15 @@ namespace Planetaria
                 }
                 identifier = identifiers[x,y].data;
                 triangles[next_triangle++] = identifier;
+            }
+
+            if (print)
+            {
+                Color color = Color.HSVToRGB((next_identifier*.1f) % 1, 1, 1);
+                color.a = .6f;
+                Debug.DrawLine(corners[0] + Vector2.up*10, corners[1] + Vector2.up*10, color, 10f);
+                Debug.DrawLine(corners[1] + Vector2.up*10, corners[2] + Vector2.up*10, color, 10f);
+                Debug.DrawLine(corners[2] + Vector2.up*10, corners[0] + Vector2.up*10, color, 10f);
             }
         }
 
