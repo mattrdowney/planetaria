@@ -42,20 +42,13 @@ namespace Planetaria
 
             uvs = new Vector2[size+1, size+1];
             positions = new Vector3[size+1, size+1];
-            for (int row = 0; row < size+1; ++row) // FIXME: UV needs to be adjusted based on distance from (manhattan distance of 1).
+            for (int row = 0; row < size+1; ++row) // FIXME: UV needs to be adjusted based on asin(2*diamond_distance)/(pi/2)
             {
                 float v = row / (float) size;
                 for (int column = 0; column < size+1; ++column)
                 {
                     float u = column / (float) size;
-                    float manhattan_distance = Mathf.Abs(u - .5f) + Mathf.Abs(v - .5f);
-                    float diamond_distance = manhattan_distance - .5f; // distance from manhattan_distance = .5 (a diamond)
-                    float adjusted_distance = (Mathf.Asin(2*diamond_distance)/(Mathf.PI/2))/2 + .5f;
-                    Vector2 quadrant_direction = new Vector2(Mathf.Sign(u - .5f), Mathf.Sign(v - .5f));
-                    float theta = Mathf.Atan2(v - .5f,u - .5f);
-                    Vector2 uv = Vector3.ProjectOnPlane(new Vector2(u, v), quadrant_direction);
-                    uv += quadrant_direction*adjusted_distance;
-                    uvs[row, column] = uv;
+                    uvs[row, column] = new Vector2(u, v);
                     positions[row, column] = ((NormalizedCartesianCoordinates) new OctahedralUVCoordinates(u, v)).data;
                 }
             }
@@ -80,78 +73,64 @@ namespace Planetaria
         private static void create_tesselated_octahedron_sphere()
         {
             current_position = Vector2.zero;
-            create_triangle_wedge_from_apex(new Vector2[] { Vector2.right, new Vector2(-1, +1), Vector2.up });
-            create_triangle_wedge_from_base(new Vector2[] { new Vector2(-1, +1), Vector2.right, Vector2.up });
-            create_triangle_wedge_from_apex(new Vector2[] { Vector2.left, new Vector2(+1, +1), Vector2.up });
-            create_triangle_wedge_from_base(new Vector2[] { new Vector2(+1, +1), Vector3.left, Vector2.up });
+            create_triangle_quadrant(new Vector2(-1, +1));
+            create_triangle_quadrant(new Vector2(+1, +1));
             current_position = new Vector2(size,size);
-            create_triangle_wedge_from_apex(new Vector2[] { Vector2.left, new Vector2(+1, -1), Vector2.down });
-            create_triangle_wedge_from_base(new Vector2[] { new Vector2(+1, -1), Vector2.left, Vector2.down });
-            create_triangle_wedge_from_apex(new Vector2[] { Vector2.right, new Vector2(-1, -1), Vector2.down });
-            create_triangle_wedge_from_base(new Vector2[] { new Vector2(-1, -1), Vector3.right, Vector2.down });
+            create_triangle_quadrant(new Vector2(+1, -1));
+            create_triangle_quadrant(new Vector2(-1, -1));
         }
 
-        private static void create_triangle_wedge_from_base(Vector2[] direction_triplet)
+        private static void create_triangle_quadrant(Vector2 zig_direction)
         {
-            bool even = (quadrant_size % 2 == 0);
-            Vector2 constant_direction = (even ? direction_triplet[0] : -direction_triplet[0]);
-            Vector2 even_direction = even ? direction_triplet[1] : direction_triplet[2];
-            Vector2 odd_direction = even ? direction_triplet[2] : direction_triplet[1];
-            for (int row = 0; row < quadrant_size; ++row)
-            {
-                int strip_size = 2*(quadrant_size-1-row) + 1;
-                if (row % 2 == 0) // even steps
-                {
-                    constant_first_triangle_strip(constant_direction, even_direction, strip_size);
-                }
-                else // odd steps
-                {
-                    constant_first_triangle_strip(-constant_direction, odd_direction, strip_size);
-                }
-            }
-        }
-
-        private static void create_triangle_wedge_from_apex(Vector2[] direction_triplet)
-        {
+            bool zig = true;
+            Vector2 zag_direction = -zig_direction; // zigzagging behaviour
+            Vector2 even_direction = new Vector2(-zig_direction.x, 0);
+            Vector2 odd_direction = new Vector2(0, zig_direction.y);
+            Vector2[] even_directions = new Vector2[] { even_direction, zig_direction };
+            Vector2[] odd_directions = new Vector2[] { odd_direction, zag_direction };
             for (int row = 0; row < quadrant_size; ++row)
             {
                 int strip_size = 2*row + 1;
-                if (row % 2 == 0) // even steps
+                if (zig) // even steps
                 {
-                    variable_first_triangle_strip(direction_triplet[1], direction_triplet[0], strip_size);
+                    Vector2[] temporary = new Vector2[] { even_directions[0], even_directions[1] };
+                    create_triangle_strip(temporary, 0, strip_size);
                 }
                 else // odd steps
                 {
-                    variable_first_triangle_strip(-direction_triplet[1], direction_triplet[2], strip_size);
+                    Vector2[] temporary = new Vector2[] { odd_directions[0], odd_directions[1] };
+                    create_triangle_strip(temporary, 0, strip_size);
                 }
+                zig = !zig;
+            }
+            even_directions = new Vector2[] { zig_direction, even_direction };
+            odd_directions = new Vector2[] { zag_direction, odd_direction };
+            for (int row = 0; row < quadrant_size; ++row)
+            {
+                int strip_size = 2*(quadrant_size-1-row) + 1;
+                if (zig) // even steps
+                {
+                    Vector2[] temporary = new Vector2[] { even_directions[0], even_directions[1] };
+                    create_triangle_strip(temporary, 1, strip_size);
+                }
+                else // odd steps
+                {
+                    Vector2[] temporary = new Vector2[] { odd_directions[0], odd_directions[1] };
+                    create_triangle_strip(temporary, 1, strip_size);
+                }
+                zig = !zig;
             }
         }
 
-        private static void constant_first_triangle_strip(Vector2 constant_direction, Vector2 variable_direction, int triangles)
+        private static void create_triangle_strip(Vector2[] directions, int variable_index, int triangles)
         {
             while (triangles > 0)
             {
                 Vector2 triangle_start = current_position;
-                Vector2 triangle_corner = triangle_start + constant_direction;
-                Vector2 triangle_end = triangle_corner + variable_direction;
+                Vector2 triangle_corner = triangle_start + directions[0];
+                Vector2 triangle_end = triangle_corner + directions[1];
 
-                variable_direction = triangle_start - triangle_end; // ORDER DEPENDENCY
-                current_position = triangle_end; // ORDER DEPENDENCY
-
-                create_triangle(new Vector2[] { triangle_start, triangle_corner, triangle_end });
-                --triangles;
-            }
-        }
-
-        private static void variable_first_triangle_strip(Vector2 constant_direction, Vector2 variable_direction, int triangles)
-        {
-            while (triangles > 0)
-            {
-                Vector2 triangle_start = current_position;
-                Vector2 triangle_corner = triangle_start + variable_direction;
-                Vector2 triangle_end = triangle_corner + constant_direction;
-
-                variable_direction = triangle_start - triangle_end; // ORDER DEPENDENCY
+                directions[variable_index] = triangle_start - triangle_end; // ORDER DEPENDENCY
                 current_position = triangle_end; // ORDER DEPENDENCY
 
                 create_triangle(new Vector2[] { triangle_start, triangle_corner, triangle_end });
@@ -178,10 +157,6 @@ namespace Planetaria
                 identifier = identifiers[x,y].data;
                 triangles[next_triangle++] = identifier;
             }
-
-            Debug.DrawLine(corners[0], corners[1], Color.red, 10f);
-            Debug.DrawLine(corners[1], corners[2], Color.red, 10f);
-            Debug.DrawLine(corners[2], corners[0], Color.red, 10f);
         }
 
         private static int quadrant_size;
