@@ -49,13 +49,14 @@ namespace Planetaria
                 {
                     float u = column / (float) size;
                     float manhattan_distance = Mathf.Abs(u - .5f) + Mathf.Abs(v - .5f);
-                    float diamond_distance = .5f - manhattan_distance; // distance from manhattan_distance = 1 (a diamond)
-                    float phi = Mathf.Asin(2*diamond_distance) + Mathf.PI/2;
+                    float diamond_distance = manhattan_distance - .5f; // distance from manhattan_distance = .5 (a diamond)
+                    float adjusted_distance = (Mathf.Asin(2*diamond_distance)/(Mathf.PI/2))/2 + .5f;
+                    Vector2 quadrant_direction = new Vector2(Mathf.Sign(u - .5f), Mathf.Sign(v - .5f));
                     float theta = Mathf.Atan2(v - .5f,u - .5f);
-                    NormalizedSphericalCoordinates position = new NormalizedSphericalCoordinates(phi, theta);
-
-                    uvs[row, column] = ((OctahedralUVCoordinates) position).data;
-                    positions[row, column] = ((NormalizedCartesianCoordinates) position).data;
+                    Vector2 uv = Vector3.ProjectOnPlane(new Vector2(u, v), quadrant_direction);
+                    uv += quadrant_direction*adjusted_distance;
+                    uvs[row, column] = uv;
+                    positions[row, column] = ((NormalizedCartesianCoordinates) new OctahedralUVCoordinates(u, v)).data;
                 }
             }
 
