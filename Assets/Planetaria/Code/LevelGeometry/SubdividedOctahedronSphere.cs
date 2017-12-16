@@ -44,30 +44,20 @@ namespace Planetaria
             positions = new Vector3[size+1, size+1];
             for (int row = 0; row < size+1; ++row) // FIXME: UV needs to be adjusted based on distance from (manhattan distance of 1).
             {
-                float y = row / (float) size;
+                float v = row / (float) size;
                 for (int column = 0; column < size+1; ++column)
                 {
-                    float x = column / (float) size;
-                    float manhattan_distance = Mathf.Abs(x) + Mathf.Abs(y);
-                    //float diamond_distance = Mathf.Abs(manhattan_distance - 1); // distance from manhattan_distance = 1 (a diamond)
-                    //Vector2 extrusion_direction = new Vector2(Mathf.Sign(x), Mathf.Sign(y));
-                    // insert code to pull towards the diamond here
-                    uvs[row, column] = new Vector2(x,y);
-                    positions[row, column] = ((NormalizedCartesianCoordinates) new OctahedralUVCoordinates(x, y)).data;
+                    float u = column / (float) size;
+                    float manhattan_distance = Mathf.Abs(u - .5f) + Mathf.Abs(v - .5f);
+                    float diamond_distance = .5f - manhattan_distance; // distance from manhattan_distance = 1 (a diamond)
+                    float phi = Mathf.Asin(2*diamond_distance) + Mathf.PI/2;
+                    float theta = Mathf.Atan2(v - .5f,u - .5f);
+                    NormalizedSphericalCoordinates position = new NormalizedSphericalCoordinates(phi, theta);
+
+                    uvs[row, column] = ((OctahedralUVCoordinates) position).data;
+                    positions[row, column] = ((NormalizedCartesianCoordinates) position).data;
                 }
             }
-
-            string printable = "";
-            for (int iteration = 0; iteration < quadrant_size/2 + 1; ++iteration)
-            {
-                Vector3 position = positions[iteration, iteration];
-                float y = position.y;
-                float x = Mathf.Sqrt(position.x*position.x + position.z*position.z);
-                //printable += "(" + x + "," + y + "),";
-                printable += y + ",";
-            }
-
-            Debug.Log(printable);
 
             triangles = new int[triangle_count*3];
             vertex_uv = new Vector2[vertex_count];

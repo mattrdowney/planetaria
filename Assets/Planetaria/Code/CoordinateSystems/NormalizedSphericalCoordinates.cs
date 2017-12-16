@@ -35,6 +35,11 @@ namespace Planetaria
             return new NormalizedCartesianCoordinates(cartesian);
         }
 
+        public static implicit operator OctahedralUVCoordinates(NormalizedSphericalCoordinates spherical)
+        {
+            return (NormalizedCartesianCoordinates) spherical;
+        }
+
         /// <summary>
         /// Mutator - Wrap elevation and azimuth so they are within [0, PI] and [0, 2*PI) respectively. 
         /// </summary>
