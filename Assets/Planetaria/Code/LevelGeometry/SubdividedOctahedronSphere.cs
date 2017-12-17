@@ -51,7 +51,10 @@ namespace Planetaria
                 {
                     float u = column / (float) size;
                     float manhattan_distance = Mathf.Abs(u - .5f) + Mathf.Abs(v - .5f);
-                    float y = (.5f - manhattan_distance)*2; // FIXME: approximate equal area triangles here (might be exact)
+                    float angle = (.5f - manhattan_distance)*Mathf.PI; // FIXME: approximate equal area triangles here (might be exact)
+                    float width = Mathf.Cos(angle);
+                    float height = Mathf.Sin(angle);
+                    float y = height / (Mathf.Abs(width) + Mathf.Abs(height));
                     float xz_magnitude = 1 - Mathf.Abs(y);
                     Vector3 unadjusted_point = ((NormalizedOctahedralCoordinates) new OctahedralUVCoordinates(u, v)).data;
                     unadjusted_point.y = 0;
