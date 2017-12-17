@@ -6,6 +6,21 @@ namespace Planetaria
     [CustomEditor(typeof(Arc))]
     public class ArcEditor : Editor
     {
+        public static void draw_arc(Arc arc, Transform transform)
+        {
+            Vector3 from = arc.position(0);
+            Vector3 from_normal = arc.normal(0);
+            Vector3 from_slope = Bearing.right(from, from_normal);
+            Vector3 to = arc.position(arc.angle());
+
+            from = transform.rotation * from;
+            from_slope = transform.rotation * from_slope;
+            to = transform.rotation * to;
+
+            Arc rotated_arc = Arc.curve(from, from_slope, to);
+            draw_arc(rotated_arc);
+        }
+
         /// <summary>
         /// Inspector - Draw an arc (basic)
         /// </summary>

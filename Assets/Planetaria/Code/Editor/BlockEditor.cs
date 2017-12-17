@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using UnityEngine;
+using UnityEditor;
 
 namespace Planetaria
 {
@@ -12,7 +13,10 @@ namespace Planetaria
             {
                 if (arc.exists)
                 {
-                    ArcEditor.draw_arc(arc.data);
+                    if (Mathf.Abs(arc.data.circle(0).radius) > Precision.threshold)
+                    {
+                        ArcEditor.draw_arc(arc.data, self.GetComponent<Transform>());
+                    }
                 }
             }
         }
