@@ -50,8 +50,17 @@ namespace Planetaria
                 for (int column = 0; column < size+1; ++column)
                 {
                     float u = column / (float) size;
-                    uvs[row, column] = new Vector2(u, v);
-                    positions[row, column] = ((NormalizedCartesianCoordinates) new OctahedralUVCoordinates(u, v)).data;
+                    float manhattan_distance = Mathf.Abs(u - .5f) + Mathf.Abs(v - .5f);
+                    float y = Mathf.Sin((.5f - manhattan_distance)*Mathf.PI);
+                    float xz_magnitude = 1 - Mathf.Abs(y);
+                    Vector3 unadjusted_point = ((NormalizedOctahedralCoordinates) new OctahedralUVCoordinates(u, v)).data;
+                    unadjusted_point.y = 0;
+                    unadjusted_point /= Mathf.Abs(unadjusted_point.x) + Mathf.Abs(unadjusted_point.z);
+                    float x = xz_magnitude * unadjusted_point.x;
+                    float z = xz_magnitude * unadjusted_point.z;
+                    NormalizedOctahedralCoordinates final_point = new NormalizedOctahedralCoordinates(new Vector3(x,y,z));
+                    uvs[row, column] = ((OctahedralUVCoordinates) final_point).data;
+                    positions[row, column] = ((NormalizedCartesianCoordinates) final_point).data;
                 }
             }
 
