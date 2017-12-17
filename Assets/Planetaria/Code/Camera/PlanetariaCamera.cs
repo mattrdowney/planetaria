@@ -4,13 +4,38 @@ namespace Planetaria
 {
     public abstract class PlanetariaCamera : MonoBehaviour //FIXME: Component // Tracker needn't be coupled.
     {
-        public const float near_clip_plane = 0.5f;
+        public void initialize()
+        {
+            transform = this.GetOrAddComponent<PlanetariaTransform>();
+            GameObject dolly = new GameObject("Camera Dolly");
+            dolly.transform.parent = this.gameObject.transform;
+            dolly.hideFlags = HideFlags.DontSave;
+            //dolly.hideFlags += HideFlags.HideInHierarchy;
+            GameObject camera = new GameObject("Camera");
+            camera.transform.parent = dolly.gameObject.transform;
+            camera.hideFlags = HideFlags.DontSave;
+            //camera.hideFlags += HideFlags.HideInHierarchy;
+            dolly_transform = dolly.GetComponent<Transform>();
+            internal_camera = camera.AddComponent<Camera>();
+            camera.AddComponent<AudioListener>();
+            internal_camera.useOcclusionCulling = false;
+
+            zoom = .95f;
+            dolly_transform.position = Vector3.forward*zoom;
+            internal_camera.nearClipPlane = near_clip_plane;
+            internal_camera.farClipPlane = far_clip_plane;
+        }
+
+        public const float near_clip_plane = 0.0078125f;
         public const float far_clip_plane = 2.0f;
         public const float clip_a = far_clip_plane / ( far_clip_plane - near_clip_plane );
         public const float clip_b = far_clip_plane * near_clip_plane / ( near_clip_plane - far_clip_plane );
         public const int z_buffer_digits = (1 << sizeof(short));
 
+        protected float zoom = 0;
+
         protected new PlanetariaTransform transform;
+        protected Transform dolly_transform;
         protected Camera internal_camera;
     }
 }

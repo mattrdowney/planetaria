@@ -64,6 +64,7 @@ namespace Planetaria
             return new optional<string>();
         }
 
+#if UNITY_EDITOR
         /// <summary>
         /// Mutator (Operating System level) - Writes (or overwrites!) the file at location "file" with the string "text_contents". 
         /// </summary>
@@ -102,6 +103,7 @@ namespace Planetaria
                 return new optional<TextAsset>();
             }
         }
+#endif
     }
 }
 

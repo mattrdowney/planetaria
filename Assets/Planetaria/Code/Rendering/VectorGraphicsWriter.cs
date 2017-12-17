@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿#if UNITY_EDITOR
+
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -67,6 +69,8 @@ namespace Planetaria
         private static bool first = true;
     }
 }
+
+#endif
 
 /*
 Permission is hereby granted, free of charge, to any person obtaining a copy

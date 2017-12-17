@@ -6,21 +6,8 @@ namespace Planetaria
     {
         private void Awake()
 	    {
-            internal_camera = GameObject.FindObjectOfType<Camera>();
-            transform = internal_camera.transform.parent.GetOrAddComponent<PlanetariaTransform>();
-            internal_camera.useOcclusionCulling = false;
-            limit_draw_distance();
+            initialize();
 	    }
-        
-        private void limit_draw_distance()
-        {
-            float[] draw_distance = new float[32]; // FIXME: shader side distance culling
-            for (int layer = 0; layer < draw_distance.Length; ++layer)
-            {
-                draw_distance[layer] = PlanetariaCamera.far_clip_plane;
-            }
-            internal_camera.layerCullDistances = draw_distance;
-        }
     }
 }
 

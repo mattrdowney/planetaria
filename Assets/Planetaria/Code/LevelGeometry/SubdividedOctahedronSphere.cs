@@ -44,14 +44,14 @@ namespace Planetaria
             uvs = new Vector2[size+1, size+1];
             positions = new Vector3[size+1, size+1];
 
-            for (int row = 0; row < size+1; ++row) // FIXME: approximate equal area triangles (might be exact)
+            for (int row = 0; row < size+1; ++row)
             {
                 float v = row / (float) size;
                 for (int column = 0; column < size+1; ++column)
                 {
                     float u = column / (float) size;
                     float manhattan_distance = Mathf.Abs(u - .5f) + Mathf.Abs(v - .5f);
-                    float y = Mathf.Sin((.5f - manhattan_distance)*Mathf.PI);
+                    float y = (.5f - manhattan_distance)*2; // FIXME: approximate equal area triangles here (might be exact)
                     float xz_magnitude = 1 - Mathf.Abs(y);
                     Vector3 unadjusted_point = ((NormalizedOctahedralCoordinates) new OctahedralUVCoordinates(u, v)).data;
                     unadjusted_point.y = 0;

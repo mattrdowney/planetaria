@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR 
+
+using UnityEngine;
 using System.Collections.Generic;
 
 namespace Planetaria
@@ -76,6 +78,8 @@ namespace Planetaria
         private Vector3 original_point;
     }
 }
+
+#endif
 
 /*
 Permission is hereby granted, free of charge, to any person obtaining a copy
