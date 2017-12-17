@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 namespace Planetaria
 {
@@ -42,7 +43,8 @@ namespace Planetaria
 
             uvs = new Vector2[size+1, size+1];
             positions = new Vector3[size+1, size+1];
-            for (int row = 0; row < size+1; ++row) // FIXME: UV needs to be adjusted based on asin(2*diamond_distance)/(pi/2)
+
+            for (int row = 0; row < size+1; ++row) // FIXME: approximate equal area triangles (might be exact)
             {
                 float v = row / (float) size;
                 for (int column = 0; column < size+1; ++column)
@@ -84,39 +86,35 @@ namespace Planetaria
         {
             bool zig = true;
             Vector2 zag_direction = -zig_direction; // zigzagging behaviour
-            Vector2 even_direction = new Vector2(-zig_direction.x, 0);
-            Vector2 odd_direction = new Vector2(0, zig_direction.y);
-            Vector2[] even_directions = new Vector2[] { even_direction, zig_direction };
-            Vector2[] odd_directions = new Vector2[] { odd_direction, zag_direction };
-            for (int row = 0; row < quadrant_size; ++row)
+            Vector2 first_direction = new Vector2(-zig_direction.x, 0);
+            Vector2 second_direction = new Vector2(0, zig_direction.y);
+            Vector2[] even_directions = new Vector2[] { first_direction, zig_direction };
+            Vector2[] odd_directions = new Vector2[] { second_direction, zag_direction };
+            for (int row = 0; row < quadrant_size; ++row) // create triangle of triangles from apex to base
             {
                 int strip_size = 2*row + 1;
                 if (zig) // even steps
                 {
-                    Vector2[] temporary = new Vector2[] { even_directions[0], even_directions[1] };
-                    create_triangle_strip(temporary, 0, strip_size);
+                    create_triangle_strip(even_directions.ToArray(), 0, strip_size);
                 }
                 else // odd steps
                 {
-                    Vector2[] temporary = new Vector2[] { odd_directions[0], odd_directions[1] };
-                    create_triangle_strip(temporary, 0, strip_size);
+                    create_triangle_strip(odd_directions.ToArray(), 0, strip_size);
                 }
                 zig = !zig;
             }
-            even_directions = new Vector2[] { zig_direction, even_direction };
-            odd_directions = new Vector2[] { zag_direction, odd_direction };
-            for (int row = 0; row < quadrant_size; ++row)
+            even_directions = new Vector2[] { zig_direction, first_direction };
+            odd_directions = new Vector2[] { zag_direction, second_direction };
+            for (int row = 0; row < quadrant_size; ++row) // create triangle of triangles from base to apex
             {
                 int strip_size = 2*(quadrant_size-1-row) + 1;
                 if (zig) // even steps
                 {
-                    Vector2[] temporary = new Vector2[] { even_directions[0], even_directions[1] };
-                    create_triangle_strip(temporary, 1, strip_size);
+                    create_triangle_strip(even_directions.ToArray(), 1, strip_size);
                 }
                 else // odd steps
                 {
-                    Vector2[] temporary = new Vector2[] { odd_directions[0], odd_directions[1] };
-                    create_triangle_strip(temporary, 1, strip_size);
+                    create_triangle_strip(odd_directions.ToArray(), 1, strip_size);
                 }
                 zig = !zig;
             }
