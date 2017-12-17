@@ -2,9 +2,9 @@
 
 namespace Planetaria
 {
-    public abstract class PlanetariaCamera : MonoBehaviour //FIXME: Component // Tracker needn't be coupled.
+    public class PlanetariaCamera : MonoBehaviour
     {
-        public void initialize()
+        public void Awake()
         {
             transform = this.GetOrAddComponent<PlanetariaTransform>();
             GameObject dolly = new GameObject("Camera Dolly");
@@ -15,6 +15,7 @@ namespace Planetaria
             camera.transform.parent = dolly.gameObject.transform;
             camera.hideFlags = HideFlags.DontSave;
             //camera.hideFlags += HideFlags.HideInHierarchy;
+
             dolly_transform = dolly.GetComponent<Transform>();
             internal_camera = camera.AddComponent<Camera>();
             camera.AddComponent<AudioListener>();
@@ -22,20 +23,19 @@ namespace Planetaria
 
             zoom = .95f;
             dolly_transform.position = Vector3.forward*zoom;
+            dolly_transform.localScale = Vector3.zero;
             internal_camera.nearClipPlane = near_clip_plane;
             internal_camera.farClipPlane = far_clip_plane;
         }
 
         public const float near_clip_plane = 0.0078125f;
         public const float far_clip_plane = 2.0f;
-        public const float clip_a = far_clip_plane / ( far_clip_plane - near_clip_plane );
-        public const float clip_b = far_clip_plane * near_clip_plane / ( near_clip_plane - far_clip_plane );
-        public const int z_buffer_digits = (1 << sizeof(short));
 
         protected float zoom = 0;
 
         protected new PlanetariaTransform transform;
         protected Transform dolly_transform;
+        protected Transform stabilizer_transform;
         protected Camera internal_camera;
     }
 }
