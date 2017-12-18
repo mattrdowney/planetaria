@@ -20,16 +20,16 @@ namespace Planetaria
             return intersections[0];
         }
 
-        public static Vector3[] arc_path_intersections(Arc arc, NormalizedCartesianCoordinates begin, NormalizedCartesianCoordinates end, float extrusion)
+        public static Vector3[] arc_path_intersections(Arc arc, Vector3 begin, Vector3 end, float extrusion)
         {
             GeospatialCircle arc_circle = arc.circle(extrusion);
-            GeospatialCircle path_circle = GeospatialCircle.circle(Vector3.Cross(begin.data, end.data).normalized, Mathf.PI/2);
+            GeospatialCircle path_circle = GeospatialCircle.circle(Vector3.Cross(begin, end).normalized, Mathf.PI/2);
 
             Vector3[] intersections = circle_circle_intersections(arc_circle, path_circle);
             return valid_arc_intersections(arc, intersections);
         }
 
-        public static optional<Vector3> arc_path_intersection(Arc arc, NormalizedCartesianCoordinates begin, NormalizedCartesianCoordinates end, float extrusion)
+        public static optional<Vector3> arc_path_intersection(Arc arc, Vector3 begin, Vector3 end, float extrusion)
         {
             Vector3[] intersections = arc_path_intersections(arc, begin, end, extrusion);
 
@@ -41,7 +41,7 @@ namespace Planetaria
 
             Vector3 intersection = intersections.Aggregate(
                     (closest_intersection, next_intersection) =>
-                    Vector3.Dot(closest_intersection, begin.data) > Vector3.Dot(next_intersection, begin.data) ?
+                    Vector3.Dot(closest_intersection, begin) > Vector3.Dot(next_intersection, begin) ?
                     closest_intersection : next_intersection);
 
             return intersection;

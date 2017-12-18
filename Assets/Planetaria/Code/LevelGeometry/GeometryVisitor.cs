@@ -4,9 +4,9 @@ namespace Planetaria
 {
     public abstract class GeometryVisitor
     {
-        public static GeometryVisitor geometry_visitor(ArcVisitor arc_visitor, float angular_position, float extrusion)
+        public static GeometryVisitor geometry_visitor(ArcVisitor arc_visitor, float angular_position, float extrusion, optional<Transform> transformation)
         {
-            GeometryVisitor result = geometry_visitor(arc_visitor, extrusion);
+            GeometryVisitor result = geometry_visitor(arc_visitor, extrusion, transformation);
             return result.set_position(angular_position, extrusion);
         }
 
@@ -23,20 +23,30 @@ namespace Planetaria
 
         public Vector3 normal()
         {
+            if (block_transform.exists) // Cannot be cached since platform may move
+            {
+                Debug.DrawRay(block_transform.data.rotation * cached_position, block_transform.data.rotation * cached_normal, Color.blue);
+                return block_transform.data.rotation * cached_normal;
+            }
             Debug.DrawRay(cached_position, cached_normal, Color.blue);
             return cached_normal;
         }
 
         public Vector3 position()
         {
+            if (block_transform.exists) // Cannot be cached since platform may move
+            {
+                return block_transform.data.rotation * cached_position;
+            }
             return cached_position;
         }
 
-        protected GeometryVisitor(ArcVisitor arc_visitor, float extrusion)
+        protected GeometryVisitor(ArcVisitor arc_visitor, float extrusion, optional<Transform> transformation)
         {
             center_arc = arc_visitor;
             left_arc = arc_visitor.left();
             right_arc = arc_visitor.right();
+            block_transform = transformation;
 
             initialize();
             upkeep(-1, extrusion);
@@ -44,30 +54,30 @@ namespace Planetaria
             last_extrusion = extrusion;
         }
 
-        private static GeometryVisitor geometry_visitor(ArcVisitor arc_visitor, float extrusion)
+        private static GeometryVisitor geometry_visitor(ArcVisitor arc_visitor, float extrusion, optional<Transform> transformation)
         {
             GeometryVisitor result;
             if (!arc_visitor.arc.exists)
             {
-                result = new ConcaveGeometryVisitor(arc_visitor, extrusion);
+                result = new ConcaveGeometryVisitor(arc_visitor, extrusion, transformation);
             }
             else
             {
-                result = new ConvexGeometryVisitor(arc_visitor, extrusion);
+                result = new ConvexGeometryVisitor(arc_visitor, extrusion, transformation);
             }
 
             return result;
         }
 
-        private static GeometryVisitor right_visitor(ArcVisitor arc_visitor, float rightward_length_from_boundary, float extrusion)
+        private static GeometryVisitor right_visitor(ArcVisitor arc_visitor, float rightward_length_from_boundary, float extrusion, optional<Transform> transformation)
         {
-            GeometryVisitor visitor = geometry_visitor(arc_visitor.right(), extrusion);
+            GeometryVisitor visitor = geometry_visitor(arc_visitor.right(), extrusion, transformation);
             return visitor.set_position(visitor.left_angle_boundary + rightward_length_from_boundary*(visitor.arc_angle/visitor.arc_length), extrusion);
         }
 
-        private static GeometryVisitor left_visitor(ArcVisitor arc_visitor, float leftward_length_from_boundary, float extrusion)
+        private static GeometryVisitor left_visitor(ArcVisitor arc_visitor, float leftward_length_from_boundary, float extrusion, optional<Transform> transformation)
         {
-            GeometryVisitor visitor = geometry_visitor(arc_visitor.left(), extrusion);
+            GeometryVisitor visitor = geometry_visitor(arc_visitor.left(), extrusion, transformation);
             return visitor.set_position(visitor.right_angle_boundary - leftward_length_from_boundary*(visitor.arc_angle/visitor.arc_length), extrusion);
         }
 
@@ -77,12 +87,12 @@ namespace Planetaria
             if (angular_position < left_angle_boundary)
             {
                 float extra_length = Mathf.Abs((left_angle_boundary - angular_position) * (arc_length/arc_angle));
-                result = left_visitor(center_arc, extra_length, extrusion);
+                result = left_visitor(center_arc, extra_length, extrusion, block_transform);
             }
             else if (angular_position > right_angle_boundary)
             {
                 float extra_length = Mathf.Abs((angular_position - right_angle_boundary) * (arc_length/arc_angle));
-                result = right_visitor(center_arc, extra_length, extrusion);
+                result = right_visitor(center_arc, extra_length, extrusion, block_transform);
             }
             this.angular_position = angular_position;
             calculate_location();
@@ -93,6 +103,8 @@ namespace Planetaria
         protected abstract void initialize();
         protected abstract void calculate_location();
     
+        protected optional<Transform> block_transform;
+
         protected ArcVisitor center_arc;
         protected ArcVisitor left_arc;
         protected ArcVisitor right_arc;
@@ -112,7 +124,7 @@ namespace Planetaria
 
     internal sealed class ConvexGeometryVisitor : GeometryVisitor
     {
-        public ConvexGeometryVisitor(ArcVisitor arc_index, float extrusion) : base(arc_index, extrusion) { }
+        public ConvexGeometryVisitor(ArcVisitor arc_index, float extrusion, optional<Transform> transformation) : base(arc_index, extrusion, transformation) { }
 
         protected override void initialize()
         {
@@ -153,7 +165,7 @@ namespace Planetaria
 
     internal sealed class ConcaveGeometryVisitor : GeometryVisitor
     {
-        public ConcaveGeometryVisitor(ArcVisitor arc_index, float extrusion) : base(arc_index, extrusion) { }
+        public ConcaveGeometryVisitor(ArcVisitor arc_index, float extrusion, optional<Transform> transformation) : base(arc_index, extrusion, transformation) { }
 
         protected override void initialize()
         {

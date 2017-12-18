@@ -40,8 +40,8 @@ namespace Planetaria
                     if (arc.exists)
                     {
                         float angle = (Mathf.PI/2)*dimension;
-                        NormalizedCartesianCoordinates begin = new NormalizedCartesianCoordinates(new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)));
-                        NormalizedCartesianCoordinates end = new NormalizedCartesianCoordinates(Vector3.down);
+                        Vector3 begin = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
+                        Vector3 end = Vector3.down;
                         Vector3[] intersections = PlanetariaIntersection.arc_path_intersections(arc.data, begin, end, 0);
                         add_intersections(arc.data, intersections);
                     }
