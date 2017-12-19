@@ -99,6 +99,35 @@ namespace Planetaria
         {
             return -north(position);
         }
+
+        /// <summary>
+        /// Find the attraction slope at point "position" that will approach "towards".
+        /// </summary>
+        /// <param name="position">The current point.</param>
+        /// <param name="away_from">The point that should be approached.</param>
+        /// <returns>The attracting slope from "position" towards "towards".</returns>
+        public static Vector3 attractor(Vector3 position, Vector3 towards)
+        {
+            Vector3 path_normal = Vector3.Cross(position, towards).normalized;
+            if (path_normal == Vector3.zero)
+            {
+                // Find any perpendicular vector to position and return it as a result (since position and attractor are podal/antipodal)
+                return new Vector3(position.y - position.z, position.z - position.x, position.y - position.x); // https://www.quora.com/How-do-I-find-a-vector-perpendicular-to-another-vector
+            }
+            Vector3 slope = Vector3.Cross(path_normal, position);
+            return slope;
+        }
+
+        /// <summary>
+        /// Find the repulsion slope at point "position" that will avoid "away_from".
+        /// </summary>
+        /// <param name="position">The current point.</param>
+        /// <param name="away_from">The point that should be avoided.</param>
+        /// <returns>The repelling slope from "position" away from "away_from".</returns>
+        public static Vector3 repeller(Vector3 position, Vector3 away_from)
+        {
+            return -attractor(position, away_from);
+        }
     }
 }
 

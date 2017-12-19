@@ -15,14 +15,16 @@ namespace Planetaria
         private NormalizedCartesianCoordinates position;
 
         // velocity
-        private NormalizedCartesianCoordinates velocity_pivot; // used when orbit_gravity_well = false, recalculates every frame?
-        private float horizontal_velocity;
-        private float vertical_velocity; // used when orbit_gravity_well = true
+        private NormalizedCartesianCoordinates velocity_vector;
+        float velocity_magnitude;
 
-        // gravity/acceleration
-        private NormalizedCartesianCoordinates gravity_well; // The south pole towards which the object will accelerate
-        private float gravity; // gravity is constant
-        private bool orbit_gravity_well; // is the object's velocity relative to gravity_well.
+        // acceleration
+        private NormalizedCartesianCoordinates acceleration_vector;
+        private float acceleration_magnitude;
+
+        // gravity
+        private NormalizedCartesianCoordinates[] gravity_wells;
+        private float[] gravity_magnitudes;
 
         private Rigidbody internal_rigidbody;
     }

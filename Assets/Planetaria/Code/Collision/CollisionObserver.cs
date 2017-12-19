@@ -122,7 +122,7 @@ namespace Planetaria
                 {
                     if (block.active)
                     {
-                        optional<BlockCollision> collision = BlockCollision.block_collision(arc, block, collider, planetaria_transformation);
+                        optional<BlockCollision> collision = BlockCollision.block_collision(arc, block, collider, planetaria_transformation, planetaria_rigidbody.data);
                         if (collision.exists)
                         {
                             collision_candidates.Add(collision.data);
