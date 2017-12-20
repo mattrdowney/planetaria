@@ -40,7 +40,7 @@ namespace Planetaria
                     (octahedral.z < 0 ? 4 : 0);  // z sign is 4s place
 
             Mesh mesh = octahedron_mesh();
-            return convert(mesh.vertices, mesh.uv, octahedral, xyz_mask);
+            return convert(vertex_list, uv_list, octahedral, xyz_mask);
         }
 
         /// <summary>
@@ -57,9 +57,8 @@ namespace Planetaria
                     (uv.y < 0.5f ? 4 : 0);  // z sign is 4s place
 
             Mesh mesh = octahedron_mesh();
-            return convert(mesh.uv, mesh.vertices, uv, xyz_mask);
+            return convert(uv_list, vertex_list, uv, xyz_mask);
         }
-
     
         /// <summary>
         /// 
@@ -83,7 +82,7 @@ namespace Planetaria
 
             for (int triangle = 0; triangle < 3; ++triangle)
             {
-                int current_triangle_index = mesh.triangles[triangle_start_index + triangle];
+                int current_triangle_index = triangle_list[triangle_start_index + triangle];
                 triangle_indices[triangle] = current_triangle_index;
                 from_triangle[triangle] = get_vector(from_array[current_triangle_index]);
                 to_triangle[triangle] = get_vector(to_array[current_triangle_index]);

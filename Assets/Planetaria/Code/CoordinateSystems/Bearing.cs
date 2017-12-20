@@ -114,7 +114,7 @@ namespace Planetaria
                 // Find any perpendicular vector to position and return it as a result (since position and attractor are podal/antipodal)
                 return new Vector3(position.y - position.z, position.z - position.x, position.y - position.x); // https://www.quora.com/How-do-I-find-a-vector-perpendicular-to-another-vector
             }
-            Vector3 slope = Vector3.Cross(path_normal, position);
+            Vector3 slope = Vector3.Cross(path_normal, position).normalized;
             return slope;
         }
 

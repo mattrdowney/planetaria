@@ -6,26 +6,51 @@ namespace Planetaria
     {
         private void Awake()
         {
+            transform = this.GetOrAddComponent<PlanetariaTransform>();
             internal_rigidbody = this.GetOrAddComponent<Rigidbody>();
             internal_rigidbody.isKinematic = true;
             internal_rigidbody.useGravity = false;
+            position = transform.position.data;
+            get_acceleration();
+        }
+
+        private void FixedUpdate()
+        {
+            Debug.Log("Happening");
+            position = transform.position.data;
+
+            Debug.Log(position);
+            Debug.Log(velocity);
+            Debug.Log(acceleration);
+            Debug.Log(gravity_wells[0]);
+
+            // I am making a bet this is relevant in spherical coordinates (it is Euler isn't it?): http://openarena.ws/board/index.php?topic=5100.0
+            velocity = velocity + acceleration * (Time.deltaTime / 2);
+            position = PlanetariaMath.slerp(position, velocity.normalized, velocity.magnitude * Time.deltaTime); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
+            get_acceleration();
+            velocity = velocity + acceleration * (Time.deltaTime / 2);
+            transform.position = new NormalizedCartesianCoordinates(position);
+        }
+
+        private void get_acceleration()
+        {
+            acceleration = Vector3.zero; // in theory this could mess things up
+
+            for (int force = 0; force < gravity_wells.Length; ++force)
+            {
+                acceleration += Bearing.attractor(position, gravity_wells[force])*gravity_wells[force].magnitude;
+            }
         }
 
         // position
-        private NormalizedCartesianCoordinates position;
-
-        // velocity
-        private NormalizedCartesianCoordinates velocity_vector;
-        float velocity_magnitude;
-
-        // acceleration
-        private NormalizedCartesianCoordinates acceleration_vector;
-        private float acceleration_magnitude;
+        private Vector3 position; // magnitude = 1
+        private Vector3 velocity; // magnitude in [0, infinity]
+        private Vector3 acceleration; // magnitude in [0, infinity]
 
         // gravity
-        private NormalizedCartesianCoordinates[] gravity_wells;
-        private float[] gravity_magnitudes;
+        [SerializeField] public Vector3[] gravity_wells;
 
+        private new PlanetariaTransform transform;
         private Rigidbody internal_rigidbody;
     }
 }

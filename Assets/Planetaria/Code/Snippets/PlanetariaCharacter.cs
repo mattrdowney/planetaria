@@ -9,13 +9,14 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
         OnBlockStay.data = on_block_stay;
         OnBlockEnter.data = on_block_enter;
         OnBlockExit.data = on_block_exit;
+        transform.position = new NormalizedSphericalCoordinates(Mathf.PI - .1f, Mathf.PI/2);
     }
 
     void Update()
     {
         if (!grounded)
         {
-            transform.position = new NormalizedSphericalCoordinates(Mathf.PI - Time.time*.5f, Mathf.PI/2);
+            //transform.position = new NormalizedSphericalCoordinates(Mathf.PI - Time.time*.5f, Mathf.PI/2);
         }
     }
 
