@@ -17,8 +17,7 @@ namespace Planetaria
                 if (scalable)
                 {
                     colliders = new Sphere[] { Sphere.filled_circle(internal_transform, Vector3.forward, value/2) };
-                    internal_collider.center = colliders[0].center;
-                    internal_collider.radius = colliders[0].radius;
+                    set_internal_collider(colliders[0]); // FIXME:
                 }
             }
         }
@@ -52,8 +51,16 @@ namespace Planetaria
                     next_candidate.center.magnitude - next_candidate.radius
                     ? furthest : next_candidate);
 
-            internal_collider.center = furthest_collider.debug_center;
-            internal_collider.radius = furthest_collider.radius;
+            set_internal_collider(furthest_collider);
+        }
+
+        private void set_internal_collider(Sphere sphere)
+        {
+            Quaternion local_to_world = internal_collider.transform.rotation;
+            Quaternion world_to_local = Quaternion.Inverse(local_to_world);
+
+            internal_collider.center = local_to_world * sphere.center;
+            internal_collider.radius = sphere.radius;
         }
 
         public bool is_field

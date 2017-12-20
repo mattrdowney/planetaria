@@ -239,6 +239,7 @@
      <None Include="Assets\OVR\Resources\OVRMRChromaKey.cginc" />
      <None Include="Assets\Planetaria\Code\Shaders\TransparentLit.shader" />
      <None Include="Assets\OVR\Shaders\OVRColorRampAlpha.shader" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_990bc4550e06f264897c1c14a0e1752c.txt" />
      <None Include="Assets\OVR\Resources\OVRMRUnlit.shader" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_bc189c7665c3b7c44be03cd25d9dfe9f.txt" />
      <None Include="Assets\OVR\Shaders\Unlit Crosshair.shader" />

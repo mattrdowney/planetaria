@@ -35,6 +35,7 @@ namespace Planetaria
                 Debug.LogError("Research why this happened.");
                 return new optional<BlockCollision>();
             }
+            rigidbody.update = false;
             BlockCollision result = new BlockCollision();
             float angle = arc.position_to_angle(intersection_point.data);
             result.geometry_visitor = GeometryVisitor.geometry_visitor(arc_visitor.data, angle, extrusion, collider.transform);

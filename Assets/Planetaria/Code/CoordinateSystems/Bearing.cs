@@ -8,7 +8,7 @@ namespace Planetaria
         {
             float x = Vector3.Dot(normal, east(position));
             float y = Vector3.Dot(normal, north(position));
-            return Mathf.Atan2(y, x);
+            return Mathf.Atan2(y, x) - Mathf.PI/2;
         }
 
         /// <summary>

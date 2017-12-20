@@ -12,9 +12,9 @@ namespace Planetaria
             internal_collider = internal_transformation.GetComponent<PlanetariaCollider>();
             internal_renderer = internal_transformation.GetComponent<PlanetariaRenderer>();
 
-            previous_position = position = new NormalizedCartesianCoordinates(cartesian_transform.position);
-            rotation = 0;
-            scale = 0.1f;
+            previous_position = position = new NormalizedCartesianCoordinates(cartesian_transform.forward);
+            rotation = Bearing.angle(cartesian_transform.forward, cartesian_transform.up);
+            scale = cartesian_transform.localScale.x;
         }
 
         private void FixedUpdate() // FIXME: move into PlanetariaGameLoop?
