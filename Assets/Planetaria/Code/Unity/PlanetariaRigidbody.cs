@@ -25,7 +25,7 @@ namespace Planetaria
                 Vector3 next_velocity = PlanetariaMath.slerp(position, velocity.normalized, velocity.magnitude * Time.deltaTime + Mathf.PI/2);
                 position = next_position;
                 velocity = next_velocity.normalized * velocity.magnitude;
-                get_acceleration();
+                acceleration = get_acceleration();
                 velocity = velocity + acceleration * (Time.deltaTime / 2);
                 transform.position = new NormalizedCartesianCoordinates(position);
 
@@ -33,14 +33,14 @@ namespace Planetaria
             }
         }
 
-        private void get_acceleration()
+        public Vector3 get_acceleration()
         {
-            acceleration = Vector3.zero; // in theory this could mess things up
-
+            Vector3 result = Vector3.zero; // in theory this could mess things up
             for (int force = 0; force < gravity_wells.Length; ++force)
             {
-                acceleration += Bearing.attractor(position, gravity_wells[force])*gravity_wells[force].magnitude;
+                result += Bearing.attractor(position, gravity_wells[force])*gravity_wells[force].magnitude;
             }
+            return result;
         }
 
         // position

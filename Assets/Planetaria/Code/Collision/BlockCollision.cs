@@ -13,8 +13,6 @@ namespace Planetaria
                 return new optional<BlockCollision>();
             }
             
-            Debug.DrawRay(collider.transform.forward, Vector3.up*10, Color.black, 10f);
-
             Quaternion block_to_world = block.transform.rotation;
             Quaternion world_to_block = Quaternion.Inverse(block_to_world);
 
@@ -36,6 +34,10 @@ namespace Planetaria
             {
                 Debug.LogError("Research why this happened.");
                 return new optional<BlockCollision>();
+            }
+            if (!platform_collision(arc, block, collider, transformation, rigidbody, intersection_point))
+            {
+                intersection_point = new optional<Vector3>();
             }
             rigidbody.update = false;
             BlockCollision result = new BlockCollision();
@@ -80,16 +82,24 @@ namespace Planetaria
         public float distance { get; private set; }
         public GeometryVisitor geometry_visitor { get; private set; }
 
-        /*private static bool check_platform()
+        private static bool platform_collision(Arc arc, Block block, PlanetariaCollider collider, PlanetariaTransform transformation, PlanetariaRigidbody rigidbody, optional<Vector3> intersection_point)
         {
+            Vector3 velocity = Bearing.attractor(transformation.previous_position.data, transformation.position.data);
+
             if (block.is_platform && intersection_point.exists)
             {
                 float arc_angle = arc.position_to_angle(intersection_point.data);
                 Vector3 normal = arc.normal(arc_angle);
-                if (Vector3.Dot(normal, rigidbody.gravity_well) > 0 ||
-                        Vector3.Dot(normal, rigidbody.velocity
+                bool upward_facing_normal = Vector3.Dot(normal, rigidbody.get_acceleration()) <= 0;
+                bool moving_toward = Vector3.Dot(normal, velocity) <= 0;
+
+                if (upward_facing_normal && moving_toward)
+                {
+                    return true;
+                }
             }
-        }*/
+            return false;
+        }
 
         private bool active_variable;
     }

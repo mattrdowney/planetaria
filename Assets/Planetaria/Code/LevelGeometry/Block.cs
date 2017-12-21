@@ -90,6 +90,7 @@ namespace Planetaria
         }
         
         public bool is_dynamic;
+        public bool is_platform;
         [SerializeField] private List<GeospatialCurve> curve_list = new List<GeospatialCurve>();
         [System.NonSerialized] private BlockActor[] effects; // previously optional<BlockActor>
         [System.NonSerialized] private new PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
