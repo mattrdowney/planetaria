@@ -22,11 +22,11 @@ namespace Planetaria
                 // I am making a bet this is relevant in spherical coordinates (it is Euler isn't it?): http://openarena.ws/board/index.php?topic=5100.0
                 velocity = velocity + acceleration * (Time.deltaTime / 2);
                 Vector3 next_position = PlanetariaMath.slerp(position, velocity.normalized, velocity.magnitude * Time.deltaTime); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
-                Vector3 next_velocity = (velocity == Vector3.zero ? Vector3.zero : PlanetariaMath.slerp(position, velocity.normalized, velocity.magnitude * Time.deltaTime + Mathf.PI/2));
+                Vector3 next_velocity = PlanetariaMath.slerp(position, velocity.normalized, velocity.magnitude * Time.deltaTime + Mathf.PI/2);
                 position = next_position;
                 velocity = next_velocity.normalized * velocity.magnitude;
                 get_acceleration();
-                velocity = velocity + acceleration * (Time.deltaTime / 2); // FIXME: energy introduced into the system: -84.27 --> -84.356
+                velocity = velocity + acceleration * (Time.deltaTime / 2);
                 transform.position = new NormalizedCartesianCoordinates(position);
 
                 // in theory, position might need to be Orthonormalized with velocity every thousand or so frames.

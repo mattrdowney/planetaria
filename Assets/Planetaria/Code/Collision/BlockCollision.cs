@@ -13,11 +13,13 @@ namespace Planetaria
                 return new optional<BlockCollision>();
             }
             
-            Quaternion local_to_world = collider.transform.rotation;
-            Quaternion world_to_local = Quaternion.Inverse(local_to_world);
+            Debug.DrawRay(collider.transform.forward, Vector3.up*10, Color.black, 10f);
 
-            Vector3 last_position = world_to_local * transformation.previous_position.data;
-            Vector3 current_position = world_to_local * transformation.position.data;
+            Quaternion block_to_world = block.transform.rotation;
+            Quaternion world_to_block = Quaternion.Inverse(block_to_world);
+
+            Vector3 last_position = world_to_block * transformation.previous_position.data;
+            Vector3 current_position = world_to_block * transformation.position.data;
 
             float extrusion = transformation.scale;
             optional<Vector3> intersection_point = PlanetariaIntersection.arc_path_intersection(arc, last_position, current_position, extrusion);
@@ -38,7 +40,7 @@ namespace Planetaria
             rigidbody.update = false;
             BlockCollision result = new BlockCollision();
             float angle = arc.position_to_angle(intersection_point.data);
-            result.geometry_visitor = GeometryVisitor.geometry_visitor(arc_visitor.data, angle, extrusion, collider.transform);
+            result.geometry_visitor = GeometryVisitor.geometry_visitor(arc_visitor.data, angle, extrusion, block.transform);
             result.distance = (intersection_point.data - transformation.position.data).magnitude;
             result.block = block;
             result.collider = collider;
