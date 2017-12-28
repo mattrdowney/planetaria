@@ -13,9 +13,17 @@ namespace Planetaria
             {
                 if (arc.exists)
                 {
-                    if (Mathf.Abs(arc.data.circle(0).radius) > Precision.threshold)
+                    if (!self.is_dynamic)
+                    {
+                        ArcEditor.draw_arc(arc.data);
+                    }
+                    else if (Mathf.Abs(arc.data.circle(0).radius) > Precision.threshold)
                     {
                         ArcEditor.draw_arc(arc.data, self.GetComponent<Transform>());
+                    }
+                    else
+                    {
+                        // FIXME: add corners for dynamic blocks
                     }
                 }
             }

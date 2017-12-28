@@ -1,6 +1,71 @@
-﻿public class PlanetariaAudioSource
+﻿using System.Collections.Generic;
+using UnityEngine;
+
+/*
+namespace Planetaria
 {
+    public class PlanetariaAudioSource : MonoBehaviour
+    {
+        private void Awake()
+        {
+            audio_source = this.GetOrAddComponent<AudioSource>();
+            audio_source.rolloffMode = AudioRolloffMode.Logarithmic;
+            if (!audio_listener.exists)
+            {
+                audio_listener = Transform.FindObjectOfType<AudioListener>().transform;
+            }
+        }
+
+        public AudioClip clip
+        {
+            get
+            {
+                return audio_source.clip;
+            }
+            set
+            {
+                audio_source.clip = value;
+            }
+        }
+
+        public float volume
+        {
+            get
+            {
+                return audio_source.volume;
+            }
+            set
+            {
+                audio_source.volume = value;
+            }
+        }
+
+        public float time
+        {
+            get
+            {
+                return internal_time;
+            }
+            set
+            {
+                internal_time = Time.time + value;
+                if (value >= delay)
+                {
+                    audio_source.time = value;
+                }
+                //Debug.Assert()
+            }
+        }
+        
+        private float delay;
+        private float internal_time;
+        private AudioSource audio_source;
+
+        private static optional<Transform> audio_listener;
+        private static SortedList<float, PlanetariaAudioSource> sounds;
+    }
 }
+*/
 
 /*
 Permission is hereby granted, free of charge, to any person obtaining a copy

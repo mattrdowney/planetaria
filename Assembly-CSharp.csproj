@@ -146,6 +146,8 @@
      <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaCollider.cs" />
      <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaMonoBehaviour.cs" />
      <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaMonoBehaviourInjector.cs" />
+     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaPhysicMaterial.cs" />
+     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaPhysicMaterialCombine.cs" />
      <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaRenderer.cs" />
      <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaRigidbody.cs" />
      <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaTransform.cs" />
