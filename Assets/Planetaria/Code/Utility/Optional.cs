@@ -62,7 +62,7 @@
 
             return data.ToString();
         }
-    
+
         [UnityEngine.SerializeField] private bool exists_variable;
         [UnityEngine.SerializeField] private Type data_variable;
     }

@@ -2,15 +2,13 @@
 {
     public class PlanetariaPhysicMaterial // https://gamedevelopment.tutsplus.com/tutorials/how-to-create-a-custom-2d-physics-engine-friction-scene-and-jump-table--gamedev-7756
     {
-        // CONSIDER: this stuff should be const?
-        bool magnetic; // CONSIDER: optional<float>?
-        float magnetic_charge; // only used when (magnetic = true) on both colliding objects
         float elasticity;
         float static_friction;
         float dynamic_friction;
-        //PlanetariaPhysicMaterialCombine charge_combine;
-        PlanetariaPhysicMaterialCombine elasticity_combine;
-        PlanetariaPhysicMaterialCombine friction_combine;
+        float magnetism;
+        PlanetariaPhysicMaterialCombine elasticity_combine; /*Suggested: PlanetariaPhysicMaterialCombine.Quadratic*/
+        PlanetariaPhysicMaterialCombine friction_combine; /*Suggested: PlanetariaPhysicMaterialCombine.Geometric*/
+        PlanetariaPhysicMaterialCombine magnetism_combine; /*Suggested: PlanetariaPhysicMaterialCombine.Multiply*/
     }
 }
 

@@ -1,13 +1,37 @@
-﻿namespace Planetaria
+﻿using UnityEngine;
+
+namespace Planetaria
 {
-    public enum PlanetariaPhysicMaterialCombine
+    public enum PlanetariaPhysicMaterialCombine // CONSIDER: do I *really* want this?
     {
-        Average = 0,
-        Pythagorean = 1,
-        Minumum = 2,
-        Geometric = 3,
-        Multiply = 4,
-        Maximum = 5
+        Harmonic = 0, // Harmonic < Geometric < Average < Quadratic (definition)
+        Geometric = 1,
+        Average = 2,
+        Quadratic = 3,
+        Minumum = 4,
+        Multiply = 5,
+        Maximum = 6
+    }
+
+    public static class PlanetariaPhysic
+    {
+        public static float blend(float left, PlanetariaPhysicMaterialCombine left_type,
+                float right, PlanetariaPhysicMaterialCombine right_type)
+        {
+            PlanetariaPhysicMaterialCombine type = (left_type >= right_type ? left_type : right_type);
+            switch(type) // Overengineering, sib
+            {
+                // Note: all functions map from (0,0)->0 and (1,1)->1;
+                // values (positive and negative) outside this range can still be used
+                case PlanetariaPhysicMaterialCombine.Harmonic: return left+right != 0 ? 2*left*right/(left + right) : 0; // avoid division by zero
+                case PlanetariaPhysicMaterialCombine.Geometric: return Mathf.Sign(left*right) == +1 ? Mathf.Sqrt(left*right) : 0; // sqrt(negative) is undefined
+                case PlanetariaPhysicMaterialCombine.Average: return (left + right)/2;
+                case PlanetariaPhysicMaterialCombine.Quadratic: return Mathf.Sqrt((left*left + right*right)/2);
+                case PlanetariaPhysicMaterialCombine.Minumum: return Mathf.Min(left, right);
+                case PlanetariaPhysicMaterialCombine.Multiply: return left * right;
+            }
+            /*case PlanetariaPhysicMaterialCombine.Maximum:*/ return Mathf.Max(left, right);
+        }
     }
 }
 

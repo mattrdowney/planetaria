@@ -54,6 +54,7 @@ namespace Planetaria
         private new PlanetariaTransform transform;
         private Rigidbody internal_rigidbody;
 
+        private bool grounded = false;
         public bool update = true;
     }
 }
