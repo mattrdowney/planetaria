@@ -4,7 +4,7 @@ namespace Planetaria
 {
     public class BlockCollision
     {
-        public static optional<BlockCollision> block_collision(Arc arc, Block block, PlanetariaCollider collider, PlanetariaTransform transformation, PlanetariaRigidbody rigidbody)
+        public static optional<BlockCollision> block_collision(CollisionObserver observer, Arc arc, Block block, PlanetariaCollider collider, PlanetariaTransform transformation, PlanetariaRigidbody rigidbody)
         {
             optional<ArcVisitor> arc_visitor = block.arc_visitor(arc);
             if (!arc_visitor.exists)
@@ -39,7 +39,6 @@ namespace Planetaria
             {
                 intersection_point = new optional<Vector3>();
             }
-            rigidbody.update = false;
             BlockCollision result = new BlockCollision();
             float angle = arc.position_to_angle(intersection_point.data);
             result.geometry_visitor = GeometryVisitor.geometry_visitor(arc_visitor.data, angle, extrusion, block.transform);
@@ -47,6 +46,8 @@ namespace Planetaria
             result.block = block;
             result.collider = collider;
             result.active = true;
+            result.this_collider = 
+            result.that_collider = collider;
             return result;
         }
 
@@ -77,6 +78,9 @@ namespace Planetaria
             }
         }
 
+        public CollisionObserver observer { get; private set; }
+        public PlanetariaCollider this_collider { get; private set; }
+        public PlanetariaCollider that_collider { get; private set; }
         public Block block { get; private set; }
         public PlanetariaCollider collider { get; private set; }
         public float distance { get; private set; }

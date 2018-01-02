@@ -2,13 +2,13 @@
 {
     public class PlanetariaPhysicMaterial // https://gamedevelopment.tutsplus.com/tutorials/how-to-create-a-custom-2d-physics-engine-friction-scene-and-jump-table--gamedev-7756
     {
-        float elasticity;
-        float static_friction;
-        float dynamic_friction;
-        float magnetism;
-        PlanetariaPhysicMaterialCombine elasticity_combine; /*Suggested: PlanetariaPhysicMaterialCombine.Quadratic*/
-        PlanetariaPhysicMaterialCombine friction_combine; /*Suggested: PlanetariaPhysicMaterialCombine.Geometric*/
-        PlanetariaPhysicMaterialCombine magnetism_combine; /*Suggested: PlanetariaPhysicMaterialCombine.Multiply*/
+        public float elasticity; /*Suggested: [0,1); 0 for no bounce, 1 for perfect bounce*/
+        public float static_friction; /*Suggested: [0,1); 0 for no friction, 1 for heavy friction*/
+        public float dynamic_friction; /*Suggested: [0,1); 0 for no friction, 1 for heavy friction*/
+        public float magnetism; /*Suggested: (-inf, +inf)*/
+        public float induced_magnetism_multiplier; /*Suggested: 0 for plastic, .01 for metal*/
+        public PlanetariaPhysicMaterialCombine elasticity_combine; /*Suggested: PlanetariaPhysicMaterialCombine.Quadratic*/
+        public PlanetariaPhysicMaterialCombine friction_combine; /*Suggested: PlanetariaPhysicMaterialCombine.Geometric*/
     }
 }
 

@@ -13,6 +13,7 @@ namespace Planetaria
         public void initialize (PlanetariaTransform planetaria_transformation, PlanetariaMonoBehaviour[] observers)
         {
             this.planetaria_transformation = planetaria_transformation;
+            this.planetaria_collider = planetaria_transformation.GetComponent<PlanetariaCollider>();
             this.planetaria_rigidbody = planetaria_transformation.GetComponent<PlanetariaRigidbody>();
             foreach (PlanetariaMonoBehaviour observer in observers)
             {
@@ -122,10 +123,14 @@ namespace Planetaria
                 {
                     if (block.active)
                     {
-                        optional<BlockCollision> collision = BlockCollision.block_collision(arc, block, collider, planetaria_transformation, planetaria_rigidbody.data);
+                        optional<BlockCollision> collision = BlockCollision.block_collision(this, arc, block, collider, planetaria_transformation, planetaria_rigidbody.data);
                         if (collision.exists)
                         {
                             collision_candidates.Add(collision.data);
+                            if (planetaria_rigidbody.exists)
+                            {
+                                planetaria_rigidbody.data.collide(collision.data);
+                            }
                         }
                     }
                 }
@@ -161,6 +166,7 @@ namespace Planetaria
         }
 
         private PlanetariaTransform planetaria_transformation;
+        private PlanetariaCollider planetaria_collider;
         private optional<PlanetariaRigidbody> planetaria_rigidbody;
         private List<PlanetariaMonoBehaviour> observers = new List<PlanetariaMonoBehaviour>();
         private List<BlockCollision> current_collisions = new List<BlockCollision>();

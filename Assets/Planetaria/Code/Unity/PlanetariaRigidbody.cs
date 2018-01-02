@@ -16,9 +16,9 @@ namespace Planetaria
 
         private void FixedUpdate()
         {
-            if (update)
+            if (!collision.exists)
             {
-                position = transform.position.data; // theoretically, this corrupts the velocity vector
+                position = transform.position.data; // FIXME: theoretically, this corrupts the velocity vector
                 // I am making a bet this is relevant in spherical coordinates (it is Euler isn't it?): http://openarena.ws/board/index.php?topic=5100.0
                 velocity = velocity + acceleration * (Time.deltaTime / 2);
                 Vector3 next_position = PlanetariaMath.slerp(position, velocity.normalized, velocity.magnitude * Time.deltaTime); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
@@ -30,6 +30,10 @@ namespace Planetaria
                 transform.position = new NormalizedCartesianCoordinates(position);
 
                 // in theory, position might need to be Orthonormalized with velocity every thousand or so frames.
+            }
+            else
+            {
+
             }
         }
 
@@ -43,6 +47,28 @@ namespace Planetaria
             return result;
         }
 
+        public void collide(BlockCollision collision)
+        {
+            // FIXME: implement
+
+            horizontal_velocity = Vector3.Dot(this.velocity, Bearing.right(collision.position().data, collision.normal().data));
+            float vertical_velocity = Vector3.Dot(this.velocity, collision.normal().data);
+            if (vertical_velocity < 0)
+            {
+                PlanetariaPhysicMaterial this_material = collision.this_collider.material; // FIXME: preprocess combine
+                PlanetariaPhysicMaterial that_material = collision.that_collider.material;
+                float elasticity = PlanetariaPhysic.blend(this_material.elasticity, this_material.elasticity_combine,
+                        that_material.elasticity, that_material.elasticity_combine);
+                vertical_velocity *= -elasticity;
+            }
+            
+            this.collision = collision;
+        }
+        
+        // FIXME: implement "un-collision"
+
+
+
         // position
         private Vector3 position; // magnitude = 1
         private Vector3 velocity; // magnitude in [0, infinity]
@@ -53,9 +79,9 @@ namespace Planetaria
 
         private new PlanetariaTransform transform;
         private Rigidbody internal_rigidbody;
-
-        private bool grounded = false;
-        public bool update = true;
+        
+        private optional<BlockCollision> collision;
+        private float horizontal_velocity;
     }
 }
 

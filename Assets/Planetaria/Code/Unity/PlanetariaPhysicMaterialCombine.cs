@@ -21,7 +21,7 @@ namespace Planetaria
             PlanetariaPhysicMaterialCombine type = (left_type >= right_type ? left_type : right_type);
             switch(type) // Overengineering, sib
             {
-                // Note: all functions map from (0,0)->0 and (1,1)->1;
+                // Note: all functions map from (0,0)->0 and (1,1)->1; (c,c)->c [for c >= 0, except Multiply]
                 // values (positive and negative) outside this range can still be used
                 case PlanetariaPhysicMaterialCombine.Harmonic: return left+right != 0 ? 2*left*right/(left + right) : 0; // avoid division by zero
                 case PlanetariaPhysicMaterialCombine.Geometric: return Mathf.Sign(left*right) == +1 ? Mathf.Sqrt(left*right) : 0; // sqrt(negative) is undefined
