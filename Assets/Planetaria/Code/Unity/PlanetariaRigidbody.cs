@@ -49,17 +49,19 @@ namespace Planetaria
 
         public void collide(BlockCollision collision)
         {
-            // FIXME: implement
-
             horizontal_velocity = Vector3.Dot(this.velocity, Bearing.right(collision.position().data, collision.normal().data));
             float vertical_velocity = Vector3.Dot(this.velocity, collision.normal().data);
             if (vertical_velocity < 0)
             {
-                PlanetariaPhysicMaterial this_material = collision.this_collider.material; // FIXME: preprocess combine
-                PlanetariaPhysicMaterial that_material = collision.that_collider.material;
-                float elasticity = PlanetariaPhysic.blend(this_material.elasticity, this_material.elasticity_combine,
-                        that_material.elasticity, that_material.elasticity_combine);
-                vertical_velocity *= -elasticity;
+                vertical_velocity *= -collision.elasticity;
+            }
+            if (vertical_velocity > collision.magnetism)
+            {
+                vertical_velocity = 0;
+            }
+            else
+            {
+                // Force OnCollisionExit, "un-collision"
             }
             
             this.collision = collision;

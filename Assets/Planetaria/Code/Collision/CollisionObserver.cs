@@ -155,6 +155,11 @@ namespace Planetaria
             }
         }
 
+        public PlanetariaCollider collider()
+        {
+            return planetaria_collider;
+        }
+
         public IEnumerable<BlockCollision> collisions()
         {
             return current_collisions;

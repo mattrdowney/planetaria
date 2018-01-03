@@ -2,7 +2,7 @@
 
 namespace Planetaria
 {
-    public enum PlanetariaPhysicMaterialCombine // CONSIDER: do I *really* want this?
+    public enum PlanetariaPhysicMaterialCombine
     {
         Harmonic = 0, // Harmonic < Geometric < Average < Quadratic (definition)
         Geometric = 1,
