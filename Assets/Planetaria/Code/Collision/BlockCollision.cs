@@ -46,19 +46,28 @@ namespace Planetaria
             result.block = block;
             result.collider = collider;
             result.active = true;
-            result.this_collider = observer.collider();
-            result.that_collider = collider;
+            result.observer = observer;
+            result.self = observer.collider();
+            result.other = collider;
 
-            PlanetariaPhysicMaterial this_material = result.this_collider.material;
-            PlanetariaPhysicMaterial that_material = result.that_collider.material;
-            result.elasticity = PlanetariaPhysic.blend(this_material.elasticity, this_material.elasticity_combine,
-                    that_material.elasticity, that_material.elasticity_combine);
-            result.dynamic_friction = PlanetariaPhysic.blend(this_material.dynamic_friction, this_material.friction_combine,
-                    that_material.dynamic_friction, that_material.friction_combine);
-            result.static_friction = PlanetariaPhysic.blend(this_material.static_friction, this_material.friction_combine,
-                    that_material.static_friction, that_material.friction_combine);
-            result.magnetism = (this_material.magnetism + that_material.magnetism * this_material.induced_magnetism_multiplier) *
-                    (that_material.magnetism + this_material.magnetism * that_material.induced_magnetism_multiplier);
+            PlanetariaPhysicMaterial self = result.self.material;
+            PlanetariaPhysicMaterial other = result.other.material;
+            result.elasticity = PlanetariaPhysic.blend(
+                    self.elasticity, self.elasticity_combine,
+                    other.elasticity, other.elasticity_combine);
+
+            result.dynamic_friction = PlanetariaPhysic.blend(
+                    self.dynamic_friction, self.friction_combine,
+                    other.dynamic_friction, other.friction_combine);
+
+            result.static_friction = PlanetariaPhysic.blend(
+                    self.static_friction, self.friction_combine,
+                    other.static_friction, other.friction_combine);
+
+            result.magnetism =
+                    (self.magnetism + other.magnetism * self.induced_magnetism_multiplier) *
+                    (other.magnetism + self.magnetism * other.induced_magnetism_multiplier);
+
             return result;
         }
 
@@ -90,8 +99,8 @@ namespace Planetaria
         }
 
         public CollisionObserver observer { get; private set; }
-        public PlanetariaCollider this_collider { get; private set; }
-        public PlanetariaCollider that_collider { get; private set; }
+        public PlanetariaCollider self { get; private set; }
+        public PlanetariaCollider other { get; private set; }
         public Block block { get; private set; }
         public PlanetariaCollider collider { get; private set; }
         public float distance { get; private set; }

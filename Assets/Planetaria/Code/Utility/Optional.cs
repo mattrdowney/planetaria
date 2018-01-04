@@ -53,6 +53,17 @@
             return !(left == right);
         }
 
+        public override bool Equals(System.Object other)
+        {
+            return other is optional<Type> && this == (optional<Type>) other;
+        }
+
+        public override int GetHashCode() 
+        {
+            return exists_variable.GetHashCode() ^ data_variable.GetHashCode();
+        }
+
+
         public override string ToString()
         {
             if (!exists)

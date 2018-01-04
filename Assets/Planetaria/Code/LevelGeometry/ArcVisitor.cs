@@ -60,6 +60,16 @@ namespace Planetaria
             return !(left == right);
         }
 
+        public override bool Equals(System.Object other)
+        {
+            return other is ArcVisitor && this == (ArcVisitor) other;
+        }
+
+        public override int GetHashCode() 
+        {
+            return arc_list_variable.GetHashCode() ^ index_variable.GetHashCode();
+        }
+
         private List<optional<Arc>> arc_list_variable;
         private int index_variable;
     }

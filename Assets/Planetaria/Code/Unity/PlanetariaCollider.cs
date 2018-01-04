@@ -58,7 +58,6 @@ namespace Planetaria
         private void set_internal_collider(Sphere sphere)
         {
             Quaternion local_to_world = internal_collider.transform.rotation;
-            Quaternion world_to_local = Quaternion.Inverse(local_to_world);
 
             internal_collider.center = local_to_world * sphere.center;
             internal_collider.radius = sphere.radius;

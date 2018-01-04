@@ -51,48 +51,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\OVR\Scripts\Composition\OVRCameraComposition.cs" />
-     <Compile Include="Assets\OVR\Scripts\Composition\OVRComposition.cs" />
-     <Compile Include="Assets\OVR\Scripts\Composition\OVRCompositionUtil.cs" />
-     <Compile Include="Assets\OVR\Scripts\Composition\OVRDirectComposition.cs" />
-     <Compile Include="Assets\OVR\Scripts\Composition\OVRExternalComposition.cs" />
-     <Compile Include="Assets\OVR\Scripts\Composition\OVRSandwichComposition.cs" />
-     <Compile Include="Assets\OVR\Scripts\OVRBoundary.cs" />
-     <Compile Include="Assets\OVR\Scripts\OVRCameraRig.cs" />
-     <Compile Include="Assets\OVR\Scripts\OVRCommon.cs" />
-     <Compile Include="Assets\OVR\Scripts\OVRDebugHeadController.cs" />
-     <Compile Include="Assets\OVR\Scripts\OVRDisplay.cs" />
-     <Compile Include="Assets\OVR\Scripts\OVRHaptics.cs" />
-     <Compile Include="Assets\OVR\Scripts\OVRHapticsClip.cs" />
-     <Compile Include="Assets\OVR\Scripts\OVRInput.cs" />
-     <Compile Include="Assets\OVR\Scripts\OVRLayerAttribute.cs" />
-     <Compile Include="Assets\OVR\Scripts\OVRLint.cs" />
-     <Compile Include="Assets\OVR\Scripts\OVRManager.cs" />
-     <Compile Include="Assets\OVR\Scripts\OVRMixedReality.cs" />
-     <Compile Include="Assets\OVR\Scripts\OVROnCompleteListener.cs" />
-     <Compile Include="Assets\OVR\Scripts\OVROverlay.cs" />
-     <Compile Include="Assets\OVR\Scripts\OVRPlatformMenu.cs" />
-     <Compile Include="Assets\OVR\Scripts\OVRPlugin.cs" />
-     <Compile Include="Assets\OVR\Scripts\OVRProfile.cs" />
-     <Compile Include="Assets\OVR\Scripts\OVRTouchpad.cs" />
-     <Compile Include="Assets\OVR\Scripts\OVRTracker.cs" />
-     <Compile Include="Assets\OVR\Scripts\Util\OVRChromaticAberration.cs" />
-     <Compile Include="Assets\OVR\Scripts\Util\OVRCubemapCapture.cs" />
-     <Compile Include="Assets\OVR\Scripts\Util\OVRDebugInfo.cs" />
-     <Compile Include="Assets\OVR\Scripts\Util\OVRGearVrController.cs" />
-     <Compile Include="Assets\OVR\Scripts\Util\OVRGearVrControllerTest.cs" />
-     <Compile Include="Assets\OVR\Scripts\Util\OVRGrabbable.cs" />
-     <Compile Include="Assets\OVR\Scripts\Util\OVRGrabber.cs" />
-     <Compile Include="Assets\OVR\Scripts\Util\OVRGridCube.cs" />
-     <Compile Include="Assets\OVR\Scripts\Util\OVRMixedRealityCaptureSettings.cs" />
-     <Compile Include="Assets\OVR\Scripts\Util\OVRModeParms.cs" />
-     <Compile Include="Assets\OVR\Scripts\Util\OVRMonoscopic.cs" />
-     <Compile Include="Assets\OVR\Scripts\Util\OVRPlayerController.cs" />
-     <Compile Include="Assets\OVR\Scripts\Util\OVRResetOrientation.cs" />
-     <Compile Include="Assets\OVR\Scripts\Util\OVRRTOverlayConnector.cs" />
-     <Compile Include="Assets\OVR\Scripts\Util\OVRSceneSampleController.cs" />
-     <Compile Include="Assets\OVR\Scripts\Util\OVRScreenFade.cs" />
-     <Compile Include="Assets\OVR\Scripts\Util\OVRWaitCursor.cs" />
      <Compile Include="Assets\Planetaria\Code\Collision\BlockCollision.cs" />
      <Compile Include="Assets\Planetaria\Code\Collision\CollisionObserver.cs" />
      <Compile Include="Assets\Planetaria\Code\Collision\GeospatialCircle.cs" />
@@ -237,22 +195,9 @@
      <Compile Include="Assets\UnitySVG\Implementation\XMLParser\SVGParser.cs" />
      <Compile Include="Assets\UnitySVG\Interface\RenderingEngine\ISVGPathDraw.cs" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_d0d2724012d574048a6356bfa367e88b.txt" />
-     <None Include="Assets\OVR\Resources\OVRMRUnlitTransparent.shader" />
-     <None Include="Assets\OVR\Resources\OVRMRChromaKey.cginc" />
      <None Include="Assets\Planetaria\Code\Shaders\TransparentLit.shader" />
-     <None Include="Assets\OVR\Shaders\OVRColorRampAlpha.shader" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_990bc4550e06f264897c1c14a0e1752c.txt" />
-     <None Include="Assets\OVR\Resources\OVRMRUnlit.shader" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_bc189c7665c3b7c44be03cd25d9dfe9f.txt" />
-     <None Include="Assets\OVR\Shaders\Unlit Crosshair.shader" />
-     <None Include="Assets\OVR\Resources\Unlit Transparent Color.shader" />
-     <None Include="Assets\OVR\Resources\OVRMRCameraFrameLit.shader" />
-     <None Include="Assets\OVR\Resources\Underlay Transparent Occluder.shader" />
-     <None Include="Assets\OVR\Resources\Alpha Premultiply.shader" />
-     <None Include="Assets\OVR\Resources\OVRMRCameraFrame.shader" />
-     <None Include="Assets\OVR\Resources\OVRMRClipPlane.shader" />
-     <None Include="Assets\OVR\Resources\Underlay Impostor.shader" />
-     <None Include="Assets\OVR\Plugins\placeholder.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

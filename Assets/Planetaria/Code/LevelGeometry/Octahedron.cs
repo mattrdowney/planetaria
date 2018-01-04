@@ -38,8 +38,7 @@ namespace Planetaria
                     (octahedral.x < 0 ? 1 : 0) + // x sign is 1s place
                     (octahedral.y < 0 ? 2 : 0) + // y sign is 2s place
                     (octahedral.z < 0 ? 4 : 0);  // z sign is 4s place
-
-            Mesh mesh = octahedron_mesh();
+            
             return convert(vertex_list, uv_list, octahedral, xyz_mask);
         }
 
@@ -55,8 +54,7 @@ namespace Planetaria
                     (uv.x < 0.5f ? 1 : 0) + // x sign is 1s place
                     (PlanetariaMath.manhattan_distance(uv - Vector2.one/2) > 0.5f ? 2 : 0) + // y sign is 2s place
                     (uv.y < 0.5f ? 4 : 0);  // z sign is 4s place
-
-            Mesh mesh = octahedron_mesh();
+            
             return convert(uv_list, vertex_list, uv, xyz_mask);
         }
     
@@ -74,8 +72,6 @@ namespace Planetaria
         {
             int triangle_start_index = xyz_mask * 3; // there are 24 indices in the octahedron mesh (i.e. 3 triangle vertices times 8 faces)
 
-            Mesh mesh = octahedron_mesh();
-        
             int[] triangle_indices = new int[3];
             Vector3[] from_triangle = new Vector3[3];
             Vector3[] to_triangle = new Vector3[3];
