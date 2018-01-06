@@ -10,6 +10,10 @@ namespace Planetaria
             internal_rigidbody = this.GetOrAddComponent<Rigidbody>();
             internal_rigidbody.isKinematic = true;
             internal_rigidbody.useGravity = false;
+        }
+
+        private void Start()
+        {
             position = transform.position.data;
             get_acceleration();
         }
@@ -18,22 +22,16 @@ namespace Planetaria
         {
             if (!collision.exists)
             {
-                position = transform.position.data; // FIXME: theoretically, this corrupts the velocity vector
                 // I am making a bet this is relevant in spherical coordinates (it is Euler isn't it?): http://openarena.ws/board/index.php?topic=5100.0
                 velocity = velocity + acceleration * (Time.deltaTime / 2);
-                Vector3 next_position = PlanetariaMath.slerp(position, velocity.normalized, velocity.magnitude * Time.deltaTime); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
-                Vector3 next_velocity = PlanetariaMath.slerp(position, velocity.normalized, velocity.magnitude * Time.deltaTime + Mathf.PI/2);
-                position = next_position;
-                velocity = next_velocity.normalized * velocity.magnitude;
-                acceleration = get_acceleration();
+                aerial_move();
                 velocity = velocity + acceleration * (Time.deltaTime / 2);
-                transform.position = new NormalizedCartesianCoordinates(position);
-
-                // in theory, position might need to be Orthonormalized with velocity every thousand or so frames.
             }
             else
             {
-
+                horizontal_velocity += horizontal_acceleration * (Time.deltaTime / 2);
+                grounded_move();
+                horizontal_velocity += horizontal_acceleration * (Time.deltaTime / 2);
             }
         }
 
@@ -68,6 +66,43 @@ namespace Planetaria
             
             this.collision = collision;
         }
+
+        private void aerial_move()
+        {
+            Vector3 next_position = PlanetariaMath.slerp(position, velocity.normalized, velocity.magnitude * Time.deltaTime); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
+            Vector3 next_velocity = PlanetariaMath.slerp(position, velocity.normalized, velocity.magnitude * Time.deltaTime + Mathf.PI/2);
+            
+            // set position -> velocity -> acceleration (in that order)
+            transform.position = new NormalizedCartesianCoordinates(next_position);
+            position = transform.position.data; // get normalized data
+            velocity = next_velocity.normalized * velocity.magnitude;
+            acceleration = get_acceleration();
+            // TODO: occasionally ensure velocity and position are orthogonal
+        }
+
+        private void grounded_move()
+        {
+            collision.data.move(horizontal_velocity * Time.deltaTime, transform.scale/2);
+            transform.position = collision.data.position();
+            position = transform.position.data; // NOTE: required so get_acceleration() functions
+            transform.rotation = Bearing.angle(collision.data.position().data, collision.data.normal().data); // FIXME: this is platformer-specific
+            // project velocity
+            acceleration = get_acceleration();
+
+            Vector3 normal = collision.data.normal().data;
+            Vector3 right = Bearing.right(collision.data.position().data, normal);
+            
+            Debug.DrawRay(collision.data.position().data, normal, Color.red);
+            Debug.DrawRay(collision.data.position().data, right, Color.green);
+
+            float vertical_acceleration = Vector3.Dot(acceleration, normal);
+            horizontal_acceleration = Vector3.Dot(acceleration, right);
+            Debug.LogError(horizontal_acceleration);
+            if (vertical_acceleration > collision.data.magnetism)
+            {
+                // Force OnCollisionExit, "un-collision" (and accelerate for a frame)
+            }
+        }
         
         // FIXME: implement "un-collision"
 
@@ -86,6 +121,7 @@ namespace Planetaria
         
         private optional<BlockCollision> collision;
         private float horizontal_velocity;
+        private float horizontal_acceleration;
     }
 }
 

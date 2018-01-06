@@ -68,10 +68,6 @@ namespace Planetaria
                     -(self.magnetism - other.magnetism * self.induced_magnetism_multiplier) *
                     (other.magnetism - self.magnetism * other.induced_magnetism_multiplier);
 
-            Debug.LogError(self.magnetism - other.magnetism * self.induced_magnetism_multiplier);
-            Debug.LogError(other.magnetism - self.magnetism * other.induced_magnetism_multiplier);
-            Debug.LogError(result.magnetism);
-
             return result;
         }
 

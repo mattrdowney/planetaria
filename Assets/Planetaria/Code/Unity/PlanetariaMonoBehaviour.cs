@@ -6,12 +6,11 @@ namespace Planetaria
 {
     public abstract class PlanetariaMonoBehaviour : MonoBehaviour
     {
-        protected delegate void ActionDelegate();
+        protected abstract void OnConstruction();
+        protected abstract void OnDestruction();
+
         protected delegate void CollisionDelegate(BlockCollision block_information);
         protected delegate void TriggerDelegate(PlanetariaCollider field_information);
-
-        protected optional<ActionDelegate> OnConstruction = null;
-        protected optional<ActionDelegate> OnDestruction = null;
 
         protected optional<CollisionDelegate> OnBlockEnter = null;
         protected optional<CollisionDelegate> OnBlockExit = null;
@@ -53,7 +52,7 @@ namespace Planetaria
             }
         }
 
-        private void Awake()
+        protected void Awake()
         {
             transform = this.GetOrAddComponent<PlanetariaTransform>();
             foreach (PlanetariaCollider collider in this.GetComponentsInChildren<PlanetariaCollider>())
@@ -62,19 +61,13 @@ namespace Planetaria
                 observers.Add(collider.get_observer());
             }
             // FIXME: still need to cache (properly)
-            if (OnConstruction.exists)
-            {
-                OnConstruction.data();
-            }
+            OnConstruction();
             StartCoroutine(wait_for_fixed_update());
         }
 
-        private void OnDestroy()
+        protected void OnDestroy()
         {
-            if (OnDestruction.exists)
-            {
-                OnDestruction.data();
-            }
+            OnDestruction();
             // FIXME: still need to un-cache (properly)
             foreach (PlanetariaCollider collider in this.GetComponentsInChildren<PlanetariaCollider>())
             {
