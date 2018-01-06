@@ -138,7 +138,7 @@ namespace Planetaria
             }
         }
 
-        public PlanetariaPhysicMaterial material;// = PlanetariaPhysicMaterial.default_material();
+        [SerializeField] public PlanetariaPhysicMaterial material = fallback;
         private CollisionObserver observer = new CollisionObserver();
         private Transform internal_transform;
         private PlanetariaTransform planetaria_transform;
@@ -148,6 +148,7 @@ namespace Planetaria
         private float scale_variable;
         public bool scalable = false;
         private bool is_field_variable = false;
+        public static PlanetariaPhysicMaterial fallback;
     }
 }
 

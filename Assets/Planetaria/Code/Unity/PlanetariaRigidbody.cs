@@ -54,10 +54,12 @@ namespace Planetaria
             if (vertical_velocity < 0)
             {
                 vertical_velocity *= -collision.elasticity;
+                Debug.Log(vertical_velocity);
             }
             if (vertical_velocity > collision.magnetism)
             {
                 vertical_velocity = 0;
+                Debug.Log(vertical_velocity);
             }
             else
             {

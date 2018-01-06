@@ -24,6 +24,7 @@ namespace Planetaria
                         Sphere[] colliders = Sphere.arc_collider(transformation, arc.data);
                         collider.set_colliders(colliders);
                         collider.is_field = false;
+                        collider.material = block.material;
                         sphere_collider.isTrigger = true;
 
                         PlanetariaCache.arc_cache.cache(sphere_collider, arc.data);
