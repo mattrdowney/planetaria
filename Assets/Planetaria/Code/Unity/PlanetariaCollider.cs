@@ -138,7 +138,7 @@ namespace Planetaria
             }
         }
 
-        public PlanetariaPhysicMaterial material;
+        public PlanetariaPhysicMaterial material;// = PlanetariaPhysicMaterial.default_material();
         private CollisionObserver observer = new CollisionObserver();
         private Transform internal_transform;
         private PlanetariaTransform planetaria_transform;

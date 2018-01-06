@@ -24,7 +24,7 @@ namespace Planetaria
         }
 
         /// <summary>
-        /// Checks if the center of mass (position) is below all of the planes. 
+        /// Checks if the center of mass (position) is below all of the planes.
         /// Special note: if a portion of the extruded volume is inside all planes, this function might still return false.
         /// </summary>
         /// <param name="position">A position on a unit-sphere.</param>

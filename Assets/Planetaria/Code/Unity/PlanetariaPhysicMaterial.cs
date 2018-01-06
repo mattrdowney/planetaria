@@ -1,14 +1,43 @@
-﻿namespace Planetaria
+﻿using UnityEngine;
+
+namespace Planetaria
 {
-    public class PlanetariaPhysicMaterial // https://gamedevelopment.tutsplus.com/tutorials/how-to-create-a-custom-2d-physics-engine-friction-scene-and-jump-table--gamedev-7756
+    // TODO: PlanetariaPhysicMaterialEditor (CreateAsset)
+    [CreateAssetMenu(fileName = "PlanetariaPhysicMaterial", menuName = "PlanetariaPhysicMaterial", order = 1)]
+    public class PlanetariaPhysicMaterial : ScriptableObject // https://gamedevelopment.tutsplus.com/tutorials/how-to-create-a-custom-2d-physics-engine-friction-scene-and-jump-table--gamedev-7756
     {
-        public float elasticity; /*Suggested: [0,1); 0 for no bounce, 1 for perfect bounce*/
-        public float static_friction; /*Suggested: [0,1); 0 for no friction, 1 for heavy friction*/
-        public float dynamic_friction; /*Suggested: [0,1); 0 for no friction, 1 for heavy friction*/
-        public float magnetism; /*Suggested: (-inf, +inf)*/
-        public float induced_magnetism_multiplier; /*Suggested: 0 for plastic, .01 for metal*/
-        public PlanetariaPhysicMaterialCombine elasticity_combine; /*Suggested: PlanetariaPhysicMaterialCombine.Quadratic*/
-        public PlanetariaPhysicMaterialCombine friction_combine; /*Suggested: PlanetariaPhysicMaterialCombine.Geometric*/
+        [SerializeField]
+        [Range(0,1)]
+        [Tooltip("The bounciness of a surface: 0 means no bounce; 1 means perfect bounce")]
+        public float elasticity;
+
+        [SerializeField]
+        [Range(0,Mathf.Infinity)]
+        [Tooltip("The force of friction past which an object will start moving: 0 means no friction, 1 is a typical max friction")]
+        public float static_friction;
+        
+        [SerializeField]
+        [Range(0,Mathf.Infinity)]
+        [Tooltip("The force of friction while an object is moving: 0 means no friction, 1 is a typical max friction")]
+        public float dynamic_friction;
+
+        [SerializeField]
+        [Range(Mathf.NegativeInfinity,Mathf.Infinity)]
+        [Tooltip("The magnetic charge of a surface: opposites attract, likes repel, magnitudes are unbounded and multiplied")]
+        public float magnetism;
+
+        [SerializeField]
+        [Range(0,1)]
+        [Tooltip("The fractional (and opposing) charge induced in a material when exposed to a magnetic field: 0 means no ferromagnetism (e.g. plastic), 0.01 would be a typical coefficient for iron (which is attracted to magnets)")]
+        public float induced_magnetism_multiplier;
+
+        [SerializeField]
+        [Tooltip("The mathematics function used to get a elasticity coefficient from two materials with separate coefficients; Quadratic recommended")]
+        public PlanetariaPhysicMaterialCombine elasticity_combine = PlanetariaPhysicMaterialCombine.Quadratic;
+
+        [SerializeField]
+        [Tooltip("The mathematics function used to get a friction coefficient from two materials with separate coefficients; Geometric recommended")]
+        public PlanetariaPhysicMaterialCombine friction_combine = PlanetariaPhysicMaterialCombine.Geometric;
     }
 }
 
