@@ -42,7 +42,7 @@ namespace Planetaria
             BlockCollision result = new BlockCollision();
             float angle = arc.position_to_angle(intersection_point.data);
             result.geometry_visitor = GeometryVisitor.geometry_visitor(arc_visitor.data, angle, extrusion, block.transform);
-            result.distance = (intersection_point.data - transformation.position.data).magnitude;
+            result.distance = Vector3.Angle(intersection_point.data, transformation.position.data);
             result.block = block;
             result.collider = collider;
             result.active = true;

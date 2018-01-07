@@ -24,7 +24,7 @@ namespace Planetaria
             {
                 // I am making a bet this is relevant in spherical coordinates (it is Euler isn't it?): http://openarena.ws/board/index.php?topic=5100.0
                 velocity = velocity + acceleration * (Time.deltaTime / 2);
-                aerial_move();
+                aerial_move(velocity * Time.deltaTime);
                 velocity = velocity + acceleration * (Time.deltaTime / 2);
             }
             else
@@ -47,7 +47,8 @@ namespace Planetaria
 
         public void collide(BlockCollision collision)
         {
-            horizontal_velocity = Vector3.Dot(this.velocity, Bearing.right(collision.position().data, collision.normal().data));
+            aerial_move(velocity.normalized*collision.distance);
+            horizontal_velocity = Vector3.Dot(this.velocity, Bearing.right(this.position, collision.normal().data));
             float vertical_velocity = Vector3.Dot(this.velocity, collision.normal().data);
             if (vertical_velocity < 0)
             {
@@ -64,18 +65,20 @@ namespace Planetaria
                 // Force OnCollisionExit, "un-collision"
             }
             
+            Debug.LogError(horizontal_velocity);
+
             this.collision = collision;
         }
 
-        private void aerial_move()
+        private void aerial_move(Vector3 delta)
         {
-            Vector3 next_position = PlanetariaMath.slerp(position, velocity.normalized, velocity.magnitude * Time.deltaTime); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
-            Vector3 next_velocity = PlanetariaMath.slerp(position, velocity.normalized, velocity.magnitude * Time.deltaTime + Mathf.PI/2);
+            Vector3 next_position = PlanetariaMath.slerp(position, delta.normalized, delta.magnitude); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
+            Vector3 next_velocity = PlanetariaMath.slerp(position, delta.normalized, delta.magnitude + Mathf.PI/2);
             
             // set position -> velocity -> acceleration (in that order)
             transform.position = new NormalizedCartesianCoordinates(next_position);
             position = transform.position.data; // get normalized data
-            velocity = next_velocity.normalized * velocity.magnitude;
+            delta = next_velocity.normalized * delta.magnitude;
             acceleration = get_acceleration();
             // TODO: occasionally ensure velocity and position are orthogonal
         }
@@ -85,7 +88,6 @@ namespace Planetaria
             collision.data.move(horizontal_velocity * Time.deltaTime, transform.scale/2);
             transform.position = collision.data.position();
             position = transform.position.data; // NOTE: required so get_acceleration() functions
-            transform.rotation = Bearing.angle(collision.data.position().data, collision.data.normal().data); // FIXME: this is platformer-specific
             // project velocity
             acceleration = get_acceleration();
 
@@ -97,7 +99,6 @@ namespace Planetaria
 
             float vertical_acceleration = Vector3.Dot(acceleration, normal);
             horizontal_acceleration = Vector3.Dot(acceleration, right);
-            Debug.LogError(horizontal_acceleration);
             if (vertical_acceleration > collision.data.magnetism)
             {
                 // Force OnCollisionExit, "un-collision" (and accelerate for a frame)
