@@ -19,7 +19,7 @@ namespace Planetaria
             Vector3 last_position = world_to_block * transformation.previous_position.data;
             Vector3 current_position = world_to_block * transformation.position.data;
 
-            float extrusion = transformation.scale;
+            float extrusion = transformation.scale/2;
             optional<Vector3> intersection_point = PlanetariaIntersection.arc_path_intersection(arc, last_position, current_position, extrusion);
             if (!intersection_point.exists) // theoretically only happens with moving objects for discrete collision checks
             {
@@ -42,7 +42,9 @@ namespace Planetaria
             BlockCollision result = new BlockCollision();
             float angle = arc.position_to_angle(intersection_point.data);
             result.geometry_visitor = GeometryVisitor.geometry_visitor(arc_visitor.data, angle, extrusion, block.transform);
-            result.distance = Vector3.Angle(intersection_point.data, transformation.position.data);
+            intersection_point.data = block_to_world * intersection_point.data;
+            result.distance = Vector3.Angle(intersection_point.data, transformation.previous_position.data)*Mathf.Deg2Rad;
+            result.overshoot = Vector3.Angle(intersection_point.data, transformation.position.data)*Mathf.Deg2Rad;
             result.block = block;
             result.collider = collider;
             result.active = true;
@@ -52,6 +54,7 @@ namespace Planetaria
 
             PlanetariaPhysicMaterial self = result.self.material;
             PlanetariaPhysicMaterial other = result.other.material;
+
             result.elasticity = PlanetariaPhysic.blend(
                     self.elasticity, self.elasticity_combine,
                     other.elasticity, other.elasticity_combine);
@@ -104,6 +107,7 @@ namespace Planetaria
         public Block block { get; private set; }
         public PlanetariaCollider collider { get; private set; }
         public float distance { get; private set; }
+        public float overshoot { get; private set; }
         public GeometryVisitor geometry_visitor { get; private set; }
         public float elasticity { get; private set; }
         public float dynamic_friction { get; private set; }

@@ -25,10 +25,8 @@ namespace Planetaria
         {
             if (block_transform.exists) // Cannot be cached since platform may move
             {
-                Debug.DrawRay(block_transform.data.rotation * cached_position, block_transform.data.rotation * cached_normal, Color.blue);
                 return block_transform.data.rotation * cached_normal;
             }
-            Debug.DrawRay(cached_position, cached_normal, Color.blue);
             return cached_normal;
         }
 
