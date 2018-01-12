@@ -48,6 +48,7 @@ namespace Planetaria
                 }
                 next_collision.collider.get_observer().enter_block(next_collision);
                 this.enter_block(next_collision);
+                collision_candidates.Clear();
             }
         }
 
@@ -129,7 +130,7 @@ namespace Planetaria
                             collision_candidates.Add(collision.data);
                             if (planetaria_rigidbody.exists)
                             {
-                                planetaria_rigidbody.data.collide(collision.data);
+                                planetaria_rigidbody.data.collide(collision.data, this);
                             }
                         }
                     }
@@ -153,11 +154,17 @@ namespace Planetaria
             {
                 observer.exit_block(collision);
             }
+            Debug.Log(collision_candidates.Count);
         }
 
         public PlanetariaCollider collider()
         {
             return planetaria_collider;
+        }
+        
+        public bool colliding()
+        {
+            return current_collisions.Count != 0;
         }
 
         public IEnumerable<BlockCollision> collisions()

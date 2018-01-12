@@ -54,6 +54,26 @@ namespace Planetaria
             float radius = elevation(extrusion);
             return GeospatialCircle.circle(center, radius);
         }
+        
+        /// Inspector - Determine if a circle is inside the arc / Determine if a point is inside the arc extruded by radius.
+        /// </summary>
+        /// <param name="position">The position (on a unit sphere) of the circle's center.</param>
+        /// <param name="extrusion">The radius to extrude the arc.</param>
+        /// <returns>
+        /// True if a collision is detected;
+        /// False otherwise.
+        /// </returns>
+        public bool contains(Vector3 position, float extrusion = 0f)
+        {
+            bool above_floor = Vector3.Dot(position, center_axis) >= Mathf.Sin(arc_latitude); // XXX: potential bug
+            bool below_ceiling = Vector3.Dot(position, center_axis) <= Mathf.Sin(arc_latitude + extrusion);
+            bool correct_latitude = above_floor && below_ceiling;
+
+            float angle = position_to_angle(position, extrusion);
+            bool correct_angle = angle < arc_angle;
+
+            return correct_latitude && correct_angle;
+        }
 
         /// <summary>
         /// Inspector - Get the position at a particular interpolation factor [0,1].

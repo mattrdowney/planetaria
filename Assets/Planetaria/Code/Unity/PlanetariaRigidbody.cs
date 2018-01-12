@@ -22,6 +22,7 @@ namespace Planetaria
         {
             if (!collision.exists)
             {
+                Debug.Log("aerial: " + Time.time);
                 // I am making a bet this is relevant in spherical coordinates (it is Euler isn't it?): http://openarena.ws/board/index.php?topic=5100.0
                 velocity = velocity + acceleration * (Time.deltaTime / 2);
                 aerial_move(velocity.magnitude * Time.deltaTime);
@@ -29,6 +30,7 @@ namespace Planetaria
             }
             else
             {
+                Debug.Log("grounded: " + Time.time);
                 horizontal_velocity += horizontal_acceleration * (Time.deltaTime / 2);
                 grounded_move();
                 horizontal_velocity += horizontal_acceleration * (Time.deltaTime / 2);
@@ -45,8 +47,10 @@ namespace Planetaria
             return result;
         }
 
-        public void collide(BlockCollision collision)
+        public void collide(BlockCollision collision, CollisionObserver observer)
         {
+            Debug.Log(Time.time);
+            this.observer = observer;
             Vector3 original_position = position;
             aerial_move(-collision.overshoot); // this only (truly) works with perpendicular vectors?
             horizontal_velocity = Vector3.Dot(this.velocity, Bearing.right(this.position, collision.normal().data));
@@ -62,7 +66,7 @@ namespace Planetaria
             }
             else
             {
-                // Force OnCollisionExit, "un-collision"
+                derail(0, vertical_velocity); // Force OnCollisionExit, "un-collision"
             }
 
             this.collision = collision;
@@ -94,15 +98,28 @@ namespace Planetaria
 
             float vertical_acceleration = Vector3.Dot(acceleration, normal);
             horizontal_acceleration = Vector3.Dot(acceleration, right);
-            if (vertical_acceleration > collision.data.magnetism)
+            if (vertical_acceleration > collision.data.magnetism*.05)
             {
-                // Force OnCollisionExit, "un-collision" (and accelerate for a frame)
+                derail(0, vertical_acceleration*Time.deltaTime); // Force OnCollisionExit, "un-collision" (and accelerate for a frame)
             }
         }
         
-        // FIXME: implement "un-collision"
-
-
+        public void derail(float horizontal_velocity, float vertical_velocity)
+        {
+            if (this.collision.exists && observer.exists)
+            {
+                horizontal_velocity += this.horizontal_velocity;
+                position = collision.data.position().data;
+                Vector3 normal = collision.data.normal().data;
+                Vector3 right = Bearing.right(position, normal);
+                velocity = right*horizontal_velocity + normal*vertical_velocity;
+                acceleration = get_acceleration();
+                Debug.DrawRay(position, velocity, Color.yellow, 10f);
+                observer.data.exit_block(collision.data);
+                this.collision = new optional<BlockCollision>();
+                Debug.Log("Derail: collision?" + this.collision.exists);
+            }
+        }
 
         // position
         private Vector3 position; // magnitude = 1
@@ -113,6 +130,7 @@ namespace Planetaria
         [SerializeField] public Vector3[] gravity_wells;
 
         private new PlanetariaTransform transform;
+        private optional<CollisionObserver> observer;
         private Rigidbody internal_rigidbody;
         
         private optional<BlockCollision> collision;

@@ -114,16 +114,15 @@ namespace Planetaria
                     {
                         if (rigidbody.exists)
                         {
-                            optional<Arc> arc = PlanetariaCache.arc_cache.get(sphere_collider.data); // C++17 if statements are so pretty compared to this...
-                            if (arc.exists)
+                            optional<Block> block = PlanetariaCache.block_cache.get(sphere_collider.data);
+                            if (block.exists &&
+                                    (!observer.colliding() || observer.collisions().First<BlockCollision>().block == block.data)) // Is the block a duplicate of the one we are colliding with?
                             {
-                                optional<Block> block = PlanetariaCache.block_cache.get(sphere_collider.data);
-                                if (!block.exists)
+                                optional<Arc> arc = PlanetariaCache.arc_cache.get(sphere_collider.data);
+                                if (arc.exists && arc.data.contains(planetaria_transform.position.data, planetaria_transform.scale/2))
                                 {
-                                    Debug.LogError("Critical Err0r.");
-                                    return;
+                                    observer.enter_block(arc.data, block.data, other_collider.data); // block collisions are handled in OnCollisionStay(): notification stage
                                 }
-                                observer.enter_block(arc.data, block.data, other_collider.data); // block collisions are handled in OnCollisionStay(): notification stage
                             }
                         }
                     }
