@@ -35,7 +35,7 @@ namespace Planetaria
                 Debug.LogError("Research why this happened.");
                 return new optional<BlockCollision>();
             }
-            if (!platform_collision(arc, block, collider, transformation, rigidbody, intersection_point))
+            if (block.is_platform && !platform_collision(arc, block, collider, transformation, rigidbody, intersection_point))
             {
                 return new optional<BlockCollision>();
             }
@@ -118,7 +118,7 @@ namespace Planetaria
         {
             Vector3 velocity = Bearing.attractor(transformation.previous_position.data, transformation.position.data);
 
-            if (block.is_platform && intersection_point.exists)
+            if (intersection_point.exists)
             {
                 float arc_angle = arc.position_to_angle(intersection_point.data);
                 Vector3 normal = arc.normal(arc_angle);

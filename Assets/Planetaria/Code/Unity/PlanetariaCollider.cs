@@ -119,10 +119,19 @@ namespace Planetaria
                                     (!observer.colliding() || observer.collisions().First<BlockCollision>().block == block.data)) // Is the block a duplicate of the one we are colliding with?
                             {
                                 optional<Arc> arc = PlanetariaCache.arc_cache.get(sphere_collider.data);
-                                if (arc.exists && arc.data.contains(planetaria_transform.position.data, planetaria_transform.scale/2))
+                                Vector3 position = planetaria_transform.position.data;
+                                if (block.data.is_dynamic)
+                                {
+                                    position = Quaternion.Inverse(block.data.transform.rotation) * position;
+                                }
+                                if (arc.exists && arc.data.contains(position, planetaria_transform.scale/2))
                                 {
                                     observer.enter_block(arc.data, block.data, other_collider.data); // block collisions are handled in OnCollisionStay(): notification stage
                                 }
+                            }
+                            else
+                            {
+                                Debug.Log("Sorta " + Time.time);
                             }
                         }
                     }

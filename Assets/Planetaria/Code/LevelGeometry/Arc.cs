@@ -65,8 +65,8 @@ namespace Planetaria
         /// </returns>
         public bool contains(Vector3 position, float extrusion = 0f)
         {
-            bool above_floor = Vector3.Dot(position, center_axis) >= Mathf.Sin(arc_latitude); // XXX: potential bug
-            bool below_ceiling = Vector3.Dot(position, center_axis) <= Mathf.Sin(arc_latitude + extrusion);
+            bool above_floor = Mathf.Asin(Vector3.Dot(position, center_axis)) >= arc_latitude; // XXX: potential bug
+            bool below_ceiling = Mathf.Asin(Vector3.Dot(position, center_axis)) <= arc_latitude + extrusion;
             bool correct_latitude = above_floor && below_ceiling;
 
             float angle = position_to_angle(position, extrusion);
@@ -178,7 +178,7 @@ namespace Planetaria
             Vector3 end_axis = (to - center).normalized;
             bool long_path = Vector3.Dot(right_axis, end_axis) < 0;
             arc_angle = Vector3.Angle(from - center, to - center)*Mathf.Deg2Rad;
-            arc_latitude = Mathf.PI/2 - Mathf.Acos(elevation);
+            arc_latitude = Mathf.Asin(elevation);
 
             if (long_path)
             {
