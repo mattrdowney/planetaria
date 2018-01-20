@@ -59,13 +59,11 @@ namespace Planetaria
                     self.elasticity, self.elasticity_combine,
                     other.elasticity, other.elasticity_combine);
 
-            result.dynamic_friction = PlanetariaPhysic.blend(
-                    self.dynamic_friction, self.friction_combine,
-                    other.dynamic_friction, other.friction_combine);
+            result.friction = PlanetariaPhysic.blend(
+                    self.friction, self.friction_combine,
+                    other.friction, other.friction_combine);
 
-            result.static_friction = PlanetariaPhysic.blend(
-                    self.static_friction, self.friction_combine,
-                    other.static_friction, other.friction_combine);
+            result.threshold_angle = Mathf.PI/2 - Mathf.Atan(result.friction);
 
             result.magnetism =
                     -(self.magnetism - other.magnetism * self.induced_magnetism_multiplier) *
@@ -110,8 +108,8 @@ namespace Planetaria
         public float overshoot { get; private set; }
         public GeometryVisitor geometry_visitor { get; private set; }
         public float elasticity { get; private set; }
-        public float dynamic_friction { get; private set; }
-        public float static_friction { get; private set; }
+        public float friction { get; private set; }
+        public float threshold_angle { get; private set; }
         public float magnetism { get; private set; }
 
         private static bool platform_collision(Arc arc, Block block, PlanetariaCollider collider, PlanetariaTransform transformation, PlanetariaRigidbody rigidbody, optional<Vector3> intersection_point)

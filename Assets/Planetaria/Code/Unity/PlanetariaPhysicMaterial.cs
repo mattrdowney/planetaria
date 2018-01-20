@@ -14,12 +14,7 @@ namespace Planetaria
         [SerializeField]
         [Range(0,Mathf.Infinity)]
         [Tooltip("The force of friction past which an object will start moving: 0 means no friction, 1 is a typical max friction")]
-        public float static_friction;
-        
-        [SerializeField]
-        [Range(0,Mathf.Infinity)]
-        [Tooltip("The force of friction while an object is moving: 0 means no friction, 1 is a typical max friction")]
-        public float dynamic_friction;
+        public float friction;
 
         [SerializeField]
         [Range(Mathf.NegativeInfinity,Mathf.Infinity)]

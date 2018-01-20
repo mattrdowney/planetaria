@@ -22,15 +22,17 @@ namespace Planetaria
         {
             if (!collision.exists)
             {
-                Debug.Log("aerial: " + Time.time);
                 // I am making a bet this is relevant in spherical coordinates (it is Euler isn't it?): http://openarena.ws/board/index.php?topic=5100.0
+                // Wikipedia: https://en.wikipedia.org/wiki/Leapfrog_integration
+                // "This is especially useful when computing orbital dynamics, as many other integration schemes, such as the (order-4) Runge-Kutta method, do not conserve energy and allow the system to drift substantially over time." - Wikipedia
+                // http://lolengine.net/blog/2011/12/14/understanding-motion-in-games
+                // http://www.richardlord.net/presentations/physics-for-flash-games.html
                 velocity = velocity + acceleration * (Time.deltaTime / 2);
                 aerial_move(velocity.magnitude * Time.deltaTime);
                 velocity = velocity + acceleration * (Time.deltaTime / 2);
             }
             else
             {
-                Debug.Log("grounded: " + Time.time);
                 horizontal_velocity += horizontal_acceleration * (Time.deltaTime / 2);
                 grounded_move();
                 horizontal_velocity += horizontal_acceleration * (Time.deltaTime / 2);
@@ -49,7 +51,6 @@ namespace Planetaria
 
         public void collide(BlockCollision collision, CollisionObserver observer)
         {
-            Debug.Log(Time.time);
             this.observer = observer;
             Vector3 original_position = position;
             aerial_move(-collision.overshoot); // this only (truly) works with perpendicular vectors?
@@ -96,12 +97,35 @@ namespace Planetaria
             Vector3 normal = collision.data.normal().data;
             Vector3 right = Bearing.right(collision.data.position().data, normal);
 
-            float vertical_acceleration = Vector3.Dot(acceleration, normal);
+            float vertical_acceleration = Mathf.Max(0, Vector3.Dot(acceleration, normal));
             horizontal_acceleration = Vector3.Dot(acceleration, right);
-            if (vertical_acceleration > collision.data.magnetism*.05)
+            
+            float friction = collision.data.friction*vertical_acceleration*Time.deltaTime;
+            if (Mathf.Sign(horizontal_velocity)*horizontal_velocity > friction)
+            {
+                horizontal_velocity -= Mathf.Sign(horizontal_velocity)*friction;
+            }
+            else
+            {
+                horizontal_velocity = 0;
+                Debug.Log("Happening");
+            }
+            float angle = Mathf.Acos(vertical_acceleration/acceleration.magnitude);
+            if (horizontal_velocity == 0 && angle < collision.data.threshold_angle)
+            {
+                acceleration = Vector3.zero;
+                horizontal_acceleration = 0;
+            }
+
+            if (vertical_acceleration > collision.data.magnetism)
             {
                 derail(0, vertical_acceleration*Time.deltaTime); // Force OnCollisionExit, "un-collision" (and accelerate for a frame)
             }
+        }
+
+        private void grounded_accelerate(float delta)
+        {
+
         }
         
         public void derail(float horizontal_velocity, float vertical_velocity)
@@ -114,10 +138,8 @@ namespace Planetaria
                 Vector3 right = Bearing.right(position, normal);
                 velocity = right*horizontal_velocity + normal*vertical_velocity;
                 acceleration = get_acceleration();
-                Debug.DrawRay(position, velocity, Color.yellow, 10f);
                 observer.data.exit_block(collision.data);
                 this.collision = new optional<BlockCollision>();
-                Debug.Log("Derail: collision?" + this.collision.exists);
             }
         }
 

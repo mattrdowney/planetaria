@@ -51,14 +51,25 @@ namespace Planetaria
                 {
                     float u = column / (float) size;
                     float manhattan_distance = Mathf.Abs(u - .5f) + Mathf.Abs(v - .5f);
-                    float angle = (.5f - manhattan_distance)*Mathf.PI; // FIXME: approximate equal area triangles here (might be exact)
+                    float angle = (.5f - manhattan_distance)*Mathf.PI;
                     float width = Mathf.Cos(angle);
                     float height = Mathf.Sin(angle);
                     float y = height / (Mathf.Abs(width) + Mathf.Abs(height));
                     float xz_magnitude = 1 - Mathf.Abs(y);
                     Vector3 unadjusted_point = ((NormalizedOctahedralCoordinates) new OctahedralUVCoordinates(u, v)).data;
                     unadjusted_point.y = 0;
-                    unadjusted_point /= Mathf.Abs(unadjusted_point.x) + Mathf.Abs(unadjusted_point.z);
+                    unadjusted_point /= (Mathf.Abs(unadjusted_point.x) + Mathf.Abs(unadjusted_point.z));
+                    float x_magnitude = Mathf.Abs(unadjusted_point.x);
+                    float z_magnitude = Mathf.Abs(unadjusted_point.z);
+                    if (x_magnitude > Precision.threshold && z_magnitude > Precision.threshold)
+                    {
+                        float polar_angle = Mathf.PI/4 * (Mathf.Min(x_magnitude, z_magnitude) / ((x_magnitude + z_magnitude)/2));
+                        polar_angle = x_magnitude > z_magnitude ? 0 + polar_angle : Mathf.PI/2 - polar_angle;
+                        unadjusted_point.x = Mathf.Sign(unadjusted_point.x) * Mathf.Abs(Mathf.Cos(polar_angle));
+                        unadjusted_point.z = Mathf.Sign(unadjusted_point.z) * Mathf.Abs(Mathf.Sin(polar_angle));
+                        unadjusted_point /= (Mathf.Abs(unadjusted_point.x) + Mathf.Abs(unadjusted_point.z));
+                    }
+                    Debug.Log(Mathf.Sign(unadjusted_point.x) + " " + Mathf.Sign(unadjusted_point.z));
                     float x = xz_magnitude * unadjusted_point.x;
                     float z = xz_magnitude * unadjusted_point.z;
                     NormalizedOctahedralCoordinates final_point = new NormalizedOctahedralCoordinates(new Vector3(x,y,z));
