@@ -54,13 +54,17 @@ namespace Planetaria
                     float angle = (.5f - manhattan_distance)*Mathf.PI;
                     float width = Mathf.Cos(angle);
                     float height = Mathf.Sin(angle);
-                    float y = height / (Mathf.Abs(width) + Mathf.Abs(height));
+                    float y = (manhattan_distance > Precision.threshold ? height / (Mathf.Abs(width) + Mathf.Abs(height)) : 1);
                     float xz_magnitude = 1 - Mathf.Abs(y);
                     Vector3 unadjusted_point = ((NormalizedOctahedralCoordinates) new OctahedralUVCoordinates(u, v)).data;
                     unadjusted_point.y = 0;
-                    unadjusted_point /= (Mathf.Abs(unadjusted_point.x) + Mathf.Abs(unadjusted_point.z));
+                    if (unadjusted_point.sqrMagnitude > 0)
+                    {
+                        unadjusted_point /= (Mathf.Abs(unadjusted_point.x) + Mathf.Abs(unadjusted_point.z));
+                    }
                     float x_magnitude = Mathf.Abs(unadjusted_point.x);
                     float z_magnitude = Mathf.Abs(unadjusted_point.z);
+                    
                     if (x_magnitude > Precision.threshold && z_magnitude > Precision.threshold)
                     {
                         float polar_angle = Mathf.PI/4 * (Mathf.Min(x_magnitude, z_magnitude) / ((x_magnitude + z_magnitude)/2));
@@ -102,10 +106,6 @@ namespace Planetaria
             current_position = new Vector2(size,size);
             create_triangle_quadrant(new Vector2(+1, -1));
             create_triangle_quadrant(new Vector2(-1, -1));
-
-            Debug.Log("Min area: " + min_area);
-            Debug.Log("Max area: " + max_area);
-            Debug.Log("Area ratio: " + (max_area/min_area));
         }
 
         private static void create_triangle_quadrant(Vector2 zig_direction)
@@ -162,13 +162,8 @@ namespace Planetaria
             }
         }
 
-        private static float min_area = Mathf.Infinity;
-        private static float max_area = 0;
-
         private static void create_triangle(Vector2[] corners)
         {
-            Vector3[] vertices = new Vector3[3];
-            int index = 0;
             foreach (Vector2 corner in corners)
             {
                 int x = Mathf.RoundToInt(corner.x);
@@ -185,27 +180,7 @@ namespace Planetaria
                 }
                 identifier = identifiers[x,y].data;
                 triangles[next_triangle++] = identifier;
-
-                vertices[index] = position;
-                ++index;
             }
-            
-            float radius = 1;
-            
-            float a = Vector3.Angle(vertices[0], vertices[1]);
-            float b = Vector3.Angle(vertices[1], vertices[2]);
-            float c = Vector3.Angle(vertices[2], vertices[0]);
-
-            float s = (a + b + c)/2;
-
-            float excess = Mathf.Atan(Mathf.Sqrt(Mathf.Tan(s/2)*Mathf.Tan((s-a)/2)*Mathf.Tan((s-b)/2)*Mathf.Tan((s-c)/2)))*4;
-            if (excess < 0) Debug.LogError(excess);
-            float area = Mathf.PI*radius*radius*excess/180f;
-            //float area = (1f/2)*Vector3.Cross(vertices[1] - vertices[0], vertices[0] - vertices[2]).magnitude;
-
-            Debug.Log("Area is: " + area);
-            min_area = Mathf.Min(area, min_area);
-            max_area = Mathf.Max(area, max_area);
         }
 
         private static int quadrant_size;
