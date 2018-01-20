@@ -69,7 +69,6 @@ namespace Planetaria
                         unadjusted_point.z = Mathf.Sign(unadjusted_point.z) * Mathf.Abs(Mathf.Sin(polar_angle));
                         unadjusted_point /= (Mathf.Abs(unadjusted_point.x) + Mathf.Abs(unadjusted_point.z));
                     }
-                    Debug.Log(Mathf.Sign(unadjusted_point.x) + " " + Mathf.Sign(unadjusted_point.z));
                     float x = xz_magnitude * unadjusted_point.x;
                     float z = xz_magnitude * unadjusted_point.z;
                     NormalizedOctahedralCoordinates final_point = new NormalizedOctahedralCoordinates(new Vector3(x,y,z));
@@ -103,6 +102,10 @@ namespace Planetaria
             current_position = new Vector2(size,size);
             create_triangle_quadrant(new Vector2(+1, -1));
             create_triangle_quadrant(new Vector2(-1, -1));
+
+            Debug.Log("Min area: " + min_area);
+            Debug.Log("Max area: " + max_area);
+            Debug.Log("Area ratio: " + (max_area/min_area));
         }
 
         private static void create_triangle_quadrant(Vector2 zig_direction)
@@ -159,8 +162,13 @@ namespace Planetaria
             }
         }
 
+        private static float min_area = Mathf.Infinity;
+        private static float max_area = 0;
+
         private static void create_triangle(Vector2[] corners)
         {
+            Vector3[] vertices = new Vector3[3];
+            int index = 0;
             foreach (Vector2 corner in corners)
             {
                 int x = Mathf.RoundToInt(corner.x);
@@ -177,7 +185,27 @@ namespace Planetaria
                 }
                 identifier = identifiers[x,y].data;
                 triangles[next_triangle++] = identifier;
+
+                vertices[index] = position;
+                ++index;
             }
+            
+            float radius = 1;
+            
+            float a = Vector3.Angle(vertices[0], vertices[1]);
+            float b = Vector3.Angle(vertices[1], vertices[2]);
+            float c = Vector3.Angle(vertices[2], vertices[0]);
+
+            float s = (a + b + c)/2;
+
+            float excess = Mathf.Atan(Mathf.Sqrt(Mathf.Tan(s/2)*Mathf.Tan((s-a)/2)*Mathf.Tan((s-b)/2)*Mathf.Tan((s-c)/2)))*4;
+            if (excess < 0) Debug.LogError(excess);
+            float area = Mathf.PI*radius*radius*excess/180f;
+            //float area = (1f/2)*Vector3.Cross(vertices[1] - vertices[0], vertices[0] - vertices[2]).magnitude;
+
+            Debug.Log("Area is: " + area);
+            min_area = Mathf.Min(area, min_area);
+            max_area = Mathf.Max(area, max_area);
         }
 
         private static int quadrant_size;
