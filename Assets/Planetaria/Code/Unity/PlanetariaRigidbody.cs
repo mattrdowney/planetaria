@@ -29,13 +29,16 @@ namespace Planetaria
                 // http://www.richardlord.net/presentations/physics-for-flash-games.html
                 velocity = velocity + acceleration * (Time.deltaTime / 2);
                 aerial_move(velocity.magnitude * Time.deltaTime);
+                acceleration = get_acceleration();
                 velocity = velocity + acceleration * (Time.deltaTime / 2);
             }
             else
             {
-                horizontal_velocity += horizontal_acceleration * (Time.deltaTime / 2);
-                grounded_move();
-                horizontal_velocity += horizontal_acceleration * (Time.deltaTime / 2);
+                grounded_track(Time.deltaTime/2);
+                grounded_position();
+                grounded_accelerate(Time.deltaTime);
+                grounded_track(Time.deltaTime/2);
+
             }
         }
 
@@ -78,54 +81,43 @@ namespace Planetaria
             Vector3 next_position = PlanetariaMath.slerp(position, velocity.normalized, delta); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
             Vector3 next_velocity = PlanetariaMath.slerp(position, velocity.normalized, delta + Mathf.PI/2);
             
-            // set position -> velocity -> acceleration (in that order)
             transform.position = new NormalizedCartesianCoordinates(next_position);
             position = transform.position.data; // get normalized data
             velocity = next_velocity.normalized * velocity.magnitude;
-            acceleration = get_acceleration();
+            
             // TODO: occasionally ensure velocity and position are orthogonal
         }
 
-        private void grounded_move()
+        private void grounded_position()
         {
             collision.data.move(horizontal_velocity * Time.deltaTime, transform.scale/2);
             transform.position = collision.data.position();
             position = transform.position.data; // NOTE: required so get_acceleration() functions
             // project velocity
-            acceleration = get_acceleration();
+        }
 
+        private void grounded_track(float delta_time)
+        {
+            horizontal_velocity += horizontal_acceleration * delta_time;
+            float friction = collision.data.friction * vertical_acceleration * delta_time;
+            float speed = Mathf.Abs(horizontal_velocity);
+            Debug.Log(friction + " against " + speed);
+            horizontal_velocity -= Mathf.Sign(horizontal_velocity)*Mathf.Min(speed, friction);
+        }
+
+        private void grounded_accelerate(float delta)
+        {
             Vector3 normal = collision.data.normal().data;
             Vector3 right = Bearing.right(collision.data.position().data, normal);
 
-            float vertical_acceleration = Mathf.Max(0, Vector3.Dot(acceleration, normal));
+            acceleration = get_acceleration();
+            vertical_acceleration = Mathf.Max(0, Vector3.Dot(acceleration, normal));
             horizontal_acceleration = Vector3.Dot(acceleration, right);
-            
-            float friction = collision.data.friction*vertical_acceleration*Time.deltaTime;
-            if (Mathf.Sign(horizontal_velocity)*horizontal_velocity > friction)
-            {
-                horizontal_velocity -= Mathf.Sign(horizontal_velocity)*friction;
-            }
-            else
-            {
-                horizontal_velocity = 0;
-                Debug.Log("Happening");
-            }
-            float angle = Mathf.Acos(vertical_acceleration/acceleration.magnitude);
-            if (horizontal_velocity == 0 && angle < collision.data.threshold_angle)
-            {
-                acceleration = Vector3.zero;
-                horizontal_acceleration = 0;
-            }
 
             if (vertical_acceleration > collision.data.magnetism)
             {
                 derail(0, vertical_acceleration*Time.deltaTime); // Force OnCollisionExit, "un-collision" (and accelerate for a frame)
             }
-        }
-
-        private void grounded_accelerate(float delta)
-        {
-
         }
         
         public void derail(float horizontal_velocity, float vertical_velocity)
@@ -138,6 +130,7 @@ namespace Planetaria
                 Vector3 right = Bearing.right(position, normal);
                 velocity = right*horizontal_velocity + normal*vertical_velocity;
                 acceleration = get_acceleration();
+                // TODO: accelerate vertically
                 observer.data.exit_block(collision.data);
                 this.collision = new optional<BlockCollision>();
             }
@@ -157,6 +150,7 @@ namespace Planetaria
         
         private optional<BlockCollision> collision;
         private float horizontal_velocity;
+        private float vertical_acceleration;
         private float horizontal_acceleration;
     }
 }

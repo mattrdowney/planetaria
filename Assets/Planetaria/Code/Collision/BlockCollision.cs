@@ -63,8 +63,6 @@ namespace Planetaria
                     self.friction, self.friction_combine,
                     other.friction, other.friction_combine);
 
-            result.threshold_angle = Mathf.PI/2 - Mathf.Atan(result.friction);
-
             result.magnetism =
                     -(self.magnetism - other.magnetism * self.induced_magnetism_multiplier) *
                     (other.magnetism - self.magnetism * other.induced_magnetism_multiplier);
