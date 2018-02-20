@@ -167,12 +167,12 @@ namespace Planetaria
             return current_collisions.Count != 0;
         }
 
-        public IEnumerable<BlockCollision> collisions()
+        public List<BlockCollision> collisions()
         {
             return current_collisions;
         }
 
-        public IEnumerable<PlanetariaCollider> fields()
+        public List<PlanetariaCollider> fields()
         {
             return field_set;
         }

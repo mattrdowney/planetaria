@@ -71,7 +71,7 @@ namespace Planetaria
                 scale_variable = value;
                 if (scalable)
                 {
-                    internal_transformation.localScale = Vector3.one * scale_variable;
+                    internal_transformation.localScale = Vector3.one * scale_variable / 2;
                 }
             }
         }

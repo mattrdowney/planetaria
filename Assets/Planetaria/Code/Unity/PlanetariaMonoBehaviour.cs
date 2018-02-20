@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Planetaria
@@ -33,7 +34,8 @@ namespace Planetaria
                 {
                     foreach (CollisionObserver observer in observers)
                     {
-                        foreach (PlanetariaCollider field in observer.fields())
+                        List<PlanetariaCollider> immutable = observer.fields().Select(item => item).ToList();
+                        foreach (PlanetariaCollider field in immutable)
                         {
                             OnFieldStay.data(field);
                         }
@@ -43,7 +45,8 @@ namespace Planetaria
                 {
                     foreach (CollisionObserver observer in observers)
                     {
-                        foreach (BlockCollision collision in observer.collisions())
+                        List<BlockCollision> immutable = observer.collisions().Select(item => item).ToList();
+                        foreach (BlockCollision collision in immutable)
                         {
                             OnBlockStay.data(collision);
                         }

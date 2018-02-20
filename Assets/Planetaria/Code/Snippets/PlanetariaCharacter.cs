@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using Planetaria;
-using System;
 
 public class PlanetariaCharacter : PlanetariaMonoBehaviour
 {
     protected override void OnConstruction()
     {
+        planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
         transform.scale = .1f;
         OnBlockStay.data = on_block_stay;
         OnBlockEnter.data = on_block_enter;
@@ -19,15 +19,34 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
 
     private void Update()
     {
+        if (Input.GetButtonDown("Jump"))
+        {
+            last_jump_attempt = Time.time;
+        }
+    }
+
+    private void FixedUpdate()
+    {
         if (!grounded)
         {
-            //transform.position = new NormalizedSphericalCoordinates(Mathf.PI - Time.time*.5f, Mathf.PI/2);
+            planetaria_rigidbody.absolute_velocity += Vector2.right * Input.GetAxis("Horizontal") * Time.deltaTime * transform.scale;
         }
     }
 
     void on_block_stay(BlockCollision collision)
     {
+        float velocity = planetaria_rigidbody.relative_velocity.x;
+        velocity += Input.GetAxis("Horizontal") * Time.deltaTime * collision.magnetism / transform.scale;
+        if (Mathf.Abs(velocity) > 4f*transform.scale)
+        {
+            velocity = Mathf.Sign(velocity)*4f*transform.scale;
+        }
+        planetaria_rigidbody.relative_velocity = new Vector2(velocity, 0);
         transform.rotation = Bearing.angle(collision.position().data, collision.normal().data);
+        if (Time.time - last_jump_attempt < .2f)
+        {
+            planetaria_rigidbody.derail(0, 4*transform.scale);
+        }
     }
 
     void on_block_enter(BlockCollision collision)
@@ -37,9 +56,12 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
 
     void on_block_exit(BlockCollision collision)
     {
+        transform.rotation = 0;
         grounded = false;
     }
 
+    PlanetariaRigidbody planetaria_rigidbody;
+    float last_jump_attempt = -1;
     bool grounded = false;
 }
 

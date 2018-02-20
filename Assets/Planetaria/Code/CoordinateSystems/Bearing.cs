@@ -11,6 +11,13 @@ namespace Planetaria
             return Mathf.Atan2(y, x) - Mathf.PI/2;
         }
 
+        public static Vector3 normal(Vector3 position, float angle)
+        {
+            Vector3 x = east(position)*Mathf.Cos(angle);
+            Vector3 y = north(position)*Mathf.Sin(angle);
+            return x + y;
+        }
+
         /// <summary>
         /// Find right relative to a point with a given normal vector.
         /// </summary>

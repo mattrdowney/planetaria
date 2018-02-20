@@ -49,6 +49,9 @@ namespace Planetaria
             }
         }
 
+        /// <summary>
+        /// The diameter of the player - divide by two when you need the radius/extrusion.
+        /// </summary>
         public float scale
         {
             get

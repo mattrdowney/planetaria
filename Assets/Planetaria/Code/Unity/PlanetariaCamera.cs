@@ -21,7 +21,7 @@ namespace Planetaria
             camera.AddComponent<AudioListener>();
             internal_camera.useOcclusionCulling = false;
 
-            zoom = .95f;
+            zoom = 0;
             dolly_transform.position = Vector3.forward*zoom;
             dolly_transform.localScale = Vector3.zero;
             internal_camera.nearClipPlane = near_clip_plane;

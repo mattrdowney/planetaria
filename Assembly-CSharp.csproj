@@ -194,12 +194,13 @@
      <Compile Include="Assets\UnitySVG\Implementation\XMLParser\SmallXmlParser.cs" />
      <Compile Include="Assets\UnitySVG\Implementation\XMLParser\SVGParser.cs" />
      <Compile Include="Assets\UnitySVG\Interface\RenderingEngine\ISVGPathDraw.cs" />
-     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_d0d2724012d574048a6356bfa367e88b.txt" />
-     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_597a8f12c7f4c0349b7c8964d6be2eb5.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_78d89960c38d6e04c952c6bce5ad625c.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_3671857144969a1498acfebe77cb02c7.txt" />
      <None Include="Assets\Planetaria\Code\Shaders\TransparentLit.shader" />
-     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_990bc4550e06f264897c1c14a0e1752c.txt" />
-     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_bc189c7665c3b7c44be03cd25d9dfe9f.txt" />
-     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_322c7598bef6a3746afb4d34fd43587c.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_1352f7653b371e744ba6ecc5618412eb.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_e8bf2c46ee942a34ba558238fb29157e.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_acb477670636e664ca41ced446e2d124.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_6fbc52976cf3c1646b19b1029917b179.txt" />
  <Reference Include="com.unity.package-manager-ui.Editor">
  <HintPath>C:/Users/Fujitora/Dropbox/Planetaria/Planetaria/Library/ScriptAssemblies/com.unity.package-manager-ui.Editor.dll</HintPath>
  </Reference>

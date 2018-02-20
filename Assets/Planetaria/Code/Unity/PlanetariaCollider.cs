@@ -116,7 +116,7 @@ namespace Planetaria
                         {
                             optional<Block> block = PlanetariaCache.block_cache.get(sphere_collider.data);
                             if (block.exists &&
-                                    (!observer.colliding() || observer.collisions().First<BlockCollision>().block == block.data)) // Is the block a duplicate of the one we are colliding with?
+                                    (!observer.colliding() || observer.collisions()[0].block == block.data)) // Is the block a duplicate of the one we are colliding with?
                             {
                                 optional<Arc> arc = PlanetariaCache.arc_cache.get(sphere_collider.data);
                                 Vector3 position = planetaria_transform.position.data;

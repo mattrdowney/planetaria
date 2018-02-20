@@ -38,7 +38,6 @@ namespace Planetaria
                 grounded_position();
                 grounded_accelerate(Time.deltaTime);
                 grounded_track(Time.deltaTime/2);
-
             }
         }
 
@@ -55,11 +54,11 @@ namespace Planetaria
         public void collide(BlockCollision collision, CollisionObserver observer)
         {
             this.observer = observer;
-            Vector3 original_position = position;
+
             aerial_move(-collision.overshoot); // this only (truly) works with perpendicular vectors?
             horizontal_velocity = Vector3.Dot(this.velocity, Bearing.right(this.position, collision.normal().data));
-
-            float vertical_velocity = Vector3.Dot(this.velocity, collision.normal().data);
+            vertical_velocity = Vector3.Dot(this.velocity, collision.normal().data);
+            
             if (vertical_velocity < 0)
             {
                 vertical_velocity *= -collision.elasticity;
@@ -72,7 +71,7 @@ namespace Planetaria
             {
                 derail(0, vertical_velocity); // Force OnCollisionExit, "un-collision"
             }
-
+            
             this.collision = collision;
         }
 
@@ -101,8 +100,7 @@ namespace Planetaria
             horizontal_velocity += horizontal_acceleration * delta_time;
             float friction = collision.data.friction * vertical_acceleration * delta_time;
             float speed = Mathf.Abs(horizontal_velocity);
-            Debug.Log(friction + " against " + speed);
-            horizontal_velocity -= Mathf.Sign(horizontal_velocity)*Mathf.Min(speed, friction);
+            //horizontal_velocity -= Mathf.Sign(horizontal_velocity)*Mathf.Min(speed, friction);
         }
 
         private void grounded_accelerate(float delta)
@@ -114,7 +112,7 @@ namespace Planetaria
             vertical_acceleration = Mathf.Max(0, Vector3.Dot(acceleration, normal));
             horizontal_acceleration = Vector3.Dot(acceleration, right);
 
-            if (vertical_acceleration > collision.data.magnetism)
+            if (vertical_acceleration > horizontal_velocity*horizontal_velocity/(transform.scale/2) + collision.data.magnetism) // TODO: check centripedal force
             {
                 derail(0, vertical_acceleration*Time.deltaTime); // Force OnCollisionExit, "un-collision" (and accelerate for a frame)
             }
@@ -136,10 +134,70 @@ namespace Planetaria
             }
         }
 
+        private void synchronize_velocity_ground_to_air()
+        {
+            if (collision.exists)
+            {
+                velocity = horizontal_velocity * Bearing.right(position, collision.data.normal().data);
+            }
+        }
+
+        private void synchronize_velocity_air_to_ground()
+        {
+            if (collision.exists)
+            {
+                horizontal_velocity = Vector3.Dot(velocity, Bearing.right(position, collision.data.normal().data));
+                vertical_velocity = Vector3.Dot(velocity, collision.data.normal().data);
+            }
+        }
+
+        public Vector2 relative_velocity
+        {
+            get
+            {
+                synchronize_velocity_ground_to_air();
+                Vector3 right = Bearing.normal(position, transform.rotation);
+                Vector3 up = Bearing.normal(position, transform.rotation + Mathf.PI/2);
+                float x = Vector3.Dot(velocity, right);
+                float y = Vector3.Dot(velocity, up);
+                return new Vector2(x, y);
+            }
+            set
+            {
+                Vector3 x = Bearing.normal(position, transform.rotation) * value.x;
+                Vector3 y = Bearing.normal(position, transform.rotation + Mathf.PI/2) * value.y;
+                velocity = x + y;
+                synchronize_velocity_air_to_ground();
+            }
+        }
+
+        public Vector2 absolute_velocity
+        {
+            get
+            {
+                synchronize_velocity_ground_to_air();
+                float x = Vector3.Dot(velocity, Bearing.east(position));
+                float y = Vector3.Dot(velocity, Bearing.north(position));
+                return new Vector2(x, y);
+            }
+            set
+            {
+                Vector3 x = Bearing.east(position) * value.x;
+                Vector3 y = Bearing.north(position) * value.y;
+                velocity = x + y;
+                synchronize_velocity_air_to_ground();
+            }
+        }
+
         // position
         private Vector3 position; // magnitude = 1
         private Vector3 velocity; // magnitude in [0, infinity]
         private Vector3 acceleration; // magnitude in [0, infinity]
+
+        /// <summary>
+        /// public Vector2 velocity - set velocity based on absolute values; up is north, right is east
+        /// public Vector3 position - set velocity based on relative values; begin attractor is south, end repeller is north
+        /// </summary>
 
         // gravity
         [SerializeField] public Vector3[] gravity_wells;
@@ -150,8 +208,9 @@ namespace Planetaria
         
         private optional<BlockCollision> collision;
         private float horizontal_velocity;
-        private float vertical_acceleration;
+        private float vertical_velocity;
         private float horizontal_acceleration;
+        private float vertical_acceleration;
     }
 }
 
