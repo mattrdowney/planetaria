@@ -109,10 +109,10 @@ namespace Planetaria
             Vector3 right = Bearing.right(collision.data.position().data, normal);
 
             acceleration = get_acceleration();
-            vertical_acceleration = Mathf.Max(0, Vector3.Dot(acceleration, normal));
             horizontal_acceleration = Vector3.Dot(acceleration, right);
+            vertical_acceleration = Vector3.Dot(-acceleration, normal) + collision.data.magnetism;
 
-            if (vertical_acceleration > horizontal_velocity*horizontal_velocity/(transform.scale/2) + collision.data.magnetism) // TODO: check centripedal force
+            if (vertical_acceleration < horizontal_velocity*horizontal_velocity/(transform.scale/2)) // TODO: check centripedal force
             {
                 derail(0, vertical_acceleration*Time.deltaTime); // Force OnCollisionExit, "un-collision" (and accelerate for a frame)
             }
@@ -138,7 +138,10 @@ namespace Planetaria
         {
             if (collision.exists)
             {
-                velocity = horizontal_velocity * Bearing.right(position, collision.data.normal().data);
+                Vector3 x = horizontal_velocity * Bearing.right(position, collision.data.normal().data);
+                Vector3 y = vertical_acceleration * Time.deltaTime * collision.data.normal().data;
+                Debug.LogWarning(y.ToString("F6"));
+                velocity = x + y;
             }
         }
 

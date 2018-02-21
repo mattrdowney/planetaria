@@ -29,23 +29,23 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
     {
         if (!grounded)
         {
-            planetaria_rigidbody.absolute_velocity += Vector2.right * Input.GetAxis("Horizontal") * Time.deltaTime * transform.scale;
+            planetaria_rigidbody.absolute_velocity += Vector2.right * Input.GetAxis("Horizontal") * Time.deltaTime * transform.scale * acceleration;
         }
     }
 
     void on_block_stay(BlockCollision collision)
     {
         float velocity = planetaria_rigidbody.relative_velocity.x;
-        velocity += Input.GetAxis("Horizontal") * Time.deltaTime * collision.magnetism / transform.scale;
-        if (Mathf.Abs(velocity) > 4f*transform.scale)
+        velocity += Input.GetAxis("Horizontal") * planetaria_rigidbody.relative_velocity.y * transform.scale * acceleration;
+        if (Mathf.Abs(velocity) > 2f*transform.scale)
         {
-            velocity = Mathf.Sign(velocity)*4f*transform.scale;
+            velocity = Mathf.Sign(velocity)*2f*transform.scale;
         }
         planetaria_rigidbody.relative_velocity = new Vector2(velocity, 0);
         transform.rotation = Bearing.angle(collision.position().data, collision.normal().data);
         if (Time.time - last_jump_attempt < .2f)
         {
-            planetaria_rigidbody.derail(0, 4*transform.scale);
+            planetaria_rigidbody.derail(0, 2*transform.scale);
         }
     }
 
@@ -56,6 +56,7 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
 
     void on_block_exit(BlockCollision collision)
     {
+        last_jump_attempt = -1;
         transform.rotation = 0;
         grounded = false;
     }
@@ -63,6 +64,7 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
     PlanetariaRigidbody planetaria_rigidbody;
     float last_jump_attempt = -1;
     bool grounded = false;
+    const float acceleration = 5f;
 }
 
 /*
