@@ -110,6 +110,11 @@ namespace Planetaria
         public float threshold_angle { get; private set; }
         public float magnetism { get; private set; }
 
+        public bool grounded(Vector3 velocity)
+        {
+            return geometry_visitor.contains(position().data + velocity*Time.deltaTime - normal().data*1e-5f);
+        }
+
         private static bool platform_collision(Arc arc, Block block, PlanetariaCollider collider, PlanetariaTransform transformation, PlanetariaRigidbody rigidbody, optional<Vector3> intersection_point)
         {
             Vector3 velocity = Bearing.attractor(transformation.previous_position.data, transformation.position.data);

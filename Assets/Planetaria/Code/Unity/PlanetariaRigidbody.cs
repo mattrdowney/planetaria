@@ -30,13 +30,20 @@ namespace Planetaria
                 velocity = velocity + acceleration * (Time.deltaTime / 2);
                 aerial_move(velocity.magnitude * Time.deltaTime);
                 acceleration = get_acceleration();
-                velocity = velocity + acceleration * (Time.deltaTime / 2);
             }
             else
             {
                 grounded_track(Time.deltaTime/2);
                 grounded_position();
                 grounded_accelerate(Time.deltaTime);
+            }
+
+            if (!collision.exists)
+            {
+                velocity = velocity + acceleration * (Time.deltaTime / 2);
+            }
+            else
+            {
                 grounded_track(Time.deltaTime/2);
             }
         }
@@ -110,9 +117,9 @@ namespace Planetaria
 
             acceleration = get_acceleration();
             horizontal_acceleration = Vector3.Dot(acceleration, right);
-            vertical_acceleration = Vector3.Dot(-acceleration, normal) + collision.data.magnetism;
-
-            if (vertical_acceleration < horizontal_velocity*horizontal_velocity/(transform.scale/2)) // TODO: check centripedal force
+            vertical_acceleration = Vector3.Dot(acceleration, normal) - collision.data.magnetism;
+            Debug.Log(Vector3.Dot(acceleration, normal) + " " + -collision.data.magnetism);
+            if (!collision.data.grounded(internal_velocity)) // TODO: check centripedal force
             {
                 derail(0, vertical_acceleration*Time.deltaTime); // Force OnCollisionExit, "un-collision" (and accelerate for a frame)
             }
@@ -140,7 +147,6 @@ namespace Planetaria
             {
                 Vector3 x = horizontal_velocity * Bearing.right(position, collision.data.normal().data);
                 Vector3 y = vertical_acceleration * Time.deltaTime * collision.data.normal().data;
-                Debug.LogWarning(y.ToString("F6"));
                 velocity = x + y;
             }
         }
@@ -189,6 +195,15 @@ namespace Planetaria
                 Vector3 y = Bearing.north(position) * value.y;
                 velocity = x + y;
                 synchronize_velocity_air_to_ground();
+            }
+        }
+
+        private Vector3 internal_velocity
+        {
+            get
+            {
+                synchronize_velocity_ground_to_air();
+                return velocity;
             }
         }
 
