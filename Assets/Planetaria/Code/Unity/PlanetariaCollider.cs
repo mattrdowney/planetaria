@@ -129,10 +129,6 @@ namespace Planetaria
                                     observer.enter_block(arc.data, block.data, other_collider.data); // block collisions are handled in OnCollisionStay(): notification stage
                                 }
                             }
-                            else
-                            {
-                                Debug.Log("Sorta " + Time.time);
-                            }
                         }
                     }
                 }

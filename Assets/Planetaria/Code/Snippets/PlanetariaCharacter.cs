@@ -36,7 +36,11 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
     void on_block_stay(BlockCollision collision)
     {
         float velocity = planetaria_rigidbody.relative_velocity.x;
-        velocity += Input.GetAxis("Horizontal") * -planetaria_rigidbody.relative_velocity.y * transform.scale * acceleration;
+        velocity += Input.GetAxis("Horizontal") * Mathf.Max(0, -planetaria_rigidbody.relative_velocity.y) * transform.scale * acceleration;
+        if (-planetaria_rigidbody.relative_velocity.y < 0)
+        {
+            Debug.LogWarning(-planetaria_rigidbody.relative_velocity.y);
+        }
         if (Mathf.Abs(velocity) > 2f*transform.scale)
         {
             velocity = Mathf.Sign(velocity)*2f*transform.scale;

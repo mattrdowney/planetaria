@@ -127,10 +127,12 @@ namespace Planetaria
                         optional<BlockCollision> collision = BlockCollision.block_collision(this, arc, block, collider, planetaria_transformation, planetaria_rigidbody.data);
                         if (collision.exists)
                         {
-                            collision_candidates.Add(collision.data);
                             if (planetaria_rigidbody.exists)
                             {
-                                planetaria_rigidbody.data.collide(collision.data, this);
+                                if (planetaria_rigidbody.data.collide(collision.data, this))
+                                {
+                                    collision_candidates.Add(collision.data);
+                                }
                             }
                         }
                     }
@@ -154,7 +156,6 @@ namespace Planetaria
             {
                 observer.exit_block(collision);
             }
-            Debug.Log(collision_candidates.Count);
         }
 
         public PlanetariaCollider collider()

@@ -19,7 +19,7 @@ namespace Planetaria
             Vector3 last_position = world_to_block * transformation.previous_position.data;
             Vector3 current_position = world_to_block * transformation.position.data;
 
-            float extrusion = transformation.scale/2  * 1.001f; // FIXME: magic number
+            float extrusion = transformation.scale/2;
             optional<Vector3> intersection_point = PlanetariaIntersection.arc_path_intersection(arc, last_position, current_position, extrusion);
             if (!intersection_point.exists) // theoretically only happens with moving objects for discrete collision checks
             {
@@ -72,7 +72,7 @@ namespace Planetaria
 
         public void move(float delta_length, float extrusion)
         {
-            geometry_visitor = geometry_visitor.move_position(delta_length, extrusion * 1.001f); // FIXME: magic number
+            geometry_visitor = geometry_visitor.move_position(delta_length, extrusion);
         }
 
         public NormalizedCartesianCoordinates position()
@@ -112,7 +112,7 @@ namespace Planetaria
 
         public bool grounded(Vector3 velocity)
         {
-            return geometry_visitor.contains(position().data + velocity*Time.deltaTime - normal().data*1e-5f);
+            return geometry_visitor.contains(position().data + velocity*Time.deltaTime - normal().data*Precision.threshold);
         }
 
         private static bool platform_collision(Arc arc, Block block, PlanetariaCollider collider, PlanetariaTransform transformation, PlanetariaRigidbody rigidbody, optional<Vector3> intersection_point)

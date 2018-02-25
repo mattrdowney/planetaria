@@ -58,28 +58,24 @@ namespace Planetaria
             return result;
         }
 
-        public void collide(BlockCollision collision, CollisionObserver observer)
+        public bool collide(BlockCollision collision, CollisionObserver observer)
         {
+            aerial_move(-collision.overshoot); // this only (truly) works with perpendicular vectors?
+
+            this.collision = collision;
             this.observer = observer;
 
-            aerial_move(-collision.overshoot); // this only (truly) works with perpendicular vectors?
-            horizontal_velocity = Vector3.Dot(this.velocity, Bearing.right(this.position, collision.normal().data));
-            vertical_velocity = Vector3.Dot(this.velocity, collision.normal().data);
-            
+            horizontal_velocity = Vector3.Dot(velocity, Bearing.right(position, collision.normal().data));
+            vertical_velocity = Vector3.Dot(velocity, collision.normal().data);
+
             if (vertical_velocity < 0)
             {
                 vertical_velocity *= -collision.elasticity;
             }
-            if (vertical_velocity > collision.magnetism)
-            {
-                vertical_velocity = 0;
-            }
-            else
-            {
-                derail(0, vertical_velocity); // Force OnCollisionExit, "un-collision"
-            }
-            
-            this.collision = collision;
+
+            grounded_accelerate(0);
+
+            return this.collision.exists;
         }
 
         private void aerial_move(float delta)
@@ -118,26 +114,30 @@ namespace Planetaria
             acceleration = get_acceleration();
             horizontal_acceleration = Vector3.Dot(acceleration, right);
             vertical_acceleration = Vector3.Dot(acceleration, normal) - collision.data.magnetism;
-            Debug.Log(Vector3.Dot(acceleration, normal) + " " + -collision.data.magnetism);
             if (!collision.data.grounded(internal_velocity)) // TODO: check centripedal force
             {
-                derail(0, vertical_acceleration*Time.deltaTime); // Force OnCollisionExit, "un-collision" (and accelerate for a frame)
+                derail(0, vertical_acceleration*delta); // Force OnCollisionExit, "un-collision" (and accelerate for a frame)
             }
         }
         
-        public void derail(float horizontal_velocity, float vertical_velocity)
+        public void derail(float x_velocity, float y_velocity)
         {
-            if (this.collision.exists && observer.exists)
+            if (collision.exists && observer.exists)
             {
-                horizontal_velocity += this.horizontal_velocity;
+                collision.data.move(0, transform.scale/2 * (1 + 1e-3f)); // extrude the player so they do not accidentally re-collide (immediately) // FIXME: magic number, move to Precision.*
+                x_velocity += horizontal_velocity;
+                //y_velocity += vertical_velocity;
                 position = collision.data.position().data;
+                transform.position = new NormalizedCartesianCoordinates(position);
                 Vector3 normal = collision.data.normal().data;
                 Vector3 right = Bearing.right(position, normal);
-                velocity = right*horizontal_velocity + normal*vertical_velocity;
+                velocity = right*x_velocity + normal*y_velocity;
+                Debug.DrawRay(position, velocity, Color.yellow, 1f);
                 acceleration = get_acceleration();
                 // TODO: accelerate vertically
                 observer.data.exit_block(collision.data);
-                this.collision = new optional<BlockCollision>();
+                collision = new optional<BlockCollision>();
+                observer = new optional<CollisionObserver>();
             }
         }
 
