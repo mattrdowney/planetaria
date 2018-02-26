@@ -1,22 +1,26 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Planetaria
 {
+    [Serializable]
     public class RegularPolygonCameraShutter : PlanetariaCameraShutter
     {
-        public override void initialize()
+        protected override void initialize()
         {
-            Camera camera = GameObject.Find("/MainCamera").GetComponent<Camera>();
+            Camera camera = this.GetComponentInChildren<Camera>() as Camera;
 
             shutter_edges = new GameObject[edges];
 
             for (int edge_index = 0; edge_index < edges; ++edge_index)
             {
-                shutter_edges[edge_index] = (GameObject) Instantiate(Resources.Load("PrimaryEdge"), new Vector3(0, 0, 0.5f), Quaternion.Euler(0, 0, edge_index*360f/edges), camera.transform);
+                shutter_edges[edge_index] = (GameObject) Instantiate(Resources.Load("PrimaryEdge"),
+                        new Vector3(0, 0, PlanetariaCamera.near_clip_plane),
+                        Quaternion.Euler(0, 0, edge_index*360f/edges), camera.transform);
 
-                float x = PlanetariaMath.cone_radius(0.5f, camera.fieldOfView*Mathf.Deg2Rad);
+                float x = PlanetariaMath.cone_radius(PlanetariaCamera.near_clip_plane, camera.fieldOfView*Mathf.Deg2Rad);
                 float y = x * camera.aspect;
-                float z = 0.5f;
+                float z = PlanetariaCamera.near_clip_plane;
             
                 StereoscopicProjectionCoordinates stereoscopic_projection = new NormalizedCartesianCoordinates(new Vector3(x, y, z));
 
@@ -26,9 +30,9 @@ namespace Planetaria
             }
         }
 
-        public override void set(float interpolation_factor)
+        protected override void set(float interpolation_factor)
         {
-            interpolation_factor = Mathf.Clamp01(interpolation_factor);
+            interpolation_factor = Mathf.Clamp(interpolation_factor, 0, 1.5f);
 
             for (int edge_index = 0; edge_index < edges; ++edge_index)
             {

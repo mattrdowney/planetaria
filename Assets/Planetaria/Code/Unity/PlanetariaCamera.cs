@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.XR;
 
 namespace Planetaria
 {
@@ -6,6 +7,7 @@ namespace Planetaria
     {
         public void Awake()
         {
+            XRDevice.SetTrackingSpaceType(TrackingSpaceType.Stationary);
             transform = this.GetOrAddComponent<PlanetariaTransform>();
             GameObject dolly = new GameObject("Camera Dolly");
             dolly.transform.parent = this.gameObject.transform;
@@ -23,7 +25,7 @@ namespace Planetaria
 
             zoom = 0;
             dolly_transform.position = Vector3.forward*zoom;
-            dolly_transform.localScale = Vector3.zero;
+            dolly_transform.localScale = Vector3.one; // CONSIDER: setting this to zero mirrors `XRDevice.SetTrackingSpaceType(TrackingSpaceType.Stationary);`
             internal_camera.nearClipPlane = near_clip_plane;
             internal_camera.farClipPlane = far_clip_plane;
         }

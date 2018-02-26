@@ -4,25 +4,25 @@ namespace Planetaria
 {
     public class BlinkCameraShutter : PlanetariaCameraShutter
     {
-        public override void initialize()
+        protected override void initialize()
         {
-            Camera camera = GameObject.Find("/MainCamera").GetComponent<Camera>();
+            Camera camera = this.GetComponentInChildren<Camera>() as Camera;
 
             shutter_edges = new GameObject[edges];
 
-            screen_height = PlanetariaMath.cone_radius(0.5f, camera.fieldOfView*Mathf.Deg2Rad)*2;
+            screen_height = PlanetariaMath.cone_radius(PlanetariaCamera.near_clip_plane, camera.fieldOfView*Mathf.Deg2Rad)*2;
             screen_width = screen_height*camera.aspect;
 
             for (int edge_index = 0; edge_index < edges; ++edge_index)
             {
                 shutter_edges[edge_index] = (GameObject) Instantiate(Resources.Load("BlinkShutter"),
-                        new Vector3(0, screen_height*Mathf.Cos(edge_index*Mathf.PI), 0.5f),
+                        new Vector3(0, screen_height*Mathf.Cos(edge_index*Mathf.PI), PlanetariaCamera.near_clip_plane + Precision.tolerance),
                         Quaternion.Euler(0, 0, edge_index*180f), camera.transform);
                 shutter_edges[edge_index].transform.localScale = new Vector3(screen_width, screen_height, 1);
             }
         }
 
-        public override void set(float interpolation_factor)
+        protected override void set(float interpolation_factor)
         {
             interpolation_factor = Mathf.Clamp01(interpolation_factor);
 

@@ -92,7 +92,6 @@
      <Compile Include="Assets\Planetaria\Code\Rendering\VolumeRenderer.cs" />
      <Compile Include="Assets\Planetaria\Code\Shutter\BlinkCameraShutter.cs" />
      <Compile Include="Assets\Planetaria\Code\Shutter\PlanetariaCameraShutter.cs" />
-     <Compile Include="Assets\Planetaria\Code\Shutter\PlanetariaShutterMotor.cs" />
      <Compile Include="Assets\Planetaria\Code\Shutter\RegularPolygonCameraShutter.cs" />
      <Compile Include="Assets\Planetaria\Code\Snippets\PlanetariaCharacter.cs" />
      <Compile Include="Assets\Planetaria\Code\Tracker\PlanetariaLookingStrategy.cs" />

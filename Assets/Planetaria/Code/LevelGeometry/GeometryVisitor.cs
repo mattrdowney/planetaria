@@ -12,15 +12,12 @@ namespace Planetaria
 
         public GeometryVisitor move_position(float delta_length, float extrusion)
         {
-            Debug.LogWarning("length: " + delta_length);
-
             if (extrusion != last_extrusion)
             {
                 upkeep(delta_length, extrusion);
                 last_extrusion = extrusion;
             }
             float delta_angle = delta_length * (arc_angle/arc_length);
-            Debug.LogWarning("angle: " + delta_angle);
             return set_position(angular_position + delta_angle, extrusion);
         }
 
@@ -35,10 +32,6 @@ namespace Planetaria
 
         public Vector3 position()
         {
-            if (center_arc.arc.exists)
-            {
-                Debug.LogWarning(center_arc.arc.data.angle() + " " + angular_position);
-            }
             if (block_transform.exists) // Cannot be cached since platform may move
             {
                 return block_transform.data.rotation * cached_position;
@@ -52,8 +45,6 @@ namespace Planetaria
             bool left_contains = left_arc.arc.exists ? left_arc.arc.data.contains(position, last_extrusion) : false;
             bool center_contains = center_arc.arc.exists ? center_arc.arc.data.contains(position, last_extrusion) : false;
             bool right_contains = right_arc.arc.exists ? right_arc.arc.data.contains(position, last_extrusion) : false;
-
-            Debug.LogWarning(!(left_contains || center_contains || right_contains));
 
             return left_contains || center_contains || right_contains;
         }
