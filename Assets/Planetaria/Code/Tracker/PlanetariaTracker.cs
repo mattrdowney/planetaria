@@ -1,12 +1,57 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using UnityEngine;
 
 namespace Planetaria
 {
-    public class PlanetariaTracker
+    public abstract class PlanetariaTracker : MonoBehaviour
     {
-        private Action teleport;
-        protected List<PlanetariaTrackingStrategy> tracking_strategies;
+        public abstract void setup();
+        public abstract void cleanup();
+        public abstract void step();
+        public abstract void teleport();
+
+        protected PlanetariaTransform self;
+        protected optional<PlanetariaTransform> target;
+        protected optional<PlanetariaCameraShutter> shutter
+        {
+            get
+            {
+                return internal_shutter;
+            }
+            set
+            {
+                if (internal_shutter.exists)
+                {
+                    internal_shutter.data.blink_event -= teleport;
+                }
+                internal_shutter = value;
+                if (internal_shutter.exists)
+                {
+                    internal_shutter.data.blink_event += teleport;
+                }
+            }
+        }
+
+        private void Start()
+        {
+            self = this.GetComponent<PlanetariaTransform>();
+            setup();
+        }
+
+        private void Update()
+        {
+            if (target.exists)
+            {
+                step();
+            }
+        }
+
+        private void OnDestroy()
+        {
+            cleanup();
+            shutter = new optional<PlanetariaCameraShutter>(); // deregisters from blink_event
+        }
+
+        private optional<PlanetariaCameraShutter> internal_shutter;
     }
 }
 

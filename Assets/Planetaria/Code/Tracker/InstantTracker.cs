@@ -1,11 +1,24 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Planetaria
 {
-    public abstract class PlanetariaTrackingStrategy : MonoBehaviour
+    public class InstantTracker : PlanetariaTracker
     {
-        public abstract void Update();
-        public abstract void Teleport();
+        public override void setup()
+        {
+            target = GameObject.Find("Character").GetComponent<PlanetariaTransform>();
+        }
+
+        public override void step()
+        {
+            self.position = target.data.position;
+        }
+
+        public override void cleanup() { }
+        public override void teleport() { }
     }
 }
 

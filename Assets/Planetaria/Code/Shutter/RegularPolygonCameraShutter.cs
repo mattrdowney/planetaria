@@ -17,33 +17,33 @@ namespace Planetaria
                 shutter_edges[edge_index] = (GameObject) Instantiate(Resources.Load("PrimaryEdge"),
                         new Vector3(0, 0, PlanetariaCamera.near_clip_plane),
                         Quaternion.Euler(0, 0, edge_index*360f/edges), camera.transform);
-
+#if UNITY_EDITOR
+                shutter_edges[edge_index].transform.localScale = Vector3.one * 4 * PlanetariaMath.cone_radius(PlanetariaCamera.near_clip_plane, camera.fieldOfView*Mathf.Deg2Rad) * Mathf.Sqrt(1 + (camera.aspect * camera.aspect));
+#else
                 float x = PlanetariaMath.cone_radius(PlanetariaCamera.near_clip_plane, camera.fieldOfView*Mathf.Deg2Rad);
                 float y = x * camera.aspect;
                 float z = PlanetariaCamera.near_clip_plane;
-            
+
                 StereoscopicProjectionCoordinates stereoscopic_projection = new NormalizedCartesianCoordinates(new Vector3(x, y, z));
 
                 shutter_edges[edge_index].transform.localScale = Vector3.one * stereoscopic_projection.data.magnitude; // FIXME: VR FOV
-            
-                //shutter_edges[edge_index].transform.localScale = Vector3.one * 4 * PlanetariaMath.cone_radius(0.5f, camera.fieldOfView*Mathf.Deg2Rad) * Mathf.Sqrt(1 + (camera.aspect * camera.aspect)); // FIXME: VR FOV
-            }
+#endif
+                }
         }
 
         protected override void set(float interpolation_factor)
         {
-            interpolation_factor = Mathf.Clamp(interpolation_factor, 0, 1.5f);
-
             for (int edge_index = 0; edge_index < edges; ++edge_index)
             {
                 shutter_edges[edge_index].SetActive(interpolation_factor != 0);
-                shutter_edges[edge_index].transform.localRotation = Quaternion.Euler(0, 0, edge_index*360f/edges + interpolation_factor*angle_to_center*rotation_adjustor/2);
-                shutter_edges[edge_index].transform.GetChild(0).localRotation = Quaternion.Euler(0, 0, interpolation_factor*angle_to_center);
+                shutter_edges[edge_index].transform.localRotation = Quaternion.Euler(0, 0, edge_index*360f/edges + interpolation_factor*angle_to_rotate*rotation_adjustor/2);
+                shutter_edges[edge_index].transform.GetChild(0).localRotation = Quaternion.Euler(0, 0, interpolation_factor*angle_to_rotate);
             }
         }
 
         public int edges;
         public float rotation_adjustor;
+        public float angle_to_rotate = angle_to_center;
 
         /// <summary>Reference to transparent cutout-textured quadrilateral planes that create camera shutter.</summary>
         private GameObject[] shutter_edges;

@@ -1,8 +1,26 @@
-﻿namespace Planetaria
-{
-    public abstract class PlanetariaTiltingStrategy : PlanetariaTrackingStrategy
-    {
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
+namespace Planetaria
+{
+    public class InstantHorizontalTracker : PlanetariaTracker
+    {
+        public override void setup()
+        {
+            target = GameObject.Find("Character").GetComponent<PlanetariaTransform>();
+        }
+
+        public override void step()
+        {
+            NormalizedSphericalCoordinates self_position = target.data.position;
+            NormalizedSphericalCoordinates target_position = target.data.position;
+            self.position = new NormalizedSphericalCoordinates(self_position.data.x, target_position.data.y);
+        }
+
+        public override void cleanup() { }
+        public override void teleport() { }
     }
 }
 

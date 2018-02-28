@@ -8,12 +8,12 @@ namespace Planetaria
     public abstract class PlanetariaCameraShutter : MonoBehaviour
     {
         public delegate void OnShutterBlink();
-        public static event OnShutterBlink blink_event;
+        public event OnShutterBlink blink_event;
 
         public float blink_wait = 6f;
-        public AnimationCurve blink_down = AnimationCurve.Linear(0, 0, 0.1f, 1);
+        public AnimationCurve blink_down = AnimationCurve.Linear(0, 0, 0.15f, 1);
         public float blink_hold = 0.1f;
-        public AnimationCurve blink_up = AnimationCurve.Linear(0, 1, 0.1f, 0);
+        public AnimationCurve blink_up = AnimationCurve.Linear(0, 1, 0.15f, 0);
 
         protected abstract void initialize();
         protected abstract void set(float interpolation_factor);
@@ -30,7 +30,6 @@ namespace Planetaria
             {
                 yield return new WaitForSeconds(blink_wait);
                 yield return StartCoroutine(blink(blink_down));
-                set(1.5f); // overshoot 1 to avoid graphical artifacts from almost closed shutter
                 yield return new WaitForSeconds(blink_hold);
                 if (blink_event != null) // FIXME: ew
                 {
@@ -48,8 +47,8 @@ namespace Planetaria
             {
                 set(blink_curve.Evaluate(blink_time));
                 yield return null;
-                Debug.Log("inner: " + Time.time);
             }
+            set(blink_curve[blink_curve.length - 1].value);
         }
     }
 }

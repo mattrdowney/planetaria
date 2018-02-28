@@ -1,8 +1,25 @@
-﻿namespace Planetaria
-{
-    public abstract class PlanetariaLookingStrategy : PlanetariaTrackingStrategy
-    {
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
+namespace Planetaria
+{
+    public class BlinkTracker : PlanetariaTracker
+    {
+        public override void setup()
+        {
+            target = GameObject.Find("Character").GetComponent<PlanetariaTransform>();
+            shutter = GameObject.FindObjectOfType<PlanetariaCameraShutter>();
+        }
+
+        public override void teleport()
+        {
+            self.position = target.data.position;
+        }
+
+        public override void cleanup() { }
+        public override void step() { }
     }
 }
 
