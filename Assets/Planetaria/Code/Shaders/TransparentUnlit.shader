@@ -1,4 +1,4 @@
-﻿Shader "Planetaria/Transparent Lit"
+﻿Shader "Planetaria/Transparent Unlit"
 {
 	Properties
 	{

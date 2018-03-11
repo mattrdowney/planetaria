@@ -71,11 +71,16 @@ namespace Planetaria
     
         public List<Arc> arcs = new List<Arc>();
         private List<GeospatialCurve> curves = new List<GeospatialCurve>();
-        private enum CreationState { SetSlope = 0, SetPoint = 1 }
         private CreationState state = CreationState.SetSlope;
         private Vector3 point { get; set; }
         private Vector3 slope { get; set; }
         private Vector3 original_point;
+
+        private enum CreationState
+        {
+            SetSlope = 0,
+            SetPoint = 1,
+        }
     }
 }
 

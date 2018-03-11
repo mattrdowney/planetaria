@@ -1,23 +1,19 @@
-﻿using UnityEngine;
+﻿using UnityEditor;
 
 namespace Planetaria
 {
-    public class InstantHorizontalTracker : PlanetariaTracker
+    [CustomEditor(typeof(EquilateralBuilder))]
+    [System.Serializable]
+    public class EquilateralBuilderEditor : Editor
     {
-        public override void setup()
+        [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
+        static void draw_arc_builder_gizmos(EquilateralBuilder self, GizmoType gizmo_type)
         {
-            target = GameObject.Find("Character").GetComponent<PlanetariaTransform>();
+            foreach (Arc arc in self.arcs)
+            {
+                ArcEditor.draw_arc(arc);
+            }
         }
-
-        public override void step()
-        {
-            NormalizedSphericalCoordinates self_position = self.position;
-            NormalizedSphericalCoordinates target_position = target.data.position;
-            self.position = new NormalizedSphericalCoordinates(self_position.data.x, target_position.data.y);
-        }
-
-        public override void cleanup() { }
-        public override void teleport() { }
     }
 }
 

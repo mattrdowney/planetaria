@@ -15,14 +15,14 @@ namespace Planetaria
             for (int edge_index = 0; edge_index < edges; ++edge_index)
             {
                 shutter_edges[edge_index] = (GameObject) Instantiate(Resources.Load("PrimaryEdge"),
-                        new Vector3(0, 0, PlanetariaCamera.near_clip_plane),
+                        new Vector3(0, 0, 2*PlanetariaCamera.near_clip_plane),
                         Quaternion.Euler(0, 0, edge_index*360f/edges), camera.transform);
 #if UNITY_EDITOR
-                shutter_edges[edge_index].transform.localScale = Vector3.one * 4 * PlanetariaMath.cone_radius(PlanetariaCamera.near_clip_plane, camera.fieldOfView*Mathf.Deg2Rad) * Mathf.Sqrt(1 + (camera.aspect * camera.aspect));
+                shutter_edges[edge_index].transform.localScale = Vector3.one * 4 * PlanetariaMath.cone_radius(2*PlanetariaCamera.near_clip_plane, camera.fieldOfView*Mathf.Deg2Rad) * Mathf.Sqrt(1 + (camera.aspect * camera.aspect));
 #else
-                float x = PlanetariaMath.cone_radius(PlanetariaCamera.near_clip_plane, camera.fieldOfView*Mathf.Deg2Rad);
+                float x = PlanetariaMath.cone_radius(2*PlanetariaCamera.near_clip_plane, camera.fieldOfView*Mathf.Deg2Rad);
                 float y = x * camera.aspect;
-                float z = PlanetariaCamera.near_clip_plane;
+                float z = 2*PlanetariaCamera.near_clip_plane;
 
                 StereoscopicProjectionCoordinates stereoscopic_projection = new NormalizedCartesianCoordinates(new Vector3(x, y, z));
 

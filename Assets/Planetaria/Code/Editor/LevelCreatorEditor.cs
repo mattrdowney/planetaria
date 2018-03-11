@@ -3,28 +3,64 @@ using UnityEditor;
 
 namespace Planetaria
 {
+    // FIXME singleton created only when #if UNITY_EDITOR and created automatically in editor mode for any arbitrary level (ideally)
+
     [CustomEditor(typeof(LevelCreator))] // TODO: this probably isn't necessary since the other object isn't being used.
     public class LevelCreatorEditor : Editor
     {
+        public enum DrawMode
+        {
+            Free,
+            Equilateral,
+        }
+
         /// <summary>
         /// Mutator - draws shapes in the editor; MouseDown creates point at position, MouseUp location determines the slope of the line; Escape finalizes shape.
         /// </summary>
         /// <returns>The next mode for the state machine.</returns>
-        private delegate CreateShape CreateShape();
+        public delegate CreateShape CreateShape(bool force_quit);
 
         private void OnEnable ()
         {
-            state_machine = draw_first_point;
+            state_machine = draw_initialize;
             mouse_control = GUIUtility.GetControlID(FocusType.Passive); //UNSURE: use FocusType.Keyboard?
             keyboard_control = GUIUtility.GetControlID(FocusType.Passive);
-            temporary_arc = new optional<ArcBuilder>();
         }
 
         private void OnDisable ()
         {
-            temporary_arc.data.close_shape();
-        
+            bool force_quit = true;
+            state_machine = state_machine(force_quit);
             Repaint();
+        }
+
+        public override void OnInspectorGUI()
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Draw Mode");
+	        draw_mode = (DrawMode) EditorGUILayout.EnumPopup("Draw Mode", draw_mode);
+	        GUILayout.EndHorizontal();
+
+            switch (draw_mode)
+            {
+                case DrawMode.Free:
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label("Equator Rows");
+	                rows = EditorGUILayout.IntField(rows, GUILayout.Width(50));
+                    GUILayout.EndHorizontal();
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label("Time Zone Columns");
+	                columns = EditorGUILayout.IntField(columns, GUILayout.Width(50));
+	                GUILayout.EndHorizontal();
+                    break;
+                case DrawMode.Equilateral:
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label("Polygon Sides");
+	                edges = EditorGUILayout.IntField(edges, GUILayout.Width(50));
+	                GUILayout.EndHorizontal();
+                    break;
+            }
+
         }
 
         private void OnSceneGUI ()
@@ -38,11 +74,24 @@ namespace Planetaria
             if (EditorWindow.mouseOverWindow == SceneView.currentDrawingSceneView)
             {
                 HandleUtility.AddDefaultControl(mouse_control);
-                state_machine = state_machine();
+                bool escape = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape;
+                state_machine = state_machine(escape);
                 use_mouse_event();
             }
             
             Repaint();
+        }
+
+        public static CreateShape draw_initialize(bool escape = false)
+        {
+            switch (draw_mode)
+            {
+                case DrawMode.Free:
+                    return FreeLineDrawMode.draw_first_point;
+                case DrawMode.Equilateral:
+                    return EquilateralDrawMode.draw_center;
+            }
+            return draw_initialize;
         }
 
         /// <summary>
@@ -63,7 +112,7 @@ namespace Planetaria
             DestroyImmediate(empty_gameobject);
         }
 
-        private static Vector3 get_mouse_position()
+        public static Vector3 get_mouse_position()
         {
             Vector3 position = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition).direction;
             Vector3 clamped_position = GridUtility.grid_snap(position, rows, columns);
@@ -113,69 +162,6 @@ namespace Planetaria
             }
         }
 
-        private static CreateShape escape(CreateShape self)
-        {
-            // Escape: close the shape so that it meets with the original point (using original point for slope)
-            if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
-            {
-                if (temporary_arc.exists)
-                {
-                    temporary_arc.data.close_shape();
-                    Debug.Log("Happening");
-                    temporary_arc = new optional<ArcBuilder>();
-                }
-                return draw_first_point;
-            }
-            return self;
-        }
-
-        private static CreateShape draw_first_point()
-        {
-            // MouseDown 1: create first corner of a shape
-            if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
-            {
-                temporary_arc = ArcBuilder.arc_builder(get_mouse_position());
-                return draw_tangent;
-            }
-
-            return draw_first_point;
-        }
-
-        /// <summary>
-        /// Mutator - MouseUp creates slope at position
-        /// </summary>
-        /// <param name="editor">The reference to the LevelCreatorEditor object that stores shape information.</param>
-        /// <returns>mouse_up if nothing was pressed; mouse_down if MouseUp or Escape was pressed.</returns>
-        private static CreateShape draw_tangent()
-        {
-            temporary_arc.data.receive_vector(get_mouse_position());
-
-            // MouseUp 1-n: create the right-hand-side slope for the last point added
-            if (Event.current.type == EventType.MouseUp && Event.current.button == 0)
-            {
-                temporary_arc.data.next();
-                return draw_nth_point;
-            }
-            return escape(draw_tangent);
-        }
-
-        /// <summary>
-        /// Mutator - MouseDown creates point at position
-        /// </summary>
-        /// <returns>The next mode for the state machine.</returns>
-        private static CreateShape draw_nth_point()
-        {
-            temporary_arc.data.receive_vector(get_mouse_position());
-
-            // MouseDown 2-n: create arc through point using last right-hand-side slope
-            if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
-            {
-                temporary_arc.data.next();
-                return draw_tangent;
-            }
-            return escape(draw_nth_point);
-        }
-
         /// <summary>
         /// Mutator - prevents editor from selecting objects in the editor view (which can de-select the current object)
         /// </summary>
@@ -194,14 +180,21 @@ namespace Planetaria
             }
         }
 
+        [Tooltip("")]
+        public static DrawMode draw_mode;
+
         /// <summary>Number of rows in the grid. Equator is drawn when rows is odd</summary>
+        [Tooltip("")]
         public static int rows = 15;
+        
         /// <summary>Number of columns in the grid (per hemisphere).</summary>
+        [Tooltip("")]
 	    public static int columns = 16;
 
-        private static CreateShape state_machine;
+        [Tooltip("")]
+        public static int edges = 3;
 
-        private static optional<ArcBuilder> temporary_arc;
+        private static CreateShape state_machine;
 
         private static float camera_speed = 5f;
 

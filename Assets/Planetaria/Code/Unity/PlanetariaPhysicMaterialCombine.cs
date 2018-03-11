@@ -10,7 +10,7 @@ namespace Planetaria
         Quadratic = 3,
         Minumum = 4,
         Multiply = 5,
-        Maximum = 6
+        Maximum = 6,
     }
 
     public static class PlanetariaPhysic

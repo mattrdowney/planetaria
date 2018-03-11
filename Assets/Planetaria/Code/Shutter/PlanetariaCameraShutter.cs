@@ -11,9 +11,9 @@ namespace Planetaria
         public event OnShutterBlink blink_event;
 
         public float blink_wait = 6f;
-        public AnimationCurve blink_down = AnimationCurve.Linear(0, 0, 0.15f, 1);
+        public AnimationCurve blink_close = AnimationCurve.Linear(0, 0, 0.15f, 1);
         public float blink_hold = 0.1f;
-        public AnimationCurve blink_up = AnimationCurve.Linear(0, 1, 0.15f, 0);
+        public AnimationCurve blink_open = AnimationCurve.Linear(0, 1, 0.15f, 0);
 
         protected abstract void initialize();
         protected abstract void set(float interpolation_factor);
@@ -24,18 +24,18 @@ namespace Planetaria
             StartCoroutine(blink());
         }
         
-        private IEnumerator blink()
+        private IEnumerator blink() // FIXME: Update to avoid cron-like stutter from scheduled event?
         {
             while (true)
             {
                 yield return new WaitForSeconds(blink_wait);
-                yield return StartCoroutine(blink(blink_down));
+                yield return StartCoroutine(blink(blink_close));
                 yield return new WaitForSeconds(blink_hold);
                 if (blink_event != null) // FIXME: ew
                 {
                     blink_event();
                 }
-                yield return StartCoroutine(blink(blink_up));
+                yield return StartCoroutine(blink(blink_open));
             }
         }
 

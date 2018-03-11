@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Planetaria
 {
@@ -11,6 +8,7 @@ namespace Planetaria
         {
             target = GameObject.Find("Character").GetComponent<PlanetariaTransform>();
             shutter = GameObject.FindObjectOfType<PlanetariaCameraShutter>();
+            teleport(); // FIXME: does this work 100% of the time?
         }
 
         public override void teleport()
