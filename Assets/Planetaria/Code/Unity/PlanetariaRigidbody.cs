@@ -7,6 +7,7 @@ namespace Planetaria
         private void Awake()
         {
             transform = this.GetOrAddComponent<PlanetariaTransform>();
+            //collider = this.GetOrAddComponent<PlanetariaCollider>();
             internal_rigidbody = this.GetOrAddComponent<Rigidbody>();
             internal_rigidbody.isKinematic = true;
             internal_rigidbody.useGravity = false;
@@ -22,6 +23,7 @@ namespace Planetaria
         {
             if (!collision.exists)
             {
+                Debug.Log("Aerial: " + Time.time);
                 // I am making a bet this is relevant in spherical coordinates (it is Euler isn't it?): http://openarena.ws/board/index.php?topic=5100.0
                 // Wikipedia: https://en.wikipedia.org/wiki/Leapfrog_integration
                 // "This is especially useful when computing orbital dynamics, as many other integration schemes, such as the (order-4) Runge-Kutta method, do not conserve energy and allow the system to drift substantially over time." - Wikipedia
@@ -33,6 +35,7 @@ namespace Planetaria
             }
             else
             {
+                Debug.Log("Grounded: " + Time.time);
                 grounded_track(Time.deltaTime/2);
                 grounded_position();
                 grounded_accelerate(Time.deltaTime);
@@ -80,6 +83,7 @@ namespace Planetaria
 
         private void aerial_move(float delta)
         {
+            Debug.DrawRay(position, velocity, Color.green);
             Vector3 next_position = PlanetariaMath.slerp(position, velocity.normalized, delta); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
             Vector3 next_velocity = PlanetariaMath.slerp(position, velocity.normalized, delta + Mathf.PI/2);
             
@@ -135,7 +139,10 @@ namespace Planetaria
                 Debug.DrawRay(position, velocity, Color.yellow, 1f);
                 acceleration = get_acceleration();
                 // TODO: accelerate vertically
-                observer.data.exit_block(collision.data);
+
+                collision.data.self.get_observer().exit_block(collision.data);
+                collision.data.other.get_observer().exit_block(collision.data);
+
                 collision = new optional<BlockCollision>();
                 observer = new optional<CollisionObserver>();
             }
@@ -143,6 +150,7 @@ namespace Planetaria
 
         private void synchronize_velocity_ground_to_air()
         {
+            Debug.Log("Collision exists? : " + collision.exists);
             if (collision.exists)
             {
                 Vector3 x = horizontal_velocity * Bearing.right(position, collision.data.normal().data);
@@ -221,6 +229,7 @@ namespace Planetaria
         [SerializeField] public Vector3[] gravity_wells;
 
         private new PlanetariaTransform transform;
+        //private new PlanetariaCollider collider;
         private optional<CollisionObserver> observer;
         private Rigidbody internal_rigidbody;
         

@@ -46,7 +46,6 @@ namespace Planetaria
             result.distance = Vector3.Angle(intersection_point.data, transformation.previous_position.data)*Mathf.Deg2Rad;
             result.overshoot = Vector3.Angle(intersection_point.data, transformation.position.data)*Mathf.Deg2Rad;
             result.block = block;
-            result.collider = collider;
             result.active = true;
             result.observer = observer;
             result.self = observer.collider();
@@ -101,7 +100,6 @@ namespace Planetaria
         public PlanetariaCollider self { get; private set; }
         public PlanetariaCollider other { get; private set; }
         public Block block { get; private set; }
-        public PlanetariaCollider collider { get; private set; }
         public float distance { get; private set; }
         public float overshoot { get; private set; }
         public GeometryVisitor geometry_visitor { get; private set; }

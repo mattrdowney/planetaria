@@ -112,12 +112,15 @@ namespace Planetaria
                     }
                     else // block collision
                     {
+                        Debug.Log("Happening!!! " + Time.time);
                         if (rigidbody.exists)
                         {
+                            Debug.Log("Happening!!! 2" + Time.time);
                             optional<Block> block = PlanetariaCache.block_cache.get(sphere_collider.data);
                             if (block.exists &&
                                     (!observer.colliding() || observer.collisions()[0].block == block.data)) // Is the block a duplicate of the one we are colliding with?
                             {
+                                Debug.Log("Happening!!! 3" + Time.time);
                                 optional<Arc> arc = PlanetariaCache.arc_cache.get(sphere_collider.data);
                                 Vector3 position = planetaria_transform.position.data;
                                 if (block.data.is_dynamic)
@@ -126,6 +129,7 @@ namespace Planetaria
                                 }
                                 if (arc.exists && arc.data.contains(position, planetaria_transform.scale/2))
                                 {
+                                    Debug.Log("Happening!!! 4" + Time.time);
                                     observer.enter_block(arc.data, block.data, other_collider.data); // block collisions are handled in OnCollisionStay(): notification stage
                                 }
                             }

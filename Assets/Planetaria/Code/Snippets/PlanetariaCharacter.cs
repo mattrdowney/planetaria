@@ -31,12 +31,12 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
         {
             planetaria_rigidbody.absolute_velocity += Vector2.right * Input.GetAxis("Horizontal") * Time.deltaTime * transform.scale * acceleration * .5f;
         }
+        Debug.Log(grounded + " " + Time.time);
     }
 
     void on_block_stay(BlockCollision collision)
     {
-        grounded = true;
-        Debug.Log("Grounded " + Time.time + " and " + grounded);
+        Debug.Log("And yet this is happening? : " + collision + " " + grounded);
         float velocity = planetaria_rigidbody.relative_velocity.x;
         velocity += Input.GetAxis("Horizontal") * -planetaria_rigidbody.relative_velocity.y * transform.scale * acceleration * 20f;
         if (Mathf.Abs(velocity) > 2f*transform.scale)
@@ -51,7 +51,10 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
         }
     }
 
-    void on_block_enter(BlockCollision collision) { } // FIXME: GitHub issue #67
+    void on_block_enter(BlockCollision collision)
+    {
+        grounded = true;
+    } // FIXME: GitHub issue #67
 
     void on_block_exit(BlockCollision collision)
     {

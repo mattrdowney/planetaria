@@ -43,11 +43,11 @@ namespace Planetaria
                 while (current_collisions.Count > 0)
                 {
                     BlockCollision collision = current_collisions[current_collisions.Count - 1];
-                    collision.collider.get_observer().exit_block(collision);
-                    this.exit_block(collision);
+                    collision.self.get_observer().exit_block(collision);
+                    collision.other.get_observer().exit_block(collision);
                 }
-                next_collision.collider.get_observer().enter_block(next_collision);
-                this.enter_block(next_collision);
+                next_collision.self.get_observer().enter_block(next_collision);
+                next_collision.other.get_observer().enter_block(next_collision);
                 collision_candidates.Clear();
             }
         }
@@ -151,11 +151,18 @@ namespace Planetaria
 
         public void exit_block(BlockCollision collision)
         {
-            current_collisions.Remove(collision);
             foreach (PlanetariaMonoBehaviour observer in observers)
             {
                 observer.exit_block(collision);
             }
+
+            //Debug.LogError(collision.GetHashCode() + " vs " + (current_collisions.Count > 0 ? current_collisions[0].GetHashCode().ToString() : ""));
+            
+            int before_count = current_collisions.Count;
+            current_collisions.Remove(collision);
+            int after_count = current_collisions.Count;
+            Debug.Assert(before_count > after_count || after_count == 0,
+                    before_count + " should be greater than " + after_count + " for " + collision.GetHashCode() + " vs " + (after_count > 0 ? current_collisions[0].GetHashCode().ToString() : ""));
         }
 
         public PlanetariaCollider collider()
@@ -170,12 +177,12 @@ namespace Planetaria
 
         public List<BlockCollision> collisions()
         {
-            return current_collisions;
+            return new List<BlockCollision>(current_collisions);
         }
 
         public List<PlanetariaCollider> fields()
         {
-            return field_set;
+            return new List<PlanetariaCollider>(field_set);
         }
 
         private PlanetariaTransform planetaria_transformation;

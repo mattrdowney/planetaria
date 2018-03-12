@@ -33,7 +33,7 @@ namespace Planetaria
         public const float near_clip_plane = 0.0078125f;
         public const float far_clip_plane = 2.0f;
 
-        protected float zoom = 0;
+        public float zoom = 0;
 
         protected new PlanetariaTransform transform;
         protected Transform dolly_transform;

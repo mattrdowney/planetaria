@@ -26,6 +26,8 @@ namespace Planetaria
             while (true)
             {
                 yield return new WaitForFixedUpdate();
+                
+                Debug.Log("Of/c #1");
                 foreach (CollisionObserver observer in observers)
                 {
                     observer.notify();
@@ -34,8 +36,7 @@ namespace Planetaria
                 {
                     foreach (CollisionObserver observer in observers)
                     {
-                        List<PlanetariaCollider> immutable = observer.fields().Select(item => item).ToList();
-                        foreach (PlanetariaCollider field in immutable)
+                        foreach (PlanetariaCollider field in observer.fields())
                         {
                             OnFieldStay.data(field);
                         }
@@ -43,11 +44,13 @@ namespace Planetaria
                 }
                 if (OnBlockStay.exists)
                 {
+                    Debug.Log("Of/c #2");
                     foreach (CollisionObserver observer in observers)
                     {
-                        List<BlockCollision> immutable = observer.collisions().Select(item => item).ToList();
-                        foreach (BlockCollision collision in immutable)
+                        Debug.Log("Of/c #3");
+                        foreach (BlockCollision collision in observer.collisions())
                         {
+                            Debug.Log("Of/c #4 size is " + observer.collisions().Count);
                             OnBlockStay.data(collision);
                         }
                     }
