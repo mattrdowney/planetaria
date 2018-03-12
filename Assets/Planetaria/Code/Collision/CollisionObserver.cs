@@ -96,7 +96,7 @@ namespace Planetaria
             }
         }
 
-        internal void notify_all_block() // FIXME: internal keyword
+        internal void notify_all_block()
         {
             if (collision_candidates.Count > 0)
             {
@@ -119,6 +119,7 @@ namespace Planetaria
                 next_collision.other.get_observer().notify_enter_block(next_collision);
                 collision_candidates.Clear();
             }
+            notify_stay_block();
         }
 
         internal void notify_enter_block(BlockCollision collision)
@@ -134,7 +135,7 @@ namespace Planetaria
         {
             foreach (PlanetariaMonoBehaviour observer in observers)
             {
-                foreach (BlockCollision collision in current_collisions)
+                foreach (BlockCollision collision in new List<BlockCollision>(current_collisions))
                 {
                     observer.stay_block(collision);
                 }
@@ -173,6 +174,7 @@ namespace Planetaria
                     notify_exit_field(field);
                 }
             }
+            notify_stay_field();
             current_fields = field_candidates;
             field_candidates = new List<PlanetariaCollider>(); // .Clear doesn't work because of reference/pointer logic
         }

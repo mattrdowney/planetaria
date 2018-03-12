@@ -35,6 +35,7 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
 
     void on_block_stay(BlockCollision collision)
     {
+        Debug.Log("Happening " + Time.time);
         if (planetaria_rigidbody.colliding) // FIXME: GitHub issue #67
         {
             float velocity = planetaria_rigidbody.relative_velocity.x;
