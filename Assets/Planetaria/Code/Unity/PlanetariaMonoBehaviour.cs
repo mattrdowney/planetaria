@@ -21,43 +21,6 @@ namespace Planetaria
         protected optional<TriggerDelegate> OnFieldExit = null;
         protected optional<TriggerDelegate> OnFieldStay = null;
 
-        private IEnumerator wait_for_fixed_update()
-        {
-            while (true)
-            {
-                yield return new WaitForFixedUpdate();
-                
-                Debug.Log("Of/c #1");
-                foreach (CollisionObserver observer in observers)
-                {
-                    observer.notify();
-                }
-                if (OnFieldStay.exists)
-                {
-                    foreach (CollisionObserver observer in observers)
-                    {
-                        foreach (PlanetariaCollider field in observer.fields())
-                        {
-                            OnFieldStay.data(field);
-                        }
-                    }
-                }
-                if (OnBlockStay.exists)
-                {
-                    Debug.Log("Of/c #2");
-                    foreach (CollisionObserver observer in observers)
-                    {
-                        Debug.Log("Of/c #3");
-                        foreach (BlockCollision collision in observer.collisions())
-                        {
-                            Debug.Log("Of/c #4 size is " + observer.collisions().Count);
-                            OnBlockStay.data(collision);
-                        }
-                    }
-                }
-            }
-        }
-
         protected void Awake()
         {
             transform = this.GetOrAddComponent<PlanetariaTransform>();
@@ -68,7 +31,6 @@ namespace Planetaria
             }
             // FIXME: still need to cache (properly)
             OnConstruction();
-            StartCoroutine(wait_for_fixed_update());
         }
 
         protected void OnDestroy()
@@ -88,6 +50,14 @@ namespace Planetaria
                 OnBlockEnter.data(collision);
             }
         }
+        
+        public void stay_block(BlockCollision collision)
+        {
+            if (OnBlockStay.exists)
+            {
+                OnBlockStay.data(collision);
+            }
+        }
 
         public void exit_block(BlockCollision collision)
         {
@@ -102,6 +72,14 @@ namespace Planetaria
             if (OnFieldEnter.exists)
             {
                 OnFieldEnter.data(field);
+            }
+        }
+
+        public void stay_field(PlanetariaCollider field)
+        {
+            if (OnFieldStay.exists)
+            {
+                OnFieldStay.data(field);
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -6,9 +7,7 @@ namespace Planetaria
 {
     public class CollisionObserver
     {
-        public CollisionObserver()
-        {
-        }
+        public CollisionObserver() { }
 
         public void initialize (PlanetariaTransform planetaria_transformation, PlanetariaMonoBehaviour[] observers)
         {
@@ -21,61 +20,10 @@ namespace Planetaria
             }
         }
 
-        public void notify()
-        {
-            field_notifications();
-            block_notifications();
-        }
-
-        private void block_notifications()
-        {
-            if (collision_candidates.Count > 0)
-            {
-                BlockCollision next_collision = collision_candidates.Aggregate(
-                        (closest, next_candidate) =>
-                        closest.distance < next_candidate.distance ? closest : next_candidate);
-
-                if (current_collisions.Count > 1)
-                {
-                    Debug.LogError("This should never happen.");
-                }
-
-                while (current_collisions.Count > 0)
-                {
-                    BlockCollision collision = current_collisions[current_collisions.Count - 1];
-                    collision.self.get_observer().exit_block(collision);
-                    collision.other.get_observer().exit_block(collision);
-                }
-                next_collision.self.get_observer().enter_block(next_collision);
-                next_collision.other.get_observer().enter_block(next_collision);
-                collision_candidates.Clear();
-            }
-        }
-
-        private void field_notifications()
-        {
-            foreach (PlanetariaMonoBehaviour observer in observers)
-            {
-                foreach (PlanetariaCollider field in fields_entered)
-                {
-                    observer.enter_field(field);
-                }
-            }
-            fields_entered.Clear();
-            foreach (PlanetariaMonoBehaviour observer in observers)
-            {
-                foreach (PlanetariaCollider field in fields_exited)
-                {
-                    observer.exit_field(field);
-                }
-            }
-            fields_exited.Clear();
-        }
-
         public void register(PlanetariaMonoBehaviour observer)
         {
             observers.Add(observer);
-            foreach (PlanetariaCollider field in field_set)
+            foreach (PlanetariaCollider field in current_fields)
             {
                 observer.enter_field(field);
             }
@@ -88,7 +36,7 @@ namespace Planetaria
         public void unregister(PlanetariaMonoBehaviour observer)
         {
             observers.Remove(observer);
-            foreach (PlanetariaCollider field in field_set)
+            foreach (PlanetariaCollider field in current_fields)
             {
                 observer.exit_field(field);
             }
@@ -98,25 +46,33 @@ namespace Planetaria
             }
         }
 
-        public void enter_field(PlanetariaCollider field)
+        public void notify()
         {
-            if (!field_set.Contains(field)) // field triggering is handled in notify() stage
-            {
-                field_set.Add(field);
-                fields_entered.Add(field);
-            }
+            notify_all_field();
+            notify_all_block();
         }
 
-        public void exit_field(PlanetariaCollider field)
+        public PlanetariaCollider collider()
         {
-            if (field_set.Contains(field))
-            {
-                field_set.Remove(field);
-                fields_exited.Add(field);
-            }
+            return planetaria_collider;
+        }
+        
+        public bool colliding()
+        {
+            return current_collisions.Count != 0;
         }
 
-        public void enter_block(Arc arc, Block block, PlanetariaCollider collider)
+        public List<BlockCollision> collisions() // HACK: FIXME: remove
+        {
+            return new List<BlockCollision>(current_collisions);
+        }
+        
+        public void potential_field_collision(PlanetariaCollider field) 
+        {
+            field_candidates.Add(field);
+        }
+ 
+        public void potential_block_collision(Arc arc, Block block, PlanetariaCollider collider)
         {
             if (planetaria_rigidbody.exists)
             {
@@ -140,7 +96,32 @@ namespace Planetaria
             }
         }
 
-        public void enter_block(BlockCollision collision)
+        internal void notify_all_block() // FIXME: internal keyword
+        {
+            if (collision_candidates.Count > 0)
+            {
+                BlockCollision next_collision = collision_candidates.Aggregate(
+                        (closest, next_candidate) =>
+                        closest.distance < next_candidate.distance ? closest : next_candidate);
+
+                if (current_collisions.Count > 1)
+                {
+                    Debug.LogError("This should never happen.");
+                }
+
+                while (current_collisions.Count > 0)
+                {
+                    BlockCollision collision = current_collisions[current_collisions.Count - 1];
+                    collision.self.get_observer().notify_exit_block(collision);
+                    collision.other.get_observer().notify_exit_block(collision);
+                }
+                next_collision.self.get_observer().notify_enter_block(next_collision);
+                next_collision.other.get_observer().notify_enter_block(next_collision);
+                collision_candidates.Clear();
+            }
+        }
+
+        internal void notify_enter_block(BlockCollision collision)
         {
             current_collisions.Add(collision);
             foreach (PlanetariaMonoBehaviour observer in observers)
@@ -149,7 +130,18 @@ namespace Planetaria
             }
         }
 
-        public void exit_block(BlockCollision collision)
+        internal void notify_stay_block()
+        {
+            foreach (PlanetariaMonoBehaviour observer in observers)
+            {
+                foreach (BlockCollision collision in current_collisions)
+                {
+                    observer.stay_block(collision);
+                }
+            }
+        }
+
+        internal void notify_exit_block(BlockCollision collision)
         {
             foreach (PlanetariaMonoBehaviour observer in observers)
             {
@@ -165,35 +157,65 @@ namespace Planetaria
                     before_count + " should be greater than " + after_count + " for " + collision.GetHashCode() + " vs " + (after_count > 0 ? current_collisions[0].GetHashCode().ToString() : ""));
         }
 
-        public PlanetariaCollider collider()
+        internal void notify_all_field()
         {
-            return planetaria_collider;
-        }
-        
-        public bool colliding()
-        {
-            return current_collisions.Count != 0;
+            foreach (PlanetariaCollider field in field_candidates) // if a new field is detected for first time, enter
+            {
+                if (!current_fields.Contains(field))
+                {
+                    notify_enter_field(field);
+                }
+            }
+            foreach (PlanetariaCollider field in current_fields) // if a field is no longer detected, exit
+            {
+                if (!field_candidates.Contains(field))
+                {
+                    notify_exit_field(field);
+                }
+            }
+            current_fields = field_candidates;
+            field_candidates = new List<PlanetariaCollider>(); // .Clear doesn't work because of reference/pointer logic
         }
 
-        public List<BlockCollision> collisions()
+        internal void notify_enter_field(PlanetariaCollider field)
         {
-            return new List<BlockCollision>(current_collisions);
+            current_fields.Add(field);
+            foreach (PlanetariaMonoBehaviour observer in observers)
+            {
+                observer.enter_field(field);
+            }
         }
 
-        public List<PlanetariaCollider> fields()
+        internal void notify_stay_field()
         {
-            return new List<PlanetariaCollider>(field_set);
+            foreach (PlanetariaMonoBehaviour observer in observers)
+            {
+                foreach (PlanetariaCollider field in current_fields)
+                {
+                    observer.stay_field(field);
+                }
+            }
+        }
+
+        internal void notify_exit_field(PlanetariaCollider field)
+        {
+            foreach (PlanetariaMonoBehaviour observer in observers)
+            {
+                observer.exit_field(field);
+            }
+            current_fields.Remove(field);
         }
 
         private PlanetariaTransform planetaria_transformation;
         private PlanetariaCollider planetaria_collider;
         private optional<PlanetariaRigidbody> planetaria_rigidbody;
         private List<PlanetariaMonoBehaviour> observers = new List<PlanetariaMonoBehaviour>();
+
         private List<BlockCollision> current_collisions = new List<BlockCollision>();
         private List<BlockCollision> collision_candidates = new List<BlockCollision>();
-        private List<PlanetariaCollider> field_set = new List<PlanetariaCollider>();
-        private List<PlanetariaCollider> fields_entered = new List<PlanetariaCollider>();
-        private List<PlanetariaCollider> fields_exited = new List<PlanetariaCollider>();
+
+        private List<PlanetariaCollider> current_fields = new List<PlanetariaCollider>();
+        private List<PlanetariaCollider> field_candidates = new List<PlanetariaCollider>();
     }
 }
 

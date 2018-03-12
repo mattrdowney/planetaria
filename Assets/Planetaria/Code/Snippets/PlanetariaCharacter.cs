@@ -10,7 +10,7 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
         OnBlockStay.data = on_block_stay;
         OnBlockEnter.data = on_block_enter;
         OnBlockExit.data = on_block_exit;
-        transform.position = new NormalizedSphericalCoordinates(Mathf.PI/2 + .06f, Mathf.PI/2 + .01f);
+        transform.position = new NormalizedSphericalCoordinates(Mathf.PI/2 + 1.06f, Mathf.PI/2 + .01f);
     }
 
     protected override void OnDestruction()
@@ -27,45 +27,48 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!grounded)
+        if (!planetaria_rigidbody.colliding)
         {
             planetaria_rigidbody.absolute_velocity += Vector2.right * Input.GetAxis("Horizontal") * Time.deltaTime * transform.scale * acceleration * .5f;
         }
-        Debug.Log(grounded + " " + Time.time);
     }
 
     void on_block_stay(BlockCollision collision)
     {
-        Debug.Log("And yet this is happening? : " + collision + " " + grounded);
-        float velocity = planetaria_rigidbody.relative_velocity.x;
-        velocity += Input.GetAxis("Horizontal") * -planetaria_rigidbody.relative_velocity.y * transform.scale * acceleration * 20f;
-        if (Mathf.Abs(velocity) > 2f*transform.scale)
+        if (planetaria_rigidbody.colliding) // FIXME: GitHub issue #67
         {
-            velocity = Mathf.Sign(velocity)*2f*transform.scale;
+            float velocity = planetaria_rigidbody.relative_velocity.x;
+            velocity += Input.GetAxis("Horizontal") * -planetaria_rigidbody.relative_velocity.y * transform.scale * acceleration * 20f;
+            if (Mathf.Abs(velocity) > 2f*transform.scale)
+            {
+                velocity = Mathf.Sign(velocity)*2f*transform.scale;
+            }
+            planetaria_rigidbody.relative_velocity = new Vector2(velocity, 0);
+            transform.rotation = Bearing.angle(collision.position().data, collision.normal().data);
+            if (Time.time - last_jump_attempt < .2f)
+            {
+                planetaria_rigidbody.derail(0, 2.3f*transform.scale);
+            }
         }
-        planetaria_rigidbody.relative_velocity = new Vector2(velocity, 0);
-        transform.rotation = Bearing.angle(collision.position().data, collision.normal().data);
-        if (Time.time - last_jump_attempt < .2f)
+        else
         {
-            planetaria_rigidbody.derail(0, 2.3f*transform.scale);
+            Debug.LogError("And yet this is happening?");
+            planetaria_rigidbody.derail(0,1);
         }
     }
 
     void on_block_enter(BlockCollision collision)
     {
-        grounded = true;
-    } // FIXME: GitHub issue #67
+    }
 
     void on_block_exit(BlockCollision collision)
     {
         last_jump_attempt = -1;
         transform.rotation = 0;
-        grounded = false;
     }
 
     PlanetariaRigidbody planetaria_rigidbody;
     float last_jump_attempt = -1;
-    bool grounded = false;
     const float acceleration = 5f;
 }
 

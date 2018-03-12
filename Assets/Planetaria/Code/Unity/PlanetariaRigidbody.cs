@@ -23,7 +23,6 @@ namespace Planetaria
         {
             if (!collision.exists)
             {
-                Debug.Log("Aerial: " + Time.time);
                 // I am making a bet this is relevant in spherical coordinates (it is Euler isn't it?): http://openarena.ws/board/index.php?topic=5100.0
                 // Wikipedia: https://en.wikipedia.org/wiki/Leapfrog_integration
                 // "This is especially useful when computing orbital dynamics, as many other integration schemes, such as the (order-4) Runge-Kutta method, do not conserve energy and allow the system to drift substantially over time." - Wikipedia
@@ -35,7 +34,6 @@ namespace Planetaria
             }
             else
             {
-                Debug.Log("Grounded: " + Time.time);
                 grounded_track(Time.deltaTime/2);
                 grounded_position();
                 grounded_accelerate(Time.deltaTime);
@@ -140,8 +138,8 @@ namespace Planetaria
                 acceleration = get_acceleration();
                 // TODO: accelerate vertically
 
-                collision.data.self.get_observer().exit_block(collision.data);
-                collision.data.other.get_observer().exit_block(collision.data);
+                collision.data.self.get_observer().notify_exit_block(collision.data);
+                collision.data.other.get_observer().notify_exit_block(collision.data);
 
                 collision = new optional<BlockCollision>();
                 observer = new optional<CollisionObserver>();
@@ -150,7 +148,6 @@ namespace Planetaria
 
         private void synchronize_velocity_ground_to_air()
         {
-            Debug.Log("Collision exists? : " + collision.exists);
             if (collision.exists)
             {
                 Vector3 x = horizontal_velocity * Bearing.right(position, collision.data.normal().data);
@@ -165,6 +162,14 @@ namespace Planetaria
             {
                 horizontal_velocity = Vector3.Dot(velocity, Bearing.right(position, collision.data.normal().data));
                 vertical_velocity = Vector3.Dot(velocity, collision.data.normal().data);
+            }
+        }
+       
+        public bool colliding
+        {
+            get
+            {
+                return collision.exists;
             }
         }
 
@@ -232,7 +237,7 @@ namespace Planetaria
         //private new PlanetariaCollider collider;
         private optional<CollisionObserver> observer;
         private Rigidbody internal_rigidbody;
-        
+
         private optional<BlockCollision> collision;
         private float horizontal_velocity;
         private float vertical_velocity;
