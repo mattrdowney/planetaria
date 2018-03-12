@@ -10,7 +10,7 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
         OnBlockStay.data = on_block_stay;
         OnBlockEnter.data = on_block_enter;
         OnBlockExit.data = on_block_exit;
-        transform.position = new NormalizedSphericalCoordinates(Mathf.PI - .1f, Mathf.PI/2);
+        transform.position = new NormalizedSphericalCoordinates(Mathf.PI/2 + .06f, Mathf.PI/2 + .01f);
     }
 
     protected override void OnDestruction()
@@ -29,14 +29,16 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
     {
         if (!grounded)
         {
-            planetaria_rigidbody.absolute_velocity += Vector2.right * Input.GetAxis("Horizontal") * Time.deltaTime * transform.scale * acceleration;
+            planetaria_rigidbody.absolute_velocity += Vector2.right * Input.GetAxis("Horizontal") * Time.deltaTime * transform.scale * acceleration * .5f;
         }
     }
 
     void on_block_stay(BlockCollision collision)
     {
+        grounded = true;
+        Debug.Log("Grounded " + Time.time + " and " + grounded);
         float velocity = planetaria_rigidbody.relative_velocity.x;
-        velocity += Input.GetAxis("Horizontal") * -planetaria_rigidbody.relative_velocity.y * transform.scale * acceleration;
+        velocity += Input.GetAxis("Horizontal") * -planetaria_rigidbody.relative_velocity.y * transform.scale * acceleration * 20f;
         if (Mathf.Abs(velocity) > 2f*transform.scale)
         {
             velocity = Mathf.Sign(velocity)*2f*transform.scale;
@@ -45,14 +47,11 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
         transform.rotation = Bearing.angle(collision.position().data, collision.normal().data);
         if (Time.time - last_jump_attempt < .2f)
         {
-            planetaria_rigidbody.derail(0, 2*transform.scale);
+            planetaria_rigidbody.derail(0, 2.3f*transform.scale);
         }
     }
 
-    void on_block_enter(BlockCollision collision)
-    {
-        grounded = true;
-    }
+    void on_block_enter(BlockCollision collision) { } // FIXME: GitHub issue #67
 
     void on_block_exit(BlockCollision collision)
     {

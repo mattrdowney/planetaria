@@ -7,9 +7,10 @@
 
 	SubShader
 	{
-		Tags { "Queue" = "Transparent" "RenderType" = "Transparent" } // CONSIDER: transparent cutout should almost definitely be used // FIXME: optimize queue usage to avoid rendering since this is ZTest Always
+		Tags { "Queue" = "Transparent+999" "RenderType" = "Transparent" } // CONSIDER: transparent cutout should almost definitely be used // FIXME: optimize queue usage to avoid rendering since this is ZTest Always
 		LOD 100
-		ZWrite Off
+		ZWrite On
+		ZTest Always
 		Cull Off
 		Blend SrcAlpha OneMinusSrcAlpha
 

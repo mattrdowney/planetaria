@@ -10,6 +10,8 @@
 		Tags { "Queue" = "Transparent" "RenderType" = "Transparent" } // CONSIDER: transparent cutout should almost definitely be used
 		LOD 100
 		ZWrite Off
+		ZTest LEqual
+
 		Cull Off
 		Blend SrcAlpha OneMinusSrcAlpha
 

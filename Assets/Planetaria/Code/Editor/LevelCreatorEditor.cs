@@ -41,18 +41,17 @@ namespace Planetaria
 	        draw_mode = (DrawMode) EditorGUILayout.EnumPopup("Draw Mode", draw_mode);
 	        GUILayout.EndHorizontal();
 
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Equator Rows");
+	        rows = EditorGUILayout.IntField(rows, GUILayout.Width(50));
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Time Zone Columns");
+	        columns = EditorGUILayout.IntField(columns, GUILayout.Width(50));
+	        GUILayout.EndHorizontal();
+
             switch (draw_mode)
             {
-                case DrawMode.Free:
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Label("Equator Rows");
-	                rows = EditorGUILayout.IntField(rows, GUILayout.Width(50));
-                    GUILayout.EndHorizontal();
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Label("Time Zone Columns");
-	                columns = EditorGUILayout.IntField(columns, GUILayout.Width(50));
-	                GUILayout.EndHorizontal();
-                    break;
                 case DrawMode.Equilateral:
                     GUILayout.BeginHorizontal();
                     GUILayout.Label("Polygon Sides");
@@ -60,7 +59,6 @@ namespace Planetaria
 	                GUILayout.EndHorizontal();
                     break;
             }
-
         }
 
         private void OnSceneGUI ()
@@ -185,11 +183,11 @@ namespace Planetaria
 
         /// <summary>Number of rows in the grid. Equator is drawn when rows is odd</summary>
         [Tooltip("")]
-        public static int rows = 15;
+        public static int rows = 63;
         
         /// <summary>Number of columns in the grid (per hemisphere).</summary>
         [Tooltip("")]
-	    public static int columns = 16;
+	    public static int columns = 64;
 
         [Tooltip("")]
         public static int edges = 3;

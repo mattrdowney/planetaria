@@ -81,7 +81,8 @@ namespace Planetaria
                 {
                     writer.Dispose();
                     UnityEditor.AssetDatabase.Refresh();
-                    string global_unique_identifier = UnityEditor.AssetDatabase.AssetPathToGUID(file);
+                    string global_unique_identifier = text_contents.GetHashCode().ToString("X");
+                    Debug.Log("Creating " + global_unique_identifier);
                     suffix = "_" + global_unique_identifier;
                     optional<string> name = Miscellaneous.inner_text(file, "/", ".");
                     if (name.exists)
