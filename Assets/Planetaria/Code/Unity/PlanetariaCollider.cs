@@ -111,7 +111,7 @@ namespace Planetaria
                 {
                     if (this.is_field || other_collider.data.is_field) // field collision
                     {
-                        observer.potential_field_collision(other_collider.data);
+                        observer.potential_field_collision(other_collider.data); // TODO: augment field (like Unity triggers) works on both the sender and receiver.
                     }
                     else // block collision
                     {
@@ -119,7 +119,7 @@ namespace Planetaria
                         {
                             optional<Block> block = PlanetariaCache.block_cache.get(sphere_collider.data);
                             if (block.exists &&
-                                    (!observer.colliding() || observer.collisions()[0].block == block.data)) // Is the block a duplicate of the one we are colliding with?
+                                    (!observer.colliding() || observer.collisions()[0].block == block.data)) // Is the block a duplicate of the one we are colliding with? // FIXME: private API exposure (optimizes at a cost of readability)
                             {
                                 optional<Arc> arc = PlanetariaCache.arc_cache.get(sphere_collider.data);
                                 Vector3 position = planetaria_transform.position.data;

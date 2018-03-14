@@ -59,7 +59,7 @@ namespace Planetaria
         
         public bool colliding()
         {
-            return current_collisions.Count != 0;
+            return current_collisions.Count > 0;
         }
 
         public List<BlockCollision> collisions() // HACK: FIXME: remove
@@ -85,8 +85,10 @@ namespace Planetaria
                         {
                             if (planetaria_rigidbody.exists)
                             {
+                                Debug.Log("Here1");
                                 if (planetaria_rigidbody.data.collide(collision.data, this))
                                 {
+                                    Debug.Log("Here2");
                                     collision_candidates.Add(collision.data);
                                 }
                             }
@@ -94,6 +96,18 @@ namespace Planetaria
                     }
                 }
             }
+        }
+
+        public void clear_block_collision()
+        {
+            while (current_collisions.Count > 0)
+            {
+                BlockCollision collision = current_collisions[current_collisions.Count-1];
+                collision.self.get_observer().notify_exit_block(collision);
+                collision.other.get_observer().notify_exit_block(collision);
+                current_collisions.Remove(collision);
+            }
+            collision_candidates.Clear();
         }
 
         internal void notify_all_block()

@@ -21,7 +21,13 @@ namespace Planetaria
 
         private void FixedUpdate()
         {
-            if (!collision.exists)
+            if (observer.exists && observer.data.colliding()) // grounded
+            {
+                grounded_track(Time.deltaTime/2);
+                grounded_position();
+                grounded_accelerate(Time.deltaTime);
+            }
+            else // non-grounded / "aerial"
             {
                 // I am making a bet this is relevant in spherical coordinates (it is Euler isn't it?): http://openarena.ws/board/index.php?topic=5100.0
                 // Wikipedia: https://en.wikipedia.org/wiki/Leapfrog_integration
@@ -32,20 +38,14 @@ namespace Planetaria
                 aerial_move(velocity.magnitude * Time.deltaTime);
                 acceleration = get_acceleration();
             }
-            else
+
+            if (observer.exists && observer.data.colliding()) // grounded
             {
                 grounded_track(Time.deltaTime/2);
-                grounded_position();
-                grounded_accelerate(Time.deltaTime);
             }
-
-            if (!collision.exists)
+            else // non-grounded / "aerial"
             {
                 velocity = velocity + acceleration * (Time.deltaTime / 2);
-            }
-            else
-            {
-                grounded_track(Time.deltaTime/2);
             }
         }
 
@@ -63,8 +63,12 @@ namespace Planetaria
         {
             aerial_move(-collision.overshoot); // this only (truly) works with perpendicular vectors?
 
-            this.collision = collision;
+            Debug.Log(this.observer);
+
             this.observer = observer;
+            this.collision = collision;
+
+            Debug.Log(this.observer);
 
             horizontal_velocity = Vector3.Dot(velocity, Bearing.right(position, collision.normal().data));
             vertical_velocity = Vector3.Dot(velocity, collision.normal().data);
@@ -76,7 +80,9 @@ namespace Planetaria
 
             grounded_accelerate(0);
 
-            return this.collision.exists;
+            Debug.Log(this.observer);
+
+            return this.observer.exists;
         }
 
         private void aerial_move(float delta)
@@ -94,8 +100,8 @@ namespace Planetaria
 
         private void grounded_position()
         {
-            collision.data.move(horizontal_velocity * Time.deltaTime, transform.scale/2);
-            transform.position = collision.data.position();
+            collision.move(horizontal_velocity * Time.deltaTime, transform.scale/2);
+            transform.position = collision.position();
             position = transform.position.data; // NOTE: required so get_acceleration() functions
             // project velocity
         }
@@ -103,65 +109,65 @@ namespace Planetaria
         private void grounded_track(float delta_time)
         {
             horizontal_velocity += horizontal_acceleration * delta_time;
-            float friction = collision.data.friction * vertical_acceleration * delta_time;
+            float friction = collision.friction * vertical_acceleration * delta_time;
             float speed = Mathf.Abs(horizontal_velocity);
             //horizontal_velocity -= Mathf.Sign(horizontal_velocity)*Mathf.Min(speed, friction);
         }
 
         private void grounded_accelerate(float delta)
         {
-            Vector3 normal = collision.data.normal().data;
-            Vector3 right = Bearing.right(collision.data.position().data, normal);
+            Vector3 normal = collision.normal().data;
+            Vector3 right = Bearing.right(collision.position().data, normal);
 
             acceleration = get_acceleration();
             horizontal_acceleration = Vector3.Dot(acceleration, right);
-            vertical_acceleration = Vector3.Dot(acceleration, normal) - collision.data.magnetism;
-            if (!collision.data.grounded(internal_velocity)) // TODO: check centripedal force
+            vertical_acceleration = Vector3.Dot(acceleration, normal) - collision.magnetism;
+            if (!collision.grounded(internal_velocity)) // TODO: check centripedal force
             {
+                Debug.Log("Happening?!?!?");
                 derail(0, vertical_acceleration*delta); // Force OnCollisionExit, "un-collision" (and accelerate for a frame)
             }
         }
         
-        public void derail(float x_velocity, float y_velocity)
+        public void derail(float x_velocity, float y_velocity) // FIXME: GitHub issue #67
         {
-            if (collision.exists && observer.exists)
+            if (observer.exists && observer.data.colliding())
             {
-                collision.data.move(0, transform.scale/2 * (1 + 1e-3f)); // extrude the player so they do not accidentally re-collide (immediately) // FIXME: magic number, move to Precision.*
+                BlockCollision collision = observer.data.collisions()[0];
+
+                collision.move(0, transform.scale/2 * (1 + 1e-3f)); // extrude the player so they do not accidentally re-collide (immediately) // FIXME: magic number, move to Precision.*
                 x_velocity += horizontal_velocity;
                 //y_velocity += vertical_velocity;
-                position = collision.data.position().data;
+                position = collision.position().data;
                 transform.position = new NormalizedCartesianCoordinates(position);
-                Vector3 normal = collision.data.normal().data;
+                Vector3 normal = collision.normal().data;
                 Vector3 right = Bearing.right(position, normal);
                 velocity = right*x_velocity + normal*y_velocity;
                 Debug.DrawRay(position, velocity, Color.yellow, 1f);
                 acceleration = get_acceleration();
                 // TODO: accelerate vertically
-
-                collision.data.self.get_observer().notify_exit_block(collision.data);
-                collision.data.other.get_observer().notify_exit_block(collision.data);
-
-                collision = new optional<BlockCollision>();
+                
+                observer.data.clear_block_collision();
                 observer = new optional<CollisionObserver>();
             }
         }
 
         private void synchronize_velocity_ground_to_air()
         {
-            if (collision.exists)
+            if (observer.exists)
             {
-                Vector3 x = horizontal_velocity * Bearing.right(position, collision.data.normal().data);
-                Vector3 y = vertical_acceleration * Time.deltaTime * collision.data.normal().data;
+                Vector3 x = horizontal_velocity * Bearing.right(position, collision.normal().data);
+                Vector3 y = vertical_acceleration * Time.deltaTime * collision.normal().data;
                 velocity = x + y;
             }
         }
 
         private void synchronize_velocity_air_to_ground()
         {
-            if (collision.exists)
+            if (observer.exists)
             {
-                horizontal_velocity = Vector3.Dot(velocity, Bearing.right(position, collision.data.normal().data));
-                vertical_velocity = Vector3.Dot(velocity, collision.data.normal().data);
+                horizontal_velocity = Vector3.Dot(velocity, Bearing.right(position, collision.normal().data));
+                vertical_velocity = Vector3.Dot(velocity, collision.normal().data);
             }
         }
        
@@ -169,7 +175,7 @@ namespace Planetaria
         {
             get
             {
-                return collision.exists;
+                return observer.exists;
             }
         }
 
@@ -234,11 +240,11 @@ namespace Planetaria
         [SerializeField] public Vector3[] gravity_wells;
 
         private new PlanetariaTransform transform;
+        private Rigidbody internal_rigidbody;
         //private new PlanetariaCollider collider;
         private optional<CollisionObserver> observer;
-        private Rigidbody internal_rigidbody;
-
-        private optional<BlockCollision> collision;
+        private BlockCollision collision;
+        
         private float horizontal_velocity;
         private float vertical_velocity;
         private float horizontal_acceleration;
