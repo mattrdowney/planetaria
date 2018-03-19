@@ -85,10 +85,8 @@ namespace Planetaria
                         {
                             if (planetaria_rigidbody.exists)
                             {
-                                Debug.Log("Here1");
                                 if (planetaria_rigidbody.data.collide(collision.data, this))
                                 {
-                                    Debug.Log("Here2");
                                     collision_candidates.Add(collision.data);
                                 }
                             }

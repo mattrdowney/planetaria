@@ -10,7 +10,7 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
         OnBlockStay.data = on_block_stay;
         OnBlockEnter.data = on_block_enter;
         OnBlockExit.data = on_block_exit;
-        transform.position = new NormalizedSphericalCoordinates(Mathf.PI/2 + 1.06f, Mathf.PI/2 + .01f);
+        transform.position = new NormalizedSphericalCoordinates(Mathf.PI/2 + 0.06f, Mathf.PI/2 + .01f);
     }
 
     protected override void OnDestruction()
@@ -29,26 +29,25 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
     {
         if (!planetaria_rigidbody.colliding)
         {
-            planetaria_rigidbody.absolute_velocity += Vector2.right * Input.GetAxis("Horizontal") * Time.deltaTime * transform.scale * acceleration * .5f;
+            planetaria_rigidbody.absolute_velocity += Vector2.right * Input.GetAxis("Horizontal") * Time.deltaTime * transform.scale * acceleration * 1f;
         }
     }
 
     void on_block_stay(BlockCollision collision)
     {
-        Debug.Log("Happening " + Time.time);
         if (planetaria_rigidbody.colliding) // FIXME: GitHub issue #67
         {
             float velocity = planetaria_rigidbody.relative_velocity.x;
             velocity += Input.GetAxis("Horizontal") * -planetaria_rigidbody.relative_velocity.y * transform.scale * acceleration * 20f;
-            if (Mathf.Abs(velocity) > 2f*transform.scale)
+            if (Mathf.Abs(velocity) > 3f*transform.scale)
             {
-                velocity = Mathf.Sign(velocity)*2f*transform.scale;
+                velocity = Mathf.Sign(velocity)*3f*transform.scale;
             }
             planetaria_rigidbody.relative_velocity = new Vector2(velocity, 0);
             transform.rotation = Bearing.angle(collision.position().data, collision.normal().data);
             if (Time.time - last_jump_attempt < .2f)
             {
-                planetaria_rigidbody.derail(0, 2.3f*transform.scale);
+                planetaria_rigidbody.derail(0, 4*transform.scale);
             }
         }
         else

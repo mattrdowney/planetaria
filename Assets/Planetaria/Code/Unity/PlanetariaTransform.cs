@@ -37,7 +37,7 @@ namespace Planetaria
 
         public NormalizedCartesianCoordinates previous_position { get; private set; } // FIXME: only set based on FixedUpdate last position
 
-        public float rotation
+        public float rotation // CONSIDER: XXX: direction (as Vector3) since a float doesn't combine well with PlanetariaTracker; NOTE: direction and position needn't be orthogonal; NOTE: direction is normal()
         {
             get
             {

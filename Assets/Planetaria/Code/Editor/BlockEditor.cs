@@ -9,21 +9,24 @@ namespace Planetaria
         [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
         private static void draw_block_gizmos(Block self, GizmoType gizmo_type)
         {
-            foreach (optional<Arc> arc in self.iterator())
+            if (LevelCreatorEditor.debug_rendering)
             {
-                if (arc.exists)
+                foreach (optional<Arc> arc in self.iterator())
                 {
-                    if (!self.is_dynamic)
+                    if (arc.exists)
                     {
-                        ArcEditor.draw_arc(arc.data);
-                    }
-                    else if (Mathf.Abs(arc.data.circle(0).radius) > Precision.threshold)
-                    {
-                        ArcEditor.draw_arc(arc.data, self.GetComponent<Transform>());
-                    }
-                    else
-                    {
-                        // FIXME: add corners for dynamic blocks
+                        if (!self.is_dynamic)
+                        {
+                            ArcEditor.draw_arc(arc.data);
+                        }
+                        else if (Mathf.Abs(arc.data.circle(0).radius) > Precision.threshold)
+                        {
+                            ArcEditor.draw_arc(arc.data, self.GetComponent<Transform>());
+                        }
+                        else
+                        {
+                            // FIXME: add corners for dynamic blocks
+                        }
                     }
                 }
             }

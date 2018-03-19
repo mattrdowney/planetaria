@@ -61,14 +61,15 @@ namespace Planetaria
 
         public bool collide(BlockCollision collision, CollisionObserver observer)
         {
-            aerial_move(-collision.overshoot); // this only (truly) works with perpendicular vectors?
+            if (this.observer.exists)
+            {
+                this.observer.data.clear_block_collision();
+            }
 
-            Debug.Log(this.observer);
+            aerial_move(-collision.overshoot); // this only (truly) works with perpendicular vectors?
 
             this.observer = observer;
             this.collision = collision;
-
-            Debug.Log(this.observer);
 
             horizontal_velocity = Vector3.Dot(velocity, Bearing.right(position, collision.normal().data));
             vertical_velocity = Vector3.Dot(velocity, collision.normal().data);
@@ -79,8 +80,6 @@ namespace Planetaria
             }
 
             grounded_accelerate(0);
-
-            Debug.Log(this.observer);
 
             return this.observer.exists;
         }
@@ -109,9 +108,10 @@ namespace Planetaria
         private void grounded_track(float delta_time)
         {
             horizontal_velocity += horizontal_acceleration * delta_time;
-            float friction = collision.friction * vertical_acceleration * delta_time;
+            float friction = collision.friction * -vertical_acceleration * delta_time * 3f;
             float speed = Mathf.Abs(horizontal_velocity);
-            //horizontal_velocity -= Mathf.Sign(horizontal_velocity)*Mathf.Min(speed, friction);
+            float before = horizontal_velocity;
+            horizontal_velocity -= Mathf.Sign(horizontal_velocity)*Mathf.Min(speed, friction);
         }
 
         private void grounded_accelerate(float delta)
@@ -124,7 +124,6 @@ namespace Planetaria
             vertical_acceleration = Vector3.Dot(acceleration, normal) - collision.magnetism;
             if (!collision.grounded(internal_velocity)) // TODO: check centripedal force
             {
-                Debug.Log("Happening?!?!?");
                 derail(0, vertical_acceleration*delta); // Force OnCollisionExit, "un-collision" (and accelerate for a frame)
             }
         }

@@ -37,7 +37,10 @@ namespace Planetaria
         public override void OnInspectorGUI()
         {
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Draw Mode");
+	        debug_rendering = EditorGUILayout.Toggle("Debug Rendering", debug_rendering);
+	        GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
 	        draw_mode = (DrawMode) EditorGUILayout.EnumPopup("Draw Mode", draw_mode);
 	        GUILayout.EndHorizontal();
 
@@ -177,6 +180,15 @@ namespace Planetaria
                 Event.current.Use();
             }
         }
+
+        [MenuItem("Planetaria/Debug Rendering #g")]
+        private static void toggle_debug_rendering()
+        {
+            debug_rendering = !debug_rendering; // toggle state
+        }
+
+        [Tooltip("")]
+        public static bool debug_rendering;
 
         [Tooltip("")]
         public static DrawMode draw_mode;
