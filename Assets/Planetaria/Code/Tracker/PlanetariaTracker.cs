@@ -39,10 +39,7 @@ namespace Planetaria
 
         private void Update()
         {
-            if (target.exists)
-            {
-                step();
-            }
+            step();
         }
 
         private void OnDestroy()

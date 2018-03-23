@@ -37,6 +37,10 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
     {
         if (planetaria_rigidbody.colliding) // FIXME: GitHub issue #67
         {
+            if (collision.magnetism != 0)
+            {
+                magnet_floor = true;
+            }
             float velocity = planetaria_rigidbody.relative_velocity.x;
             velocity += Input.GetAxis("Horizontal") * -planetaria_rigidbody.relative_velocity.y * transform.scale * acceleration * 20f;
             if (Mathf.Abs(velocity) > 3f*transform.scale)
@@ -44,7 +48,7 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
                 velocity = Mathf.Sign(velocity)*3f*transform.scale;
             }
             planetaria_rigidbody.relative_velocity = new Vector2(velocity, 0);
-            transform.rotation = Bearing.angle(collision.position().data, collision.normal().data);
+            transform.direction = collision.normal();
             if (Time.time - last_jump_attempt < .2f)
             {
                 planetaria_rigidbody.derail(0, 4*transform.scale);
@@ -64,12 +68,15 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
     void on_block_exit(BlockCollision collision)
     {
         last_jump_attempt = -1;
-        transform.rotation = 0;
+        transform.direction = new NormalizedCartesianCoordinates(Vector3.up);
+        magnet_floor = false;
     }
 
     PlanetariaRigidbody planetaria_rigidbody;
     float last_jump_attempt = -1;
     const float acceleration = 5f;
+
+    public bool magnet_floor = false;
 }
 
 /*

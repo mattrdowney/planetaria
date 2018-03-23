@@ -9,17 +9,12 @@ namespace Planetaria
         {
             Transform internal_transformation = this.GetComponent<Transform>();
             cartesian_transform = internal_transformation;
-            internal_collider = internal_transformation.GetComponent<PlanetariaCollider>();
-            internal_renderer = internal_transformation.GetComponent<PlanetariaRenderer>();
+            internal_collider = internal_transformation.GetComponent<PlanetariaCollider>(); // FIXME: undefined behavior
+            internal_renderer = internal_transformation.GetComponent<PlanetariaRenderer>(); // FIXME:
 
-            previous_position = position = new NormalizedCartesianCoordinates(cartesian_transform.forward);
-            rotation = Bearing.angle(cartesian_transform.forward, cartesian_transform.up);
+            position = new NormalizedCartesianCoordinates(cartesian_transform.forward);
+            direction = new NormalizedCartesianCoordinates(Vector3.up);
             scale = cartesian_transform.localScale.x;
-        }
-
-        private void FixedUpdate() // FIXME: move into PlanetariaGameLoop?
-        {
-            move();
         }
 
         public NormalizedCartesianCoordinates position
@@ -30,22 +25,25 @@ namespace Planetaria
             }
             set
             {
-                previous_position = position_variable;
                 position_variable = value;
+                cartesian_transform.rotation = Quaternion.LookRotation(position.data, direction.data);
             }
         }
 
-        public NormalizedCartesianCoordinates previous_position { get; private set; } // FIXME: only set based on FixedUpdate last position
-
-        public float rotation // CONSIDER: XXX: direction (as Vector3) since a float doesn't combine well with PlanetariaTracker; NOTE: direction and position needn't be orthogonal; NOTE: direction is normal()
+        /// <summary>
+        /// The direction the object faces. The object will rotate towards "direction".
+        /// </summary>
+        /// <example>arc.normal() [dynamic] or Vector3.up [static]</example>
+        public NormalizedCartesianCoordinates direction
         {
             get
             {
-                return rotation_variable.data;
+                return direction_variable;
             }
             set
             {
-                rotation_variable = value;
+                direction_variable = value;
+                cartesian_transform.rotation = Quaternion.LookRotation(position.data, direction.data);
             }
         }
 
@@ -56,51 +54,11 @@ namespace Planetaria
         {
             get
             {
-                return scale_variable.data;
+                return scale_variable;
             }
             set
             {
                 scale_variable = value;
-            }
-        }
-
-        /*public Planetarium planetarium
-        {
-            get
-            {
-                return planetarium_variable.data;
-            }
-            set
-            {
-                planetarium_variable = value;
-            }
-        }*/
-
-        public void move()
-        {
-            /*if (planetarium_variable.dirty)
-            {
-                cartesian_transform.position = planetarium.position;
-                planetarium_variable.clear();
-            }*/
-
-            if (position_variable.dirty)
-            {
-                internal_position = Quaternion.LookRotation(position.data);
-            }
-            if (rotation_variable.dirty)
-            {
-                internal_rotation = Quaternion.Euler(0, 0, rotation*Mathf.Rad2Deg);
-            }
-            if (position_variable.dirty || rotation_variable.dirty)
-            {
-                cartesian_transform.rotation = internal_position * internal_rotation;
-                position_variable.clear();
-                rotation_variable.clear();
-            }
-
-            if (scale_variable.dirty)
-            {
                 if (internal_collider.exists)
                 {
                     internal_collider.data.scale = scale; // TODO: check
@@ -109,7 +67,6 @@ namespace Planetaria
                 {
                     internal_renderer.data.scale = scale; // TODO: check
                 }
-                scale_variable.clear();
             }
         }
 
@@ -117,13 +74,10 @@ namespace Planetaria
         private optional<PlanetariaCollider> internal_collider; // Observer pattern would be more elegant but slower
         private optional<PlanetariaRenderer> internal_renderer;
 
-        private Quaternion internal_position;
-        private Quaternion internal_rotation;
-
-        //private dirtyable<Planetarium> planetarium_variable;
-        private dirtyable<NormalizedCartesianCoordinates> position_variable = new dirtyable<NormalizedCartesianCoordinates>();
-        private dirtyable<float> rotation_variable;
-        private dirtyable<float> scale_variable;
+        //private Planetarium planetarium_variable; // cartesian_transform's position
+        private NormalizedCartesianCoordinates position_variable = new NormalizedCartesianCoordinates(Vector3.forward);
+        private NormalizedCartesianCoordinates direction_variable = new NormalizedCartesianCoordinates(Vector3.forward);
+        private float scale_variable;
     }
 }
 

@@ -1,30 +1,34 @@
 ﻿using UnityEngine;
 using Planetaria;
+using System;
 
-public class InstantRotationTracker : PlanetariaTracker
+public class Elevator : PlanetariaTracker
 {
+    public override void cleanup() { }
+
     public override void setup()
     {
-        target = GameObject.Find("Character").GetComponent<PlanetariaTransform>();
-        character = GameObject.Find("Character").GetComponent<PlanetariaCharacter>();
+        start_position = self.position.data;
+        NormalizedSphericalCoordinates spherical = self.position;
+        NormalizedCartesianCoordinates cartesian = new NormalizedSphericalCoordinates(spherical.data.x - Mathf.PI*(2f/3f), spherical.data.y);
+        end_position = cartesian.data;
     }
 
     public override void step()
     {
-        if (character.magnet_floor)
-        {
-            self.direction = target.data.direction;
-        }
-        else
-        {
-            self.direction = new NormalizedCartesianCoordinates(Vector3.up);
-        }
+        float interpolation_fraction = Mathf.PingPong(Time.time/10f, 1); // FIXME: AnimationCurve (repeat) with optional hook for buttons
+        Debug.Log(interpolation_fraction);
+        Vector3 intermediate_position = Vector3.Slerp(start_position, end_position, interpolation_fraction); // FIXME: needs to work >=180 degrees
+        self.position = new NormalizedCartesianCoordinates(intermediate_position);
+        
+        Debug.DrawLine(start_position, intermediate_position, Color.white);
+        Debug.DrawLine(intermediate_position, end_position, Color.black);
     }
 
-    public override void cleanup() { }
     public override void teleport() { }
 
-    PlanetariaCharacter character;
+    private Vector3 start_position;
+    private Vector3 end_position;
 }
 
 /*

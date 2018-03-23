@@ -16,8 +16,8 @@ namespace Planetaria
             Quaternion block_to_world = block.transform.rotation;
             Quaternion world_to_block = Quaternion.Inverse(block_to_world);
 
-            Vector3 last_position = world_to_block * transformation.previous_position.data;
-            Vector3 current_position = world_to_block * transformation.position.data;
+            Vector3 last_position = world_to_block * rigidbody.get_previous_position();
+            Vector3 current_position = world_to_block * rigidbody.get_position();
 
             float extrusion = transformation.scale/2;
             optional<Vector3> intersection_point = PlanetariaIntersection.arc_path_intersection(arc, last_position, current_position, extrusion);
@@ -43,8 +43,8 @@ namespace Planetaria
             float angle = arc.position_to_angle(intersection_point.data);
             result.geometry_visitor = GeometryVisitor.geometry_visitor(arc_visitor.data, angle, extrusion, block.transform);
             intersection_point.data = block_to_world * intersection_point.data;
-            result.distance = Vector3.Angle(intersection_point.data, transformation.previous_position.data)*Mathf.Deg2Rad;
-            result.overshoot = Vector3.Angle(intersection_point.data, transformation.position.data)*Mathf.Deg2Rad;
+            result.distance = Vector3.Angle(intersection_point.data, rigidbody.get_previous_position())*Mathf.Deg2Rad;
+            result.overshoot = Vector3.Angle(intersection_point.data, rigidbody.get_position())*Mathf.Deg2Rad;
             result.block = block;
             result.active = true;
             result.observer = observer;
@@ -115,7 +115,7 @@ namespace Planetaria
 
         private static bool platform_collision(Arc arc, Block block, PlanetariaCollider collider, PlanetariaTransform transformation, PlanetariaRigidbody rigidbody, optional<Vector3> intersection_point)
         {
-            Vector3 velocity = Bearing.attractor(transformation.previous_position.data, transformation.position.data);
+            Vector3 velocity = Bearing.attractor(rigidbody.get_previous_position(), rigidbody.get_position());
 
             if (intersection_point.exists)
             {

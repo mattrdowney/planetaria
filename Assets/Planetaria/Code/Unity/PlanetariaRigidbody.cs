@@ -15,12 +15,13 @@ namespace Planetaria
 
         private void Start()
         {
-            position = transform.position.data;
+            previous_position = position = transform.position.data;
             get_acceleration();
         }
 
         private void FixedUpdate()
         {
+            previous_position = position;
             if (observer.exists && observer.data.colliding()) // grounded
             {
                 grounded_track(Time.deltaTime/2);
@@ -183,16 +184,16 @@ namespace Planetaria
             get
             {
                 synchronize_velocity_ground_to_air();
-                Vector3 right = Bearing.normal(position, transform.rotation);
-                Vector3 up = Bearing.normal(position, transform.rotation + Mathf.PI/2);
+                Vector3 right = Bearing.right(position, transform.direction.data);
+                Vector3 up = Bearing.up(position, transform.direction.data);
                 float x = Vector3.Dot(velocity, right);
                 float y = Vector3.Dot(velocity, up);
                 return new Vector2(x, y);
             }
             set
             {
-                Vector3 x = Bearing.normal(position, transform.rotation) * value.x;
-                Vector3 y = Bearing.normal(position, transform.rotation + Mathf.PI/2) * value.y;
+                Vector3 x = Bearing.right(position, transform.direction.data) * value.x;
+                Vector3 y = Bearing.up(position, transform.direction.data) * value.y;
                 velocity = x + y;
                 synchronize_velocity_air_to_ground();
             }
@@ -225,7 +226,18 @@ namespace Planetaria
             }
         }
 
+        public Vector3 get_position()
+        {
+            return position;
+        }
+
+        public Vector3 get_previous_position()
+        {
+            return previous_position;
+        }
+
         // position
+        private Vector3 previous_position; // magnitude = 1
         private Vector3 position; // magnitude = 1
         private Vector3 velocity; // magnitude in [0, infinity]
         private Vector3 acceleration; // magnitude in [0, infinity]
