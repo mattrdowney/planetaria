@@ -72,15 +72,18 @@ namespace Planetaria
             this.observer = observer;
             this.collision = collision;
 
+            Debug.DrawRay(position, velocity, Color.black, 1f);
             horizontal_velocity = Vector3.Dot(velocity, Bearing.right(position, collision.normal().data));
             vertical_velocity = Vector3.Dot(velocity, collision.normal().data);
-
+            Debug.DrawRay(position, horizontal_velocity*Bearing.right(position, collision.normal().data), Color.blue, 1f);
             if (vertical_velocity < 0)
             {
                 vertical_velocity *= -collision.elasticity;
             }
 
             grounded_accelerate(0);
+
+            Debug.DrawRay(position, horizontal_velocity*Bearing.right(position, collision.normal().data), Color.green, 1f);
 
             return this.observer.exists;
         }
@@ -109,10 +112,10 @@ namespace Planetaria
         private void grounded_track(float delta_time)
         {
             horizontal_velocity += horizontal_acceleration * delta_time;
-            float friction = collision.friction * -vertical_acceleration * delta_time * 3f;
+            float friction = Mathf.Abs(collision.friction * -vertical_velocity);
             float speed = Mathf.Abs(horizontal_velocity);
-            float before = horizontal_velocity;
             horizontal_velocity -= Mathf.Sign(horizontal_velocity)*Mathf.Min(speed, friction);
+            vertical_velocity = 0;
         }
 
         private void grounded_accelerate(float delta)
@@ -123,6 +126,7 @@ namespace Planetaria
             acceleration = get_acceleration();
             horizontal_acceleration = Vector3.Dot(acceleration, right);
             vertical_acceleration = Vector3.Dot(acceleration, normal) - collision.magnetism;
+            vertical_velocity += vertical_acceleration*Time.deltaTime;
             if (!collision.grounded(internal_velocity)) // TODO: check centripedal force
             {
                 derail(0, vertical_acceleration*delta); // Force OnCollisionExit, "un-collision" (and accelerate for a frame)
