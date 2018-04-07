@@ -111,7 +111,6 @@
      <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaRenderer.cs" />
      <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaRigidbody.cs" />
      <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaTransform.cs" />
-     <Compile Include="Assets\Planetaria\Code\Utility\Dirtyable.cs" />
      <Compile Include="Assets\Planetaria\Code\Utility\Miscellaneous.cs" />
      <Compile Include="Assets\Planetaria\Code\Utility\Optional.cs" />
      <Compile Include="Assets\Planetaria\Code\Utility\PlanetariaCache.cs" />
