@@ -6,10 +6,10 @@ namespace Planetaria
 {
     public class LevelCreator : MonoBehaviour
     {
-	    private void Start()
+        private void Start()
         {
-		
-	    }
+        
+        }
     }
 }
 

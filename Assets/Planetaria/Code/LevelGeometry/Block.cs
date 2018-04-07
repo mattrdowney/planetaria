@@ -38,7 +38,7 @@ namespace Planetaria
             return ArcVisitor.arc_visitor(arc_list, arc_list_index);
         }
 
-        public IEnumerable<optional<Arc>> iterator()
+        public IEnumerable<optional<Arc>> iterator() // TODO: check
         {
             return arc_list;
         }

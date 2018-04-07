@@ -31,15 +31,15 @@ namespace Planetaria
             return texture;
         }
 
-	    public static Subtype GetOrAddComponent<Subtype>(this Component self) where Subtype : Component
+        public static Subtype GetOrAddComponent<Subtype>(this Component self) where Subtype : Component
         {
-		    optional<Subtype> result = self.GetComponent<Subtype>();
-		    if (!result.exists)
+            optional<Subtype> result = self.GetComponent<Subtype>();
+            if (!result.exists)
             {
-			    result = self.gameObject.AddComponent<Subtype>();
-		    }
-		    return result.data;
-	    }
+                result = self.gameObject.AddComponent<Subtype>();
+            }
+            return result.data;
+        }
 
         /// <summary>
         /// Inspector - finds the last instance of inner_text between prefix and suffix, if it exists, and returns it.

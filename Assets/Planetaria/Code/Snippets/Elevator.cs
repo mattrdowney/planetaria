@@ -1,6 +1,5 @@
-﻿using UnityEngine;
-using Planetaria;
-using System;
+﻿using Planetaria;
+using UnityEngine;
 
 public class Elevator : PlanetariaTracker
 {
@@ -10,17 +9,17 @@ public class Elevator : PlanetariaTracker
     {
         start_position = self.position.data;
         NormalizedSphericalCoordinates spherical = self.position;
-        NormalizedCartesianCoordinates cartesian = new NormalizedSphericalCoordinates(spherical.data.x - Mathf.PI*(2f/3f), spherical.data.y);
+        NormalizedCartesianCoordinates cartesian = new NormalizedSphericalCoordinates(spherical.data.x - Mathf.PI * (2f / 3f), spherical.data.y);
         end_position = cartesian.data;
     }
 
     public override void step()
     {
-        float interpolation_fraction = Mathf.PingPong(Time.time/10f, 1); // FIXME: AnimationCurve (repeat) with optional hook for buttons
+        float interpolation_fraction = Mathf.PingPong(Time.time / 10f, 1); // FIXME: AnimationCurve (repeat) with optional hook for buttons
         Debug.Log(interpolation_fraction);
         Vector3 intermediate_position = Vector3.Slerp(start_position, end_position, interpolation_fraction); // FIXME: needs to work >=180 degrees
         self.position = new NormalizedCartesianCoordinates(intermediate_position);
-        
+
         Debug.DrawLine(start_position, intermediate_position, Color.white);
         Debug.DrawLine(intermediate_position, end_position, Color.black);
     }

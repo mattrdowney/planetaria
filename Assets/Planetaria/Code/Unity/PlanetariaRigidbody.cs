@@ -71,19 +71,15 @@ namespace Planetaria
 
             this.observer = observer;
             this.collision = collision;
-
-            Debug.DrawRay(position, velocity, Color.black, 1f);
+            
             horizontal_velocity = Vector3.Dot(velocity, Bearing.right(position, collision.normal().data));
             vertical_velocity = Vector3.Dot(velocity, collision.normal().data);
-            Debug.DrawRay(position, horizontal_velocity*Bearing.right(position, collision.normal().data), Color.blue, 1f);
             if (vertical_velocity < 0)
             {
                 vertical_velocity *= -collision.elasticity;
             }
 
             grounded_accelerate(0);
-
-            Debug.DrawRay(position, horizontal_velocity*Bearing.right(position, collision.normal().data), Color.green, 1f);
 
             return this.observer.exists;
         }

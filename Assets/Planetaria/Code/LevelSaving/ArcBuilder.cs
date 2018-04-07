@@ -61,9 +61,9 @@ namespace Planetaria
             GameObject shape = Block.block(curves);
             Block block = shape.GetComponent<Block>();
             optional<TextAsset> svg_file = BlockRenderer.render(block);
-            PlanetariaRenderer renderer = shape.AddComponent<PlanetRenderer>();
             if (svg_file.exists)
             {
+                //PlanetariaRenderer renderer = shape.AddComponent<PlanetRenderer>();
                 //renderer.material = RenderVectorGraphics.render(svg_file.data);
             }
             DestroyImmediate(this.gameObject);
