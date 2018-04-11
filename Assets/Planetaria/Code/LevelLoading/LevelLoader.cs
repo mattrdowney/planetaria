@@ -3,22 +3,23 @@ using UnityEngine;
 
 namespace Planetaria
 {
-    public abstract class LevelLoader : MonoBehaviour
+    public class LevelLoader : MonoBehaviour
     {
-        public static LoadingStrategy loader { set; private get; }
+        public static optional<LoadingStrategy> loader { set; get; }
 
         private void Awake()
         {
-            loader = new BasicLoadingStrategy();
-
-            loader.request_level(initial_level);
-
-            wait(initial_level);
+            if (!loader.exists)
+            {
+                loader = new BasicLoadingStrategy();
+                //loader.data.request_level(initial_level); // if loader doesn't exist, it must be startup time
+                //wait(initial_level); // when future levels are loaded, do not re-request it (if condition is a must)
+            }
         }
 
         IEnumerator wait(int level_index)
         {
-            yield return new WaitUntil(() => loader.fraction_loaded(level_index) == 1f);
+            yield return new WaitUntil(() => loader.data.fraction_loaded(level_index) == 1f);
         }
 
         private int initial_level = 0;

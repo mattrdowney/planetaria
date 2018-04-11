@@ -74,6 +74,7 @@
      <Compile Include="Assets\Planetaria\Code\LevelGeometry\SubdividedOctahedronSphere.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelLoading\BasicLoadingStrategy.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelLoading\LevelLoader.cs" />
+     <Compile Include="Assets\Planetaria\Code\LevelLoading\LevelLoaderUtility.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelLoading\LoadingStrategy.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelLoading\Planetarium.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelSaving\ArcBuilder.cs" />
@@ -195,6 +196,7 @@
      <Compile Include="Assets\UnitySVG\Implementation\XMLParser\SmallXmlParser.cs" />
      <Compile Include="Assets\UnitySVG\Implementation\XMLParser\SVGParser.cs" />
      <Compile Include="Assets\UnitySVG\Interface\RenderingEngine\ISVGPathDraw.cs" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\-1\-1_D1D991C7.txt" />
      <None Include="Assets\Planetaria\Code\Shaders\TransparentUnlit.shader" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_C243E8A7.txt" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_F5001B9C.txt" />
@@ -203,6 +205,7 @@
      <None Include="Assets\Planetaria\Code\Shaders\TransparentAlways.shader" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_A3670D4A.txt" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_D591D3B9.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\-1\-1_33562CC3.txt" />
  <Reference Include="UnityEditor.StandardEvents">
  <HintPath>C:/Users/Fujitora/Dropbox/Planetaria/Planetaria/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
  </Reference>

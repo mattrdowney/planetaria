@@ -2,7 +2,7 @@
 
 namespace Planetaria
 {
-    public abstract class LoadingStrategy : Component
+    public abstract class LoadingStrategy
     {
         /// <summary>
         /// Inspector - Gets the progress on the level loading.
@@ -18,10 +18,10 @@ namespace Planetaria
         public abstract void request_level(int level_index);
 
         /// <summary>
-        /// Mutator - Will instantaneously switch level geometry and transition out the graphics for level gradually.
+        /// Inspector - The center point of the given level_index where objects should be placed.
         /// </summary>
-        /// <param name="level_index">The index of the level that will be focused, implicitly unfocusing previous level. (Should match Unity level index.)</param>
-        public abstract void focus_level(int level_index);
+        /// <param name="level_index">The index of the level that will be focused in. (Should match Unity level index.)</param>
+        public abstract Vector3 center(int level_index);
 
         // A footnote regarding graphics loading: until this point I planned on doing a "camera shutter blink to load in/out levels, but I will probably implement two versions:
         // 1) camera shutter blink (for casual players).

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Planetaria
@@ -6,12 +6,24 @@ namespace Planetaria
     public class BasicLoadingStrategy : LoadingStrategy
     {
         /// <summary>
+        /// Constructor
+        /// </summary>
+        public BasicLoadingStrategy()
+        {
+            for (int level_index = 0; level_index < SceneManager.sceneCountInBuildSettings; ++level_index) // FIXME: This should NOT load Menu Screen and other GUI levels
+            {
+                LevelLoaderUtility.load(level_index, center(level_index));
+            }
+        }
+
+        /// <summary>
         /// Inspector - Return 100% loaded, since the basic loader loads all levels in Awake.
         /// </summary>
         /// <param name="level_index">The index of the level that would have been loaded. (Should match Unity level index.)</param>
         /// <returns>1, meaning 100% loaded.</returns>
         public override float fraction_loaded(int level_index)
         {
+            // CONSIDER: invalid indices return 0
             return 1;
         }
 
@@ -24,30 +36,13 @@ namespace Planetaria
         }
 
         /// <summary>
-        /// Mutator - Switch level geometry and graphics.
+        /// Inspector - The center point of the given level_index where objects should be placed.
         /// </summary>
         /// <param name="level_index">The index of the level that will be focused in. (Should match Unity level index.)</param>
-        public override void focus_level(int level_index)
+        public override Vector3 center(int level_index)
         {
-            planetaria_map[current_level_index].unload_room();
-            planetaria_map[level_index].load_room();
-            current_level_index = level_index;
+            return Vector3.right * (Planetarium.planetarium_size * level_index);
         }
-
-        private void Awake()
-        {
-            current_level_index = 0;
-            planetaria_map = new Dictionary<int, Planetarium>();
-
-            for (int level_index = 0; level_index < SceneManager.sceneCount; ++level_index) // FIXME: This should NOT load Menu Screen and other GUI levels
-            {
-                SceneManager.LoadScene(level_index, LoadSceneMode.Additive);
-                planetaria_map[level_index] = Planetarium.planetarium(level_index);
-            }
-        }
-
-        private int current_level_index;
-        private Dictionary<int, Planetarium> planetaria_map;
     }
 }
 
