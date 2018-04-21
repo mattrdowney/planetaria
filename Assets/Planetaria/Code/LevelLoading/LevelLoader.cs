@@ -1,25 +1,18 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Planetaria
 {
     public class LevelLoader : MonoBehaviour
     {
-        public static optional<LoadingStrategy> loader { set; get; }
+        public static optional<LoadingStrategy> loader { set; get; } // CONSIDER: set: are levels are properly reloaded?
 
         private void Awake()
         {
             if (!loader.exists)
             {
-                loader = new BasicLoadingStrategy();
-                //loader.data.request_level(initial_level); // if loader doesn't exist, it must be startup time
-                //wait(initial_level); // when future levels are loaded, do not re-request it (if condition is a must)
+                loader = new SingleLoadingStrategy();
+                loader.data.activate_level(initial_level); // if loader doesn't exist, it must be startup time
             }
-        }
-
-        IEnumerator wait(int level_index)
-        {
-            yield return new WaitUntil(() => loader.data.fraction_loaded(level_index) == 1f);
         }
 
         private int initial_level = 0;

@@ -74,9 +74,9 @@
      <Compile Include="Assets\Planetaria\Code\LevelGeometry\SubdividedOctahedronSphere.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelLoading\BasicLoadingStrategy.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelLoading\LevelLoader.cs" />
-     <Compile Include="Assets\Planetaria\Code\LevelLoading\LevelLoaderUtility.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelLoading\LoadingStrategy.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelLoading\Planetarium.cs" />
+     <Compile Include="Assets\Planetaria\Code\LevelLoading\SingleLoadingStrategy.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelSaving\ArcBuilder.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelSaving\EquilateralBuilder.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelSaving\LevelCreator.cs" />
@@ -118,6 +118,7 @@
      <Compile Include="Assets\Planetaria\Code\Utility\PlanetariaMath.cs" />
      <Compile Include="Assets\Planetaria\Code\Utility\PlanetariaSubcache.cs" />
      <Compile Include="Assets\Planetaria\Code\Utility\Precision.cs" />
+     <Compile Include="Assets\Planetaria\Code\Utility\ProceduralPacking.cs" />
      <Compile Include="Assets\UnitySVG\Extensions.cs" />
      <Compile Include="Assets\UnitySVG\Implement.cs" />
      <Compile Include="Assets\UnitySVG\Implementation\RenderingEngine\BasicType\SVGGArcAbs.cs" />

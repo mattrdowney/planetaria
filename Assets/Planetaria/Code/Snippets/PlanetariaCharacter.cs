@@ -11,6 +11,11 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
         OnBlockEnter.data = on_block_enter;
         OnBlockExit.data = on_block_exit;
         transform.position = new NormalizedSphericalCoordinates(Mathf.PI/2 + 0.06f, Mathf.PI/2 + .01f);
+
+        for (int sequence_number = 0; sequence_number < 1000; ++sequence_number)
+        {
+            Debug.DrawRay(ProceduralPacking.sphere((uint)sequence_number), Vector3.up, Color.yellow, 10f);
+        }
     }
 
     protected override void OnDestruction()

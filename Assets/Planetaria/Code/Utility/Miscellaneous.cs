@@ -64,6 +64,17 @@ namespace Planetaria
             return new optional<string>();
         }
 
+        /// <summary>
+        /// Inspector - Checks if bit is set in integer.
+        /// </summary>
+        /// <param name="value">The integer value to be read as binary.</param>
+        /// <param name="bit_index">The index of the bit index (i.e. [0,31]).</param>
+        /// <returns>True if bit is set; false otherwise.</returns>
+        public static bool is_bit_set(int value, int bit_index)
+        {
+            return (value & (1 << bit_index)) != 0;
+        }
+
 #if UNITY_EDITOR
         /// <summary>
         /// Mutator (Operating System level) - Writes (or overwrites!) the file at location "file" with the string "text_contents". 

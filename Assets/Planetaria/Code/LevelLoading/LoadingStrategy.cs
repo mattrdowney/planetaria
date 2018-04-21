@@ -4,6 +4,8 @@ namespace Planetaria
 {
     public abstract class LoadingStrategy
     {
+        // TODO: destructor-like behavior (Finalize won't cut it).
+
         /// <summary>
         /// Inspector - Gets the progress on the level loading.
         /// </summary>
@@ -12,18 +14,30 @@ namespace Planetaria
         public abstract float fraction_loaded(int level_index);
 
         /// <summary>
-        /// Mutator - Starts loading the level (and--if necessary--unloads other levels).
+        /// Mutator - Starts loading the level in the background if possible (and--if necessary--unloads other levels).
         /// </summary>
         /// <param name="level_index">The index of the level that will be loaded. (Should match Unity level index.)</param>
-        public abstract void request_level(int level_index);
+        /// <param name="priority">Higher priority levels are loaded sooner and kept longer.</param>
+        public abstract void request_level(int level_index, float priority);
 
         /// <summary>
-        /// Inspector - The center point of the given level_index where objects should be placed.
+        /// Mutator - Starts loading the level in the background if possible (and--if necessary--unloads other levels).
         /// </summary>
-        /// <param name="level_index">The index of the level that will be focused in. (Should match Unity level index.)</param>
-        public abstract Vector3 center(int level_index);
+        /// <param name="level_index">The index of the level that will be loaded. (Should match Unity level index.)</param>
+        public void request_level(int level_index)
+        {
+            request_level(level_index, Time.time);
+        }
 
-        // A footnote regarding graphics loading: until this point I planned on doing a "camera shutter blink to load in/out levels, but I will probably implement two versions:
+        /// <summary>
+        /// Mutator - Activates the level (and unloads other levels if necessary).
+        /// </summary>
+        /// <param name="level_index">The index of the level that will be loaded. (Should match Unity level index.)</param>
+        public abstract void activate_level(int level_index);
+
+
+
+        // TODO: A footnote regarding graphics loading: until this point I planned on doing a "camera shutter blink to load in/out levels, but I will probably implement two versions:
         // 1) camera shutter blink (for casual players).
         // 2) hexagonal shutter blink (for people that hate themselves).
     }

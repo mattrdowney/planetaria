@@ -3,38 +3,31 @@ using UnityEngine.SceneManagement;
 
 namespace Planetaria
 {
-    public class BasicLoadingStrategy : LoadingStrategy
+    public class SingleLoadingStrategy : LoadingStrategy
     {
         /// <summary>
         /// Constructor
         /// </summary>
-        public BasicLoadingStrategy()
+        public SingleLoadingStrategy()
         {
-            for (int level_index = 0; level_index < SceneManager.sceneCountInBuildSettings; ++level_index) // FIXME: This should NOT load Menu Screen and other GUI levels
-            {
-                // FIXME: load
-            }
         }
 
         /// <summary>
-        /// Inspector - Return 100% loaded, since the basic loader loads all levels in Awake.
+        /// Inspector - Return one if scene is active or zero otherwise.
         /// </summary>
         /// <param name="level_index">The index of the level that would have been loaded. (Should match Unity level index.)</param>
-        /// <returns>1, meaning 100% loaded.</returns>
+        /// <returns>return 1 if scene is active, meaning 100% loaded; or 0 for 0% loaded otherwise.</returns>
         public override float fraction_loaded(int level_index)
         {
-            // CONSIDER: invalid indices return 0
-            return 1;
+            return SceneManager.GetActiveScene().buildIndex == level_index ? 1 : 0;
         }
 
         /// <summary>
-        /// Inspector - Since all levels are loaded, do nothing.
+        /// Inspector - Since only one level can be loaded, do nothing (cannot pre-load)
         /// </summary>
         /// <param name="level_index">The index of the level that would have been loaded. (Should match Unity level index.)</param>
         /// <param name="priority">Higher priority levels are loaded sooner and kept longer.</param>
-        public override void request_level(int level_index, float priority)
-        {
-        }
+        public override void request_level(int level_index, float priority) { }
 
         /// <summary>
         /// Mutator - Activates the level if necessary (and--if necessary--unloads other levels).
