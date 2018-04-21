@@ -8,11 +8,11 @@ namespace Planetaria
     public class FieldEditor : Editor
     {
         Field field;
-        PlanetariaTransform transform; // TODO: make fields relative (for moving fields)
+        // TODO: make fields relative (for moving fields)
 
         private void Awake()
         {
-            List<Plane> plane_list = field.get_plane_list();
+            //List<Plane> plane_list = field.get_plane_list(); // TODO: implement
 
             //for all planes...
             //  PlanetariaIntersection.circle_circle_intersection(

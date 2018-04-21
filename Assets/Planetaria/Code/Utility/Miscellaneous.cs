@@ -19,6 +19,19 @@ namespace Planetaria
            return boolean_list.Count(is_true => is_true);
         }
 
+        public static int power(int base_, int exponent)
+        {
+            if (exponent <= 0)
+            {
+                return 1;
+            }
+            if (is_bit_set(exponent, 0)) // odd number
+            {
+                return power(base_, exponent - 1);
+            }
+            return power(base_, exponent / 2) * power(base_, exponent / 2); // even
+        }
+
         public static optional<Texture2D> fetch_image(string image_file)
         {
             optional<Texture2D> texture = new optional<Texture2D>();

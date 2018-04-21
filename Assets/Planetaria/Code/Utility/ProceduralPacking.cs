@@ -1,32 +1,22 @@
 ﻿using UnityEngine;
-using Exception;
 
 namespace Planetaria
 {
     public static class ProceduralPacking
     {
         /// <summary>
-        /// Inspector - The 3D location of the nth sphere in a procedural dense sphere pack.
-        /// </summary>
-        /// <param name="linear_index">The generator index.</param>
-        /// <param name="diameter">The diameter (scale) of the sphere. Default: 2</param>
-        public static Vector3 sphere(uint linear_index, float diameter = 2)
-        {
-            return cube(linear_index, diameter); // FIXME:
-        }
-
-        /// <summary>
         /// Inspector - The 3D location of the nth cube in a procedural block.
         /// </summary>
         /// <param name="linear_index">The generator index.</param>
-        /// <param name="scale">The size of the cube. Default: 1</param>
-        public static Vector3 cube(uint linear_index, float scale = 1)
+        /// <param name="scale">The size of the cube.</param>
+        public static Vector3 cube(int linear_index, float scale = 1)
         {
-            uint octant = linear_index / 8;
+            linear_index = Mathf.Abs(linear_index);
+            int octant = linear_index / Miscellaneous.power(2, 3);
             Vector3 result = cube_octant(octant, scale);
             for (int dimension = 0; dimension < 3; ++dimension)
             {
-                if (Miscellaneous.is_bit_set((int)linear_index, dimension))
+                if (Miscellaneous.is_bit_set(linear_index, dimension))
                 {
                     Vector3 mirror = Vector3.zero;
                     mirror[dimension] = 1;
@@ -40,8 +30,8 @@ namespace Planetaria
         /// Inspector - The 3D location of the nth cube in a procedural octant of a block.
         /// </summary>
         /// <param name="linear_index">The generator index.</param>
-        /// <param name="scale">The size of the cube. Default: 1</param>
-        public static Vector3 cube_octant(uint octant_index, float scale = 1)
+        /// <param name="scale">The size of the cube.</param>
+        private static Vector3 cube_octant(int octant_index, float scale = 1)
         {
             Vector3 result = Vector3.one*(scale/2);
             float recursive_scale = scale;
@@ -49,7 +39,7 @@ namespace Planetaria
             {
                 for (int dimension = 0; dimension < 3; ++dimension)
                 {
-                    if (Miscellaneous.is_bit_set((int)octant_index, dimension))
+                    if (Miscellaneous.is_bit_set(octant_index, dimension))
                     {
                         Vector3 shift = Vector3.zero;
                         shift[dimension] = recursive_scale;
@@ -57,7 +47,7 @@ namespace Planetaria
                     }
                 }
                 recursive_scale *= 2;
-                octant_index /= 8;
+                octant_index /= Miscellaneous.power(2, 3);
             }
 
             return result;

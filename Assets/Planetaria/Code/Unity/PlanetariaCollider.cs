@@ -125,7 +125,7 @@ namespace Planetaria
                                 Vector3 position = planetaria_transform.position.data;
                                 if (block.data.is_dynamic)
                                 {
-                                    position = Quaternion.Inverse(block.data.transform.rotation) * position;
+                                    position = Quaternion.Inverse(block.data.gameObject.transform.rotation) * position;
                                 }
                                 if (arc.exists && arc.data.contains(position, planetaria_transform.scale/2))
                                 {

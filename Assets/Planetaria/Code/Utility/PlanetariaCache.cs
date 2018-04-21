@@ -14,7 +14,7 @@ namespace Planetaria
                     if (arc.exists)
                     {
                         GameObject game_object = new GameObject("Planetaria Collider");
-                        game_object.transform.parent = block.transform;
+                        game_object.transform.parent = block.gameObject.transform;
                         game_object.hideFlags = HideFlags.DontSave;
 
                         PlanetariaCollider collider = game_object.AddComponent<PlanetariaCollider>();

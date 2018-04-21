@@ -74,7 +74,6 @@ namespace Planetaria
         {
             active = true;
             generate_arcs();
-            effects = this.GetComponents<BlockActor>();
             transform = this.GetOrAddComponent<PlanetariaTransform>();
             PlanetariaCache.cache(this);
         }
@@ -91,12 +90,11 @@ namespace Planetaria
         
         public bool is_dynamic;
         public bool is_platform;
-        public PlanetariaPhysicMaterial material = fallback;
-        [SerializeField] private List<GeospatialCurve> curve_list = new List<GeospatialCurve>();
-        [System.NonSerialized] private List<optional<Arc>> arc_list = new List<optional<Arc>>();
-        [System.NonSerialized] private BlockActor[] effects; // previously optional<BlockActor>
-        [System.NonSerialized] private new PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
         public static PlanetariaPhysicMaterial fallback;
+        public PlanetariaPhysicMaterial material = fallback;
+        [System.NonSerialized] public new PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
+        [System.NonSerialized] private List<optional<Arc>> arc_list = new List<optional<Arc>>();
+        [SerializeField] private List<GeospatialCurve> curve_list = new List<GeospatialCurve>();
     }
 }
 

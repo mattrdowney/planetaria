@@ -13,12 +13,10 @@ namespace Planetaria
         /// Special note: the .ssvg MUST be convex or all behavior is undefined.
         /// </param>
         /// <returns>The GameObject reference with an attached Field component.</returns>
-        public static GameObject CreateZone(string ssvg_file) // TODO: add convex check asserts.
+        public static GameObject field(string ssvg_file) // TODO: add convex check asserts.
         {
             GameObject result = new GameObject();
-            Field field = result.AddComponent<Field>();
-
-            field.plane_list = new List<Plane>();
+            //Field field = result.AddComponent<Field>(); // FIXME: implement
 
             return result;
         }
@@ -37,37 +35,26 @@ namespace Planetaria
                 return false;
             }
 
-            foreach (Plane plane in plane_list)
+            /*foreach (Plane plane in plane_list)
             {
                 if (plane.GetSide(position))
                 {
                     return false;
                 }
-            }
+            }*/
 
             return true;
         }
 
-        /// <summary>
-        /// Mutable? - 
-        /// </summary>
-        /// <returns>The list of planes that make the field.</returns>
-        public List<Plane> get_plane_list()
-        {
-            return plane_list;
-        }
-
         private void Start()
         {
-            effects = this.GetComponents<FieldActor>(); // TODO: check null is properly set
             transform = this.GetOrAddComponent<PlanetariaTransform>();
         }
 
         public bool active { get; set; }
-    
-        private FieldActor[] effects; // previously FieldActor
-        private List<Plane> plane_list; // FIXME: System.Collection.Immutable.ImmutableArray<Plane> not supported in current Unity version?
-        [SerializeField] private new PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
+        
+        // TODO: implement - List<Plane> became PlanetariaCollider
+        [SerializeField] public new PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
     }
 }
 
