@@ -2,27 +2,27 @@
 
 namespace Planetaria
 {
-    public class LevelLoader : MonoBehaviour
+    public class Door : PlanetariaMonoBehaviour
     {
-        public static LoadingStrategy loader // CONSIDER: set: are levels are properly reloaded?
+        public int target_level = 1;
+
+        protected override void OnConstruction()
         {
-            set
-            {
-                internal_loader = value;
-            }
-            get
-            {
-                if (!internal_loader.exists)
-                {
-                    loader = new SingleLoadingStrategy();
-                }
-                return internal_loader.data;
-            }
+            OnFieldStay.data = on_field_stay;
         }
 
-        private static optional<LoadingStrategy> internal_loader;
+        protected override void OnDestruction()
+        {
+            
+        }
 
-        private int initial_level = 0;
+        private void on_field_stay(PlanetariaCollider collider)
+        {
+            if (Input.GetAxis("Vertical") == 1)
+            {
+                LevelLoader.loader.activate_level(target_level);
+            }
+        }
     }
 }
 

@@ -49,7 +49,6 @@ namespace Planetaria
                 recursive_scale *= 2;
                 octant_index /= Miscellaneous.power(2, 3);
             }
-
             return result;
         }
     }
