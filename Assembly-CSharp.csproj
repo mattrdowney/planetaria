@@ -198,16 +198,29 @@
      <Compile Include="Assets\UnitySVG\Implementation\XMLParser\SmallXmlParser.cs" />
      <Compile Include="Assets\UnitySVG\Implementation\XMLParser\SVGParser.cs" />
      <Compile Include="Assets\UnitySVG\Interface\RenderingEngine\ISVGPathDraw.cs" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_545A16A2.txt" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\-1\-1_D1D991C7.txt" />
      <None Include="Assets\Planetaria\Code\Shaders\TransparentUnlit.shader" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_C243E8A7.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_1E9E7D4.txt" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_F5001B9C.txt" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_CEA940AB.txt" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_4DD17707.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_39F9777D.txt" />
      <None Include="Assets\Planetaria\Code\Shaders\TransparentAlways.shader" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_A3670D4A.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_BEE6A160.txt" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_D591D3B9.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_9EC7A06B.txt" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\-1\-1_33562CC3.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_4EE117AA.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_F0F88602.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_6C4415E.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_4A208BB2.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_FE6E4600.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_101A36FF.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_B830432E.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_6D2C182D.txt" />
  <Reference Include="UnityEditor.StandardEvents">
  <HintPath>C:/Users/Fujitora/Dropbox/Planetaria/Planetaria/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
  </Reference>

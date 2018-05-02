@@ -28,7 +28,7 @@ namespace Planetaria
         {
             GameObject shape = Block.block(curves);
             Block block = shape.GetComponent<Block>();
-            optional<TextAsset> svg_file = BlockRenderer.render(block);
+            optional<TextAsset> svg_file = BlockRenderer.render(block, edges == 2 ? 1 : 0); // lines can't have zero thickness
             if (svg_file.exists)
             {
                 //PlanetariaRenderer renderer = shape.AddComponent<PlanetRenderer>();
@@ -39,9 +39,9 @@ namespace Planetaria
 
         private void create_equilateral()
         {
-            if (edges > 0)
+            if (edges > 0 && center != first_vertex)
             {
-                if (edges >= 2 && center != first_vertex)
+                if (edges >= 2)
                 {
                     Vector3 forward = center.normalized;
                     Vector3 right = Vector3.ProjectOnPlane(first_vertex, forward).normalized;
@@ -71,6 +71,25 @@ namespace Planetaria
                 }
                 else // create a circle with given radius
                 {
+                    arcs.Clear();
+                    curves.Clear();
+
+                    // first_vertex is circle start
+                    Vector3 right = Vector3.Cross(center, first_vertex).normalized;
+                    Vector3 mirror = Vector3.Cross(center, right).normalized;
+                    Vector3 hidden_vertex = Vector3.Reflect(first_vertex, mirror).normalized; // opposite end of circle start
+
+                    Vector3 first_up = Vector3.Cross(first_vertex, right).normalized;
+                    Vector3 first_tangent = -Vector3.Cross(first_up, first_vertex).normalized;
+                    
+                    Vector3 second_up = -Vector3.Cross(hidden_vertex, right).normalized;
+                    Vector3 second_tangent = -Vector3.Cross(second_up, hidden_vertex).normalized;
+
+                    arcs.Add(Arc.curve(first_vertex, first_tangent, hidden_vertex)); // draw first semi-circle
+                    curves.Add(GeospatialCurve.curve(first_vertex, first_tangent));
+
+                    arcs.Add(Arc.curve(hidden_vertex, second_tangent, first_vertex)); // draw second semi-circle
+                    curves.Add(GeospatialCurve.curve(hidden_vertex, second_tangent));
 
                 }
             }

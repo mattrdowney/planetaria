@@ -43,9 +43,13 @@ namespace Planetaria
             return write_footer(name, true);
         }
 
-        public static void end_shape(Color32 color)
+        public static void end_shape(Color32 color, float width)
         {
-            writer.Write(" Z\" fill=\"rgb(" + color.r + "," + color.g + "," + color.b + ")\"/>\n");
+            writer.Write(" Z\" "); // Close shape with direct line from end to beginning
+            writer.Write("stroke-width=\"" + width + "\" "); // line thickness
+            writer.Write("stroke=\"rgb(" + color.r + "," + color.g + "," + color.b + ")\" "); // line color
+            writer.Write("fill =\"rgb(" + color.r + "," + color.g + "," + color.b + ")\" "); // fill color
+            writer.Write("/>\n"); // Path block finished
         }
 
         public static void write_header(string identifier)

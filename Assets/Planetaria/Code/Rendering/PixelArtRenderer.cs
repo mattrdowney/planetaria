@@ -59,7 +59,7 @@ namespace Planetaria
                 ShapeRenderer.draw_arc(right_arcs[columns-1], 0, 1);
                 ShapeRenderer.draw_arc(lower_arcs[rows-1], 0, 1);
                 ShapeRenderer.draw_arc(left_arcs[0], 0, 1);
-                VectorGraphicsWriter.end_shape(Color.black);
+                VectorGraphicsWriter.end_shape(Color.black, 0);
 
                 for (int row = 0; row < rows; ++row)
                 {
@@ -74,7 +74,7 @@ namespace Planetaria
                         ShapeRenderer.draw_arc(right_arcs[column], prior_row, later_row); // right column
                         ShapeRenderer.draw_arc(lower_arcs[row], (1-later_column), (1-prior_column)); // lower row
                         ShapeRenderer.draw_arc(left_arcs[column], (1-later_row), (1-prior_row)); // left column
-                        VectorGraphicsWriter.end_shape(pixel_buffer[columns*row + column]);
+                        VectorGraphicsWriter.end_shape(pixel_buffer[columns*row + column], 0);
                     }
                 }
             }

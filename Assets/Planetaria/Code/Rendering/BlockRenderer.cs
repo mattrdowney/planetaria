@@ -7,7 +7,7 @@ namespace Planetaria
     [ExecuteInEditMode]
     public static class BlockRenderer
     {
-        public static optional<TextAsset> render(Block block)
+        public static optional<TextAsset> render(Block block, float width)
         {
             VectorGraphicsWriter.begin_canvas();
             VectorGraphicsWriter.begin_shape();
@@ -19,7 +19,7 @@ namespace Planetaria
                 ShapeRenderer.partition_arc(arc_iterator.arc, arc_iterator.begin, arc_iterator.end);
             }
 
-            VectorGraphicsWriter.end_shape(Color.black);
+            VectorGraphicsWriter.end_shape(Color.black, width);
             return VectorGraphicsWriter.end_canvas();
         }
     }

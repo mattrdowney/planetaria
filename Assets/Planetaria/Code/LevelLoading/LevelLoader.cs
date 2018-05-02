@@ -4,7 +4,7 @@ namespace Planetaria
 {
     public class LevelLoader : MonoBehaviour
     {
-        public static LoadingStrategy loader // CONSIDER: set: are levels are properly reloaded?
+        public static LoadingStrategy loader // CONSIDER: set: are levels properly reloaded?
         {
             set
             {
@@ -21,8 +21,6 @@ namespace Planetaria
         }
 
         private static optional<LoadingStrategy> internal_loader;
-
-        private int initial_level = 0;
     }
 }
 

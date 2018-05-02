@@ -60,7 +60,7 @@ namespace Planetaria
 
             GameObject shape = Block.block(curves);
             Block block = shape.GetComponent<Block>();
-            optional<TextAsset> svg_file = BlockRenderer.render(block);
+            optional<TextAsset> svg_file = BlockRenderer.render(block, 0);
             if (svg_file.exists)
             {
                 //PlanetariaRenderer renderer = shape.AddComponent<PlanetRenderer>();
