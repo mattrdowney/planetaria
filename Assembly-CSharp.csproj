@@ -202,6 +202,7 @@
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\-1\-1_D1D991C7.txt" />
      <None Include="Assets\Planetaria\Code\Shaders\TransparentUnlit.shader" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_C243E8A7.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_2DC8916F.txt" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_1E9E7D4.txt" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_F5001B9C.txt" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_CEA940AB.txt" />

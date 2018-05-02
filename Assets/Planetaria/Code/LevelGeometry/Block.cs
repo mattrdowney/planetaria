@@ -17,6 +17,7 @@ namespace Planetaria
             Block block = result.AddComponent<Block>();
             block.curve_list = curves;
             block.generate_arcs();
+            block.ignore.Add(block);
 
             return result;
         }
@@ -95,6 +96,7 @@ namespace Planetaria
         [System.NonSerialized] public new PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
         [System.NonSerialized] private List<optional<Arc>> arc_list = new List<optional<Arc>>();
         [SerializeField] private List<GeospatialCurve> curve_list = new List<GeospatialCurve>();
+        [SerializeField] public List<Block> ignore = new List<Block>();
     }
 }
 

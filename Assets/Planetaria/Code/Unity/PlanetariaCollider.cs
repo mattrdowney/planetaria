@@ -119,7 +119,7 @@ namespace Planetaria
                         {
                             optional<Block> block = PlanetariaCache.block_cache.get(sphere_collider.data);
                             if (block.exists &&
-                                    (!observer.colliding() || observer.collisions()[0].block == block.data)) // Is the block a duplicate of the one we are colliding with? // FIXME: private API exposure (optimizes at a cost of readability)
+                                    (!observer.colliding() || !observer.collisions()[0].block.ignore.Contains(block.data))) // Should we ignore the new block? // FIXME: private API exposure (optimizes at a cost of readability)
                             {
                                 optional<Arc> arc = PlanetariaCache.arc_cache.get(sphere_collider.data);
                                 Vector3 position = planetaria_transform.position.data;
