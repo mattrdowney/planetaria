@@ -66,8 +66,9 @@ namespace Planetaria
         /// <returns>A Sphere that can be used as a collider.</returns>
         public static Sphere ideal_collider(optional<Transform> transformation, Plane plane)
         {
-            float tangent = Mathf.Tan(Mathf.Acos(plane.distance));
-            float secant = 1/plane.distance;
+            float distance = extrude_distance(plane, Precision.collider_extrusion);
+            float tangent = Mathf.Tan(Mathf.Acos(distance));
+            float secant = 1/distance;
 
             // This collider has the special property that all sphere colliders will only collide if the planetaria sphere is intersecting
             // This is because the sphere is formed at the focal point of a cone from the planetaria sphere's tangent lines.
@@ -111,10 +112,10 @@ namespace Planetaria
             // axial_distance = cos(left_angle) + 2cos(arcsin(sin(left_angle)/2))
             // which, according to Wolfram Alpha is: cos(left_angle) + sqrt(sin2(left_angle) + 3)
 
-            // FIXME: collisions can (theoretically) be missed without Precision.collider_extrusion;
+            // TODO: check: collisions can (theoretically) be missed without Precision.collider_extrusion;
             // In practice, floating point errors aren't an issue because there are two colliders (neither of which is size zero).
 
-            float x = plane.distance;
+            float x = extrude_distance(plane, Precision.collider_extrusion);
             float axial_distance = x + Mathf.Sqrt(x*x + 3);
             return new Sphere(transformation, plane.normal*axial_distance, 2);
         }
@@ -147,12 +148,17 @@ namespace Planetaria
         {
             if (plane.distance < -1f + Precision.threshold)
             {
-                return new Sphere[1] { Sphere.ideal_collider(transformation, plane) };
+                return new Sphere[1] { Sphere.ideal_collider(transformation, plane.flipped) };
             }
             Sphere[] colliders = new Sphere[2];
             colliders[0] = Sphere.uniform_collider(transformation, plane);
-            colliders[1] = Sphere.uniform_collider(transformation, new Plane(-plane.normal, -plane.distance));
+            colliders[1] = Sphere.uniform_collider(transformation, plane.flipped);
             return colliders;
+        }
+
+        private static float extrude_distance(Plane plane, float extrusion)
+        {
+            return Mathf.Cos(Mathf.Acos(Mathf.Clamp(plane.distance,-1,+1))+extrusion);
         }
 
         private Sphere(optional<Transform> transformation, Vector3 center, float radius)
