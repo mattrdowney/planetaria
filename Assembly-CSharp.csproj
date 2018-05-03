@@ -199,6 +199,7 @@
      <Compile Include="Assets\UnitySVG\Interface\RenderingEngine\ISVGPathDraw.cs" />
      <None Include="Assets\Planetaria\Code\Shaders\TransparentUnlit.shader" />
      <None Include="Assets\Planetaria\Code\Shaders\TransparentAlways.shader" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_66BAD413.txt" />
  <Reference Include="UnityEditor.StandardEvents">
  <HintPath>C:/Users/Fujitora/Dropbox/Planetaria/Planetaria/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
  </Reference>

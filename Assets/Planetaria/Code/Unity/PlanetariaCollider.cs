@@ -17,7 +17,7 @@ namespace Planetaria
                 scale_variable = value;
                 if (scalable)
                 {
-                    colliders = new Sphere[] { Sphere.single_collider(internal_transform, Vector3.forward, value/2) };
+                    colliders = new Sphere[] { Sphere.ideal_collider(internal_transform, new Plane(Vector3.forward, Mathf.Cos(value/2))) };
                     set_internal_collider(colliders[0]);
                     internal_collider.center = Vector3.forward * internal_collider.center.magnitude;
                 }

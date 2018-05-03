@@ -5,42 +5,6 @@ namespace Planetaria
 {
     public class Sphere
     {
-        /// <summary>
-        /// The intersection of two spheres is a circle, and adding a third sphere generates a set of colliders that define an arc
-        /// </summary>
-        /// <param name="transformation">For static objects no transform is better, otherwise the Transform-relative movement will be considered for dynamic objects.</param>
-        /// <param name="arc">The arc for which the colliders will be generated.</param>
-        /// <returns>A set of three Spheres that define an arc collision.</returns>
-        public static Sphere[] arc_collider(optional<Transform> transformation, Arc arc) // FIXME: delegation, remove redundancy
-        {
-            GeospatialCircle circle = arc.circle();
-            Sphere[] boundary_colliders = boundary_collider(transformation, arc);
-            Sphere[] circle_colliders = double_collider(transformation, circle.center, circle.radius);
-            Sphere[] colliders = new Sphere[boundary_colliders.Length + circle_colliders.Length];
-            Array.Copy(circle_colliders, colliders, circle_colliders.Length);
-            Array.Copy(boundary_colliders, 0, colliders, circle_colliders.Length, boundary_colliders.Length);
-            return colliders;
-        }
-
-        public static Sphere single_collider(optional<Transform> transformation, Plane plane)
-        {
-            return uniform_collider(transformation, plane.normal, Mathf.Asin(plane.distance)); // FIXME: incorrect
-        }
-
-        public static Sphere single_collider(optional<Transform> transformation, Vector3 axis, float planetaria_radius)
-        {
-            planetaria_radius += Precision.collider_extrusion;
-
-            float tangent = Mathf.Tan(planetaria_radius);
-            float secant = 1/Mathf.Cos(planetaria_radius);
-
-            // This collider has the special property that all sphere colliders will only collide if the planetaria sphere is intersecting
-            // This is because the sphere is formed at the focal point of a cone from the planetaria sphere's tangent lines.
-            return new Sphere(transformation, axis*secant, tangent);
-        }
-
-        public float radius { get; private set; }
-
         public Vector3 center
         {
             get
@@ -76,50 +40,47 @@ namespace Planetaria
             }
         }
 
-        private static Sphere[] boundary_collider(optional<Transform> transformation, Arc arc)
+        public float radius { get; private set; }
+
+        /// <summary>
+        /// The intersection of two spheres is a circle, and adding a third sphere generates a set of colliders that define an arc
+        /// </summary>
+        /// <param name="transformation">For static objects no transform is better, otherwise the Transform-relative movement will be considered for dynamic objects.</param>
+        /// <param name="arc">The arc for which the colliders will be generated.</param>
+        /// <returns>A set of three Spheres that define an arc collision.</returns>
+        public static Sphere[] arc_collider(optional<Transform> transformation, Arc arc) // FIXME: delegation, remove redundancy
         {
-            Sphere result;
-            Vector3 corner = arc.position(0);
-            Vector3 center = arc.position(arc.angle()/2);
-
-            float real_angle = Vector3.Angle(center, corner) * Mathf.Deg2Rad;
-            if (real_angle < Precision.max_sphere_radius) // use a r<=1 sphere
-            {
-                result = single_collider(transformation, center, real_angle);
-            }
-            else // use r=2 sphere
-            {
-                result = uniform_collider(transformation, center, real_angle);
-            }
-
-            if (result.radius < Precision.threshold)
-            {
-                return new Sphere[0];
-            }
-            return new Sphere[1] { result };
-        }
-
-        private static Sphere[] double_collider(optional<Transform> transformation, Vector3 axis, float planetaria_radius)
-        {
-            planetaria_radius = Mathf.Abs(planetaria_radius);
-            if (planetaria_radius < Precision.threshold)
-            {
-                return new Sphere[1] { Sphere.single_collider(transformation, axis, planetaria_radius) };
-            }
-            Sphere[] colliders = new Sphere[2];
-            colliders[0] = Sphere.uniform_collider(transformation, axis, planetaria_radius);
-            colliders[1] = Sphere.uniform_collider(transformation, axis, planetaria_radius, true);
+            Sphere[] boundary_colliders = boundary_collider(transformation, arc);
+            Sphere[] elevation_colliders = elevation_collider(transformation, arc.plane());
+            Sphere[] colliders = new Sphere[boundary_colliders.Length + elevation_colliders.Length];
+            Array.Copy(elevation_colliders, colliders, elevation_colliders.Length);
+            Array.Copy(boundary_colliders, 0, colliders, elevation_colliders.Length, boundary_colliders.Length);
             return colliders;
+        }
+        
+        /// <summary>
+        /// Constructor - envelops a region using focal point of plane (perfect fit)
+        /// </summary>
+        /// <param name="transformation">An optional Transform that will be used to shift the center (if moved).</param>
+        /// <param name="plane">The plane representing where the collider begins. Everything along the normal will be encapsulated.</param>
+        /// <returns>A Sphere that can be used as a collider.</returns>
+        public static Sphere ideal_collider(optional<Transform> transformation, Plane plane)
+        {
+            float tangent = Mathf.Tan(Mathf.Acos(plane.distance));
+            float secant = 1/plane.distance;
+
+            // This collider has the special property that all sphere colliders will only collide if the planetaria sphere is intersecting
+            // This is because the sphere is formed at the focal point of a cone from the planetaria sphere's tangent lines.
+            return new Sphere(transformation, plane.normal*secant, tangent);
         }
 
         /// <summary>
-        /// The Sphere collider that envelops a axial "point" with a given planetaria_radius.
+        /// Constructor - envelops a region with a size-2 Sphere.
         /// </summary>
         /// <param name="transformation">An optional Transform that will be used to shift the center (if moved).</param>
-        /// <param name="axis">The center of the circle (both a point and an axis).</param>
-        /// <param name="planetaria_radius">The angle along the surface from circle center to circle boundary.</param>
+        /// <param name="plane">The plane representing where the collider begins. Everything along the normal will be encapsulated.</param>
         /// <returns>A Sphere that can be used as a collider.</returns>
-        private static Sphere uniform_collider(optional<Transform> transformation, Vector3 axis, float planetaria_radius, bool northern_hemisphere = false)
+        public static Sphere uniform_collider(optional<Transform> transformation, Plane plane)
         {
             // Background:
             // imagine two spheres:
@@ -150,13 +111,48 @@ namespace Planetaria
             // axial_distance = cos(left_angle) + 2cos(arcsin(sin(left_angle)/2))
             // which, according to Wolfram Alpha is: cos(left_angle) + sqrt(sin2(left_angle) + 3)
 
-            int hemisphere = (northern_hemisphere ? -1 : +1);
+            // FIXME: collisions can (theoretically) be missed without Precision.collider_extrusion;
+            // In practice, floating point errors aren't an issue because there are two colliders (neither of which is size zero).
 
-            planetaria_radius += hemisphere*Precision.collider_extrusion; // Collisions can theoretically (and practically) be missed due to rounding errors.
+            float x = plane.distance;
+            float axial_distance = x + Mathf.Sqrt(x*x + 3);
+            return new Sphere(transformation, plane.normal*axial_distance, 2);
+        }
 
-            float x = Mathf.Cos(planetaria_radius);
-            float axial_distance = x + hemisphere*Mathf.Sqrt(x*x + 3);
-            return new Sphere(transformation, axis*axial_distance, 2);
+        private static Sphere[] boundary_collider(optional<Transform> transformation, Arc arc)
+        {
+            Sphere result;
+            Vector3 corner = arc.position(0);
+            Vector3 center = arc.position(arc.angle()/2);
+            Plane plane = new Plane(center, Vector3.Dot(center,corner)); // create a plane centered at "center" that captures both corners (2nd implicitly)
+
+            float real_angle = Vector3.Angle(center, corner) * Mathf.Deg2Rad;
+            if (real_angle < Precision.max_sphere_radius) // use a r<=1 sphere
+            {
+                result = ideal_collider(transformation, plane);
+            }
+            else // use r=2 sphere
+            {
+                result = uniform_collider(transformation, plane);
+            }
+
+            if (result.radius < Precision.threshold)
+            {
+                return new Sphere[0];
+            }
+            return new Sphere[1] { result };
+        }
+
+        private static Sphere[] elevation_collider(optional<Transform> transformation, Plane plane)
+        {
+            if (plane.distance < -1f + Precision.threshold)
+            {
+                return new Sphere[1] { Sphere.ideal_collider(transformation, plane) };
+            }
+            Sphere[] colliders = new Sphere[2];
+            colliders[0] = Sphere.uniform_collider(transformation, plane);
+            colliders[1] = Sphere.uniform_collider(transformation, new Plane(-plane.normal, -plane.distance));
+            return colliders;
         }
 
         private Sphere(optional<Transform> transformation, Vector3 center, float radius)
