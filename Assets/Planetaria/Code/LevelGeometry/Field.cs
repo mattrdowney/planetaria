@@ -5,18 +5,11 @@ namespace Planetaria
 {
     public class Field : MonoBehaviour
     {   
-        /// <summary>
-        /// Constructor - Generates a field using a .ssvg file.
-        /// </summary>
-        /// <param name="ssvg_file">
-        /// The .ssvg (spherical scalable vector graphics) file that will generate the field.
-        /// Special note: the .ssvg MUST be convex or all behavior is undefined.
-        /// </param>
-        /// <returns>The GameObject reference with an attached Field component.</returns>
-        public static GameObject field(string ssvg_file) // TODO: add convex check asserts.
+        public static GameObject field(List<GeospatialCurve> curves) // TODO: add convex check asserts.
         {
-            GameObject result = new GameObject();
-            //Field field = result.AddComponent<Field>(); // FIXME: implement
+            GameObject result = new GameObject("Field");
+            Field field = result.AddComponent<Field>(); // FIXME: implement
+            field.curve_list = curves;
 
             return result;
         }
@@ -35,13 +28,7 @@ namespace Planetaria
                 return false;
             }
 
-            /*foreach (Plane plane in plane_list)
-            {
-                if (plane.GetSide(position))
-                {
-                    return false;
-                }
-            }*/
+            // likely redundant with PlanetariaCollider to do extra checks
 
             return true;
         }
@@ -49,12 +36,24 @@ namespace Planetaria
         private void Start()
         {
             transform = this.GetOrAddComponent<PlanetariaTransform>();
+            PlanetariaCache.cache(this);
+        }
+
+        private void OnDestroy()
+        {
+            PlanetariaCache.uncache(this);
+        }
+
+        public IEnumerable<GeospatialCurve> iterator()
+        {
+            return new List<GeospatialCurve>(curve_list);
         }
 
         public bool active { get; set; }
         
-        // TODO: implement - List<Plane> became PlanetariaCollider
-        [SerializeField] public new PlanetariaTransform transform; // TODO: make arcs relative (for moving platforms)
+        public bool is_dynamic;
+        [System.NonSerialized] public new PlanetariaTransform transform;
+        [SerializeField] private List<GeospatialCurve> curve_list = new List<GeospatialCurve>();
     }
 }
 
@@ -65,7 +64,6 @@ in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE

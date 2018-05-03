@@ -125,6 +125,16 @@ namespace Planetaria
         }
 
         /// <summary>
+        /// Inspector - Creates a plane that represents the floor (at given elevation).
+        /// </summary>
+        /// <param name="extrusion">The radius of the collider touching the floor.</param>
+        /// <returns>A plane representing the floor. Normal goes "up".</returns>
+        public Plane plane(float extrusion = 0)
+        {
+            return new Plane(center_axis, Mathf.Sin(arc_latitude + extrusion)); // TODO: verify
+        }
+
+        /// <summary>
         /// Inspector - Get the position at a particular angle.
         /// </summary>
         /// <param name="angle">The angle in radians along the arc.</param>

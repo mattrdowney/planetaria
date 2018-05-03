@@ -68,7 +68,7 @@ namespace Planetaria
         /// <param name="dividend">The element that will be used to calculate the remainder.</param>
         /// <param name="divisor">The interval upon which the dividend will be divided.</param>
         /// <returns>The remainder.</returns>
-        public static float modolo_using_euclidean_division(float dividend, float divisor)
+        public static float modolo_using_euclidean_division(float dividend, float divisor) // TODO: test/verify
         {
             divisor = Mathf.Abs(divisor);
 

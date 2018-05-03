@@ -15,24 +15,65 @@ namespace Planetaria
         {
             GeospatialCircle circle = arc.circle();
             Sphere[] boundary_colliders = boundary_collider(transformation, arc);
-            Sphere[] circle_colliders = circle_collider(transformation, circle.center, circle.radius);
+            Sphere[] circle_colliders = double_collider(transformation, circle.center, circle.radius);
             Sphere[] colliders = new Sphere[boundary_colliders.Length + circle_colliders.Length];
             Array.Copy(circle_colliders, colliders, circle_colliders.Length);
             Array.Copy(boundary_colliders, 0, colliders, circle_colliders.Length, boundary_colliders.Length);
             return colliders;
         }
 
-        private static Sphere[] circle_collider(optional<Transform> transformation, Vector3 axis, float planetaria_radius)
+        public static Sphere single_collider(optional<Transform> transformation, Plane plane)
         {
-            planetaria_radius = Mathf.Abs(planetaria_radius);
-            if (planetaria_radius < Precision.threshold)
+            return uniform_collider(transformation, plane.normal, Mathf.Asin(plane.distance)); // FIXME: incorrect
+        }
+
+        public static Sphere single_collider(optional<Transform> transformation, Vector3 axis, float planetaria_radius)
+        {
+            planetaria_radius += Precision.collider_extrusion;
+
+            float tangent = Mathf.Tan(planetaria_radius);
+            float secant = 1/Mathf.Cos(planetaria_radius);
+
+            // This collider has the special property that all sphere colliders will only collide if the planetaria sphere is intersecting
+            // This is because the sphere is formed at the focal point of a cone from the planetaria sphere's tangent lines.
+            return new Sphere(transformation, axis*secant, tangent);
+        }
+
+        public float radius { get; private set; }
+
+        public Vector3 center
+        {
+            get
             {
-                return new Sphere[1] { Sphere.filled_circle(transformation, axis, planetaria_radius) };
+                if (transformation.exists)
+                {
+                    if (transformation.data.rotation == cached_rotation)
+                    {
+                        return cached_center;
+                    }
+                    cached_rotation = transformation.data.rotation;
+                    // no need to adjust position if both objects are on the same Planetarium
+                    cached_center = /* transformation.position + */ cached_rotation * center_variable; // TODO: check if matrix multiplication or built-in function does this faster
+                    return cached_center;
+                }
+                return center_variable;
             }
-            Sphere[] colliders = new Sphere[2];
-            colliders[0] = Sphere.collider(transformation, axis, planetaria_radius);
-            colliders[1] = Sphere.collider(transformation, axis, planetaria_radius, true);
-            return colliders;
+            set
+            {
+                center_variable = value;
+            }
+        }
+
+        public Vector3 debug_center
+        {
+            get
+            {
+                if (transformation.exists)
+                {
+                    return transformation.data.position + transformation.data.rotation * center_variable;
+                }
+                return center_variable;
+            }
         }
 
         private static Sphere[] boundary_collider(optional<Transform> transformation, Arc arc)
@@ -44,11 +85,11 @@ namespace Planetaria
             float real_angle = Vector3.Angle(center, corner) * Mathf.Deg2Rad;
             if (real_angle < Precision.max_sphere_radius) // use a r<=1 sphere
             {
-                result = filled_circle(transformation, center, real_angle);
+                result = single_collider(transformation, center, real_angle);
             }
             else // use r=2 sphere
             {
-                result = collider(transformation, center, real_angle);
+                result = uniform_collider(transformation, center, real_angle);
             }
 
             if (result.radius < Precision.threshold)
@@ -58,6 +99,18 @@ namespace Planetaria
             return new Sphere[1] { result };
         }
 
+        private static Sphere[] double_collider(optional<Transform> transformation, Vector3 axis, float planetaria_radius)
+        {
+            planetaria_radius = Mathf.Abs(planetaria_radius);
+            if (planetaria_radius < Precision.threshold)
+            {
+                return new Sphere[1] { Sphere.single_collider(transformation, axis, planetaria_radius) };
+            }
+            Sphere[] colliders = new Sphere[2];
+            colliders[0] = Sphere.uniform_collider(transformation, axis, planetaria_radius);
+            colliders[1] = Sphere.uniform_collider(transformation, axis, planetaria_radius, true);
+            return colliders;
+        }
 
         /// <summary>
         /// The Sphere collider that envelops a axial "point" with a given planetaria_radius.
@@ -66,7 +119,7 @@ namespace Planetaria
         /// <param name="axis">The center of the circle (both a point and an axis).</param>
         /// <param name="planetaria_radius">The angle along the surface from circle center to circle boundary.</param>
         /// <returns>A Sphere that can be used as a collider.</returns>
-        private static Sphere collider(optional<Transform> transformation, Vector3 axis, float planetaria_radius, bool northern_hemisphere = false)
+        private static Sphere uniform_collider(optional<Transform> transformation, Vector3 axis, float planetaria_radius, bool northern_hemisphere = false)
         {
             // Background:
             // imagine two spheres:
@@ -104,53 +157,6 @@ namespace Planetaria
             float x = Mathf.Cos(planetaria_radius);
             float axial_distance = x + hemisphere*Mathf.Sqrt(x*x + 3);
             return new Sphere(transformation, axis*axial_distance, 2);
-        }
-
-        public static Sphere filled_circle(optional<Transform> transformation, Vector3 axis, float planetaria_radius)
-        {
-            planetaria_radius += Precision.collider_extrusion;
-
-            float tangent = Mathf.Tan(planetaria_radius);
-            float secant = 1/Mathf.Cos(planetaria_radius);
-
-            // This collider has the special property that all sphere colliders will only collide if the planetaria sphere is intersecting
-            // This is because the sphere is formed at the focal point of a cone from the planetaria sphere's tangent lines.
-            return new Sphere(transformation, axis*secant, tangent);
-        }
-
-        public float radius { get; private set; }
-        public Vector3 center
-        {
-            get
-            {
-                if (transformation.exists)
-                {
-                    if (transformation.data.rotation == cached_rotation)
-                    {
-                        return cached_center;
-                    }
-                    cached_rotation = transformation.data.rotation;
-                    // no need to adjust position if both objects are on the same Planetarium
-                    cached_center = /* transformation.position + */ cached_rotation * center_variable; // TODO: check if matrix multiplication or built-in function does this faster
-                    return cached_center;
-                }
-                return center_variable;
-            }
-            set
-            {
-                center_variable = value;
-            }
-        }
-        public Vector3 debug_center
-        {
-            get
-            {
-                if (transformation.exists)
-                {
-                    return transformation.data.position + transformation.data.rotation * center_variable;
-                }
-                return center_variable;
-            }
         }
 
         private Sphere(optional<Transform> transformation, Vector3 center, float radius)
