@@ -196,10 +196,15 @@
      <Compile Include="Assets\UnitySVG\Implementation\XMLParser\SmallXmlParser.cs" />
      <Compile Include="Assets\UnitySVG\Implementation\XMLParser\SVGParser.cs" />
      <Compile Include="Assets\UnitySVG\Interface\RenderingEngine\ISVGPathDraw.cs" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_C720137C.txt" />
      <None Include="Assets\Planetaria\Code\Shaders\TransparentUnlit.shader" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_24F0DD1D.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_640D9B35.txt" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_75A3A64B.txt" />
      <None Include="Assets\Planetaria\Code\Shaders\TransparentAlways.shader" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\-1\-1_A7FE9AC1.txt" />
      <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_66BAD413.txt" />
+     <None Include="Assets\Planetaria\Art\VectorGraphics\Resources\0\0_761CDDF4.txt" />
  <Reference Include="UnityEditor.StandardEvents">
  <HintPath>C:/Users/Fujitora/Dropbox/Planetaria/Planetaria/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
  </Reference>

@@ -42,6 +42,12 @@ namespace Planetaria
         public bool contains(Vector3 position)
         {
             position.Normalize(); // FIXME ? : this is an approximation
+
+            if (block_transform.exists)
+            {
+                position = Quaternion.Inverse(block_transform.data.rotation)*position;
+            }
+
             bool left_contains = left_arc.arc.exists ? left_arc.arc.data.contains(position, last_extrusion) : false;
             bool center_contains = center_arc.arc.exists ? center_arc.arc.data.contains(position, last_extrusion) : false;
             bool right_contains = right_arc.arc.exists ? right_arc.arc.data.contains(position, last_extrusion) : false;
