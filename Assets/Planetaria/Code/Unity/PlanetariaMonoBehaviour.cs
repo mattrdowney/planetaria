@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Planetaria
@@ -16,7 +14,7 @@ namespace Planetaria
         protected optional<CollisionDelegate> OnBlockEnter = null;
         protected optional<CollisionDelegate> OnBlockExit = null;
         protected optional<CollisionDelegate> OnBlockStay = null;
-    
+
         protected optional<TriggerDelegate> OnFieldEnter = null;
         protected optional<TriggerDelegate> OnFieldExit = null;
         protected optional<TriggerDelegate> OnFieldStay = null;

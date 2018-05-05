@@ -51,7 +51,7 @@ namespace Planetaria
         public static Sphere[] arc_collider(optional<Transform> transformation, Arc arc) // FIXME: delegation, remove redundancy
         {
             Sphere[] boundary_colliders = boundary_collider(transformation, arc);
-            Sphere[] elevation_colliders = elevation_collider(transformation, arc.plane());
+            Sphere[] elevation_colliders = elevation_collider(transformation, arc.plane().flipped);
             Sphere[] colliders = new Sphere[boundary_colliders.Length + elevation_colliders.Length];
             Array.Copy(elevation_colliders, colliders, elevation_colliders.Length);
             Array.Copy(boundary_colliders, 0, colliders, elevation_colliders.Length, boundary_colliders.Length);
@@ -110,7 +110,7 @@ namespace Planetaria
             // axial_distance = 3 - [1 - cos(left_angle)] - [2 - 2cos(arcsin(sin(left_angle)/2))]
             // axial_distance = 3 - 1 + cos(left_angle) - 2 + 2cos(arcsin(sin(left_angle)/2))
             // axial_distance = cos(left_angle) + 2cos(arcsin(sin(left_angle)/2))
-            // which, according to Wolfram Alpha is: cos(left_angle) + sqrt(sin2(left_angle) + 3)
+            // which, according to Wolfram Alpha is: cos(left_angle) + sqrt(cos^2(left_angle) + 3)
 
             // TODO: check: collisions can (theoretically) be missed without Precision.collider_extrusion;
             // In practice, floating point errors aren't an issue because there are two colliders (neither of which is size zero).
@@ -146,9 +146,9 @@ namespace Planetaria
 
         private static Sphere[] elevation_collider(optional<Transform> transformation, Plane plane)
         {
-            if (plane.distance < -1f + Precision.threshold)
+            if (plane.distance > 1f - Precision.threshold)
             {
-                return new Sphere[1] { Sphere.ideal_collider(transformation, plane.flipped) };
+                return new Sphere[1] { Sphere.ideal_collider(transformation, plane) };
             }
             Sphere[] colliders = new Sphere[2];
             colliders[0] = Sphere.uniform_collider(transformation, plane);
@@ -158,7 +158,7 @@ namespace Planetaria
 
         private static float extrude_distance(Plane plane, float extrusion)
         {
-            return Mathf.Cos(Mathf.Acos(Mathf.Clamp(plane.distance,-1,+1))+extrusion);
+            return Mathf.Cos(Mathf.Acos(Mathf.Clamp(plane.distance,-1,+1))-extrusion);
         }
 
         private Sphere(optional<Transform> transformation, Vector3 center, float radius)

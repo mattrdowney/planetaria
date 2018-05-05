@@ -54,7 +54,7 @@ namespace Planetaria
             int current_index = 0;
             foreach (GeospatialCurve curve in field.iterator())
             {
-                Plane plane = Arc.curve(last_curve.point, last_curve.slope, curve.point).plane();
+                Plane plane = Arc.curve(last_curve.point, last_curve.slope, curve.point).plane().flipped;
                 colliders[current_index] = Sphere.uniform_collider(transformation, plane);
 
                 // prepare for next element
