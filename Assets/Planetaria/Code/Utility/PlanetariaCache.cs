@@ -54,8 +54,10 @@ namespace Planetaria
             int current_index = 0;
             foreach (GeospatialCurve curve in field.iterator())
             {
-                Plane plane = Arc.curve(last_curve.point, last_curve.slope, curve.point).plane().flipped;
-                colliders[current_index] = Sphere.uniform_collider(transformation, plane);
+                Plane plane = Arc.curve(last_curve.point, last_curve.slope, curve.point).plane();
+                Plane flipped = new Plane(-plane.normal, plane.distance); // FIXME: I think my code doesn't handle negative numbers for uniform_collider
+                Debug.Log(plane.distance);
+                colliders[current_index] = Sphere.uniform_collider(transformation, flipped);
 
                 // prepare for next element
                 ++current_index;

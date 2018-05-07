@@ -13,7 +13,7 @@ namespace Planetaria
             // MouseDown 1: create first corner of a shape
             if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
             {
-                temporary_arc = ArcBuilder.arc_builder(LevelCreatorEditor.get_mouse_position());
+                temporary_arc = ArcBuilder.arc_builder(LevelCreatorEditor.get_mouse_position(), LevelCreatorEditor.is_field);
                 return draw_tangent;
             }
 

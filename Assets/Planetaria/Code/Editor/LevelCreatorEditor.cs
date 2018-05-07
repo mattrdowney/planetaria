@@ -45,9 +45,14 @@ namespace Planetaria
 	        GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
+	        is_field = EditorGUILayout.Toggle("Field", is_field);
+	        GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
             GUILayout.Label("Equator Rows");
 	        rows = EditorGUILayout.IntField(rows, GUILayout.Width(50));
             GUILayout.EndHorizontal();
+
             GUILayout.BeginHorizontal();
             GUILayout.Label("Time Zone Columns");
 	        columns = EditorGUILayout.IntField(columns, GUILayout.Width(50));
@@ -192,6 +197,9 @@ namespace Planetaria
 
         [Tooltip("")]
         public static DrawMode draw_mode;
+
+        [Tooltip("")]
+        public static bool is_field;
 
         /// <summary>Number of rows in the grid. Equator is drawn when rows is odd</summary>
         [Tooltip("")]

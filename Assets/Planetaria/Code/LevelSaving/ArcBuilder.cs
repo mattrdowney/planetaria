@@ -8,12 +8,13 @@ namespace Planetaria
     [ExecuteInEditMode]
     public class ArcBuilder : MonoBehaviour
     {
-        public static ArcBuilder arc_builder(Vector3 original_point)
+        public static ArcBuilder arc_builder(Vector3 original_point, bool is_field)
         {
             GameObject game_object = new GameObject("Arc Builder");
             ArcBuilder result = game_object.AddComponent<ArcBuilder>();
             result.point = result.original_point = original_point;
             result.arcs.Add(Arc.line(original_point, original_point));
+            result.is_field = is_field;
             return result;
         }
 
@@ -58,14 +59,24 @@ namespace Planetaria
                 curves.Add(GeospatialCurve.curve(point, original_point));
             }
 
-            GameObject shape = Block.block(curves);
-            Block block = shape.GetComponent<Block>();
-            optional<TextAsset> svg_file = BlockRenderer.render(block, 0);
-            if (svg_file.exists)
+            if (is_field)
             {
-                //PlanetariaRenderer renderer = shape.AddComponent<PlanetRenderer>();
-                //renderer.material = RenderVectorGraphics.render(svg_file.data);
+                GameObject field = Field.field(curves);
+                Debug.Log(field);
             }
+            else
+            {
+                GameObject shape = Block.block(curves);
+                Block block = shape.GetComponent<Block>();
+                optional<TextAsset> svg_file = BlockRenderer.render(block, 0);
+
+                if (svg_file.exists)
+                {
+                    //PlanetariaRenderer renderer = shape.AddComponent<PlanetRenderer>();
+                    //renderer.material = RenderVectorGraphics.render(svg_file.data);
+                }
+            }
+            
             DestroyImmediate(this.gameObject);
         }
     
@@ -75,6 +86,7 @@ namespace Planetaria
         private Vector3 point { get; set; }
         private Vector3 slope { get; set; }
         private Vector3 original_point;
+        private bool is_field;
 
         private enum CreationState
         {
