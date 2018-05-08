@@ -70,6 +70,7 @@
      <Compile Include="Assets\Planetaria\Code\LevelGeometry\GeometryVisitor.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelGeometry\GeospatialCurve.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelGeometry\Octahedron.cs" />
+     <Compile Include="Assets\Planetaria\Code\LevelGeometry\SphericalCap.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelGeometry\SubdividedOctahedronSphere.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelLoading\BasicLoadingStrategy.cs" />
      <Compile Include="Assets\Planetaria\Code\LevelLoading\LevelLoader.cs" />

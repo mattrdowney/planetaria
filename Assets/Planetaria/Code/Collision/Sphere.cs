@@ -51,7 +51,7 @@ namespace Planetaria
         public static Sphere[] arc_collider(optional<Transform> transformation, Arc arc) // FIXME: delegation, remove redundancy
         {
             Sphere[] boundary_colliders = boundary_collider(transformation, arc);
-            Sphere[] elevation_colliders = elevation_collider(transformation, arc.plane().flipped);
+            Sphere[] elevation_colliders = elevation_collider(transformation, arc.floor());
             Sphere[] colliders = new Sphere[boundary_colliders.Length + elevation_colliders.Length];
             Array.Copy(elevation_colliders, colliders, elevation_colliders.Length);
             Array.Copy(boundary_colliders, 0, colliders, elevation_colliders.Length, boundary_colliders.Length);
@@ -59,29 +59,31 @@ namespace Planetaria
         }
         
         /// <summary>
-        /// Constructor - envelops a region using focal point of plane (perfect fit)
+        /// Constructor - envelops a SphericalCap region using focal point of cone/SphericalCap (perfect fit)
         /// </summary>
         /// <param name="transformation">An optional Transform that will be used to shift the center (if moved).</param>
-        /// <param name="plane">The plane representing where the collider begins. Everything along the normal will be encapsulated.</param>
+        /// <param name="cap">The SphericalCap that will be encapsulated by a Sphere (collider).</param>
         /// <returns>A Sphere that can be used as a collider.</returns>
-        public static Sphere ideal_collider(optional<Transform> transformation, Plane plane)
+        /// <details>
+        /// This collider has the special property that all sphere colliders will only collide if the planetaria sphere is intersecting.
+        /// This is because the sphere is formed at the focal point of a cone from the planetaria sphere's tangent lines.
+        /// </details>
+        public static Sphere ideal_collider(optional<Transform> transformation, SphericalCap cap)
         {
-            float distance = extrude_distance(plane, Precision.collider_extrusion);
+            float distance = extrude_distance(cap, Precision.collider_extrusion);
             float tangent = Mathf.Tan(Mathf.Acos(distance));
             float secant = 1/distance;
 
-            // This collider has the special property that all sphere colliders will only collide if the planetaria sphere is intersecting
-            // This is because the sphere is formed at the focal point of a cone from the planetaria sphere's tangent lines.
-            return new Sphere(transformation, plane.normal*secant, tangent);
+            return new Sphere(transformation, cap.normal*secant, tangent);
         }
 
         /// <summary>
-        /// Constructor - envelops a region with a size-2 Sphere.
+        /// Constructor - envelops a SphericalCap region with a size-2 Sphere.
         /// </summary>
         /// <param name="transformation">An optional Transform that will be used to shift the center (if moved).</param>
-        /// <param name="plane">The plane representing where the collider begins. Everything along the normal will be encapsulated.</param>
+        /// <param name="cap">The SphericalCap that will be encapsulated by a Sphere (collider).</param>
         /// <returns>A Sphere that can be used as a collider.</returns>
-        public static Sphere uniform_collider(optional<Transform> transformation, Plane plane)
+        public static Sphere uniform_collider(optional<Transform> transformation, SphericalCap cap)
         {
             // Background:
             // imagine two spheres:
@@ -115,9 +117,9 @@ namespace Planetaria
             // TODO: check: collisions can (theoretically) be missed without Precision.collider_extrusion;
             // In practice, floating point errors aren't an issue because there are two colliders (neither of which is size zero).
 
-            float x = extrude_distance(plane, Precision.collider_extrusion);
-            float axial_distance = x + Mathf.Sqrt(x*x + 3);
-            return new Sphere(transformation, plane.normal*axial_distance, 2);
+            float x = extrude_distance(cap, Precision.collider_extrusion);
+            float axial_distance = x + Mathf.Sign(x)*Mathf.Sqrt(x*x + 3);
+            return new Sphere(transformation, cap.normal*axial_distance, 2);
         }
 
         private static Sphere[] boundary_collider(optional<Transform> transformation, Arc arc)
@@ -125,16 +127,16 @@ namespace Planetaria
             Sphere result;
             Vector3 corner = arc.position(0);
             Vector3 center = arc.position(arc.angle()/2);
-            Plane plane = new Plane(center, Vector3.Dot(center,corner)); // create a plane centered at "center" that captures both corners (2nd implicitly)
+            SphericalCap cap = SphericalCap.cap(center, corner); // create a SphericalCap centered at "center" that captures both corners (2nd implicitly)
 
             float real_angle = Vector3.Angle(center, corner) * Mathf.Deg2Rad;
             if (real_angle < Precision.max_sphere_radius) // use a r<=1 sphere
             {
-                result = ideal_collider(transformation, plane);
+                result = ideal_collider(transformation, cap);
             }
             else // use r=2 sphere
             {
-                result = uniform_collider(transformation, plane);
+                result = uniform_collider(transformation, cap);
             }
 
             if (result.radius < Precision.threshold)
@@ -144,21 +146,21 @@ namespace Planetaria
             return new Sphere[1] { result };
         }
 
-        private static Sphere[] elevation_collider(optional<Transform> transformation, Plane plane)
+        private static Sphere[] elevation_collider(optional<Transform> transformation, SphericalCap cap)
         {
-            if (plane.distance > 1f - Precision.threshold)
+            if (cap.offset > 1f - Precision.threshold)
             {
-                return new Sphere[1] { Sphere.ideal_collider(transformation, plane) };
+                return new Sphere[1] { Sphere.ideal_collider(transformation, cap) };
             }
             Sphere[] colliders = new Sphere[2];
-            colliders[0] = Sphere.uniform_collider(transformation, plane);
-            colliders[1] = Sphere.uniform_collider(transformation, plane.flipped);
+            colliders[0] = Sphere.uniform_collider(transformation, cap);
+            colliders[1] = Sphere.uniform_collider(transformation, cap.complement());
             return colliders;
         }
 
-        private static float extrude_distance(Plane plane, float extrusion)
+        private static float extrude_distance(SphericalCap cap, float extrusion)
         {
-            return Mathf.Cos(Mathf.Acos(Mathf.Clamp(plane.distance,-1,+1))-extrusion);
+            return Mathf.Cos(Mathf.Acos(Mathf.Clamp(cap.offset, -1, +1)) - extrusion);
         }
 
         private Sphere(optional<Transform> transformation, Vector3 center, float radius)

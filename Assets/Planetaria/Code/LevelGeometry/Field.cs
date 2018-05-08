@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Planetaria
@@ -44,9 +45,22 @@ namespace Planetaria
             PlanetariaCache.uncache(this);
         }
 
-        public IEnumerable<GeospatialCurve> iterator()
+        public IEnumerable<Arc> iterator() // TODO: check
         {
-            return new List<GeospatialCurve>(curve_list);
+            Arc[] arcs = new Arc[Enumerable.Count(curve_list)];
+
+            int current_index = 0;
+            GeospatialCurve last_curve = Enumerable.Last(curve_list);
+            foreach (GeospatialCurve curve in curve_list)
+            {
+                arcs[current_index] = Arc.curve(last_curve.point, last_curve.slope, curve.point);
+
+                // prepare for next element
+                ++current_index;
+                last_curve = curve;
+            }
+
+            return arcs;
         }
 
         public bool active { get; set; }

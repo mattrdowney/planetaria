@@ -7,22 +7,23 @@ namespace Planetaria
     [CustomEditor(typeof(Field))]
     public class FieldEditor : Editor
     {
-        Field field;
-        // TODO: make fields relative (for moving fields)
-
-        private void Awake()
+        [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
+        private static void draw_block_gizmos(Field self, GizmoType gizmo_type)
         {
-            //List<Plane> plane_list = field.get_plane_list(); // TODO: implement
-
-            //for all planes...
-            //  PlanetariaIntersection.circle_circle_intersection(
-            //  add to container of field arcs
-        }
-
-        private void OnSceneGUI()
-        {
-            //for all field arcs
-            //  RendererUtility.draw_arc(
+            if (LevelCreatorEditor.debug_rendering)
+            {
+                foreach (Arc arc in self.iterator())
+                {
+                    if (!self.is_dynamic)
+                    {
+                        ArcEditor.draw_arc(arc);
+                    }
+                    else
+                    {
+                        ArcEditor.draw_arc(arc, self.GetComponent<Transform>());
+                    }
+                }
+            }
         }
     }
 }

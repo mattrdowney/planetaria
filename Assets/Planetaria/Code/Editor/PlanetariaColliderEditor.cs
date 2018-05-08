@@ -13,7 +13,7 @@ namespace Planetaria
         {
             for (int sphere_index = 0; sphere_index < self.colliders.Length; ++sphere_index)
             {
-                if (sphere_index != mask[0] && sphere_index != mask[1])
+                if (sphere_index < sizeof(int) && !mask[sphere_index])
                 {
                     Sphere sphere = self.colliders[sphere_index];
                     Gizmos.color = new Color(0,1,0,0.5f); // translucent green
@@ -26,20 +26,20 @@ namespace Planetaria
 
         public override void OnInspectorGUI()
         {
-            GUILayout.BeginHorizontal();
-            GUILayout.Label(" Collider Mask 1 ");
-            mask[0] = EditorGUILayout.IntField(mask[0], GUILayout.Width(50));
-            GUILayout.EndHorizontal();
-     
-            GUILayout.BeginHorizontal();
-            GUILayout.Label(" Collider Mask 2 ");
-            mask[1] = EditorGUILayout.IntField(mask[1], GUILayout.Width(50));
-            GUILayout.EndHorizontal();
+            PlanetariaCollider self = (PlanetariaCollider) target;
+            for (int bit_position = 0; bit_position < 8*sizeof(int) && bit_position < self.colliders.Length; ++bit_position)
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Label(" Collider Mask " + bit_position);
+                mask[bit_position] = EditorGUILayout.Toggle(mask[bit_position], GUILayout.Width(50));
+                GUILayout.EndHorizontal();
+            }
      
             SceneView.RepaintAll();
         }
 
-        private static int[] mask = new int[2] {-1, -1 };
+        Field self;
+        private static bool[] mask = new bool[sizeof(int)];
     }
 }
 

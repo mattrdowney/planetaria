@@ -125,13 +125,13 @@ namespace Planetaria
         }
 
         /// <summary>
-        /// Inspector - Creates a plane that represents the floor (at given elevation).
+        /// Inspector - Creates a SphericalCap that represents the floor (at given elevation).
         /// </summary>
         /// <param name="extrusion">The radius of the collider touching the floor.</param>
-        /// <returns>A plane representing the floor. Normal goes "up".</returns>
-        public Plane plane(float extrusion = 0)
+        /// <returns>A SphericalCap representing the floor. Normal goes "down" - towards floor.</returns>
+        public SphericalCap floor(float extrusion = 0)
         {
-            return new Plane(center_axis, Mathf.Sin(arc_latitude + extrusion)); // TODO: verify
+            return SphericalCap.cap(center_axis, Mathf.Sin(arc_latitude + extrusion)).complement();
         }
 
         /// <summary>

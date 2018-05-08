@@ -47,21 +47,15 @@ namespace Planetaria
 
             optional<Transform> transformation = (field.is_dynamic ? field.gameObject.transform : null);
 
-            Sphere[] colliders = new Sphere[Enumerable.Count(field.iterator())];
             collider.is_field = true;
             sphere_collider.isTrigger = true;
-            GeospatialCurve last_curve = Enumerable.Last(field.iterator());
-            int current_index = 0;
-            foreach (GeospatialCurve curve in field.iterator())
-            {
-                Plane plane = Arc.curve(last_curve.point, last_curve.slope, curve.point).plane();
-                Plane flipped = new Plane(-plane.normal, plane.distance); // FIXME: I think my code doesn't handle negative numbers for uniform_collider
-                Debug.Log(plane.distance);
-                colliders[current_index] = Sphere.uniform_collider(transformation, flipped);
 
-                // prepare for next element
+            Sphere[] colliders = new Sphere[Enumerable.Count(field.iterator())];
+            int current_index = 0;
+            foreach (Arc arc in field.iterator())
+            {
+                colliders[current_index] = Sphere.uniform_collider(transformation, arc.floor());
                 ++current_index;
-                last_curve = curve;
             }
             collider.set_colliders(colliders);
         }
