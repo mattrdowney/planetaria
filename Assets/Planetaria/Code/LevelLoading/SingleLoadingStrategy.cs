@@ -35,7 +35,11 @@ namespace Planetaria
         /// <param name="level_index">The index of the level that will be loaded. (Should match Unity level index.)</param>
         public override void activate_level(int level_index)
         {
-            SceneManager.LoadScene(level_index);
+            if (fraction_loaded(level_index) != 1)
+            {
+                Debug.Log("Loading " + level_index + "...");
+                SceneManager.LoadScene(level_index);
+            }
         }
     }
 }

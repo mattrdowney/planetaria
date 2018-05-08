@@ -10,6 +10,9 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
         OnBlockStay.data = on_block_stay;
         OnBlockEnter.data = on_block_enter;
         OnBlockExit.data = on_block_exit;
+
+        OnFieldStay.data = on_field_stay;
+
         transform.position = new NormalizedSphericalCoordinates(Mathf.PI/2 + 0.06f, Mathf.PI/2 + .01f);
     }
 
@@ -33,7 +36,7 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
         }
     }
 
-    void on_block_stay(BlockCollision collision)
+    private void on_block_stay(BlockCollision collision)
     {
         if (planetaria_rigidbody.colliding) // FIXME: GitHub issue #67
         {
@@ -61,20 +64,30 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
         }
     }
 
-    void on_block_enter(BlockCollision collision)
+    private void on_block_enter(BlockCollision collision)
     {
     }
 
-    void on_block_exit(BlockCollision collision)
+    private void on_block_exit(BlockCollision collision)
     {
         last_jump_attempt = -1;
         transform.direction = new NormalizedCartesianCoordinates(Vector3.up);
         magnet_floor = false;
     }
 
-    PlanetariaRigidbody planetaria_rigidbody;
-    float last_jump_attempt = -1;
-    const float acceleration = 5f;
+    private void on_field_stay(PlanetariaCollider collider)
+    {
+        Debug.Log("Inside " + Time.time);
+        if (Input.GetAxis("Vertical") == -1)
+        {
+            Debug.Log("Pressed " + Time.time);
+            LevelLoader.loader.activate_level(1);
+        }
+    }
+
+    private PlanetariaRigidbody planetaria_rigidbody;
+    private float last_jump_attempt = -1;
+    private const float acceleration = 5f;
 
     public bool magnet_floor = false;
 }

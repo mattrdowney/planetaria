@@ -186,14 +186,14 @@ namespace Planetaria
                     notify_exit_field(field);
                 }
             }
-            notify_stay_field();
-            current_fields = field_candidates;
+            current_fields = field_candidates; // Swap happens here (to avoid iterator invalidation)
+            notify_stay_field(); // ORDER DEPENDENCY : current_fields must be set first!
             field_candidates = new List<PlanetariaCollider>(); // .Clear doesn't work because of reference/pointer logic
         }
 
         internal void notify_enter_field(PlanetariaCollider field)
         {
-            current_fields.Add(field);
+            //current_fields.Add(field); // Don't want invalidated iterators - swap at end of loop
             foreach (PlanetariaMonoBehaviour observer in observers)
             {
                 observer.enter_field(field);
@@ -217,7 +217,7 @@ namespace Planetaria
             {
                 observer.exit_field(field);
             }
-            current_fields.Remove(field);
+            //current_fields.Remove(field); // Don't want invalidated iterators - swap at end of loop
         }
 
         private PlanetariaTransform planetaria_transformation;

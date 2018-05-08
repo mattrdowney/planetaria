@@ -193,7 +193,7 @@ namespace Planetaria
         }
 
         [Tooltip("")]
-        public static bool debug_rendering;
+        public static bool debug_rendering = true;
 
         [Tooltip("")]
         public static DrawMode draw_mode;

@@ -83,42 +83,51 @@ namespace Planetaria
         /// <param name="transformation">An optional Transform that will be used to shift the center (if moved).</param>
         /// <param name="cap">The SphericalCap that will be encapsulated by a Sphere (collider).</param>
         /// <returns>A Sphere that can be used as a collider.</returns>
-        public static Sphere uniform_collider(optional<Transform> transformation, SphericalCap cap)
+        public static Sphere uniform_collider(optional<Transform> transformation, SphericalCap cap) // TODO: FIXME: documentation
         {
-            // Background:
-            // imagine two spheres:
-            // "left" sphere is of radius 1 and placed at the origin (0,0,0).
-            // "right" sphere is of radius 2 and is placed at (3,0,0).
-            // These spheres intersect at a point (1,0,0).
-            // If slid closer together they will intersect at a circle of radius (0,1].
-            // The goal is to find the distance between spheres to create a collider along a given circle.
+        // Background 1:
+        // imagine two spheres:
+        // "left" sphere is of radius 1 and placed at the origin (0,0,0).
+        // "right" sphere is of radius 2 and is placed at (3,0,0).
+        // These spheres intersect at a point (1,0,0).
+        // If slid closer together they will intersect at a circle of radius (0,1].
+        // The goal is to find the distance between spheres to create a collider along a given circle.
 
-            // Derivation:
-            // I created four variables:
-            // left_height = sin(left_angle)
-            // left_distance = 1 - cos(left_angle)
-            // right_height = 2sin(right_angle)
-            // right_distance = 2 - 2cos(right_angle)
+        // Derivation 1:
+        // I created four variables:
+        // left_height = sin(left_angle)
+        // left_distance = 1 - cos(left_angle)
+        // right_height = 2sin(right_angle)
+        // right_distance = 2 - 2cos(right_angle)
 
-            // While we are trying to find 3 - sum(distances), we know that left_height must equal right_height for the intersection to be valid
-            // Therefore sin(left_angle) = left_height = right_height = 2sin(right_angle)
-            // Since left_angle is the planetaria_radius (because we are dealing with a unit sphere) we can solve for right_angle:
-            // right_angle = arcsin(sin(left_angle)/2)
+        // While we are trying to find 3 - sum(distances), we know that left_height must equal right_height for the intersection to be valid
+        // Therefore sin(left_angle) = left_height = right_height = 2sin(right_angle)
+        // Since left_angle is the planetaria_radius (because we are dealing with a unit sphere) we can solve for right_angle:
+        // right_angle = arcsin(sin(left_angle)/2)
 
-            // Now that we know right_angle and left_angle we can solve all formulas:
-            // left_distance = 1 - cos(left_angle)
-            // right_distance = 2 - 2cos(arcsin(sin(left_angle)/2))
-            // Next we just subtract these differences from 3 (the radii sum):
-            // axial_distance = 3 - [1 - cos(left_angle)] - [2 - 2cos(arcsin(sin(left_angle)/2))]
-            // axial_distance = 3 - 1 + cos(left_angle) - 2 + 2cos(arcsin(sin(left_angle)/2))
-            // axial_distance = cos(left_angle) + 2cos(arcsin(sin(left_angle)/2))
-            // which, according to Wolfram Alpha is: cos(left_angle) + sqrt(cos^2(left_angle) + 3)
+        // Now that we know right_angle and left_angle we can solve all formulas:
+        // left_distance = 1 - cos(left_angle)
+        // right_distance = 2 - 2cos(arcsin(sin(left_angle)/2))
+        // Next we just subtract these differences from 3 (the radii sum):
+        // axial_distance = 3 - [1 - cos(left_angle)] - [2 - 2cos(arcsin(sin(left_angle)/2))]
+        // axial_distance = 3 - 1 + cos(left_angle) - 2 + 2cos(arcsin(sin(left_angle)/2))
+        // axial_distance = cos(left_angle) + 2cos(arcsin(sin(left_angle)/2))
+        // which, according to Wolfram Alpha is: cos(left_angle) + sqrt(cos^2(left_angle) + 3)
 
-            // TODO: check: collisions can (theoretically) be missed without Precision.collider_extrusion;
-            // In practice, floating point errors aren't an issue because there are two colliders (neither of which is size zero).
+        // Check negative values:
+        // Background:
+        // imagine two spheres:
+        // "left" sphere is of radius 1 and placed at the origin (0,0,0).
+        // "right" sphere is of radius 2 and is placed at (1,0,0).
+        // These spheres intersect at a point (-1,0,0).
+        // If slid further away they will intersect at a circle of radius (0,1].
+        // Testing:
+        // An input of x=-1 should result in axial_distance=1 (the center of the size-2 sphere):
+        // Plugging this into our equation we get x + sqrt(x*x + 3) = -1 + sqrt(-1*-1 + 3) = -1 + sqrt(4) = -1 + 2 = 1
+        // which is indeed equal to 1
 
-            float x = extrude_distance(cap, Precision.collider_extrusion);
-            float axial_distance = x + Mathf.Sign(x)*Mathf.Sqrt(x*x + 3);
+            float x = extrude_distance(cap, Precision.collider_extrusion); // collisions can be missed for small objects due to floating point error
+            float axial_distance = x + Mathf.Sqrt(x*x + 3);
             return new Sphere(transformation, cap.normal*axial_distance, 2);
         }
 

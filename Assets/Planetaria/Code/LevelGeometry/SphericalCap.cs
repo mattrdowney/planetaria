@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
 /// <summary>
+/// A glorified UnityEngine.Plane
 /// A SphericalCap is a data structure that represents a (unique) SphericalCap volume formed by the intersection of a sphere and a plane.
 /// SphericalCaps can go past the equator, but they always include one pole (and--only for spheres (i.e. offset -1)--sometimes contain both poles).
 /// </summary>

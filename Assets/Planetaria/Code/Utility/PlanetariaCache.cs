@@ -38,26 +38,31 @@ namespace Planetaria
 
         public static void cache(Field field)
         {
-            GameObject game_object = new GameObject("Planetaria Collider");
-            game_object.transform.parent = field.gameObject.transform;
-            game_object.hideFlags = HideFlags.DontSave;
-
-            PlanetariaCollider collider = game_object.AddComponent<PlanetariaCollider>();
-            SphereCollider sphere_collider = collider.get_sphere_collider();
-
-            optional<Transform> transformation = (field.is_dynamic ? field.gameObject.transform : null);
-
-            collider.is_field = true;
-            sphere_collider.isTrigger = true;
-
-            Sphere[] colliders = new Sphere[Enumerable.Count(field.iterator())];
-            int current_index = 0;
-            foreach (Arc arc in field.iterator())
+            if (Application.isPlaying)
             {
-                colliders[current_index] = Sphere.uniform_collider(transformation, arc.floor());
-                ++current_index;
+                GameObject game_object = new GameObject("Planetaria Collider");
+                game_object.transform.parent = field.gameObject.transform;
+                game_object.hideFlags = HideFlags.DontSave;
+
+                PlanetariaCollider collider = game_object.AddComponent<PlanetariaCollider>();
+                SphereCollider sphere_collider = collider.get_sphere_collider();
+
+                optional<Transform> transformation = (field.is_dynamic ? field.gameObject.transform : null);
+
+                collider.is_field = true;
+                sphere_collider.isTrigger = true;
+
+                Sphere[] colliders = new Sphere[Enumerable.Count(field.iterator())];
+                int current_index = 0;
+                foreach (Arc arc in field.iterator())
+                {
+                    colliders[current_index] = Sphere.uniform_collider(transformation, arc.floor());
+                    ++current_index;
+                }
+                collider.set_colliders(colliders);
+
+                PlanetariaCache.collider_cache.cache(sphere_collider, collider);
             }
-            collider.set_colliders(colliders);
         }
 
         public static void uncache(Block block)
@@ -77,7 +82,7 @@ namespace Planetaria
         {
             if (Application.isPlaying)
             {
-                optional<SphereCollider> collider = field.gameObject.GetComponent<SphereCollider>();
+                optional<SphereCollider> collider = field.gameObject.GetComponent<SphereCollider>(); // this should always happen
                 if (collider.exists)
                 {
                     PlanetariaCache.collider_cache.uncache(collider.data);

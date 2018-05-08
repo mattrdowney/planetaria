@@ -35,8 +35,6 @@ namespace Planetaria
         /// <param name="level_index">The index of the level that will be loaded. (Should match Unity level index.)</param>
         public abstract void activate_level(int level_index);
 
-
-
         // TODO: A footnote regarding graphics loading: until this point I planned on doing a "camera shutter blink to load in/out levels, but I will probably implement two versions:
         // 1) camera shutter blink (for casual players).
         // 2) hexagonal shutter blink (for people that hate themselves).

@@ -47,16 +47,12 @@ namespace Planetaria
 
         public IEnumerable<Arc> iterator() // TODO: check
         {
-            Arc[] arcs = new Arc[Enumerable.Count(curve_list)];
+            List<Arc> arcs = new List<Arc>();
 
-            int current_index = 0;
             GeospatialCurve last_curve = Enumerable.Last(curve_list);
             foreach (GeospatialCurve curve in curve_list)
             {
-                arcs[current_index] = Arc.curve(last_curve.point, last_curve.slope, curve.point);
-
-                // prepare for next element
-                ++current_index;
+                arcs.Add(Arc.curve(last_curve.point, last_curve.slope, curve.point));
                 last_curve = curve;
             }
 
