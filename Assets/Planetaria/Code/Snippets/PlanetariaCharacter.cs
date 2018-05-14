@@ -77,10 +77,8 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
 
     private void on_field_stay(PlanetariaCollider collider)
     {
-        Debug.Log("Inside " + Time.time);
-        if (Input.GetAxis("Vertical") == -1)
+        if (Input.GetAxisRaw("Vertical") == -1)
         {
-            Debug.Log("Pressed " + Time.time);
             LevelLoader.loader.activate_level(1);
         }
     }

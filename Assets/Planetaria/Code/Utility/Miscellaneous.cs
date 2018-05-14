@@ -19,17 +19,23 @@ namespace Planetaria
            return boolean_list.Count(is_true => is_true);
         }
 
-        public static int power(int base_, int exponent)
+        /// <summary>
+        /// Inspector - Determines the relative counterclockwise ordering of cartesian 2D points.
+        /// </summary>
+        /// <param name="left">The left-hand-side of the comparison</param>
+        /// <param name="right">The right-hand-side of the comparison</param>
+        /// <returns>
+        /// False if left comes before right in terms of its angle in polar coordinates - counterclockwise from positive x-axis
+        /// True if left is greater than or equal to right by the same metric
+        /// </returns>
+        public static bool counterclockwise_ordering(Vector2 left, Vector2 right) // https://stackoverflow.com/questions/6989100/sort-points-in-clockwise-order/46635372#46635372
         {
-            if (exponent <= 0)
-            {
-                return 1;
-            }
-            if (is_bit_set(exponent, 0)) // odd number
-            {
-                return power(base_, exponent - 1);
-            }
-            return power(base_, exponent / 2) * power(base_, exponent / 2); // even
+            int left_quadrant = quadrant(left); // quadrant in range [1,4]
+            int right_quadrant = quadrant(right);
+
+            bool lesser_quadrant = left_quadrant < right_quadrant;
+            bool lesser_quadrant_angle = (right.x) * (left.y) < (right.y) * (left.x); // only works locally within quadrant
+            return lesser_quadrant || lesser_quadrant_angle; // Note: short-circuiting behaviour - quadrant is more important for ordering
         }
 
         public static optional<Texture2D> fetch_image(string image_file)
@@ -86,6 +92,40 @@ namespace Planetaria
         public static bool is_bit_set(int value, int bit_index)
         {
             return (value & (1 << bit_index)) != 0;
+        }
+
+        public static int power(int base_, int exponent)
+        {
+            if (exponent <= 0)
+            {
+                return 1;
+            }
+            if (is_bit_set(exponent, 0)) // odd number
+            {
+                return power(base_, exponent - 1);
+            }
+            return power(base_, exponent / 2) * power(base_, exponent / 2); // even
+        }
+
+        /// <summary>
+        /// Inspector - Finds the quadrant of a point [1,4] listed clockwise starting from the positive quadrant
+        /// </summary>
+        /// <param name="point">The cartesian 2D point in space which is being evaluated.</param>
+        /// <returns>Label of [1,4] listed counterclockwise starting from positive quadrant</returns>
+        public static int quadrant(Vector2 point)
+        {
+            bool negative_x = point.x < 0;
+            bool negative_y = point.y < 0;
+
+            // the compiler should optimize this; if not, oh well
+            if (!negative_y) // top
+            {
+                return negative_x ? 2 : 1; // left : right
+            }
+            else // bottom
+            {
+                return negative_x ? 3 : 4; // left : right
+            }
         }
 
 #if UNITY_EDITOR

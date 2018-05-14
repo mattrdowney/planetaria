@@ -25,6 +25,7 @@ namespace Planetaria
                         }
                         else
                         {
+                            ArcEditor.draw_arc(arc.data, self.GetComponent<Transform>());
                             // FIXME: add corners for dynamic blocks
                         }
                     }

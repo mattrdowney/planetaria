@@ -16,11 +16,11 @@ namespace Planetaria
                 {
                     if (!self.is_dynamic)
                     {
-                        ArcEditor.draw_arc(arc);
+                        ArcEditor.draw_arc(arc, 0, Color.green);
                     }
                     else
                     {
-                        ArcEditor.draw_arc(arc, self.GetComponent<Transform>());
+                        ArcEditor.draw_arc(arc, 0, Color.green, self.GetComponent<Transform>());
                     }
                 }
             }

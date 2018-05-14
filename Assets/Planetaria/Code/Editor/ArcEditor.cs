@@ -6,37 +6,23 @@ namespace Planetaria
     [CustomEditor(typeof(Arc))]
     public class ArcEditor : Editor
     {
-        public static void draw_arc(Arc arc, Transform transform)
-        {
-            Vector3 from = arc.position(0);
-            Vector3 from_normal = arc.normal(0);
-            Vector3 from_slope = Bearing.right(from, from_normal);
-            Vector3 to = arc.position(arc.angle());
-
-            from = transform.rotation * from;
-            from_slope = transform.rotation * from_slope;
-            to = transform.rotation * to;
-
-            Arc rotated_arc = Arc.curve(from, from_slope, to);
-            draw_arc(rotated_arc);
-        }
-
         /// <summary>
         /// Inspector - Draw an arc (basic)
         /// </summary>
         /// <param name="arc">The arc that will be rendered.</param>
-        public static void draw_arc(Arc arc)
+        public static void draw_arc(Arc arc,
+                optional<Transform> transformation = new optional<Transform>())
         {
             Color violet = new Color(127, 0, 255);
 
             const float diameter = .1f;
 
-            draw_arc(arc, 0.0f, Color.black);
-            draw_arc(arc, diameter/2, Color.gray);
-            draw_arc(arc, diameter, Color.white);
+            draw_arc(arc, 0.0f, Color.black, transformation);
+            draw_arc(arc, diameter/2, Color.gray, transformation);
+            draw_arc(arc, diameter, Color.white, transformation);
 
-            draw_radial(arc, 0, diameter, Color.red);
-            draw_radial(arc, arc.angle(), diameter, violet);
+            draw_radial(arc, 0, diameter, Color.red, transformation);
+            draw_radial(arc, arc.angle(), diameter, violet, transformation);
         }
 
         /// <summary>
@@ -45,9 +31,15 @@ namespace Planetaria
         /// <param name="arc">The arc that will be rendered.</param>
         /// <param name="extrusion">The distance to extrude the arc.</param>
         /// <param name="color">The color of the drawn arc.</param>
-        public static void draw_arc(Arc arc, float extrusion, Color color)
+        public static void draw_arc(Arc arc, float extrusion, Color color,
+                optional<Transform> transformation = new optional<Transform>())
         {
-            RendererUtility.draw_arc(arc, extrusion, color);
+            if (extrusion == 0 && arc.floor().offset > 1 - Precision.threshold)
+            {
+                return;
+            }
+            Arc rotated_arc = shifted_arc(arc, extrusion, transformation);
+            RendererUtility.draw_arc(rotated_arc, 0, color);
         }
 
         /// <summary>
@@ -55,14 +47,43 @@ namespace Planetaria
         /// </summary>
         /// <param name="arc">The arc that will be rendered.</param>
         /// <param name="angle">The angle at which the extruded radius is drawn.</param>
-        /// <param name="radius">The radius to extrude the arc.</param>
+        /// <param name="extrusion">The distance to extrude the radial arc.</param>
         /// <param name="color">The color of the drawn radial arc.</param>
-        public static void draw_radial(Arc arc, float angle, float radius, Color color)
+        public static void draw_radial(Arc arc, float angle, float extrusion, Color color,
+                optional<Transform> transformation = new optional<Transform>())
         {
             Vector3 from = arc.position(angle, 0);
-            Vector3 to = arc.position(angle, radius);
+            Vector3 to = arc.position(angle, extrusion);
+            if (transformation.exists)
+            {
+                from = transformation.data.rotation * from;
+                to = transformation.data.rotation * to;
+            }
             Vector3 from_tangent = Vector3.ProjectOnPlane(to, from).normalized;
             RendererUtility.draw_arc(from, from_tangent, to, color);
+        }
+
+        /// <summary>
+        /// Constructor - rotates arc so that it is relative to the input Transform.
+        /// </summary>
+        /// <param name="arc">The arc to be rotated.</param>
+        /// <param name="transformation">The Transform to rotate by.</param>
+        /// <returns>An arc rotated by Transform.</returns>
+        public static Arc shifted_arc(Arc arc, float extrusion, optional<Transform> transformation = new optional<Transform>())
+        {
+            Vector3 from = arc.position(0, extrusion);
+            Vector3 from_normal = arc.normal(0, extrusion);
+            Vector3 from_tangent = Bearing.right(from, from_normal);
+            Vector3 to = arc.position(arc.angle(), extrusion);
+
+            if (transformation.exists)
+            {
+                from = transformation.data.rotation * from;
+                from_tangent = transformation.data.rotation * from_tangent;
+                to = transformation.data.rotation * to;
+            }
+
+            return Arc.curve(from, from_tangent, to);
         }
 
         // public static void draw_radial(Arc arc, float angle, float local_angle, float radius, Color color) // TODO: implement
