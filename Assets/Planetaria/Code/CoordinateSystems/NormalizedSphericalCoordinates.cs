@@ -41,17 +41,17 @@ namespace Planetaria
         }
 
         /// <summary>
-        /// Mutator - Wrap elevation and azimuth so they are within [0, PI] and [0, 2*PI) respectively. 
+        /// Mutator - Wrap elevation and azimuth so they are within [0, PI] and [0, 2*PI) respectively.
         /// </summary>
-        private void normalize()
+        private void normalize() // FIXME: verify - it's been wrong until now at least
         {
             if (data_variable.x < 0 || data_variable.x > Mathf.PI)
             {
-                data_variable.x %= 2*Mathf.PI;
-                if (data_variable.x > Mathf.PI)
+                data_variable.x = PlanetariaMath.modolo_using_euclidean_division(data_variable.x, 2*Mathf.PI); // modulo is undefined behavior with negative numbers
+                if (data_variable.x > Mathf.PI) // result must be positive (due to euclidean division)
                 {
                     data_variable.x = 2*Mathf.PI - data_variable.x;
-                    data_variable.y += Mathf.PI; // going through a pole changes the azimuth
+                    data_variable.y += Mathf.PI; // going past the pole (to the opposite hemisphere) changes the azimuth
                 }
             }
 

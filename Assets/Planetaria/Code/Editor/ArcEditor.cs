@@ -10,6 +10,7 @@ namespace Planetaria
         /// Inspector - Draw an arc (basic)
         /// </summary>
         /// <param name="arc">The arc that will be rendered.</param>
+        /// <param name="transformation">The Transform to rotate by.</param>
         public static void draw_arc(Arc arc,
                 optional<Transform> transformation = new optional<Transform>())
         {
@@ -31,15 +32,15 @@ namespace Planetaria
         /// <param name="arc">The arc that will be rendered.</param>
         /// <param name="extrusion">The distance to extrude the arc.</param>
         /// <param name="color">The color of the drawn arc.</param>
+        /// <param name="transformation">The Transform to rotate by.</param>
         public static void draw_arc(Arc arc, float extrusion, Color color,
                 optional<Transform> transformation = new optional<Transform>())
         {
-            if (extrusion == 0 && arc.floor().offset > 1 - Precision.threshold)
+            if (extrusion != 0 || arc.floor().offset < 1 - Precision.threshold) // for arcs larger than a single pixel
             {
-                return;
+                Arc rotated_arc = shifted_arc(arc, extrusion, transformation);
+                RendererUtility.draw_arc(rotated_arc, 0, color);
             }
-            Arc rotated_arc = shifted_arc(arc, extrusion, transformation);
-            RendererUtility.draw_arc(rotated_arc, 0, color);
         }
 
         /// <summary>
@@ -49,6 +50,7 @@ namespace Planetaria
         /// <param name="angle">The angle at which the extruded radius is drawn.</param>
         /// <param name="extrusion">The distance to extrude the radial arc.</param>
         /// <param name="color">The color of the drawn radial arc.</param>
+        /// <param name="transformation">The Transform to rotate by.</param>
         public static void draw_radial(Arc arc, float angle, float extrusion, Color color,
                 optional<Transform> transformation = new optional<Transform>())
         {

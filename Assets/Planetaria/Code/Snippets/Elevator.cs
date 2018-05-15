@@ -7,23 +7,26 @@ public class Elevator : PlanetariaTracker
 
     public override void setup()
     {
-        start_position = self.position.data;
-        NormalizedSphericalCoordinates spherical = self.position;
-        NormalizedCartesianCoordinates cartesian = new NormalizedSphericalCoordinates(spherical.data.x - Mathf.PI * (2f / 3f), spherical.data.y);
-        end_position = cartesian.data;
+        Vector3 start_position = self.GetComponent<Block>().center_of_mass();
+        NormalizedSphericalCoordinates spherical = new NormalizedCartesianCoordinates(start_position);
+        NormalizedSphericalCoordinates shifted_spherical = new NormalizedSphericalCoordinates(spherical.data.x + Mathf.PI*0.75f, spherical.data.y);
+        NormalizedCartesianCoordinates shifted_cartesian = shifted_spherical;
+        Vector3 end_position = shifted_cartesian.data;
+
+        rotator = Quaternion.FromToRotation(start_position, end_position);
     }
 
     public override void step()
     {
         float interpolation_fraction = Mathf.PingPong(Time.time / 10f, 1); // FIXME: AnimationCurve (repeat) with optional hook for buttons
-        Vector3 intermediate_position = Vector3.Slerp(start_position, end_position, interpolation_fraction); // FIXME: needs to work >=180 degrees
-        self.position = new NormalizedCartesianCoordinates(intermediate_position);
+        Quaternion intermediate_position = Quaternion.Slerp(Quaternion.identity, rotator, interpolation_fraction); // FIXME: needs to work >=180 degrees
+        self.position = new NormalizedCartesianCoordinates(intermediate_position * Vector3.forward);
+        self.direction = new NormalizedCartesianCoordinates(intermediate_position * Vector3.up);
     }
 
     public override void teleport() { }
 
-    private Vector3 start_position;
-    private Vector3 end_position;
+    private Quaternion rotator;
 }
 
 /*

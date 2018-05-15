@@ -1,16 +1,11 @@
 ﻿using UnityEngine;
+using Planetaria;
 
-namespace Planetaria
+public class RaycastUnitTests : MonoBehaviour
 {
-    public enum PlanetariaPhysicMaterialCombine
+    private void Update()
     {
-        Harmonic = 0, // Harmonic < Geometric < Average < Quadratic (definition)
-        Geometric = 1,
-        Average = 2,
-        Quadratic = 3,
-        Minumum = 4,
-        Multiply = 5,
-        Maximum = 6,
+        PlanetariaRaycastHit[] collision_info = PlanetariaPhysics.raycast_all(Arc.curve(Vector3.up, -Vector3.forward, Vector3.down), Mathf.PI);
     }
 }
 

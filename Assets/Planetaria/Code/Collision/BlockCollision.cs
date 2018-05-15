@@ -54,11 +54,11 @@ namespace Planetaria
             PlanetariaPhysicMaterial self = result.self.material;
             PlanetariaPhysicMaterial other = result.other.material;
 
-            result.elasticity = PlanetariaPhysic.blend(
+            result.elasticity = PlanetariaPhysics.blend(
                     self.elasticity, self.elasticity_combine,
                     other.elasticity, other.elasticity_combine);
 
-            result.friction = PlanetariaPhysic.blend(
+            result.friction = PlanetariaPhysics.blend(
                     self.friction, self.friction_combine,
                     other.friction, other.friction_combine);
 

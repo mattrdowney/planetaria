@@ -37,7 +37,6 @@ namespace Planetaria
         {
             if (fraction_loaded(level_index) != 1)
             {
-                Debug.Log("Loading " + level_index + "...");
                 SceneManager.LoadScene(level_index);
             }
         }

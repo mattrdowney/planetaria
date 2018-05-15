@@ -19,6 +19,14 @@ namespace Planetaria
             intersections = valid_arc_intersections(b, intersections);
             return intersections[0];
         }
+        
+        public static Vector3[] arc_path_intersections(Arc raycast_arc, Arc geometry_arc, float raycast_angle) // TODO: clean up, merge with arc_arc_intersection()
+        {
+            Vector3[] intersections = circle_circle_intersections(raycast_arc.circle(), geometry_arc.circle());
+            intersections = valid_arc_intersections(raycast_arc, intersections, raycast_angle);
+            intersections = valid_arc_intersections(geometry_arc, intersections);
+            return intersections;
+        }
 
         public static Vector3[] arc_path_intersections(Arc arc, Vector3 begin, Vector3 end, float extrusion)
         {
@@ -124,18 +132,25 @@ namespace Planetaria
             return magnitude_squared < sum_of_radii*sum_of_radii;
         }
 
-        public static Vector3[] valid_arc_intersections(Arc arc, Vector3[] intersections)
+        public static Vector3[] valid_arc_intersections(Arc arc, Vector3[] intersections,
+                optional<float> max_angle = new optional<float>())
         {
+            if (!max_angle.exists)
+            {
+                max_angle = arc.angle();
+            }
             Vector3[] results = new Vector3[0];
             for (int intersection_index = 0; intersection_index < intersections.Length; ++intersection_index)
             {
-                float angle = arc.position_to_angle(intersections[intersection_index]);
-                if (angle < arc.angle())
+                float intersection_angle = arc.position_to_angle(intersections[intersection_index]);
+                
+                if (intersection_angle < max_angle.data)
                 {
                     System.Array.Resize(ref results, results.Length + 1);
                     results[results.Length-1] = intersections[intersection_index];
                 }
             }
+                
             return results;
         }
     }

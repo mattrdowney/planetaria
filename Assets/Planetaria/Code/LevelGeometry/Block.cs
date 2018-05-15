@@ -13,7 +13,7 @@ namespace Planetaria
         /// <returns>A block matching its blueprint.</returns>
         public static GameObject block(List<GeospatialCurve> curves)
         {
-            GameObject result = new GameObject("Shape");
+            GameObject result = new GameObject("Block");
             Block block = result.AddComponent<Block>();
             block.curve_list = curves;
             block.generate_arcs();
@@ -45,6 +45,17 @@ namespace Planetaria
         }
 
         public bool active { get; set; }
+
+        public Vector3 center_of_mass() // FIXME: proper volume integration (for convex hulls)
+        {
+            Vector3 result = Vector3.zero;
+            foreach (GeospatialCurve curve in curve_list)
+            {
+                result += curve.point;
+            }
+            result.Normalize();
+            return result; // FIXME: Vector3.zero can be returned
+        }
 
         public bool empty()
         {
