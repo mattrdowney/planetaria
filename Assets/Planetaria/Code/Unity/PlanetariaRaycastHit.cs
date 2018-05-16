@@ -38,8 +38,17 @@ namespace Planetaria
             {
                 distance = 2*Mathf.PI - distance;
             }
-            positive_face_collision = true; // FIXME: HACK: LAZY: 
-            normal = raycast_arc.normal(raycast_arc.position_to_angle(intersection_point));
+            positive_face_collision = true; // FIXME: HACK: LAZY: // also dynamic changes
+
+            Transform internal_transform = block.GetComponent<Transform>();
+            Quaternion arc_to_world = internal_transform.rotation;
+            Quaternion world_to_arc = Quaternion.Inverse(arc_to_world);
+
+            Vector3 local_intersection_point = world_to_arc * intersection_point;
+            float angle = raycast_arc.position_to_angle(local_intersection_point);
+            Vector3 local_normal = raycast_arc.normal(angle);
+
+            normal = arc_to_world * local_normal;
             point = intersection_point;
             rigidbody = block.GetComponent<PlanetariaRigidbody>();
             transform = block.GetOrAddComponent<PlanetariaTransform>();

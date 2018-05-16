@@ -117,11 +117,22 @@ namespace Planetaria
             return true;
         }
 
-        public static Vector3[] raycast_intersection(Arc raycast_arc, Arc geometry_arc, float raycast_angle) // TODO: clean up, merge with arc_arc_intersection()
+        public static Vector3[] raycast_intersection(Arc raycast_arc, Arc geometry_arc, float raycast_angle,
+                optional<Transform> geometry_transform = new optional<Transform>())
         {
-            Vector3[] intersections = circle_circle_intersections(raycast_arc.circle(), geometry_arc.circle());
-            intersections = valid_arc_intersections(raycast_arc, intersections, raycast_angle);
-            intersections = valid_arc_intersections(geometry_arc, intersections);
+            GeospatialCircle relative_geometry_circle = geometry_arc.circle();
+            if (geometry_transform.exists)
+            {
+                Quaternion arc_to_world = geometry_transform.data.rotation;
+                Quaternion world_to_arc = Quaternion.Inverse(arc_to_world);
+                Debug.DrawRay(Vector3.zero, relative_geometry_circle.center, Color.green, 1f);
+                relative_geometry_circle = GeospatialCircle.circle(arc_to_world * relative_geometry_circle.center, relative_geometry_circle.radius);
+                Debug.DrawRay(Vector3.zero, relative_geometry_circle.center, Color.cyan, 1f);
+            }
+            Vector3[] intersections = circle_circle_intersections(raycast_arc.circle(), relative_geometry_circle);
+            Debug.Log(intersections.Length);
+            intersections = valid_arc_intersections(raycast_arc, intersections, new optional<Transform>(), raycast_angle);
+            intersections = valid_arc_intersections(geometry_arc, intersections, geometry_transform);
             return intersections;
         }
 
@@ -132,21 +143,33 @@ namespace Planetaria
             return magnitude_squared < sum_of_radii*sum_of_radii;
         }
 
-        public static Vector3[] valid_arc_intersections(Arc arc, Vector3[] intersections,
+        public static Vector3[] valid_arc_intersections(Arc arc, Vector3[] intersections, // TODO: research and development
+                optional<Transform> arc_transform = new optional<Transform>(),
                 optional<float> max_angle = new optional<float>())
         {
             if (!max_angle.exists)
             {
                 max_angle = arc.angle();
             }
+
             Vector3[] results = new Vector3[0];
             for (int intersection_index = 0; intersection_index < intersections.Length; ++intersection_index)
             {
-                float intersection_angle = arc.position_to_angle(intersections[intersection_index]);
-                
-                bool positive_raycast_contains = max_angle.data >= 0 && intersection_angle < max_angle.data;
-                bool negative_raycast_contains = max_angle.data < 0 && 2*Mathf.PI - intersection_angle < Mathf.Abs(max_angle.data);
-                if (positive_raycast_contains || negative_raycast_contains)
+                Vector3 intersection_point = intersections[intersection_index];
+                if (arc_transform.exists)
+                {
+                    Quaternion arc_to_world = arc_transform.data.rotation;
+                    Quaternion world_to_arc = Quaternion.Inverse(arc_to_world);
+                    intersection_point = world_to_arc * intersection_point;
+                }
+
+                Vector3 arc_left = arc.position(0);
+                Vector3 arc_center = arc.position(max_angle.data/2);
+                Vector3 arc_right = arc.position(max_angle.data);
+                Vector3 boundary_midpoint = (arc_left + arc_right)/2;
+
+                Plane arc_validator = new Plane(arc_center, boundary_midpoint);
+                if (arc_validator.GetSide(intersection_point))
                 {
                     System.Array.Resize(ref results, results.Length + 1);
                     results[results.Length-1] = intersections[intersection_index];

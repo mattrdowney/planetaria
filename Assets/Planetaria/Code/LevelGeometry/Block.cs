@@ -87,6 +87,7 @@ namespace Planetaria
             active = true;
             generate_arcs();
             transform = this.GetOrAddComponent<PlanetariaTransform>();
+            internal_transform = this.GetComponent<Transform>();
             PlanetariaCache.cache(this);
         }
 
@@ -105,6 +106,7 @@ namespace Planetaria
         public static PlanetariaPhysicMaterial fallback;
         public PlanetariaPhysicMaterial material = fallback;
         [System.NonSerialized] public new PlanetariaTransform transform;
+        [System.NonSerialized] public Transform internal_transform;
         [System.NonSerialized] private List<optional<Arc>> arc_list = new List<optional<Arc>>();
         [SerializeField] private List<GeospatialCurve> curve_list = new List<GeospatialCurve>();
         [SerializeField] public List<Block> ignore = new List<Block>();
