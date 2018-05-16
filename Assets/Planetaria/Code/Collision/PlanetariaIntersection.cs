@@ -19,14 +19,6 @@ namespace Planetaria
             intersections = valid_arc_intersections(b, intersections);
             return intersections[0];
         }
-        
-        public static Vector3[] arc_path_intersections(Arc raycast_arc, Arc geometry_arc, float raycast_angle) // TODO: clean up, merge with arc_arc_intersection()
-        {
-            Vector3[] intersections = circle_circle_intersections(raycast_arc.circle(), geometry_arc.circle());
-            intersections = valid_arc_intersections(raycast_arc, intersections, raycast_angle);
-            intersections = valid_arc_intersections(geometry_arc, intersections);
-            return intersections;
-        }
 
         public static Vector3[] arc_path_intersections(Arc arc, Vector3 begin, Vector3 end, float extrusion)
         {
@@ -125,6 +117,14 @@ namespace Planetaria
             return true;
         }
 
+        public static Vector3[] raycast_intersection(Arc raycast_arc, Arc geometry_arc, float raycast_angle) // TODO: clean up, merge with arc_arc_intersection()
+        {
+            Vector3[] intersections = circle_circle_intersections(raycast_arc.circle(), geometry_arc.circle());
+            intersections = valid_arc_intersections(raycast_arc, intersections, raycast_angle);
+            intersections = valid_arc_intersections(geometry_arc, intersections);
+            return intersections;
+        }
+
         public static bool sphere_sphere_intersection(Sphere left, Sphere right)
         {
             float magnitude_squared = (right.center - left.center).sqrMagnitude;
@@ -144,7 +144,9 @@ namespace Planetaria
             {
                 float intersection_angle = arc.position_to_angle(intersections[intersection_index]);
                 
-                if (intersection_angle < max_angle.data)
+                bool positive_raycast_contains = max_angle.data >= 0 && intersection_angle < max_angle.data;
+                bool negative_raycast_contains = max_angle.data < 0 && 2*Mathf.PI - intersection_angle < Mathf.Abs(max_angle.data);
+                if (positive_raycast_contains || negative_raycast_contains)
                 {
                     System.Array.Resize(ref results, results.Length + 1);
                     results[results.Length-1] = intersections[intersection_index];

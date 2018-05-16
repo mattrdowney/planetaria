@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Planetaria
 {
@@ -24,13 +25,53 @@ namespace Planetaria
         }
 
         /// <summary>
-        /// Inspector - Finds the collision points between an arc extrapolated to be distance long.
+        /// Inspector - Finds the collision points between an arc extrapolated to be distance long (ordered by distance)
+        /// </summary>
+        /// <param name="arc">A fragment that defines the arc in space (might not be fully used or return collisions after the end of the arc).</param>
+        /// <param name="distance">The distance to raycast (may be greater than or less than the length of the arc - or negative).</param>
+        /// <param name="layer_mask">The collision mask that defines which objects will be ignored.</param>
+        /// <returns>All of the collision points of the Raycast (listed exactly once).</returns>
+        public static PlanetariaRaycastHit raycast(Arc arc, float distance, int layer_mask = Physics.DefaultRaycastLayers)
+        {
+            return raycast_all(arc, distance, layer_mask)[0]; // HACK: TODO: optimize
+        }
+
+        /// <summary>
+        /// Inspector - Finds the collision points between an arc (ordered by distance)
+        /// </summary>
+        /// <param name="arc">The arc that will detect collisions.</param>
+        /// <returns>All of the collision points of the Raycast along the arc (listed exactly once).</returns>
+        public static PlanetariaRaycastHit[] raycast_all(Arc arc)
+        {
+            return raycast_all(arc, arc.length(), Physics.DefaultRaycastLayers);
+        }
+
+        /// <summary>
+        /// Inspector - Finds the collision points between an arc extrapolated to be distance long (ordered by distance)
         /// </summary>
         /// <param name="arc">A fragment that defines the arc in space (might not be fully used or return collisions after the end of the arc).</param>
         /// <param name="distance">The distance to raycast (may be greater than or less than the length of the arc - or negative).</param>
         /// <param name="layer_mask">The collision mask that defines which objects will be ignored.</param>
         /// <returns>All of the collision points of the Raycast (listed exactly once).</returns>
         public static PlanetariaRaycastHit[] raycast_all(Arc arc, float distance, int layer_mask = Physics.DefaultRaycastLayers)
+        {
+            List<PlanetariaRaycastHit> result = unordered_raycast_all(arc, distance, layer_mask).ToList();
+
+            RaycastSorter sorter = RaycastSorter.sorter(arc, distance);
+
+            result.Sort(sorter);
+
+            return result.ToArray();
+        }
+
+        /// <summary>
+        /// Inspector - Finds the collision points between an arc extrapolated to be distance long (the PlanetariaRaycastHit structs have no particular order)
+        /// </summary>
+        /// <param name="arc">A fragment that defines the arc in space (might not be fully used or return collisions after the end of the arc).</param>
+        /// <param name="distance">The distance to raycast (may be greater than or less than the length of the arc - or negative).</param>
+        /// <param name="layer_mask">The collision mask that defines which objects will be ignored.</param>
+        /// <returns>All of the collision points of the Raycast (listed exactly once).</returns>
+        private static PlanetariaRaycastHit[] unordered_raycast_all(Arc arc, float distance, int layer_mask)
         {
             //float angle = arc.angle(); // this would determine the intersections for the un-modified arc (ignoring distance)
             
@@ -61,10 +102,10 @@ namespace Planetaria
                 optional<Arc> geometry_arc = PlanetariaCache.arc_cache.get(sphere_collider);
                 if (geometry_arc.exists)
                 {
-                    Vector3[] intersections = PlanetariaIntersection.arc_path_intersections(arc, geometry_arc.data, distance); // TODO: verify distance is indeed the angle in this scenario
+                    Vector3[] intersections = PlanetariaIntersection.raycast_intersection(arc, geometry_arc.data, distance); // TODO: verify distance is indeed the angle in this scenario
                     foreach (Vector3 intersection in intersections)
                     {
-                        PlanetariaRaycastHit single_collision = PlanetariaRaycastHit.hit(arc, sphere_collider, intersection);
+                        PlanetariaRaycastHit single_collision = PlanetariaRaycastHit.hit(arc, sphere_collider, intersection, distance);
                         raycast_hits.Add(single_collision);
                     }
                 }

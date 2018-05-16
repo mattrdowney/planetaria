@@ -9,7 +9,7 @@ namespace Planetaria
         {
             XRDevice.SetTrackingSpaceType(TrackingSpaceType.Stationary);
             transform = this.GetOrAddComponent<PlanetariaTransform>();
-            GameObject dolly = new GameObject("Camera Dolly");
+            GameObject dolly = new GameObject("CameraDolly");
             dolly.transform.parent = this.gameObject.transform;
             dolly.hideFlags = HideFlags.DontSave;
             //dolly.hideFlags += HideFlags.HideInHierarchy;
