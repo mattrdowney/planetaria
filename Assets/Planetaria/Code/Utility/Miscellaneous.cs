@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 
@@ -31,6 +32,53 @@ namespace Planetaria
             return texture;
         }
 
+        /// <summary>
+        /// Mutator - Gets the designated object from the root of the scene if it exists; otherwise it creates and returns it.
+        /// </summary>
+        /// <param name="name">The name of the object (without double leading underscores i.e. "__").</param>
+        /// <returns>The found or newly added object from the root of the scene.</returns>
+        public static GameObject GetOrAddObject(string name)
+        {
+            name = "__" + name;
+            optional<GameObject> game_object = GameObject.Find("/" + name);
+            if (!game_object.exists)
+            {
+                game_object = new GameObject(name);
+            }
+            //child.hideFlags += HideFlags.HideInHierarchy; // TODO: if condition [debug_inspector] !Hide
+            return game_object.data;
+        }
+
+        /// <summary>
+        /// Mutator - Gets the attached child by its name if it exists; otherwise it adds and returns it.
+        /// </summary>
+        /// <param name="self">Calling object - extension method (implicit).</param>
+        /// <param name="name">The name of the object (without double leading underscores i.e. "__").</param>
+        /// <param name="hidden_internal">Whether the GameObject should be hidden unless debugging.</param>
+        /// <returns>The found or newly added child with given name.</returns>
+        public static GameObject GetOrAddChild(this Component self, string name, bool hidden_internal = true)
+        {
+            if (hidden_internal)
+            {
+                name = "__" + name;
+            }
+            optional<Transform> child = self.transform.Find(name);
+            if (!child.exists)
+            {
+                GameObject child_object = new GameObject(name);
+                child_object.transform.parent = self.transform;
+                child = child_object.transform;
+            }
+            //child.hideFlags += HideFlags.HideInHierarchy; // TODO: if condition [debug_inspector] !Hide
+            return child.data.gameObject;
+        }
+
+        /// <summary>
+        /// Mutator - Gets the attached Component if it exists; otherwise it adds and returns it.
+        /// </summary>
+        /// <typeparam name="Subtype">The type of the Component to be fetched.</typeparam>
+        /// <param name="self">Calling object - extension method (implicit).</param>
+        /// <returns>The found or newly added Component.</returns>
         public static Subtype GetOrAddComponent<Subtype>(this Component self) where Subtype : Component
         {
             optional<Subtype> result = self.GetComponent<Subtype>();
@@ -86,6 +134,26 @@ namespace Planetaria
                 return power(base_, exponent - 1);
             }
             return power(base_, exponent / 2) * power(base_, exponent / 2); // even
+        }
+
+        public static void serialize<Key, Value>(this Dictionary<Key, Value> dictionary, List<Key> keys, List<Value> values)
+        {
+            keys.Clear();
+            values.Clear();
+            foreach (KeyValuePair<Key, Value> pair in dictionary)
+            {
+                keys.Add(pair.Key);
+                values.Add(pair.Value);
+            }
+        }
+
+        public static void deserialize<Key, Value>(this Dictionary<Key, Value> dictionary, List<Key> keys, List<Value> values)
+        {
+            dictionary.Clear();
+            for (int pair_index = 0; pair_index < keys.Count; ++pair_index)
+            {
+                dictionary[keys[pair_index]] = values[pair_index];
+            }
         }
 
 #if UNITY_EDITOR

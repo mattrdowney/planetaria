@@ -2,7 +2,8 @@
 
 namespace Planetaria
 {
-    public class OctahedralUVCoordinates
+    [System.Serializable]
+    public struct OctahedralUVCoordinates
     {
         public Vector2 data
         {
@@ -42,8 +43,6 @@ namespace Planetaria
             return new NormalizedOctahedralCoordinates(cartesian);
         }
 
-        private Vector2 data_variable;
-
         /// <summary>
         /// Mutator - Wrap UV coordinates so that neither value is outside of [0,1].
         /// </summary>
@@ -76,6 +75,8 @@ namespace Planetaria
                 data_variable.y = Precision.just_below_one;
             }
         }
+
+        [SerializeField] private Vector2 data_variable;
     }
 }
 

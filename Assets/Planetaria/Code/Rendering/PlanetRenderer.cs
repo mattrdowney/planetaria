@@ -2,17 +2,12 @@
 
 namespace Planetaria
 {
-    [ExecuteInEditMode]
     public class PlanetRenderer : PlanetariaRenderer // CONSIDER: rename SphereRenderer or SurfaceRenderer?
     {
-        private void Awake()
+        private void OnValidate()
         {
-            set_transformation("PlanetRenderer");
-            set_renderer();
-            set_renderer_values();
-            set_layer();
-            internal_renderer.sharedMaterial = material;
             scalable = false;
+            internal_renderer.sharedMaterial = material;
         }
 
         protected sealed override void set_renderer()
@@ -24,7 +19,7 @@ namespace Planetaria
         }
 
         //private static Mesh shared_mesh_variable; // Needs observer pattern
-        private MeshFilter internal_mesh_filter;
+        [SerializeField] [HideInInspector] private MeshFilter internal_mesh_filter;
     }
 }
 

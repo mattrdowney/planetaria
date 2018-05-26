@@ -3,27 +3,25 @@ using UnityEngine.XR;
 
 namespace Planetaria
 {
+    [DisallowMultipleComponent]
+    [System.Serializable]
     public class PlanetariaCamera : MonoBehaviour
     {
         public void Awake()
         {
             XRDevice.SetTrackingSpaceType(TrackingSpaceType.Stationary);
-            transform = this.GetOrAddComponent<PlanetariaTransform>();
-            GameObject dolly = new GameObject("CameraDolly");
-            dolly.transform.parent = this.gameObject.transform;
-            dolly.hideFlags = HideFlags.DontSave;
-            //dolly.hideFlags += HideFlags.HideInHierarchy;
-            GameObject camera = new GameObject("Camera");
-            camera.transform.parent = dolly.gameObject.transform;
-            camera.hideFlags = HideFlags.DontSave;
-            //camera.hideFlags += HideFlags.HideInHierarchy;
+        }
 
+        public void Reset()
+        {
+            transform = this.GetOrAddComponent<PlanetariaTransform>();
+            GameObject dolly = this.GetOrAddChild("CameraDolly");
+            GameObject camera = dolly.transform.GetOrAddChild("Camera");
             dolly_transform = dolly.GetComponent<Transform>();
-            internal_camera = camera.AddComponent<Camera>();
-            camera.AddComponent<AudioListener>();
+            internal_camera = camera.transform.GetOrAddComponent<Camera>();
+            camera.transform.GetOrAddComponent<AudioListener>();
             internal_camera.useOcclusionCulling = false;
 
-            zoom = 0;
             dolly_transform.position = Vector3.forward*zoom;
             dolly_transform.localScale = Vector3.one; // CONSIDER: setting this to zero mirrors `XRDevice.SetTrackingSpaceType(TrackingSpaceType.Stationary);`
             internal_camera.nearClipPlane = near_clip_plane;
@@ -33,12 +31,10 @@ namespace Planetaria
         public const float near_clip_plane = 0.0078125f;
         public const float far_clip_plane = 2.0f;
 
-        public float zoom = 0;
-
-        protected new PlanetariaTransform transform;
-        protected Transform dolly_transform;
-        protected Transform stabilizer_transform;
-        protected Camera internal_camera;
+        [SerializeField] public float zoom = 0;
+        [SerializeField] [HideInInspector] protected new PlanetariaTransform transform;
+        [SerializeField] [HideInInspector] protected Transform dolly_transform;
+        [SerializeField] [HideInInspector] protected Camera internal_camera;
     }
 }
 

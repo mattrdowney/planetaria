@@ -11,7 +11,7 @@ namespace Planetaria
         {
             if (LevelCreatorEditor.debug_rendering)
             {
-                foreach (optional<Arc> arc in self.iterator())
+                foreach (optional<Arc> arc in self.generate_arcs())
                 {
                     if (arc.exists)
                     {

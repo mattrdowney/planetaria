@@ -2,9 +2,11 @@
 
 namespace Planetaria
 {
+    [DisallowMultipleComponent]
+    [System.Serializable]
     public class PlanetariaRigidbody : MonoBehaviour
     {
-        private void Awake()
+        private void Reset()
         {
             transform = this.GetOrAddComponent<PlanetariaTransform>();
             //collider = this.GetOrAddComponent<PlanetariaCollider>();
@@ -13,7 +15,7 @@ namespace Planetaria
             internal_rigidbody.useGravity = false;
         }
 
-        private void Start()
+        private void OnValidate()
         {
             previous_position = position = transform.position.data;
             get_acceleration();
@@ -250,11 +252,10 @@ namespace Planetaria
         // gravity
         [SerializeField] public Vector3[] gravity_wells;
 
-        private new PlanetariaTransform transform;
-        private Rigidbody internal_rigidbody;
-        //private new PlanetariaCollider collider;
-        private optional<CollisionObserver> observer;
-        private BlockCollision collision;
+        [SerializeField] [HideInInspector] private new PlanetariaTransform transform;
+        [SerializeField] [HideInInspector] private Rigidbody internal_rigidbody;
+        [SerializeField] [HideInInspector] private optional<CollisionObserver> observer;
+        [SerializeField] [HideInInspector] private BlockCollision collision;
         
         private float horizontal_velocity;
         private float vertical_velocity;

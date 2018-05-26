@@ -2,21 +2,16 @@
 
 namespace Planetaria
 {
-    [ExecuteInEditMode]
     public class VolumeRenderer : PlanetariaRenderer
     {
         // FIXME: For now, VolumeRenderer can draw the Mesh asset without alteration, but when zoom is implemented a flatten mesh shader will have to be implemented *with respect to (0,0,0), not the camera's position*
-        
-        private void Awake()
+
+        private void OnValidate()
         {
-            set_transformation("VolumeRenderer");
-            set_renderer();
-            set_renderer_values();
-            set_layer();
+            scalable = true;
+            internal_transformation.position = Vector3.forward;
             internal_renderer.sharedMaterial = material;
             internal_mesh_filter.sharedMesh = mesh;
-            internal_transformation.position = Vector3.forward;
-            scalable = true;
         }
 
         protected sealed override void set_renderer()
@@ -26,7 +21,7 @@ namespace Planetaria
         }
 
         [SerializeField] public Mesh mesh;
-        private MeshFilter internal_mesh_filter;
+        [SerializeField] [HideInInspector] private MeshFilter internal_mesh_filter;
     }
 }
 

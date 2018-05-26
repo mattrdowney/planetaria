@@ -1,35 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using System.Diagnostics;
+using UnityEditor;
+using UnityEngine;
 
 namespace Planetaria
 {
-    public class PlanetariaSubcache<Key, Value>
+    public class MasterBuild
     {
-        public void cache(Key key, Value value)
+        [MenuItem("Planetaria/Build Everything")]
+        public static void build_game()
         {
-            map_cache.Add(key, value);
+            // Get filename.
+            string path = EditorUtility.SaveFolderPanel("Choose Location of Built Game", "", "");
+            string[] levels = new string[] {"Assets/Planetaria/Levels/level_0.unity", "Assets/Planetaria/Levels/level_1.unity"};
+
+            // Build player.
+            BuildPipeline.BuildPlayer(levels, path + "/Planetaria.exe", BuildTarget.StandaloneWindows, BuildOptions.None);
+
+            // Run the game
+            Process process = new Process();
+            process.StartInfo.FileName = path + "/Planetaria.exe";
+            process.Start();
         }
-
-        public void uncache(Key key)
-        {
-            map_cache.Remove(key);
-        }
-
-        public optional<Value> get(Key key)
-        {
-            if (!map_cache.ContainsKey(key))
-            {
-                return new optional<Value>();
-            }
-
-            return map_cache[key];
-        }
-
-        public void clear()
-        {
-            map_cache.Clear();
-        }
-
-        private Dictionary<Key, Value> map_cache = new Dictionary<Key, Value>();
     }
 }
 

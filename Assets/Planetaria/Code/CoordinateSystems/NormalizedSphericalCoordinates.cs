@@ -2,7 +2,8 @@
 
 namespace Planetaria
 {
-    public class NormalizedSphericalCoordinates
+    [System.Serializable]
+    public struct NormalizedSphericalCoordinates
     {
         public Vector2 data
         {
@@ -61,7 +62,7 @@ namespace Planetaria
             }
         }
 
-        private Vector2 data_variable;
+        [SerializeField] private Vector2 data_variable;
     }
 }
 

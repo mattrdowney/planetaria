@@ -3,30 +3,39 @@
 namespace Planetaria
 {
     // FIXME: find a way to serialize
-    public class PlanetariaTransform : MonoBehaviour
+    [DisallowMultipleComponent]
+    [System.Serializable]
+    public class PlanetariaTransform : MonoBehaviour // CONSIDER: C#-style extension methods only: no need for separate object at risk of extra confusion; NOTE: some concepts like direction would no longer work in the same way
     {
-        private void Awake()
+        private void Start()
         {
-            Transform internal_transformation = this.GetComponent<Transform>();
-            cartesian_transform = internal_transformation;
-            internal_collider = internal_transformation.GetComponent<PlanetariaCollider>(); // FIXME: undefined behavior
-            internal_renderer = internal_transformation.GetComponent<PlanetariaRenderer>(); // FIXME:
+            internal_collider = internal_transform.GetComponent<PlanetariaCollider>(); // TODO: better way to do this - observer pattern
+            internal_renderer = internal_transform.GetComponent<PlanetariaRenderer>();
+        }
 
-            position = new NormalizedCartesianCoordinates(cartesian_transform.forward);
-            direction = new NormalizedCartesianCoordinates(Vector3.up);
-            scale = cartesian_transform.localScale.x;
+        private void Reset()
+        {
+            internal_transform = this.GetComponent<Transform>();
+            Debug.Log(internal_transform);
+        }
+
+        private void OnValidate()
+        {
+            position = new NormalizedCartesianCoordinates(internal_transform.forward);
+            direction = new NormalizedCartesianCoordinates(internal_transform.up);
+            scale = internal_transform.localScale.x;
         }
 
         public NormalizedCartesianCoordinates position
         {
             get
             {
-                return position_variable;
+                return new NormalizedCartesianCoordinates(position_variable);
             }
             set
             {
-                position_variable = value;
-                cartesian_transform.rotation = Quaternion.LookRotation(position.data, direction.data);
+                position_variable = value.data;
+                internal_transform.rotation = Quaternion.LookRotation(position_variable, direction_variable);
             }
         }
 
@@ -38,12 +47,12 @@ namespace Planetaria
         {
             get
             {
-                return direction_variable;
+                return new NormalizedCartesianCoordinates(direction_variable);
             }
             set
             {
-                direction_variable = value;
-                cartesian_transform.rotation = Quaternion.LookRotation(position.data, direction.data);
+                direction_variable = value.data;
+                internal_transform.rotation = Quaternion.LookRotation(position_variable, direction_variable);
             }
         }
 
@@ -70,14 +79,14 @@ namespace Planetaria
             }
         }
 
-        private Transform cartesian_transform;
-        private optional<PlanetariaCollider> internal_collider; // Observer pattern would be more elegant but slower
-        private optional<PlanetariaRenderer> internal_renderer;
+        [SerializeField] private Transform internal_transform; // FIXME: hide these 3
+        [SerializeField] private optional<PlanetariaCollider> internal_collider; // Observer pattern would be more elegant but slower
+        [SerializeField] private optional<PlanetariaRenderer> internal_renderer;
 
         //private Planetarium planetarium_variable; // cartesian_transform's position
-        private NormalizedCartesianCoordinates position_variable = new NormalizedCartesianCoordinates(Vector3.forward);
-        private NormalizedCartesianCoordinates direction_variable = new NormalizedCartesianCoordinates(Vector3.forward);
-        private float scale_variable;
+        [SerializeField] private Vector3 position_variable = Vector3.forward;
+        [SerializeField] private Vector3 direction_variable = Vector3.up;
+        [SerializeField] private float scale_variable;
     }
 }
 

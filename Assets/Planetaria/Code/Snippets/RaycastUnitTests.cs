@@ -5,16 +5,15 @@ public class RaycastUnitTests : MonoBehaviour
 {
     private void Start()
     {
-        GameObject camera_object = GameObject.Find("MainCamera/CameraDolly/Camera");
-        Debug.Log(camera_object);
-        camera = camera_object.GetComponent<Camera>();
+        GameObject camera_object = GameObject.Find("MainCamera/__CameraDolly/__Camera");
+        main_camera = camera_object.GetComponent<Camera>();
         player = GameObject.Find("Character").transform;
     }
 
     private void Update()
     {
         Vector3 screen_point = Input.mousePosition;
-        Vector3 mouse_position = camera.ScreenPointToRay(screen_point).direction;
+        Vector3 mouse_position = main_camera.ScreenPointToRay(screen_point).direction;
 
         Vector3 character_position = player.forward;
         PlanetariaRaycastHit[] collision_info = PlanetariaPhysics.raycast_all(Arc.line(character_position, mouse_position));
@@ -24,15 +23,15 @@ public class RaycastUnitTests : MonoBehaviour
         foreach (PlanetariaRaycastHit hit in collision_info)
         {
             color = blue ? Color.blue : Color.red;
-            Debug.DrawLine(last_position, hit.point, color, 1f);
+            Debug.DrawLine(last_position, hit.point, color);
             last_position = hit.point;
             blue = !blue;
         }
         color = blue ? Color.blue : Color.red;
-        Debug.DrawLine(last_position, mouse_position, color, 1f);
+        Debug.DrawLine(last_position, mouse_position, color);
     }
 
-    private Camera camera;
+    private Camera main_camera;
     private Transform player;
 }
 

@@ -3,10 +3,11 @@ using UnityEngine;
 
 namespace Planetaria
 {
+    [System.Serializable]
     public abstract class PlanetariaMonoBehaviour : MonoBehaviour
     {
-        protected abstract void OnConstruction();
         protected abstract void OnDestruction();
+        protected abstract void OnReset();
 
         protected delegate void CollisionDelegate(BlockCollision block_information);
         protected delegate void TriggerDelegate(PlanetariaCollider field_information);
@@ -19,7 +20,7 @@ namespace Planetaria
         protected optional<TriggerDelegate> OnFieldExit = null;
         protected optional<TriggerDelegate> OnFieldStay = null;
 
-        protected void Awake()
+        protected void Reset()
         {
             transform = this.GetOrAddComponent<PlanetariaTransform>();
             foreach (PlanetariaCollider collider in this.GetComponentsInChildren<PlanetariaCollider>())
@@ -28,7 +29,7 @@ namespace Planetaria
                 observers.Add(collider.get_observer());
             }
             // FIXME: still need to cache (properly)
-            OnConstruction();
+            OnReset();
         }
 
         protected void OnDestroy()
@@ -89,8 +90,8 @@ namespace Planetaria
             }
         }
 
-        public new PlanetariaTransform transform;
-        private List<CollisionObserver> observers = new List<CollisionObserver>();
+        [SerializeField] public new PlanetariaTransform transform;
+        [SerializeField] private List<CollisionObserver> observers = new List<CollisionObserver>();
     }
 }
 

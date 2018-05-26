@@ -2,18 +2,13 @@
 
 namespace Planetaria
 {
-    [ExecuteInEditMode]
     public class AreaRenderer : PlanetariaRenderer
     {
-        private void Awake()
+        private void OnValidate()
         {
-            set_transformation("AreaRenderer");
-            set_renderer();
-            set_renderer_values();
-            set_layer();
-            internal_renderer.sharedMaterial = material;
-            internal_transformation.position = Vector3.forward;
             scalable = true;
+            internal_transformation.position = Vector3.forward;
+            internal_renderer.sharedMaterial = material;
         }
 
         protected sealed override void set_renderer()

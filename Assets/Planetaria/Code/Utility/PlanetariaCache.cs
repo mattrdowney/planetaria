@@ -1,98 +1,160 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Planetaria
 {
     // TODO: Multiton Design Pattern for multiple levels?
-    public static class PlanetariaCache
+    [DisallowMultipleComponent]
+    [System.Serializable]
+    public class PlanetariaCache : MonoBehaviour
     {
-        public static void cache(Block block)
+        public static PlanetariaCache instance()
         {
-            if (Application.isPlaying)
+            if (internal_singleton_instance.exists)
             {
-                foreach (optional<Arc> arc in block.iterator())
+                return internal_singleton_instance.data;
+            }
+            GameObject game_object = Miscellaneous.GetOrAddObject("GameMaster");
+            internal_singleton_instance = game_object.transform.GetOrAddComponent<PlanetariaCache>();
+            return internal_singleton_instance.data;
+        }
+
+        public optional<Arc> arc_fetch(SphereCollider key)
+        {
+            optional<Block> block = PlanetariaCache.instance().block_fetch(key);
+            if (!block.exists)
+            {
+                return new optional<Arc>();
+            }
+            optional<int> arc_index = PlanetariaCache.instance().index(key);
+            if (!arc_index.exists)
+            {
+                return new optional<Arc>();
+            }
+            optional<Arc> arc = block.data.iterator()[arc_index.data];
+            return arc;
+        }
+
+        public optional<Block> block_fetch(SphereCollider key)
+        {
+            if (!block_cache.ContainsKey(key))
+            {
+                return new optional<Block>();
+            }
+            return block_cache[key];
+        }
+
+        public optional<PlanetariaCollider> collider_fetch(SphereCollider key)
+        {
+            if (!collider_cache.ContainsKey(key))
+            {
+                return new optional<PlanetariaCollider>();
+            }
+            return collider_cache[key];
+        }
+
+        public optional<int> index(SphereCollider key)
+        {
+            if (!index_cache.ContainsKey(key))
+            {
+                return new optional<int>();
+            }
+            return index_cache[key];
+        }
+
+        public void cache(Block block)
+        {
+            int arc_index = 0;
+            foreach (optional<Arc> arc in block.iterator())
+            {
+                if (arc.exists)
                 {
-                    if (arc.exists)
-                    {
-                        GameObject game_object = new GameObject("Planetaria Collider");
-                        game_object.transform.parent = block.gameObject.transform;
-                        game_object.hideFlags = HideFlags.DontSave;
+                    GameObject game_object = block.GetOrAddChild("Collider", false);
+                    PlanetariaCollider collider = game_object.transform.GetOrAddComponent<PlanetariaCollider>();
+                    SphereCollider sphere_collider = collider.get_sphere_collider();
 
-                        PlanetariaCollider collider = game_object.AddComponent<PlanetariaCollider>();
-                        SphereCollider sphere_collider = collider.get_sphere_collider();
+                    optional<Transform> transformation = (block.is_dynamic ? block.gameObject.transform : null);
+                    Sphere[] colliders = Sphere.arc_collider(transformation, arc.data);
+                    collider.set_colliders(colliders);
+                    collider.is_field = false;
+                    collider.material = block.material;
+                    sphere_collider.isTrigger = true;
 
-                        optional<Transform> transformation = (block.is_dynamic ? block.gameObject.transform : null);
-                        Sphere[] colliders = Sphere.arc_collider(transformation, arc.data);
-                        collider.set_colliders(colliders);
-                        collider.is_field = false;
-                        collider.material = block.material;
-                        sphere_collider.isTrigger = true;
-
-                        PlanetariaCache.arc_cache.cache(sphere_collider, arc.data);
-                        PlanetariaCache.block_cache.cache(sphere_collider, block);
-                        PlanetariaCache.collider_cache.cache(sphere_collider, collider);
-                    }
+                    PlanetariaCache.instance().index_cache.Add(sphere_collider, arc_index);
+                    PlanetariaCache.instance().block_cache.Add(sphere_collider, block);
+                    PlanetariaCache.instance().collider_cache.Add(sphere_collider, collider);
                 }
+                ++arc_index;
             }
         }
 
-        public static void cache(Field field)
+        public void cache(Field field)
         {
-            if (Application.isPlaying)
+            GameObject game_object = field.GetOrAddChild("Collider", false);
+            PlanetariaCollider collider = game_object.transform.GetOrAddComponent<PlanetariaCollider>();
+            SphereCollider sphere_collider = collider.get_sphere_collider();
+
+            optional<Transform> transformation = (field.is_dynamic ? field.gameObject.transform : null);
+
+            collider.is_field = true;
+            sphere_collider.isTrigger = true;
+
+            Sphere[] colliders = new Sphere[Enumerable.Count(field.iterator())];
+            int current_index = 0;
+            foreach (Arc arc in field.iterator())
             {
-                GameObject game_object = new GameObject("Planetaria Collider");
-                game_object.transform.parent = field.gameObject.transform;
-                game_object.hideFlags = HideFlags.DontSave;
+                colliders[current_index] = Sphere.uniform_collider(transformation, arc.floor());
+                ++current_index;
+            }
+            collider.set_colliders(colliders);
 
-                PlanetariaCollider collider = game_object.AddComponent<PlanetariaCollider>();
-                SphereCollider sphere_collider = collider.get_sphere_collider();
+            PlanetariaCache.instance().collider_cache.Add(sphere_collider, collider);
+        }
 
-                optional<Transform> transformation = (field.is_dynamic ? field.gameObject.transform : null);
-
-                collider.is_field = true;
-                sphere_collider.isTrigger = true;
-
-                Sphere[] colliders = new Sphere[Enumerable.Count(field.iterator())];
-                int current_index = 0;
-                foreach (Arc arc in field.iterator())
-                {
-                    colliders[current_index] = Sphere.uniform_collider(transformation, arc.floor());
-                    ++current_index;
-                }
-                collider.set_colliders(colliders);
-
-                PlanetariaCache.collider_cache.cache(sphere_collider, collider);
+        public void uncache(MonoBehaviour script)
+        {
+            foreach (PlanetariaCollider collider in script.GetComponentsInChildren<PlanetariaCollider>())
+            {
+                Destroy(collider.gameObject);
             }
         }
 
-        public static void uncache(Block block)
+        public void uncache(PlanetariaCollider collider)
         {
-            if (Application.isPlaying)
+            PlanetariaCache.instance().index_cache.Remove(collider.get_sphere_collider());
+            PlanetariaCache.instance().block_cache.Remove(collider.get_sphere_collider());
+            PlanetariaCache.instance().collider_cache.Remove(collider.get_sphere_collider());
+        }
+
+        public void cache_all()
+        {
+            // FIXME: only destroy/create GameObjects on arc_list change to prevent unneccessary level edits between user sessions.
+            uncache_all();
+            foreach (Block block in GameObject.FindObjectsOfType<Block>())
             {
-                foreach (SphereCollider collider in block.gameObject.GetComponentsInChildren<SphereCollider>())
-                {
-                    PlanetariaCache.arc_cache.uncache(collider);
-                    PlanetariaCache.block_cache.uncache(collider);
-                    PlanetariaCache.collider_cache.uncache(collider);
-                }
+                block.generate_arcs();
+                PlanetariaCache.instance().cache(block);
+            }
+            foreach (Field field in GameObject.FindObjectsOfType<Field>())
+            {
+                PlanetariaCache.instance().cache(field);
             }
         }
 
-        public static void uncache(Field field)
+        public void uncache_all()
         {
-            if (Application.isPlaying)
-            {
-                optional<SphereCollider> collider = field.gameObject.GetComponent<SphereCollider>(); // this should always happen
-                if (collider.exists)
-                {
-                    PlanetariaCache.collider_cache.uncache(collider.data);
-                }
-            }
+            index_cache.Clear();
+            block_cache.Clear();
+            collider_cache.Clear();
         }
-    
-        [System.NonSerialized] public static PlanetariaSubcache<SphereCollider, Arc> arc_cache = new PlanetariaSubcache<SphereCollider, Arc>();
-        [System.NonSerialized] public static PlanetariaSubcache<SphereCollider, Block> block_cache = new PlanetariaSubcache<SphereCollider, Block>();
-        [System.NonSerialized] public static PlanetariaSubcache<SphereCollider, PlanetariaCollider> collider_cache = new PlanetariaSubcache<SphereCollider, PlanetariaCollider>();
+
+        [System.NonSerialized] private Dictionary<SphereCollider, int> index_cache = new Dictionary<SphereCollider, int>();
+        [System.NonSerialized] private Dictionary<SphereCollider, Block> block_cache = new Dictionary<SphereCollider, Block>();
+        [System.NonSerialized] private Dictionary<SphereCollider, PlanetariaCollider> collider_cache = new Dictionary<SphereCollider, PlanetariaCollider>();
+
+        private static optional<PlanetariaCache> internal_singleton_instance = new optional<PlanetariaCache>();
     }
 }
 

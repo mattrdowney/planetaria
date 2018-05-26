@@ -6,14 +6,17 @@ namespace Planetaria
     {
         public int target_level = 1;
 
-        protected override void OnConstruction()
+        private void Awake()
         {
             OnFieldStay.data = on_field_stay;
         }
 
+        protected override void OnReset()
+        {
+        }
+
         protected override void OnDestruction()
         {
-            
         }
 
         private void on_field_stay(PlanetariaCollider collider)

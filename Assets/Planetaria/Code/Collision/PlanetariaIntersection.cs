@@ -124,13 +124,11 @@ namespace Planetaria
             if (geometry_transform.exists)
             {
                 Quaternion arc_to_world = geometry_transform.data.rotation;
-                Quaternion world_to_arc = Quaternion.Inverse(arc_to_world);
                 Debug.DrawRay(Vector3.zero, relative_geometry_circle.center, Color.green, 1f);
                 relative_geometry_circle = GeospatialCircle.circle(arc_to_world * relative_geometry_circle.center, relative_geometry_circle.radius);
                 Debug.DrawRay(Vector3.zero, relative_geometry_circle.center, Color.cyan, 1f);
             }
             Vector3[] intersections = circle_circle_intersections(raycast_arc.circle(), relative_geometry_circle);
-            Debug.Log(intersections.Length);
             intersections = valid_arc_intersections(raycast_arc, intersections, new optional<Transform>(), raycast_angle);
             intersections = valid_arc_intersections(geometry_arc, intersections, geometry_transform);
             return intersections;

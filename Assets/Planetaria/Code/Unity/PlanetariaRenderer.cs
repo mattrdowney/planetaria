@@ -2,9 +2,18 @@
 
 namespace Planetaria
 {
-    [ExecuteInEditMode] // FIXME: scene file stores a new Renderer reference each save due to implementation, ISerializationCallbackReceiver can't delete objects either
+    [DisallowMultipleComponent]
+    [System.Serializable]
     public abstract class PlanetariaRenderer : MonoBehaviour
     {
+        private void Reset()
+        {
+            set_transformation("Renderer");
+            set_renderer();
+            set_renderer_values();
+            set_layer();
+        }
+
         protected abstract void set_renderer();
 
         protected void set_layer()
@@ -25,15 +34,8 @@ namespace Planetaria
 
         protected void set_transformation(string name)
         {
-            optional<Transform> child = this.transform.Find(name);
-            if (!child.exists)
-            {
-                child = new GameObject(name).transform;
-                child.data.parent = this.transform;
-                child.data.hideFlags = HideFlags.DontSave;
-                //child.data.hideFlags |= HideFlags.HideInHierarchy; // FIXME: when Planetaria goes to 1.0, this should be added.
-            }
-            internal_transformation = child.data.GetComponent<Transform>();
+            GameObject child = this.GetOrAddChild(name);
+            internal_transformation = child.GetComponent<Transform>();
         }
 
         /// <summary>
@@ -83,8 +85,8 @@ namespace Planetaria
         private float scale_variable;
         protected bool scalable;
 
-        protected Transform internal_transformation;
-        protected Renderer internal_renderer;
+        [SerializeField] protected Transform internal_transformation;
+        [SerializeField] protected Renderer internal_renderer;
 
         protected static short next_available_order(int layer_identifier)
         {
@@ -100,7 +102,7 @@ namespace Planetaria
             return order;
         }
 
-        private static short order_identifier = short.MinValue; // CONSIDER: use layer map again if convenient
+        [SerializeField] [HideInInspector] private static short order_identifier = short.MinValue; // CONSIDER: use layer map again if convenient
     }
 }
 

@@ -99,10 +99,10 @@ namespace Planetaria
             List<PlanetariaRaycastHit> raycast_hits = new List<PlanetariaRaycastHit>();
             foreach (SphereCollider sphere_collider in colliders)
             {
-                optional<Arc> geometry_arc = PlanetariaCache.arc_cache.get(sphere_collider);
+                optional<Arc> geometry_arc = PlanetariaCache.instance().arc_fetch(sphere_collider);
                 if (geometry_arc.exists)
                 {
-                    optional<Block> block = PlanetariaCache.block_cache.get(sphere_collider);
+                    optional<Block> block = PlanetariaCache.instance().block_fetch(sphere_collider);
                     optional<Transform> geometry_transform = block.exists && block.data.is_dynamic ? block.data.internal_transform : new optional<Transform>();
                     Vector3[] intersections = PlanetariaIntersection.raycast_intersection(arc, geometry_arc.data, distance, geometry_transform); // TODO: verify distance is indeed the angle in this scenario
                     foreach (Vector3 intersection in intersections)

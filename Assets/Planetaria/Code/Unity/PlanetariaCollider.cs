@@ -4,8 +4,26 @@ using UnityEngine;
 
 namespace Planetaria
 {
+    [DisallowMultipleComponent]
+    [System.Serializable]
     public class PlanetariaCollider : MonoBehaviour // FIXME: while not incredibly complicated, I think there might be a way to simplify this
     {
+        private void Awake()
+        {
+            StartCoroutine(wait_for_fixed_update());
+        }
+
+        private void Reset()
+        {
+            GameObject internal_game_object = this.GetOrAddChild("InternalCollider");
+            internal_collider = internal_game_object.transform.GetOrAddComponent<SphereCollider>();
+            internal_transform = this.GetComponent<Transform>();
+            planetaria_transform = this.GetOrAddComponent<PlanetariaTransform>();
+            rigidbody = this.GetComponentInParent<PlanetariaRigidbody>();
+            observer.initialize(planetaria_transform, this.GetComponentsInParent<PlanetariaMonoBehaviour>());
+            // add to collision_map and trigger_map for all objects currently intersecting (via Physics.OverlapBox()) // CONSIDER: I think Unity Fixed this, right?
+        }
+
         public float scale
         {
             get
@@ -76,20 +94,6 @@ namespace Planetaria
             }
         }
 
-        private void Awake()
-        {
-            GameObject child_for_collision = new GameObject("SphereCollider");
-            child_for_collision.transform.parent = this.gameObject.transform;
-            internal_collider = child_for_collision.transform.GetOrAddComponent<SphereCollider>();
-            internal_transform = this.GetOrAddComponent<Transform>();
-            planetaria_transform = this.GetOrAddComponent<PlanetariaTransform>();
-            rigidbody = this.GetComponent<PlanetariaRigidbody>();
-            observer.initialize(planetaria_transform, this.GetComponentsInParent<PlanetariaMonoBehaviour>());
-            // add to collision_map and trigger_map for all objects currently intersecting (via Physics.OverlapBox()) // CONSIDER: I think Unity Fixed this, right?
-
-            StartCoroutine(wait_for_fixed_update());
-        }
-
         private void OnTriggerStay(Collider collider)
         {
             optional<SphereCollider> sphere_collider = collider as SphereCollider;
@@ -98,7 +102,7 @@ namespace Planetaria
                 Debug.LogError("This should never happen");
                 return;
             }
-            optional<PlanetariaCollider> other_collider = PlanetariaCache.collider_cache.get(sphere_collider.data);
+            optional<PlanetariaCollider> other_collider = PlanetariaCache.instance().collider_fetch(sphere_collider.data);
             if (!other_collider.exists)
             {
                 Debug.LogError("This should never happen");
@@ -117,11 +121,11 @@ namespace Planetaria
                     {
                         if (rigidbody.exists)
                         {
-                            optional<Block> block = PlanetariaCache.block_cache.get(sphere_collider.data);
+                            optional<Block> block = PlanetariaCache.instance().block_fetch(sphere_collider.data);
                             if (block.exists &&
                                     (!observer.colliding() || !observer.collisions()[0].block.ignore.Contains(block.data))) // Should we ignore the new block? // FIXME: private API exposure (optimizes at a cost of readability)
                             {
-                                optional<Arc> arc = PlanetariaCache.arc_cache.get(sphere_collider.data);
+                                optional<Arc> arc = PlanetariaCache.instance().arc_fetch(sphere_collider.data);
                                 Vector3 position = planetaria_transform.position.data;
                                 if (block.data.is_dynamic)
                                 {
@@ -147,13 +151,18 @@ namespace Planetaria
             }
         }
 
+        private void OnDestroy()
+        {
+            PlanetariaCache.instance().uncache(this);
+        }
+
         [SerializeField] public PlanetariaPhysicMaterial material = fallback;
-        private CollisionObserver observer = new CollisionObserver();
-        private Transform internal_transform;
-        private PlanetariaTransform planetaria_transform;
-        private SphereCollider internal_collider;
-        private new optional<PlanetariaRigidbody> rigidbody;
-        [SerializeField] public Sphere[] colliders = new Sphere[0]; // FIXME: private
+        [SerializeField] [HideInInspector] private CollisionObserver observer = new CollisionObserver();
+        [SerializeField] [HideInInspector] private Transform internal_transform;
+        [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;
+        [SerializeField] [HideInInspector] private SphereCollider internal_collider;
+        [SerializeField] [HideInInspector] public new optional<PlanetariaRigidbody> rigidbody;
+        [SerializeField] [HideInInspector] public Sphere[] colliders = new Sphere[0]; // FIXME: private
         private float scale_variable;
         public bool scalable = false;
         private bool is_field_variable = false;

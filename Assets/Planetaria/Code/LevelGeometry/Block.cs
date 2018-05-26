@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace Planetaria
 {
+    [DisallowMultipleComponent]
     [System.Serializable]
-    [ExecuteInEditMode]
     public class Block : MonoBehaviour
     {
         /// <summary>
@@ -39,9 +39,9 @@ namespace Planetaria
             return ArcVisitor.arc_visitor(arc_list, arc_list_index);
         }
 
-        public IEnumerable<optional<Arc>> iterator() // TODO: check
+        public List<optional<Arc>> iterator()
         {
-            return arc_list;
+            return new List<optional<Arc>>(arc_list);
         }
 
         public bool active { get; set; }
@@ -62,9 +62,13 @@ namespace Planetaria
             return curve_list.Count == 0;
         }
 
-        private void generate_arcs()
+        /// <summary>
+        /// Inspector - (Unoptimized, use in editor only; otherwise use iterator())
+        /// </summary>
+        /// <returns>A new list of collision geometry.</returns>
+        public List<optional<Arc>> generate_arcs()
         {
-            arc_list = new List<optional<Arc>>();
+            List<optional<Arc>> result = new List<optional<Arc>>();
             for (int edge = 0; edge < curve_list.Count; ++edge)
             {
                 GeospatialCurve[] curves = new GeospatialCurve[3];
@@ -74,42 +78,47 @@ namespace Planetaria
                 }
                 Arc left_arc = Arc.curve(curves[0].point, curves[0].slope, curves[1].point);
                 Arc right_arc = Arc.curve(curves[1].point, curves[1].slope, curves[2].point);
-                arc_list.Add(left_arc);
+                result.Add(left_arc);
                 if (Vector3.Angle(left_arc.normal(left_arc.angle()), right_arc.normal(0)) > Precision.tolerance)
                 {
-                    arc_list.Add(Arc.corner(left_arc, right_arc));
+                    result.Add(Arc.corner(left_arc, right_arc));
                 }
             }
+
+            return result;
         }
 
         private void Start()
         {
-            active = true;
-            generate_arcs();
-            transform = this.GetOrAddComponent<PlanetariaTransform>();
-            internal_transform = this.GetComponent<Transform>();
-            PlanetariaCache.cache(this);
+            arc_list = generate_arcs();
+            PlanetariaCache.instance().cache(this);
         }
 
         private void Reset()
         {
-            generate_arcs();
+            curve_list = new List<GeospatialCurve>();
+            ignore = new List<Block>();
+
+            active = true;
+            transform = this.GetOrAddComponent<PlanetariaTransform>();
+            internal_transform = this.GetComponent<Transform>();
         }
 
         private void OnDestroy()
         {
-            PlanetariaCache.uncache(this);
+            PlanetariaCache.instance().uncache(this);
         }
         
-        public bool is_dynamic;
-        public bool is_platform;
         public static PlanetariaPhysicMaterial fallback;
-        public PlanetariaPhysicMaterial material = fallback;
-        [System.NonSerialized] public new PlanetariaTransform transform;
-        [System.NonSerialized] public Transform internal_transform;
-        [System.NonSerialized] private List<optional<Arc>> arc_list = new List<optional<Arc>>();
-        [SerializeField] private List<GeospatialCurve> curve_list = new List<GeospatialCurve>();
-        [SerializeField] public List<Block> ignore = new List<Block>();
+        [SerializeField] public bool is_dynamic; // FIXME: move to PlanetariaRigidbody
+        [SerializeField] public bool is_platform;
+        [SerializeField] public PlanetariaPhysicMaterial material = fallback;
+        [SerializeField] [HideInInspector] public new PlanetariaTransform transform;
+        [SerializeField] [HideInInspector] public Transform internal_transform;
+        [SerializeField] private List<GeospatialCurve> curve_list;
+        [SerializeField] public List<Block> ignore;
+
+        [System.NonSerialized] public List<optional<Arc>> arc_list;
     }
 }
 

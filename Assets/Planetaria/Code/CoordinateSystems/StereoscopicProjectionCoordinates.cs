@@ -2,9 +2,14 @@
 
 namespace Planetaria
 {
-    public class StereoscopicProjectionCoordinates
+    [System.Serializable]
+    public struct StereoscopicProjectionCoordinates
     {
-        public Vector2 data { get; set; }
+        public Vector2 data
+        {
+            get { return data_variable; }
+            set { data_variable = value; }
+        }
 
         /// <summary>
         /// Constructor - Stores stereoscopic projection coordinates in a wrapper class.
@@ -12,7 +17,7 @@ namespace Planetaria
         /// <param name="stereoscopic_projection">The stereoscopic projection coordinates on plane z=0.</param>
         public StereoscopicProjectionCoordinates(Vector2 stereoscopic_projection)
         {
-            data = stereoscopic_projection;
+            data_variable = stereoscopic_projection;
         }
 
         /// <summary>
@@ -33,6 +38,8 @@ namespace Planetaria
 
             return new NormalizedCartesianCoordinates(new Vector3(x, y, z));
         }
+
+        [SerializeField] private Vector2 data_variable;
     }
 }
 

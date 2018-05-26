@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Planetaria
 {
+    [System.Serializable]
     public class CollisionObserver
     {
         public CollisionObserver() { }
@@ -220,16 +221,16 @@ namespace Planetaria
             //current_fields.Remove(field); // Don't want invalidated iterators - swap at end of loop
         }
 
-        private PlanetariaTransform planetaria_transformation;
-        private PlanetariaCollider planetaria_collider;
-        private optional<PlanetariaRigidbody> planetaria_rigidbody;
-        private List<PlanetariaMonoBehaviour> observers = new List<PlanetariaMonoBehaviour>();
+        [SerializeField] private PlanetariaTransform planetaria_transformation;
+        [SerializeField] private PlanetariaCollider planetaria_collider;
+        [SerializeField] private optional<PlanetariaRigidbody> planetaria_rigidbody;
+        [SerializeField] private List<PlanetariaMonoBehaviour> observers = new List<PlanetariaMonoBehaviour>();
 
-        private List<BlockCollision> current_collisions = new List<BlockCollision>();
-        private List<BlockCollision> collision_candidates = new List<BlockCollision>();
+        [SerializeField] private List<BlockCollision> current_collisions = new List<BlockCollision>();
+        [SerializeField] private List<BlockCollision> collision_candidates = new List<BlockCollision>();
 
-        private List<PlanetariaCollider> current_fields = new List<PlanetariaCollider>();
-        private List<PlanetariaCollider> field_candidates = new List<PlanetariaCollider>();
+        [SerializeField] private List<PlanetariaCollider> current_fields = new List<PlanetariaCollider>();
+        [SerializeField] private List<PlanetariaCollider> field_candidates = new List<PlanetariaCollider>();
     }
 }
 

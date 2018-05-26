@@ -1,6 +1,8 @@
-﻿namespace Planetaria
+﻿using UnityEngine;
+
+namespace Planetaria
 {
-    [System.Serializable]
+    [System.Serializable] // While this is one of my favorite types, I might have to forgo serializing it [I can still use it, just not between Unity sessions]
     public struct optional<Type> // https://stackoverflow.com/questions/16199227/optional-return-in-c-net
     {
         public bool exists
@@ -43,7 +45,7 @@
         public static bool operator ==(optional<Type> left, optional<Type> right)
         {
             bool inequal_existance = (left.exists != right.exists);
-            bool inequal_value = (left.exists && right.exists && !left.data.Equals(right.data));
+            bool inequal_value = (left.exists && right.exists && left.data.Equals(right.data));
             bool inequal = inequal_existance || inequal_value;
             return !inequal;
         }
@@ -74,8 +76,8 @@
             return data.ToString();
         }
 
-        [UnityEngine.SerializeField] private bool exists_variable;
-        [UnityEngine.SerializeField] private Type data_variable;
+        [SerializeField] private bool exists_variable;
+        [SerializeField] private Type data_variable;
     }
 }
 

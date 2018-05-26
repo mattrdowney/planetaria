@@ -2,6 +2,7 @@
 
 namespace Planetaria
 {
+    [System.Serializable]
     public struct NormalizedOctahedralCoordinates
     {
         public Vector3 data
@@ -56,7 +57,7 @@ namespace Planetaria
             data_variable /= length;
         }
 
-        private Vector3 data_variable;
+        [SerializeField] private Vector3 data_variable;
     }
 }
 

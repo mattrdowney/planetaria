@@ -2,7 +2,8 @@
 
 namespace Planetaria
 {
-    public class NormalizedCartesianCoordinates
+    [System.Serializable]
+    public struct NormalizedCartesianCoordinates
     {
         public Vector3 data
         {
@@ -81,11 +82,18 @@ namespace Planetaria
             {
                 return;
             }
- 
-            data_variable.Normalize();
+
+            if (data_variable != Vector3.zero)
+            {
+                data_variable.Normalize();
+            }
+            else // No point should be at the origin
+            {
+                data_variable = Vector3.up; // TODO: is this breaking anything?
+            }
         }
     
-        private Vector3 data_variable;
+        [SerializeField] private Vector3 data_variable;
     }
 }
 

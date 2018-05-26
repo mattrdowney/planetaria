@@ -6,7 +6,8 @@ namespace Planetaria
     /// An immutable class that stores an arc along the surface of a unit sphere.
     /// Includes convex corners, great edges, convex edges, and concave edges. Cannot store concave corners!
     /// </summary>
-    public class Arc
+    [System.Serializable]
+    public struct Arc // possibility: Quaternion to store right/up/forward (conveniently 24 bytes: https://stackoverflow.com/questions/1082311/why-should-a-net-struct-be-less-than-16-bytes)
     {
         /// <summary>
         /// Constructor - Creates convex, concave, or great arcs.
@@ -207,7 +208,7 @@ namespace Planetaria
         {
             return new optional<Arc>(); // Concave corners are not actually arcs; it's complicated...
         }
-
+        
         /// <summary>
         /// Constructor - Create a convex corner arc.
         /// </summary>

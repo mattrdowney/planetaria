@@ -4,6 +4,8 @@ using UnityEngine;
 
 namespace Planetaria
 {
+    [DisallowMultipleComponent]
+    [System.Serializable]
     public class Field : MonoBehaviour
     {   
         public static GameObject field(List<GeospatialCurve> curves) // TODO: add convex check asserts.
@@ -15,34 +17,19 @@ namespace Planetaria
             return result;
         }
 
-        /// <summary>
-        /// Checks if the center of mass (position) is below all of the planes.
-        /// Special note: if a portion of the extruded volume is inside all planes, this function might still return false.
-        /// </summary>
-        /// <param name="position">A position on a unit-sphere.</param>
-        /// <param name="radius">The radius [0,PI/2] to extrude.</param>
-        /// <returns>True if position is below (inside) all of the planes; false otherwise.</returns>
-        public bool contains(Vector3 position, float radius = 0f)
-        {
-            if (!active)
-            {
-                return false;
-            }
-
-            // likely redundant with PlanetariaCollider to do extra checks
-
-            return true;
-        }
-
         private void Start()
         {
+            PlanetariaCache.instance().cache(this);
+        }
+
+        private void Reset()
+        {
             transform = this.GetOrAddComponent<PlanetariaTransform>();
-            PlanetariaCache.cache(this);
         }
 
         private void OnDestroy()
         {
-            PlanetariaCache.uncache(this);
+            PlanetariaCache.instance().uncache(this);
         }
 
         public IEnumerable<Arc> iterator() // TODO: check

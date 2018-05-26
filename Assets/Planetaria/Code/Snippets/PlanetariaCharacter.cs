@@ -3,7 +3,7 @@ using Planetaria;
 
 public class PlanetariaCharacter : PlanetariaMonoBehaviour
 {
-    protected override void OnConstruction()
+    private void Awake()
     {
         planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
         transform.scale = .1f;
@@ -14,6 +14,10 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
         OnFieldStay.data = on_field_stay;
 
         transform.position = new NormalizedSphericalCoordinates(Mathf.PI/2 + 0.06f, Mathf.PI/2 + .01f);
+    }
+
+    protected override void OnReset()
+    {
     }
 
     protected override void OnDestruction()
