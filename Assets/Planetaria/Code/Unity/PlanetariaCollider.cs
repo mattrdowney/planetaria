@@ -13,6 +13,8 @@ namespace Planetaria
         {
             initialize();
             StartCoroutine(wait_for_fixed_update());
+            observer = new CollisionObserver();
+            observer.initialize(planetaria_transform, this.GetComponentsInParent<PlanetariaMonoBehaviour>());
         }
 
         private void Reset()
@@ -38,10 +40,6 @@ namespace Planetaria
             if (!rigidbody.exists)
             {
                 rigidbody = this.GetComponentInParent<PlanetariaRigidbody>();
-            }
-            if (observer == null)
-            {
-                observer.initialize(planetaria_transform, this.GetComponentsInParent<PlanetariaMonoBehaviour>());
             }
             // add to collision_map and trigger_map for all objects currently intersecting (via Physics.OverlapBox()) // CONSIDER: I think Unity Fixed this, right?
         }
@@ -130,39 +128,31 @@ namespace Planetaria
                 Debug.LogError("This should never happen");
                 return;
             }
-
-            Debug.Log("Happening 0");
             if (!(this.is_field && other_collider.data.is_field)) // fields pass through each other (same as triggers)
             {
-                Debug.Log("Happening 1");
                 if (PlanetariaIntersection.collider_collider_intersection(this.colliders, other_collider.data.colliders))
                 {
-                    Debug.Log("Happening 2");
                     if (this.is_field || other_collider.data.is_field) // field collision
                     {
                         observer.potential_field_collision(other_collider.data); // TODO: augment field (like Unity triggers) works on both the sender and receiver.
                     }
                     else // block collision
                     {
-                        Debug.Log("Happening 3");
                         if (rigidbody.exists)
                         {
-                            Debug.Log("Happening 4");
                             optional<Block> block = PlanetariaCache.instance().block_fetch(sphere_collider.data);
                             if (block.exists &&
                                     (!observer.colliding() || !observer.collisions()[0].block.ignore.Contains(block.data))) // Should we ignore the new block? // FIXME: private API exposure (optimizes at a cost of readability)
                             {
-                                Debug.Log("Happening 5");
                                 optional<Arc> arc = PlanetariaCache.instance().arc_fetch(sphere_collider.data);
                                 Vector3 position = planetaria_transform.position.data;
                                 if (block.data.is_dynamic)
                                 {
                                     position = Quaternion.Inverse(block.data.gameObject.transform.rotation) * position;
                                 }
-                                Debug.Log(arc.exists + " " + position + " " + planetaria_transform.scale / 2);
                                 if (arc.exists && arc.data.contains(position, planetaria_transform.scale/2))
                                 {
-                                    Debug.Log("Happening 6");
+                                    Debug.Log("Happening");
                                     observer.potential_block_collision(arc.data, block.data, other_collider.data); // block collisions are handled in OnCollisionStay(): notification stage
                                 }
                             }
@@ -182,7 +172,7 @@ namespace Planetaria
         }
 
         [SerializeField] public PlanetariaPhysicMaterial material = fallback;
-        [SerializeField] [HideInInspector] private CollisionObserver observer = new CollisionObserver();
+        [SerializeField] [HideInInspector] private CollisionObserver observer;
         [SerializeField] [HideInInspector] private Transform internal_transform;
         [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;
         [SerializeField] [HideInInspector] private SphereCollider internal_collider;

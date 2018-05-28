@@ -20,12 +20,21 @@ namespace Planetaria
 
         private void Start()
         {
+            initialize();
             PlanetariaCache.instance().cache(this);
         }
 
         private void Reset()
         {
-            transform = this.GetOrAddComponent<PlanetariaTransform>();
+            initialize();
+        }
+
+        private void initialize()
+        {
+            if (transform == null)
+            {
+                transform = this.GetOrAddComponent<PlanetariaTransform>();
+            }
         }
 
         private void OnDestroy()

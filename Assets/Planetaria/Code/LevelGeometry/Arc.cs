@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Planetaria
@@ -73,8 +74,6 @@ namespace Planetaria
 
             float angle = position_to_angle(position, extrusion);
             bool correct_angle = angle < arc_angle;
-
-            Debug.Log(above_floor + " " + below_ceiling + " " + correct_latitude + " " + position.ToString("F4") + " " + angle + " " + correct_angle);
 
             return correct_latitude && correct_angle;
         }
@@ -162,15 +161,44 @@ namespace Planetaria
             float x = Vector3.Dot(position, forward_axis);
             float y = Vector3.Dot(position, right_axis);
             float angle = Mathf.Atan2(y,x);
-            Debug.Log(angle);
             float result = (angle >= 0 ? angle : angle + 2*Mathf.PI);
-            Debug.Log(result);
             if (float.IsNaN(result) || float.IsInfinity(result) || result > this.angle())
             {
                 result = this.angle();
             }
             Debug.Assert(0 <= result && result <= this.angle(), result);
             return result;
+        }
+
+        public static bool operator==(Arc left, Arc right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Arc left, Arc right)
+        {
+            return !left.Equals(right);
+        }
+
+        public override bool Equals(System.Object other_object) // FIXME: no need to define these?
+        {
+            bool equal_type = other_object is Arc;
+            if (!equal_type)
+            {
+                return false;
+            }
+            Arc other = (Arc) other_object;
+            return this.forward_axis == other.forward_axis &&
+                    this.right_axis == other.right_axis &&
+                    this.center_axis == other.center_axis &&
+                    this.arc_angle == other.arc_angle &&
+                    this.arc_latitude == other.arc_latitude;
+        }
+
+        public override string ToString()
+        {
+            return "{ " + forward_axis.ToString("F4") + ", " + right_axis.ToString("F4") + ", " + center_axis.ToString("F4") + "}" +
+                    " : " + arc_latitude + ", " + arc_angle;
         }
 
         /// <summary>

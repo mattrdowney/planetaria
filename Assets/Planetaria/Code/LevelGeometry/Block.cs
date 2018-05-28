@@ -30,8 +30,12 @@ namespace Planetaria
         /// <returns>The index of the match if the arc exists in the container and is not null; a nonexistent index otherwise.</returns>
         public optional<ArcVisitor> arc_visitor(Arc arc)
         {
+            Debug.Log(arc);
+            Debug.Log(arc_list[0]);
             int arc_list_index = arc_list.IndexOf(arc);
-
+            Debug.Log(arc_list.Count);
+            Debug.Log(arc_list_index);
+            Debug.Log(arc_list[0] == arc);
             if (arc_list_index == -1)
             {
                 return new optional<ArcVisitor>();
@@ -45,7 +49,17 @@ namespace Planetaria
             return new List<optional<Arc>>(arc_list);
         }
 
-        public bool active { get; set; }
+        public bool active
+        {
+            get
+            {
+                return active_variable;
+            }
+            set
+            {
+                active_variable = value;
+            }
+        }
 
         public Vector3 center_of_mass() // FIXME: proper volume integration (for convex hulls)
         {
@@ -122,6 +136,7 @@ namespace Planetaria
         }
         
         public static PlanetariaPhysicMaterial fallback;
+        [SerializeField] public bool active_variable;
         [SerializeField] public bool is_dynamic; // FIXME: move to PlanetariaRigidbody
         [SerializeField] public bool is_platform;
         [SerializeField] public PlanetariaPhysicMaterial material = fallback;

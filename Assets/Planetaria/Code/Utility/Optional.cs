@@ -43,22 +43,29 @@ namespace Planetaria
             return new optional<Type>(original);
         } 
 
-        public static bool operator ==(optional<Type> left, optional<Type> right)
+        public static bool operator ==(optional<Type> left, optional<Type> right) // FIXME: switch
         {
-            bool inequal_existance = (left.exists != right.exists);
-            bool inequal_value = (left.exists && right.exists && left.data.Equals(right.data));
-            bool inequal = inequal_existance || inequal_value;
-            return !inequal;
+            return left.Equals(right);
         }
 
         public static bool operator !=(optional<Type> left, optional<Type> right)
         {
-            return !(left == right);
+            return !left.Equals(right);
         }
 
-        public override bool Equals(System.Object other)
+        public override bool Equals(System.Object other_object) // FIXME: 
         {
-            return other is optional<Type> && this == (optional<Type>) other;
+            bool equal_type = other_object is optional<Type>;
+            if (!equal_type)
+            {
+                return false;
+            }
+            optional<Type> other = (optional<Type>) other_object;
+            bool inequal_existance = (this.exists != other.exists);
+            bool inequal_value = (this.exists && other.exists && this.data.Equals(other.data));
+            bool inequal = inequal_existance || inequal_value;
+            Debug.Log(inequal_existance + " " + inequal_value + " " + inequal);
+            return !inequal;
         }
 
         public override int GetHashCode() 

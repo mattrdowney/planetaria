@@ -7,8 +7,8 @@ namespace Planetaria
     [Serializable]
     public abstract class PlanetariaMonoBehaviour : MonoBehaviour
     {
+        protected abstract void OnConstruction();
         protected abstract void OnDestruction();
-        protected abstract void OnReset();
 
         protected delegate void CollisionDelegate(BlockCollision block_information);
         protected delegate void TriggerDelegate(PlanetariaCollider field_information);
@@ -21,16 +21,16 @@ namespace Planetaria
         protected optional<TriggerDelegate> OnFieldExit = null;
         protected optional<TriggerDelegate> OnFieldStay = null;
 
-        protected void Reset()
+        protected void Awake()
         {
             transform = this.GetOrAddComponent<PlanetariaTransform>();
-            foreach (PlanetariaCollider collider in this.GetComponentsInChildren<PlanetariaCollider>())
+            foreach (PlanetariaCollider collider in this.GetComponentsInChildren<PlanetariaCollider>()) // FIXME:
             {
                 collider.register(this);
                 observers.Add(collider.get_observer());
             }
             // FIXME: still need to cache (properly)
-            OnReset();
+            OnConstruction();
         }
 
         protected void OnDestroy()

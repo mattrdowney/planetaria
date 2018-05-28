@@ -17,7 +17,7 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
         transform.direction = new NormalizedCartesianCoordinates(Vector3.up);
     }
 
-    protected override void OnReset()
+    protected override void OnConstruction()
     {
     }
 

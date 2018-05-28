@@ -11,7 +11,7 @@ namespace Planetaria
             OnFieldStay.data = on_field_stay;
         }
 
-        protected override void OnReset()
+        protected override void OnConstruction()
         {
         }
 
