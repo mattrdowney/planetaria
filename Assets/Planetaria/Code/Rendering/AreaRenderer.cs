@@ -11,7 +11,7 @@ namespace Planetaria
                 internal_renderer = internal_transform.GetOrAddComponent<SpriteRenderer>();
             }
             scalable = true;
-            internal_transform.position = Vector3.forward;
+            internal_transform.position = internal_transform.forward;
             internal_renderer.sharedMaterial = material;
         }
     }

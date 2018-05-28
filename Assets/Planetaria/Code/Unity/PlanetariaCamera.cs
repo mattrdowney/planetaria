@@ -1,10 +1,11 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.XR;
 
 namespace Planetaria
 {
     [DisallowMultipleComponent]
-    [System.Serializable]
+    [Serializable]
     public class PlanetariaCamera : MonoBehaviour
     {
         private void Awake()

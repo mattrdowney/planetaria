@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 namespace Planetaria
 {
     [DisallowMultipleComponent]
-    [System.Serializable]
+    [Serializable]
     public class Field : MonoBehaviour
     {   
         public static GameObject field(List<GeospatialCurve> curves) // TODO: add convex check asserts.
@@ -49,7 +50,7 @@ namespace Planetaria
         public bool active { get; set; }
         
         public bool is_dynamic;
-        [System.NonSerialized] public new PlanetariaTransform transform;
+        [NonSerialized] public new PlanetariaTransform transform;
         [SerializeField] private List<GeospatialCurve> curve_list = new List<GeospatialCurve>();
     }
 }

@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Planetaria
 {
-    [System.Serializable]
+    [Serializable]
     public struct StereoscopicProjectionCoordinates
     {
         public Vector2 data

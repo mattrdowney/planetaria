@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Planetaria
 {
-    [System.Serializable]
+    [Serializable]
     public struct GeospatialCurve
     {
         public static GeospatialCurve curve(Vector3 point, Vector3 slope)

@@ -1,11 +1,11 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 namespace Planetaria
 {
-    [System.Serializable]
+    [Serializable]
     public class CollisionObserver
     {
         public CollisionObserver() { }
@@ -226,11 +226,11 @@ namespace Planetaria
         [SerializeField] private optional<PlanetariaRigidbody> planetaria_rigidbody;
         [SerializeField] private List<PlanetariaMonoBehaviour> observers = new List<PlanetariaMonoBehaviour>();
 
-        [SerializeField] private List<BlockCollision> current_collisions = new List<BlockCollision>();
-        [System.NonSerialized] private List<BlockCollision> collision_candidates = new List<BlockCollision>();
+        [NonSerialized] private List<BlockCollision> current_collisions = new List<BlockCollision>();
+        [NonSerialized] private List<BlockCollision> collision_candidates = new List<BlockCollision>();
 
-        [SerializeField] private List<PlanetariaCollider> current_fields = new List<PlanetariaCollider>();
-        [System.NonSerialized] private List<PlanetariaCollider> field_candidates = new List<PlanetariaCollider>();
+        [NonSerialized] private List<PlanetariaCollider> current_fields = new List<PlanetariaCollider>();
+        [NonSerialized] private List<PlanetariaCollider> field_candidates = new List<PlanetariaCollider>();
     }
 }
 

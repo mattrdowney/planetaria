@@ -3,28 +3,18 @@ using UnityEngine;
 
 namespace Planetaria
 {
-    public class Sphere
+    [Serializable]
+    public struct Sphere
     {
         public Vector3 center
         {
             get
             {
-                if (transformation.exists)
+                if (transform_variable.exists)
                 {
-                    if (transformation.data.rotation == cached_rotation)
-                    {
-                        return cached_center;
-                    }
-                    cached_rotation = transformation.data.rotation;
-                    // no need to adjust position if both objects are on the same Planetarium
-                    cached_center = /* transformation.position + */ cached_rotation * center_variable; // TODO: check if matrix multiplication or built-in function does this faster
-                    return cached_center;
+                    return transform_variable.data.rotation * center_variable;
                 }
                 return center_variable;
-            }
-            set
-            {
-                center_variable = value;
             }
         }
 
@@ -32,15 +22,21 @@ namespace Planetaria
         {
             get
             {
-                if (transformation.exists)
+                if (transform_variable.exists)
                 {
-                    return transformation.data.position + transformation.data.rotation * center_variable;
+                    return transform_variable.data.position + transform_variable.data.rotation * center_variable;
                 }
                 return center_variable;
             }
         }
 
-        public float radius { get; private set; }
+        public float radius
+        {
+            get
+            {
+                return radius_variable;
+            }
+        }
 
         /// <summary>
         /// The intersection of two spheres is a circle, and adding a third sphere generates a set of colliders that define an arc
@@ -174,18 +170,14 @@ namespace Planetaria
 
         private Sphere(optional<Transform> transformation, Vector3 center, float radius)
         {
-            this.transformation = transformation;
-            this.center = center;
-            this.radius = radius;
-
-            this.cached_rotation = transformation.exists ? transformation.data.rotation : Quaternion.identity;
-            this.cached_center = cached_rotation * center_variable;
+            transform_variable = transformation;
+            center_variable = center;
+            radius_variable = radius;
         }
 
-        private optional<Transform> transformation { get; set; }
-        private Vector3 center_variable;
-        private Quaternion cached_rotation;
-        private Vector3 cached_center;
+        [SerializeField] private optional<Transform> transform_variable;
+        [SerializeField] private Vector3 center_variable;
+        [SerializeField] private float radius_variable;
     }
 }
 

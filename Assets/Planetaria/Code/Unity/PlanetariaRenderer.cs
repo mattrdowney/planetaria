@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Planetaria
 {
     [DisallowMultipleComponent]
-    [System.Serializable]
+    [Serializable]
     public abstract class PlanetariaRenderer : MonoBehaviour
     {
         private void Awake()

@@ -1,10 +1,11 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Planetaria
 {
     // FIXME: find a way to serialize
     [DisallowMultipleComponent]
-    [System.Serializable]
+    [Serializable]
     public class PlanetariaTransform : MonoBehaviour // CONSIDER: C#-style extension methods only: no need for separate object at risk of extra confusion; NOTE: some concepts like direction would no longer work in the same way
     {
         private void Awake()
@@ -33,7 +34,7 @@ namespace Planetaria
             }
             position = new NormalizedCartesianCoordinates(internal_transform.forward);
             direction = new NormalizedCartesianCoordinates(internal_transform.up);
-            scale = internal_transform.localScale.x;
+            scale = scale_variable;
         }
 
         public NormalizedCartesianCoordinates position
@@ -94,8 +95,8 @@ namespace Planetaria
         [SerializeField] [HideInInspector] private optional<PlanetariaRenderer> internal_renderer;
 
         //private Planetarium planetarium_variable; // cartesian_transform's position
-        [SerializeField] private Vector3 position_variable = Vector3.forward; // CONSIDER: [HideInInspector] 
-        [SerializeField] private Vector3 direction_variable = Vector3.up; // CONSIDER: how do non-normalized vectors affect Quaternion.LookRotation()? Vector3.zero is the biggest issue.
+        [SerializeField] [HideInInspector] private Vector3 position_variable = Vector3.forward; // CONSIDER: [HideInInspector] 
+        [SerializeField] [HideInInspector] private Vector3 direction_variable = Vector3.up; // CONSIDER: how do non-normalized vectors affect Quaternion.LookRotation()? Vector3.zero is the biggest issue.
         [SerializeField] private float scale_variable; // CONSIDER: without editor OnValidate() setting Transform.scale, these methods are extremely misleading
     }
 }

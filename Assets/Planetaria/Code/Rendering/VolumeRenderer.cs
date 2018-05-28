@@ -17,7 +17,7 @@ namespace Planetaria
                 internal_mesh_filter = internal_transform.GetOrAddComponent<MeshFilter>();
             }
             scalable = true;
-            internal_transform.position = Vector3.forward;
+            internal_transform.position = internal_transform.forward;
             internal_renderer.sharedMaterial = material;
             internal_mesh_filter.sharedMesh = mesh;
         }

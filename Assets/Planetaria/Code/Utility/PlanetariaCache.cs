@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,7 +7,7 @@ namespace Planetaria
 {
     // TODO: Multiton Design Pattern for multiple levels?
     [DisallowMultipleComponent]
-    [System.Serializable]
+    [Serializable]
     public class PlanetariaCache : MonoBehaviour
     {
         public static PlanetariaCache instance()
@@ -150,9 +150,9 @@ namespace Planetaria
             collider_cache.Clear();
         }
 
-        [System.NonSerialized] private Dictionary<SphereCollider, int> index_cache = new Dictionary<SphereCollider, int>();
-        [System.NonSerialized] private Dictionary<SphereCollider, Block> block_cache = new Dictionary<SphereCollider, Block>();
-        [System.NonSerialized] private Dictionary<SphereCollider, PlanetariaCollider> collider_cache = new Dictionary<SphereCollider, PlanetariaCollider>();
+        [NonSerialized] private Dictionary<SphereCollider, int> index_cache = new Dictionary<SphereCollider, int>();
+        [NonSerialized] private Dictionary<SphereCollider, Block> block_cache = new Dictionary<SphereCollider, Block>();
+        [NonSerialized] private Dictionary<SphereCollider, PlanetariaCollider> collider_cache = new Dictionary<SphereCollider, PlanetariaCollider>();
 
         private static optional<PlanetariaCache> internal_singleton_instance = new optional<PlanetariaCache>();
     }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Planetaria
 {
@@ -6,7 +7,7 @@ namespace Planetaria
     /// An immutable class that stores an arc along the surface of a unit sphere.
     /// Includes convex corners, great edges, convex edges, and concave edges. Cannot store concave corners!
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public struct Arc // possibility: Quaternion to store right/up/forward (conveniently 24 bytes: https://stackoverflow.com/questions/1082311/why-should-a-net-struct-be-less-than-16-bytes)
     {
         /// <summary>
@@ -66,12 +67,14 @@ namespace Planetaria
         /// </returns>
         public bool contains(Vector3 position, float extrusion = 0f)
         {
-            bool above_floor = Mathf.Asin(Vector3.Dot(position, center_axis)) >= arc_latitude; // XXX: potential bug
+            bool above_floor = Mathf.Asin(Vector3.Dot(position, center_axis)) >= arc_latitude; // TODO: verify - potential bug?
             bool below_ceiling = Mathf.Asin(Vector3.Dot(position, center_axis)) <= arc_latitude + extrusion;
             bool correct_latitude = above_floor && below_ceiling;
 
             float angle = position_to_angle(position, extrusion);
             bool correct_angle = angle < arc_angle;
+
+            Debug.Log(above_floor + " " + below_ceiling + " " + correct_latitude + " " + position.ToString("F4") + " " + angle + " " + correct_angle);
 
             return correct_latitude && correct_angle;
         }
@@ -159,7 +162,9 @@ namespace Planetaria
             float x = Vector3.Dot(position, forward_axis);
             float y = Vector3.Dot(position, right_axis);
             float angle = Mathf.Atan2(y,x);
+            Debug.Log(angle);
             float result = (angle >= 0 ? angle : angle + 2*Mathf.PI);
+            Debug.Log(result);
             if (float.IsNaN(result) || float.IsInfinity(result) || result > this.angle())
             {
                 result = this.angle();
@@ -187,7 +192,7 @@ namespace Planetaria
             Vector3 center = elevation * center_axis;
 
             Vector3 end_axis = (to - center).normalized;
-            bool long_path = Vector3.Dot(right_axis, end_axis) < 0;
+            bool long_path = Vector3.Dot(right_axis, end_axis) < 0 || from == to;
             arc_angle = Vector3.Angle(from - center, to - center)*Mathf.Deg2Rad;
             arc_latitude = Mathf.Asin(elevation);
 

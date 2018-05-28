@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Planetaria
 {
-    [System.Serializable]
+    [Serializable]
     public abstract class PlanetariaMonoBehaviour : MonoBehaviour
     {
         protected abstract void OnDestruction();
@@ -91,7 +92,7 @@ namespace Planetaria
         }
 
         [SerializeField] [HideInInspector] public new PlanetariaTransform transform;
-        [SerializeField] [HideInInspector] private List<CollisionObserver> observers = new List<CollisionObserver>();
+        [NonSerialized] [HideInInspector] private List<CollisionObserver> observers = new List<CollisionObserver>();
     }
 }
 

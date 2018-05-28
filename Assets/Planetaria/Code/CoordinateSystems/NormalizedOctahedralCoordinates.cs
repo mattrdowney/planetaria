@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Planetaria
 {
-    [System.Serializable]
+    [Serializable]
     public struct NormalizedOctahedralCoordinates
     {
         public Vector3 data

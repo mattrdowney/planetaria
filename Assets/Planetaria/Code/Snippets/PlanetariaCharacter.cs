@@ -14,6 +14,7 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
     private void Start()
     {
         planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
+        transform.direction = new NormalizedCartesianCoordinates(Vector3.up);
     }
 
     protected override void OnReset()

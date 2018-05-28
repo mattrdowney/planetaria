@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Planetaria
 {
-    [System.Serializable] // While this is one of my favorite types, I might have to forgo serializing it [I can still use it, just not between Unity sessions]
+    [Serializable] // While this is one of my favorite types, I might have to forgo serializing it [I can still use it, just not between Unity sessions]
     public struct optional<Type> // https://stackoverflow.com/questions/16199227/optional-return-in-c-net
     {
         public bool exists
@@ -19,7 +20,7 @@ namespace Planetaria
             {
                 if (!exists)
                 {
-                    throw new System.NullReferenceException();
+                    throw new NullReferenceException();
                 }
                 return data_variable;
             }

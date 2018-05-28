@@ -1,9 +1,10 @@
-﻿using UnityEditor;
+﻿using System;
+using UnityEditor;
 
 namespace Planetaria
 {
     [CustomEditor(typeof(ArcBuilder))]
-    [System.Serializable]
+    [Serializable]
     public class ArcBuilderEditor : Editor
     {
         [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]

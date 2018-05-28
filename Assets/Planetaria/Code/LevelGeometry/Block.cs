@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Planetaria
 {
     [DisallowMultipleComponent]
-    [System.Serializable]
+    [Serializable]
     public class Block : MonoBehaviour
     {
         /// <summary>
@@ -129,7 +130,7 @@ namespace Planetaria
         [SerializeField] private List<GeospatialCurve> curve_list;
         [SerializeField] public List<Block> ignore;
 
-        [System.NonSerialized] public List<optional<Arc>> arc_list;
+        [NonSerialized] public List<optional<Arc>> arc_list;
     }
 }
 

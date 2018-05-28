@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using UnityEngine;
 
 namespace Planetaria
@@ -169,7 +170,7 @@ namespace Planetaria
                 Plane arc_validator = new Plane(arc_center, boundary_midpoint);
                 if (arc_validator.GetSide(intersection_point))
                 {
-                    System.Array.Resize(ref results, results.Length + 1);
+                    Array.Resize(ref results, results.Length + 1);
                     results[results.Length-1] = intersections[intersection_index];
                 }
             }

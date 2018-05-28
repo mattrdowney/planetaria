@@ -1,9 +1,10 @@
-﻿using UnityEditor;
+﻿using System;
+using UnityEditor;
 
 namespace Planetaria
 {
     [CustomEditor(typeof(EquilateralBuilder))]
-    [System.Serializable]
+    [Serializable]
     public class EquilateralBuilderEditor : Editor
     {
         [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
