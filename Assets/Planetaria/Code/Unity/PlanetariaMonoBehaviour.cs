@@ -90,8 +90,8 @@ namespace Planetaria
             }
         }
 
-        [SerializeField] public new PlanetariaTransform transform;
-        [SerializeField] private List<CollisionObserver> observers = new List<CollisionObserver>();
+        [SerializeField] [HideInInspector] public new PlanetariaTransform transform;
+        [SerializeField] [HideInInspector] private List<CollisionObserver> observers = new List<CollisionObserver>();
     }
 }
 

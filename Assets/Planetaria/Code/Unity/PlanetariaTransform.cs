@@ -7,20 +7,30 @@ namespace Planetaria
     [System.Serializable]
     public class PlanetariaTransform : MonoBehaviour // CONSIDER: C#-style extension methods only: no need for separate object at risk of extra confusion; NOTE: some concepts like direction would no longer work in the same way
     {
-        private void Start()
+        private void Awake()
         {
-            internal_collider = internal_transform.GetComponent<PlanetariaCollider>(); // TODO: better way to do this - observer pattern
-            internal_renderer = internal_transform.GetComponent<PlanetariaRenderer>();
+            initialize();
         }
 
         private void Reset()
         {
-            internal_transform = this.GetComponent<Transform>();
-            Debug.Log(internal_transform);
+            initialize();
         }
 
-        private void OnValidate()
+        private void initialize()
         {
+            if (internal_transform == null)
+            {
+                internal_transform = this.GetComponent<Transform>();
+            }
+            if (!internal_collider.exists)
+            {
+                internal_collider = internal_transform.GetComponent<PlanetariaCollider>(); // TODO: better way to do this - observer pattern
+            }
+            if (!internal_renderer.exists)
+            {
+                internal_renderer = internal_transform.GetComponent<PlanetariaRenderer>();
+            }
             position = new NormalizedCartesianCoordinates(internal_transform.forward);
             direction = new NormalizedCartesianCoordinates(internal_transform.up);
             scale = internal_transform.localScale.x;
@@ -79,14 +89,14 @@ namespace Planetaria
             }
         }
 
-        [SerializeField] private Transform internal_transform; // FIXME: hide these 3
-        [SerializeField] private optional<PlanetariaCollider> internal_collider; // Observer pattern would be more elegant but slower
-        [SerializeField] private optional<PlanetariaRenderer> internal_renderer;
+        [SerializeField] [HideInInspector] private Transform internal_transform; // FIXME: hide these 3
+        [SerializeField] [HideInInspector] private optional<PlanetariaCollider> internal_collider; // Observer pattern would be more elegant but slower
+        [SerializeField] [HideInInspector] private optional<PlanetariaRenderer> internal_renderer;
 
         //private Planetarium planetarium_variable; // cartesian_transform's position
-        [SerializeField] private Vector3 position_variable = Vector3.forward;
-        [SerializeField] private Vector3 direction_variable = Vector3.up;
-        [SerializeField] private float scale_variable;
+        [SerializeField] private Vector3 position_variable = Vector3.forward; // CONSIDER: [HideInInspector] 
+        [SerializeField] private Vector3 direction_variable = Vector3.up; // CONSIDER: how do non-normalized vectors affect Quaternion.LookRotation()? Vector3.zero is the biggest issue.
+        [SerializeField] private float scale_variable; // CONSIDER: without editor OnValidate() setting Transform.scale, these methods are extremely misleading
     }
 }
 

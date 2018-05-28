@@ -4,16 +4,15 @@ namespace Planetaria
 {
     public class AreaRenderer : PlanetariaRenderer
     {
-        private void OnValidate()
-        {
-            scalable = true;
-            internal_transformation.position = Vector3.forward;
-            internal_renderer.sharedMaterial = material;
-        }
-
         protected sealed override void set_renderer()
         {
-            internal_renderer = internal_transformation.GetOrAddComponent<SpriteRenderer>();
+            if (internal_renderer == null)
+            {
+                internal_renderer = internal_transform.GetOrAddComponent<SpriteRenderer>();
+            }
+            scalable = true;
+            internal_transform.position = Vector3.forward;
+            internal_renderer.sharedMaterial = material;
         }
     }
 }

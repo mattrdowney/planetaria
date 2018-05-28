@@ -6,17 +6,27 @@ namespace Planetaria
     [System.Serializable]
     public abstract class PlanetariaRenderer : MonoBehaviour
     {
+        private void Awake()
+        {
+            initialize();
+        }
+
         private void Reset()
         {
-            set_transformation("Renderer");
+            initialize();
+        }
+
+        private void initialize()
+        {
+            set_transformation();
             set_renderer();
             set_renderer_values();
-            set_layer();
+            set_draw_order();
         }
 
         protected abstract void set_renderer();
 
-        protected void set_layer()
+        protected void set_draw_order()
         {
             if (!drawing_order.exists)
             {
@@ -32,10 +42,13 @@ namespace Planetaria
             internal_renderer.motionVectorGenerationMode = MotionVectorGenerationMode.ForceNoMotion;
         }
 
-        protected void set_transformation(string name)
+        protected void set_transformation()
         {
-            GameObject child = this.GetOrAddChild(name);
-            internal_transformation = child.GetComponent<Transform>();
+            if (internal_transform == null)
+            {
+                GameObject child = this.GetOrAddChild("Renderer");
+                internal_transform = child.GetComponent<Transform>();
+            }
         }
 
         /// <summary>
@@ -73,7 +86,7 @@ namespace Planetaria
                 scale_variable = value;
                 if (scalable)
                 {
-                    internal_transformation.localScale = Vector3.one * scale_variable / 2;
+                    internal_transform.localScale = Vector3.one * scale_variable / 2;
                 }
             }
         }
@@ -85,8 +98,8 @@ namespace Planetaria
         private float scale_variable;
         protected bool scalable;
 
-        [SerializeField] protected Transform internal_transformation;
-        [SerializeField] protected Renderer internal_renderer;
+        [SerializeField] [HideInInspector] protected Transform internal_transform;
+        [SerializeField] [HideInInspector] protected Renderer internal_renderer;
 
         protected static short next_available_order(int layer_identifier)
         {

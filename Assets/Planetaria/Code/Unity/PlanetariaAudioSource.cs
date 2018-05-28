@@ -4,7 +4,7 @@ using UnityEngine;
 /*
 namespace Planetaria
 {
-    public class PlanetariaAudioSource : MonoBehaviour
+    public class PlanetariaAudioSource : MonoBehaviour // TODO: instead of differences being temporal, the AudioSource should provide sound spatialization.
     {
         private void Awake()
         {

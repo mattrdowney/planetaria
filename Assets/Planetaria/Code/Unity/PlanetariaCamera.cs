@@ -7,22 +7,30 @@ namespace Planetaria
     [System.Serializable]
     public class PlanetariaCamera : MonoBehaviour
     {
-        public void Awake()
+        private void Awake()
         {
+            initialize();
             XRDevice.SetTrackingSpaceType(TrackingSpaceType.Stationary);
         }
 
-        public void Reset()
+        private void Reset()
         {
-            transform = this.GetOrAddComponent<PlanetariaTransform>();
-            GameObject dolly = this.GetOrAddChild("CameraDolly");
-            GameObject camera = dolly.transform.GetOrAddChild("Camera");
-            dolly_transform = dolly.GetComponent<Transform>();
-            internal_camera = camera.transform.GetOrAddComponent<Camera>();
-            camera.transform.GetOrAddComponent<AudioListener>();
-            internal_camera.useOcclusionCulling = false;
+            initialize();
+        }
 
-            dolly_transform.position = Vector3.forward*zoom;
+        private void initialize()
+        {
+            if (transform == null)
+            {
+                transform = this.GetOrAddComponent<PlanetariaTransform>();
+                GameObject dolly = this.GetOrAddChild("CameraDolly");
+                GameObject camera = dolly.transform.GetOrAddChild("Camera");
+                dolly_transform = dolly.GetComponent<Transform>();
+                internal_camera = camera.transform.GetOrAddComponent<Camera>();
+                camera.transform.GetOrAddComponent<AudioListener>();
+            }
+            internal_camera.useOcclusionCulling = false;
+            dolly_transform.position = Vector3.forward * zoom;
             dolly_transform.localScale = Vector3.one; // CONSIDER: setting this to zero mirrors `XRDevice.SetTrackingSpaceType(TrackingSpaceType.Stationary);`
             internal_camera.nearClipPlane = near_clip_plane;
             internal_camera.farClipPlane = far_clip_plane;

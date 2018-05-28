@@ -4,18 +4,20 @@ namespace Planetaria
 {
     public class PlanetRenderer : PlanetariaRenderer // CONSIDER: rename SphereRenderer or SurfaceRenderer?
     {
-        private void OnValidate()
-        {
-            scalable = false;
-            internal_renderer.sharedMaterial = material;
-        }
-
         protected sealed override void set_renderer()
         {
-            internal_renderer = internal_transformation.GetOrAddComponent<MeshRenderer>();
-            internal_mesh_filter = internal_transformation.GetOrAddComponent<MeshFilter>();
-            SubdividedOctahedronSphere sphere = SubdividedOctahedronSphere.generate(16);
+            if (internal_renderer == null)
+            {
+                internal_renderer = internal_transform.GetOrAddComponent<MeshRenderer>();
+            }
+            if (internal_mesh_filter == null)
+            {
+                internal_mesh_filter = internal_transform.GetOrAddComponent<MeshFilter>();
+            }
+            SubdividedOctahedronSphere sphere = SubdividedOctahedronSphere.generate(16); // FIXME:
             internal_mesh_filter.sharedMesh = sphere.get_shared_mesh(); //Octahedron.octahedron_mesh();
+            scalable = false;
+            internal_renderer.sharedMaterial = material;
         }
 
         //private static Mesh shared_mesh_variable; // Needs observer pattern

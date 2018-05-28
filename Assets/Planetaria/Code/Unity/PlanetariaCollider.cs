@@ -1,26 +1,48 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 
 namespace Planetaria
 {
     [DisallowMultipleComponent]
-    [System.Serializable]
+    [Serializable]
     public class PlanetariaCollider : MonoBehaviour // FIXME: while not incredibly complicated, I think there might be a way to simplify this
     {
         private void Awake()
         {
+            initialize();
             StartCoroutine(wait_for_fixed_update());
         }
 
         private void Reset()
         {
+            initialize();
+        }
+
+        private void initialize()
+        {
             GameObject internal_game_object = this.GetOrAddChild("InternalCollider");
-            internal_collider = internal_game_object.transform.GetOrAddComponent<SphereCollider>();
-            internal_transform = this.GetComponent<Transform>();
-            planetaria_transform = this.GetOrAddComponent<PlanetariaTransform>();
-            rigidbody = this.GetComponentInParent<PlanetariaRigidbody>();
-            observer.initialize(planetaria_transform, this.GetComponentsInParent<PlanetariaMonoBehaviour>());
+            if (internal_collider == null)
+            {
+                internal_collider = internal_game_object.transform.GetOrAddComponent<SphereCollider>();
+            }
+            if (internal_transform == null)
+            {
+                internal_transform = this.GetComponent<Transform>();
+            }
+            if (planetaria_transform == null)
+            {
+                planetaria_transform = this.GetOrAddComponent<PlanetariaTransform>();
+            }
+            if (!rigidbody.exists)
+            {
+                rigidbody = this.GetComponentInParent<PlanetariaRigidbody>();
+            }
+            if (observer == null)
+            {
+                observer.initialize(planetaria_transform, this.GetComponentsInParent<PlanetariaMonoBehaviour>());
+            }
             // add to collision_map and trigger_map for all objects currently intersecting (via Physics.OverlapBox()) // CONSIDER: I think Unity Fixed this, right?
         }
 
@@ -96,6 +118,7 @@ namespace Planetaria
 
         private void OnTriggerStay(Collider collider)
         {
+            Debug.Log(Time.time + "Staying in a collision");
             optional<SphereCollider> sphere_collider = collider as SphereCollider;
             if (!sphere_collider.exists)
             {
@@ -151,11 +174,6 @@ namespace Planetaria
             }
         }
 
-        private void OnDestroy()
-        {
-            PlanetariaCache.instance().uncache(this);
-        }
-
         [SerializeField] public PlanetariaPhysicMaterial material = fallback;
         [SerializeField] [HideInInspector] private CollisionObserver observer = new CollisionObserver();
         [SerializeField] [HideInInspector] private Transform internal_transform;
@@ -163,9 +181,9 @@ namespace Planetaria
         [SerializeField] [HideInInspector] private SphereCollider internal_collider;
         [SerializeField] [HideInInspector] public new optional<PlanetariaRigidbody> rigidbody;
         [SerializeField] [HideInInspector] public Sphere[] colliders = new Sphere[0]; // FIXME: private
-        private float scale_variable;
-        public bool scalable = false;
-        private bool is_field_variable = false;
+        [SerializeField] private float scale_variable;
+        [SerializeField] public bool scalable = false;
+        [SerializeField] private bool is_field_variable = false;
         public static PlanetariaPhysicMaterial fallback;
     }
 }

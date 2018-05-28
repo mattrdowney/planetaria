@@ -5,15 +5,15 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
 {
     private void Awake()
     {
-        planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
-        transform.scale = .1f;
         OnBlockStay.data = on_block_stay;
         OnBlockEnter.data = on_block_enter;
         OnBlockExit.data = on_block_exit;
-
         OnFieldStay.data = on_field_stay;
+    }
 
-        transform.position = new NormalizedSphericalCoordinates(Mathf.PI/2 + 0.06f, Mathf.PI/2 + .01f);
+    private void Start()
+    {
+        planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
     }
 
     protected override void OnReset()

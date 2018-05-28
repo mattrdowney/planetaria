@@ -90,6 +90,7 @@ namespace Planetaria
 
         private void Start()
         {
+            initialize();
             arc_list = generate_arcs();
             PlanetariaCache.instance().cache(this);
         }
@@ -98,10 +99,20 @@ namespace Planetaria
         {
             curve_list = new List<GeospatialCurve>();
             ignore = new List<Block>();
-
             active = true;
-            transform = this.GetOrAddComponent<PlanetariaTransform>();
-            internal_transform = this.GetComponent<Transform>();
+            initialize();
+        }
+
+        private void initialize()
+        {
+            if (transform == null)
+            {
+                transform = this.GetOrAddComponent<PlanetariaTransform>();
+            }
+            if (internal_transform == null)
+            {
+                internal_transform = this.GetComponent<Transform>();
+            }
         }
 
         private void OnDestroy()

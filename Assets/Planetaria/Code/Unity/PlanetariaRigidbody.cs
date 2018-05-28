@@ -6,18 +6,34 @@ namespace Planetaria
     [System.Serializable]
     public class PlanetariaRigidbody : MonoBehaviour
     {
-        private void Reset()
+        private void Awake()
         {
-            transform = this.GetOrAddComponent<PlanetariaTransform>();
-            //collider = this.GetOrAddComponent<PlanetariaCollider>();
-            internal_rigidbody = this.GetOrAddComponent<Rigidbody>();
-            internal_rigidbody.isKinematic = true;
-            internal_rigidbody.useGravity = false;
+            initialize();
         }
 
-        private void OnValidate()
+        private void Reset()
         {
-            previous_position = position = transform.position.data;
+            initialize();
+        }
+
+        private void initialize()
+        {
+            if (transform == null)
+            {
+                transform = this.GetOrAddComponent<PlanetariaTransform>();
+            }
+            if (internal_transform == null)
+            {
+                internal_transform = this.GetOrAddComponent<Transform>();
+            }
+            //collider = this.GetOrAddComponent<PlanetariaCollider>();
+            if (internal_rigidbody == null)
+            {
+                internal_rigidbody = this.GetOrAddComponent<Rigidbody>();
+            }
+            internal_rigidbody.isKinematic = true;
+            internal_rigidbody.useGravity = false;
+            previous_position = position = internal_transform.forward;
             get_acceleration();
         }
 
@@ -252,7 +268,8 @@ namespace Planetaria
         // gravity
         [SerializeField] public Vector3[] gravity_wells;
 
-        [SerializeField] [HideInInspector] private new PlanetariaTransform transform;
+        [SerializeField] [HideInInspector] public new PlanetariaTransform transform;
+        [SerializeField] [HideInInspector] private Transform internal_transform;
         [SerializeField] [HideInInspector] private Rigidbody internal_rigidbody;
         [SerializeField] [HideInInspector] private optional<CollisionObserver> observer;
         [SerializeField] [HideInInspector] private BlockCollision collision;

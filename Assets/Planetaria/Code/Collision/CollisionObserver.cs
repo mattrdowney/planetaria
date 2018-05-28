@@ -227,10 +227,10 @@ namespace Planetaria
         [SerializeField] private List<PlanetariaMonoBehaviour> observers = new List<PlanetariaMonoBehaviour>();
 
         [SerializeField] private List<BlockCollision> current_collisions = new List<BlockCollision>();
-        [SerializeField] private List<BlockCollision> collision_candidates = new List<BlockCollision>();
+        [System.NonSerialized] private List<BlockCollision> collision_candidates = new List<BlockCollision>();
 
         [SerializeField] private List<PlanetariaCollider> current_fields = new List<PlanetariaCollider>();
-        [SerializeField] private List<PlanetariaCollider> field_candidates = new List<PlanetariaCollider>();
+        [System.NonSerialized] private List<PlanetariaCollider> field_candidates = new List<PlanetariaCollider>();
     }
 }
 
