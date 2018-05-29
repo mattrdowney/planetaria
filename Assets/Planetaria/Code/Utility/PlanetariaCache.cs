@@ -10,25 +10,28 @@ namespace Planetaria
     [Serializable]
     public class PlanetariaCache : MonoBehaviour
     {
-        public static PlanetariaCache instance()
+        public static PlanetariaCache self
         {
-            if (internal_singleton_instance.exists)
+            get
             {
-                return internal_singleton_instance.data;
+                if (self_variable.exists)
+                {
+                    return self_variable.data;
+                }
+                GameObject game_object = Miscellaneous.GetOrAddObject("GameMaster");
+                self_variable = game_object.transform.GetOrAddComponent<PlanetariaCache>();
+                return self_variable.data;
             }
-            GameObject game_object = Miscellaneous.GetOrAddObject("GameMaster");
-            internal_singleton_instance = game_object.transform.GetOrAddComponent<PlanetariaCache>();
-            return internal_singleton_instance.data;
         }
 
         public optional<Arc> arc_fetch(SphereCollider key)
         {
-            optional<Block> block = PlanetariaCache.instance().block_fetch(key);
+            optional<Block> block = PlanetariaCache.self.block_fetch(key);
             if (!block.exists)
             {
                 return new optional<Arc>();
             }
-            optional<int> arc_index = PlanetariaCache.instance().index(key);
+            optional<int> arc_index = PlanetariaCache.self.index(key);
             if (!arc_index.exists)
             {
                 return new optional<Arc>();
@@ -82,9 +85,9 @@ namespace Planetaria
                     collider.material = block.material;
                     sphere_collider.isTrigger = true;
 
-                    PlanetariaCache.instance().index_cache.Add(sphere_collider, arc_index);
-                    PlanetariaCache.instance().block_cache.Add(sphere_collider, block);
-                    PlanetariaCache.instance().collider_cache.Add(sphere_collider, collider);
+                    PlanetariaCache.self.index_cache.Add(sphere_collider, arc_index);
+                    PlanetariaCache.self.block_cache.Add(sphere_collider, block);
+                    PlanetariaCache.self.collider_cache.Add(sphere_collider, collider);
                 }
                 ++arc_index;
             }
@@ -110,7 +113,7 @@ namespace Planetaria
             }
             collider.set_colliders(colliders);
 
-            PlanetariaCache.instance().collider_cache.Add(sphere_collider, collider);
+            PlanetariaCache.self.collider_cache.Add(sphere_collider, collider);
         }
 
         public void uncache(MonoBehaviour script)
@@ -123,9 +126,9 @@ namespace Planetaria
 
         public void uncache(PlanetariaCollider collider)
         {
-            PlanetariaCache.instance().index_cache.Remove(collider.get_sphere_collider());
-            PlanetariaCache.instance().block_cache.Remove(collider.get_sphere_collider());
-            PlanetariaCache.instance().collider_cache.Remove(collider.get_sphere_collider());
+            PlanetariaCache.self.index_cache.Remove(collider.get_sphere_collider());
+            PlanetariaCache.self.block_cache.Remove(collider.get_sphere_collider());
+            PlanetariaCache.self.collider_cache.Remove(collider.get_sphere_collider());
         }
 
         public void cache_all()
@@ -135,11 +138,11 @@ namespace Planetaria
             foreach (Block block in GameObject.FindObjectsOfType<Block>())
             {
                 block.generate_arcs();
-                PlanetariaCache.instance().cache(block);
+                PlanetariaCache.self.cache(block);
             }
             foreach (Field field in GameObject.FindObjectsOfType<Field>())
             {
-                PlanetariaCache.instance().cache(field);
+                PlanetariaCache.self.cache(field);
             }
         }
 
@@ -154,7 +157,7 @@ namespace Planetaria
         [NonSerialized] private Dictionary<SphereCollider, Block> block_cache = new Dictionary<SphereCollider, Block>();
         [NonSerialized] private Dictionary<SphereCollider, PlanetariaCollider> collider_cache = new Dictionary<SphereCollider, PlanetariaCollider>();
 
-        private static optional<PlanetariaCache> internal_singleton_instance = new optional<PlanetariaCache>();
+        private static optional<PlanetariaCache> self_variable = new optional<PlanetariaCache>();
     }
 }
 

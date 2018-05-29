@@ -37,11 +37,11 @@ namespace Planetaria
         public override void OnInspectorGUI()
         {
             GUILayout.BeginHorizontal();
-            Global.show_graphics = EditorGUILayout.Toggle("Debug Rendering", Global.show_graphics);
+            Global.self.hide_graphics = EditorGUILayout.Toggle("Debug Rendering", Global.self.hide_graphics);
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            Global.show_inspector = EditorGUILayout.Toggle("Hidden Inspector", Global.show_inspector);
+            Global.self.show_inspector = EditorGUILayout.Toggle("Hidden Inspector", Global.self.show_inspector);
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
@@ -189,20 +189,20 @@ namespace Planetaria
         [MenuItem("Planetaria/Toggle Debug Graphics #g")]
         private static void toggle_debug_graphics() // (Shift + g(raphics))
         {
-            Global.show_graphics = !Global.show_graphics; // toggle state
+            Global.self.hide_graphics = !Global.self.hide_graphics; // toggle state
         }
 
         [MenuItem("Planetaria/Toggle Hidden Inspector #i")]
         private static void toggle_hidden_inspector() // (Shift + i(nspector))
         {
-            Global.show_inspector = !Global.show_inspector; // toggle state
+            Global.self.show_inspector = !Global.self.show_inspector; // toggle state
             foreach (GameObject game_object in GameObject.FindObjectsOfType<GameObject>())
             {
                 // Hide planetaria internals (GitHub Issue #43 and #75).
                 // Toggling the inspector shows these objects (Shift + i(nspector))
                 if (game_object.name.Substring(0, 2) == "__") // double underscore indicates hidden object
                 {
-                    if (Global.show_inspector)
+                    if (!Global.self.show_inspector)
                     {
                         game_object.hideFlags |= (HideFlags.HideInHierarchy | HideFlags.HideInInspector); // set
                     }

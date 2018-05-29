@@ -29,9 +29,9 @@ namespace Planetaria
         /// <returns>The result of a point sweep / raycast in spherical 2D space.</returns>
         private PlanetariaRaycastHit(Arc raycast_arc, SphereCollider sphere_collider, Vector3 intersection_point, float raycast_distance)
         {
-            arc = PlanetariaCache.instance().arc_fetch(sphere_collider).data;
-            block = PlanetariaCache.instance().block_fetch(sphere_collider).data; // FIXME:
-            collider = PlanetariaCache.instance().collider_fetch(sphere_collider).data;
+            arc = PlanetariaCache.self.arc_fetch(sphere_collider).data;
+            block = PlanetariaCache.self.block_fetch(sphere_collider).data; // FIXME:
+            collider = PlanetariaCache.self.collider_fetch(sphere_collider).data;
 
             distance = raycast_arc.position_to_angle(intersection_point) * (raycast_arc.length()/raycast_arc.angle()); // TODO: verify
             if (raycast_distance < 0)

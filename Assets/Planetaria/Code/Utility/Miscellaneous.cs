@@ -49,11 +49,9 @@ namespace Planetaria
             {
                 game_object = new GameObject(name);
             }
-            if (hidden_internal && Global.show_inspector)
+            if (hidden_internal && !Global.self.show_inspector)
             {
-                Debug.Log("Before Hiding: HideFlags." + game_object.data.hideFlags);
                 game_object.data.hideFlags = (HideFlags.HideInHierarchy | HideFlags.HideInInspector);
-                Debug.Log("After Hiding: HideFlags." + game_object.data.hideFlags);
             }
             return game_object.data;
         }
@@ -78,7 +76,7 @@ namespace Planetaria
                 child_object.transform.parent = self.transform;
                 child = child_object.transform;
             }
-            if (hidden_internal && Global.show_inspector)
+            if (hidden_internal && Global.self.show_inspector)
             {
                 Debug.Log("Before Hiding: HideFlags." + child.data.hideFlags);
                 child.data.hideFlags = (HideFlags.HideInHierarchy | HideFlags.HideInInspector);

@@ -10,7 +10,7 @@ namespace Planetaria
         [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
         private static void draw_block_gizmos(Field self, GizmoType gizmo_type)
         {
-            if (Global.show_graphics)
+            if (!Global.self.hide_graphics)
             {
                 foreach (Arc arc in self.iterator())
                 {

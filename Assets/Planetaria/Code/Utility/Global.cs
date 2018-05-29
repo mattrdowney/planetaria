@@ -2,10 +2,30 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class Global
+namespace Planetaria
 {
-    public static bool show_graphics; // (Shift + g(raphics))
-    public static bool show_inspector; // (Shift + i(nspector))
+    public class Global : MonoBehaviour
+    {
+        public static Global self
+        {
+            get
+            {
+                if (self_variable.exists)
+                {
+                    return self_variable.data;
+                }
+                GameObject game_master = Miscellaneous.GetOrAddObject("GameMaster", false);
+                game_master.hideFlags = HideFlags.HideInHierarchy | HideFlags.HideInInspector; // hide by default
+                self_variable = game_master.transform.GetOrAddComponent<Global>();
+                return self_variable.data;
+            }
+        }
+
+        [SerializeField] public bool hide_graphics; // (Shift + g(raphics))
+        [SerializeField] public bool show_inspector; // (Shift + i(nspector))
+
+        private static optional<Global> self_variable;
+    }
 }
 
 /*

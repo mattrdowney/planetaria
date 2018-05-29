@@ -100,7 +100,7 @@ namespace Planetaria
         {
             initialize();
             arc_list = generate_arcs();
-            PlanetariaCache.instance().cache(this);
+            PlanetariaCache.self.cache(this);
         }
 
         private void Reset()
@@ -125,7 +125,7 @@ namespace Planetaria
 
         private void OnDestroy()
         {
-            PlanetariaCache.instance().uncache(this);
+            PlanetariaCache.self.uncache(this);
         }
         
         public static PlanetariaPhysicMaterial fallback;

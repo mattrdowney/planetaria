@@ -21,7 +21,7 @@ namespace Planetaria
         private void Start()
         {
             initialize();
-            PlanetariaCache.instance().cache(this);
+            PlanetariaCache.self.cache(this);
         }
 
         private void Reset()
@@ -39,7 +39,7 @@ namespace Planetaria
 
         private void OnDestroy()
         {
-            PlanetariaCache.instance().uncache(this);
+            PlanetariaCache.self.uncache(this);
         }
 
         public IEnumerable<Arc> iterator() // TODO: check

@@ -122,7 +122,7 @@ namespace Planetaria
                 Debug.LogError("This should never happen");
                 return;
             }
-            optional<PlanetariaCollider> other_collider = PlanetariaCache.instance().collider_fetch(sphere_collider.data);
+            optional<PlanetariaCollider> other_collider = PlanetariaCache.self.collider_fetch(sphere_collider.data);
             if (!other_collider.exists)
             {
                 Debug.LogError("This should never happen");
@@ -140,11 +140,11 @@ namespace Planetaria
                     {
                         if (rigidbody.exists)
                         {
-                            optional<Block> block = PlanetariaCache.instance().block_fetch(sphere_collider.data);
+                            optional<Block> block = PlanetariaCache.self.block_fetch(sphere_collider.data);
                             if (block.exists &&
                                     (!observer.colliding() || !observer.collisions()[0].block.ignore.Contains(block.data))) // Should we ignore the new block? // FIXME: private API exposure (optimizes at a cost of readability)
                             {
-                                optional<Arc> arc = PlanetariaCache.instance().arc_fetch(sphere_collider.data);
+                                optional<Arc> arc = PlanetariaCache.self.arc_fetch(sphere_collider.data);
                                 Vector3 position = planetaria_transform.position.data;
                                 if (block.data.is_dynamic)
                                 {
