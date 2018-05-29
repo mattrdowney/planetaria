@@ -62,9 +62,8 @@ namespace Planetaria
             }
             optional<Type> other = (optional<Type>) other_object;
             bool inequal_existance = (this.exists != other.exists);
-            bool inequal_value = (this.exists && other.exists && this.data.Equals(other.data));
+            bool inequal_value = (this.exists && other.exists && !this.data.Equals(other.data));
             bool inequal = inequal_existance || inequal_value;
-            Debug.Log(inequal_existance + " " + inequal_value + " " + inequal);
             return !inequal;
         }
 

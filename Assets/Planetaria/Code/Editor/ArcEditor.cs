@@ -38,8 +38,11 @@ namespace Planetaria
         {
             if (extrusion != 0 || arc.floor().offset < 1 - Precision.threshold) // for arcs larger than a single pixel
             {
-                Arc rotated_arc = shifted_arc(arc, extrusion, transformation);
-                RendererUtility.draw_arc(rotated_arc, 0, color);
+                Arc[] rotated_arcs = shifted_arc(arc, extrusion, transformation);
+                for (int half = 0; half < 2; ++half) // CONSIDER: put heavy lifting here from shifted_arc()?
+                {
+                    RendererUtility.draw_arc(rotated_arcs[half], 0, color);
+                }
             }
         }
 
@@ -66,26 +69,34 @@ namespace Planetaria
         }
 
         /// <summary>
-        /// Constructor - rotates arc so that it is relative to the input Transform.
+        /// Constructor - rotates arc so that it is relative to the input Transform and extruded.
         /// </summary>
         /// <param name="arc">The arc to be rotated.</param>
+        /// <param name="extrusion">The angular distance (in radians) to extrude the arc.</param>
         /// <param name="transformation">The Transform to rotate by.</param>
-        /// <returns>An arc rotated by Transform.</returns>
-        public static Arc shifted_arc(Arc arc, float extrusion, optional<Transform> transformation = new optional<Transform>())
+        /// <returns>Two arcs rotated by Transform and extruded (two required because extruding equator lines is non-trivial).</returns>
+        public static Arc[] shifted_arc(Arc arc, float extrusion, optional<Transform> transformation = new optional<Transform>())
         {
-            Vector3 from = arc.position(0, extrusion);
-            Vector3 from_normal = arc.normal(0, extrusion);
-            Vector3 from_tangent = Bearing.right(from, from_normal);
-            Vector3 to = arc.position(arc.angle(), extrusion);
-
-            if (transformation.exists)
+            Arc[] result = new Arc[2];
+            for (int half = 0; half < 2; ++half) // Necessary because of non-equator lines
             {
-                from = transformation.data.rotation * from;
-                from_tangent = transformation.data.rotation * from_tangent;
-                to = transformation.data.rotation * to;
+                float start_angle = (0f + half)/2 * arc.angle();
+                float end_angle = (1f + half)/2 * arc.angle();
+                Vector3 from = arc.position(start_angle, extrusion);
+                Vector3 from_normal = arc.normal(start_angle, extrusion);
+                Vector3 from_tangent = Bearing.right(from, from_normal);
+                Vector3 to = arc.position(end_angle, extrusion);
+
+                if (transformation.exists)
+                {
+                    from = transformation.data.rotation * from;
+                    from_tangent = transformation.data.rotation * from_tangent;
+                    to = transformation.data.rotation * to;
+                }
+                result[half] = Arc.curve(from, from_tangent, to);
             }
 
-            return Arc.curve(from, from_tangent, to);
+            return result;
         }
 
         // public static void draw_radial(Arc arc, float angle, float local_angle, float radius, Color color) // TODO: implement

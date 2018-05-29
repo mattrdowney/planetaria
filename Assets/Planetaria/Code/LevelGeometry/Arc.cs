@@ -180,7 +180,7 @@ namespace Planetaria
             return !left.Equals(right);
         }
 
-        public override bool Equals(System.Object other_object) // FIXME: no need to define these?
+        public override bool Equals(System.Object other_object)
         {
             bool equal_type = other_object is Arc;
             if (!equal_type)
@@ -193,6 +193,15 @@ namespace Planetaria
                     this.center_axis == other.center_axis &&
                     this.arc_angle == other.arc_angle &&
                     this.arc_latitude == other.arc_latitude;
+        }
+
+        public override int GetHashCode()
+        {
+            return forward_axis.GetHashCode() ^
+                    right_axis.GetHashCode() ^
+                    center_axis.GetHashCode() ^
+                    arc_latitude.GetHashCode() ^
+                    arc_angle.GetHashCode();
         }
 
         public override string ToString()

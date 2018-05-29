@@ -19,7 +19,6 @@ namespace Planetaria
             block.curve_list = curves;
             block.generate_arcs();
             block.ignore.Add(block);
-
             return result;
         }
 
@@ -30,17 +29,11 @@ namespace Planetaria
         /// <returns>The index of the match if the arc exists in the container and is not null; a nonexistent index otherwise.</returns>
         public optional<ArcVisitor> arc_visitor(Arc arc)
         {
-            Debug.Log(arc);
-            Debug.Log(arc_list[0]);
             int arc_list_index = arc_list.IndexOf(arc);
-            Debug.Log(arc_list.Count);
-            Debug.Log(arc_list_index);
-            Debug.Log(arc_list[0] == arc);
             if (arc_list_index == -1)
             {
                 return new optional<ArcVisitor>();
             }
-
             return ArcVisitor.arc_visitor(arc_list, arc_list_index);
         }
 

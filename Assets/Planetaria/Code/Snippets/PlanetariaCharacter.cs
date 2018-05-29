@@ -3,7 +3,7 @@ using Planetaria;
 
 public class PlanetariaCharacter : PlanetariaMonoBehaviour
 {
-    private void Awake()
+    protected override void OnConstruction()
     {
         OnBlockStay.data = on_block_stay;
         OnBlockEnter.data = on_block_enter;
@@ -11,18 +11,12 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
         OnFieldStay.data = on_field_stay;
     }
 
+    protected override void OnDestruction() { }
+
     private void Start()
     {
         planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
         transform.direction = new NormalizedCartesianCoordinates(Vector3.up);
-    }
-
-    protected override void OnConstruction()
-    {
-    }
-
-    protected override void OnDestruction()
-    {
     }
 
     private void Update()

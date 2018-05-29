@@ -152,7 +152,6 @@ namespace Planetaria
                                 }
                                 if (arc.exists && arc.data.contains(position, planetaria_transform.scale/2))
                                 {
-                                    Debug.Log("Happening");
                                     observer.potential_block_collision(arc.data, block.data, other_collider.data); // block collisions are handled in OnCollisionStay(): notification stage
                                 }
                             }
