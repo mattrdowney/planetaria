@@ -36,16 +36,25 @@ namespace Planetaria
         /// Mutator - Gets the designated object from the root of the scene if it exists; otherwise it creates and returns it.
         /// </summary>
         /// <param name="name">The name of the object (without double leading underscores i.e. "__").</param>
+        /// <param name="hidden_internal">Whether the GameObject should be hidden unless debugging.</param>
         /// <returns>The found or newly added object from the root of the scene.</returns>
-        public static GameObject GetOrAddObject(string name)
+        public static GameObject GetOrAddObject(string name, bool hidden_internal = true)
         {
-            name = "__" + name;
+            if (hidden_internal)
+            {
+                name = "__" + name;
+            }
             optional<GameObject> game_object = GameObject.Find("/" + name);
             if (!game_object.exists)
             {
                 game_object = new GameObject(name);
             }
-            //child.hideFlags += HideFlags.HideInHierarchy; // TODO: if condition [debug_inspector] !Hide
+            if (hidden_internal && Global.show_inspector)
+            {
+                Debug.Log("Before Hiding: HideFlags." + game_object.data.hideFlags);
+                game_object.data.hideFlags = (HideFlags.HideInHierarchy | HideFlags.HideInInspector);
+                Debug.Log("After Hiding: HideFlags." + game_object.data.hideFlags);
+            }
             return game_object.data;
         }
 
@@ -69,7 +78,12 @@ namespace Planetaria
                 child_object.transform.parent = self.transform;
                 child = child_object.transform;
             }
-            //child.hideFlags += HideFlags.HideInHierarchy; // TODO: if condition [debug_inspector] !Hide
+            if (hidden_internal && Global.show_inspector)
+            {
+                Debug.Log("Before Hiding: HideFlags." + child.data.hideFlags);
+                child.data.hideFlags = (HideFlags.HideInHierarchy | HideFlags.HideInInspector);
+                Debug.Log("After Hiding: HideFlags." + child.data.hideFlags);
+            }
             return child.data.gameObject;
         }
 

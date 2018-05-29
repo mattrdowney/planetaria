@@ -37,8 +37,12 @@ namespace Planetaria
         public override void OnInspectorGUI()
         {
             GUILayout.BeginHorizontal();
-	        debug_rendering = EditorGUILayout.Toggle("Debug Rendering", debug_rendering);
-	        GUILayout.EndHorizontal();
+            Global.show_graphics = EditorGUILayout.Toggle("Debug Rendering", Global.show_graphics);
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            Global.show_inspector = EditorGUILayout.Toggle("Hidden Inspector", Global.show_inspector);
+            GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
 	        draw_mode = (DrawMode) EditorGUILayout.EnumPopup("Draw Mode", draw_mode);
@@ -72,11 +76,8 @@ namespace Planetaria
         private void OnSceneGUI ()
         {
             move_camera();
-
             center_camera_view();
-        
             GridUtility.draw_grid(rows, columns);
-
             if (EditorWindow.mouseOverWindow == SceneView.currentDrawingSceneView)
             {
                 HandleUtility.AddDefaultControl(mouse_control);
@@ -84,7 +85,6 @@ namespace Planetaria
                 state_machine = state_machine(escape);
                 use_mouse_event();
             }
-            
             Repaint();
         }
 
@@ -186,14 +186,34 @@ namespace Planetaria
             }
         }
 
-        [MenuItem("Planetaria/Debug Rendering #g")]
-        private static void toggle_debug_rendering()
+        [MenuItem("Planetaria/Toggle Debug Graphics #g")]
+        private static void toggle_debug_graphics() // (Shift + g(raphics))
         {
-            debug_rendering = !debug_rendering; // toggle state
+            Global.show_graphics = !Global.show_graphics; // toggle state
         }
 
-        [Tooltip("")]
-        public static bool debug_rendering = true;
+        [MenuItem("Planetaria/Toggle Hidden Inspector #i")]
+        private static void toggle_hidden_inspector() // (Shift + i(nspector))
+        {
+            Global.show_inspector = !Global.show_inspector; // toggle state
+            foreach (GameObject game_object in GameObject.FindObjectsOfType<GameObject>())
+            {
+                // Hide planetaria internals (GitHub Issue #43 and #75).
+                // Toggling the inspector shows these objects (Shift + i(nspector))
+                if (game_object.name.Substring(0, 2) == "__") // double underscore indicates hidden object
+                {
+                    if (Global.show_inspector)
+                    {
+                        game_object.hideFlags |= (HideFlags.HideInHierarchy | HideFlags.HideInInspector); // set
+                    }
+                    else
+                    {
+                        game_object.hideFlags &= ~(HideFlags.HideInHierarchy | HideFlags.HideInInspector); // unset
+                    }
+                }
+                EditorUtility.SetDirty(game_object);
+            }
+        }
 
         [Tooltip("")]
         public static DrawMode draw_mode;

@@ -1,31 +1,11 @@
-﻿using UnityEngine;
-using UnityEditor;
+﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
-namespace Planetaria
+public static class Global
 {
-    [CustomEditor(typeof(Field))]
-    public class FieldEditor : Editor
-    {
-        [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
-        private static void draw_block_gizmos(Field self, GizmoType gizmo_type)
-        {
-            if (Global.show_graphics)
-            {
-                foreach (Arc arc in self.iterator())
-                {
-                    if (!self.is_dynamic)
-                    {
-                        ArcEditor.draw_arc(arc, 0, Color.green);
-                    }
-                    else
-                    {
-                        ArcEditor.draw_arc(arc, 0, Color.green, self.GetComponent<Transform>());
-                    }
-                }
-            }
-        }
-    }
+    public static bool show_graphics; // (Shift + g(raphics))
+    public static bool show_inspector; // (Shift + i(nspector))
 }
 
 /*
