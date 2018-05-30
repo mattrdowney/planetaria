@@ -51,6 +51,16 @@ namespace Planetaria
             return arc_angle;
         }
 
+        public Vector3 begin(float extrusion = 0f)
+        {
+            return position(0, extrusion);
+        }
+
+        public Vector3 begin_normal(float extrusion = 0f)
+        {
+            return normal(0, extrusion);
+        }
+
         public GeospatialCircle circle(float extrusion = 0)
         {
             Vector3 center = pole(extrusion);
@@ -78,6 +88,16 @@ namespace Planetaria
             return correct_latitude && correct_angle;
         }
 
+        public Vector3 end(float extrusion = 0f)
+        {
+            return position(angle(), extrusion);
+        }
+
+        public Vector3 end_normal(float extrusion = 0f)
+        {
+            return normal(angle(), extrusion);
+        }
+
         /// <summary>
         /// Inspector - Get the position at a particular interpolation factor [0,1].
         /// </summary>
@@ -101,8 +121,8 @@ namespace Planetaria
         /// </returns>
         public static bool is_convex(Arc left, Arc right)
         {
-            Vector3 normal_for_left = left.normal(left.angle());
-            Vector3 rightward_for_right = Bearing.right(right.position(0), right.normal(0));
+            Vector3 normal_for_left = left.end_normal();
+            Vector3 rightward_for_right = Bearing.right(right.begin(), right.begin_normal());
             return Vector3.Dot(normal_for_left, rightward_for_right) < Precision.tolerance;
         }
 
@@ -262,11 +282,11 @@ namespace Planetaria
             // find the arc along the equator and set the latitude to -PI/2 (implicitly, that means the arc radius is ~0)
 
             // The equatorial positions can be found by extruding the edges by PI/2
-            Vector3 start = left.position(left.angle(), Mathf.PI/2);
-            Vector3 end = right.position(0, Mathf.PI/2);
+            Vector3 start = left.end(Mathf.PI/2);
+            Vector3 end = right.begin(Mathf.PI/2);
 
             // The left tangent slope vector should point away from the position "start"
-            Vector3 slope = Bearing.right(start, left.normal(left.angle(), Mathf.PI/2)); // idk why it's left instead of right, but it works so w/e
+            Vector3 slope = Bearing.right(start, left.end_normal(Mathf.PI/2)); // idk why it's left instead of right, but it works so w/e
 
             // Create arc along equator
             Arc result = new Arc(start, slope, end);

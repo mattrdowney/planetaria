@@ -13,7 +13,7 @@ namespace Planetaria
             // MouseDown 1: create first corner of a shape
             if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
             {
-                temporary_arc = ArcBuilder.arc_builder(LevelCreatorEditor.get_mouse_position(), LevelCreatorEditor.is_field);
+                temporary_arc = ArcBuilder.arc_builder(LevelCreatorEditor.get_mouse_position(), LevelCreatorEditor.is_field, LevelCreatorEditor.allow_self_intersections);
                 return draw_tangent;
             }
 
@@ -36,8 +36,11 @@ namespace Planetaria
             // MouseUp 1-n: create the right-hand-side slope for the last point added
             if (Event.current.type == EventType.MouseUp && Event.current.button == 0)
             {
-                temporary_arc.data.next();
-                return draw_nth_point;
+                if (temporary_arc.data.valid())
+                {
+                    temporary_arc.data.next();
+                    return draw_nth_point;
+                }
             }
             return draw_tangent;
         }
@@ -57,8 +60,11 @@ namespace Planetaria
             // MouseDown 2-n: create arc through point using last right-hand-side slope
             if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
             {
-                temporary_arc.data.next();
-                return draw_tangent;
+                if (temporary_arc.data.valid())
+                {
+                    temporary_arc.data.next();
+                    return draw_tangent;
+                }
             }
             return draw_nth_point;
         }

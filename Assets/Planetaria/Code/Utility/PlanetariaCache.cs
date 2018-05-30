@@ -74,7 +74,7 @@ namespace Planetaria
             {
                 if (arc.exists)
                 {
-                    GameObject game_object = block.GetOrAddChild("Collider", false);
+                    GameObject game_object = block.GetOrAddChild("Collider", false); // TODO: Zero out transform.position for GitHub Issue #37
                     PlanetariaCollider collider = game_object.transform.GetOrAddComponent<PlanetariaCollider>();
                     SphereCollider sphere_collider = collider.get_sphere_collider();
 

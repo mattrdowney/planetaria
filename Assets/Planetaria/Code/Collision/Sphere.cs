@@ -130,7 +130,7 @@ namespace Planetaria
         private static Sphere[] boundary_collider(optional<Transform> transformation, Arc arc)
         {
             Sphere result;
-            Vector3 corner = arc.position(0);
+            Vector3 corner = arc.begin();
             Vector3 center = arc.position(arc.angle()/2);
             SphericalCap cap = SphericalCap.cap(center, corner); // create a SphericalCap centered at "center" that captures both corners (2nd implicitly)
 

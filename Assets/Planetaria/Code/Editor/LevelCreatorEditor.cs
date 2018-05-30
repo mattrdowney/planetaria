@@ -53,6 +53,10 @@ namespace Planetaria
 	        GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
+            allow_self_intersections = EditorGUILayout.Toggle("Allow self-intersections", allow_self_intersections);
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
             GUILayout.Label("Equator Rows");
 	        rows = EditorGUILayout.IntField(rows, GUILayout.Width(50));
             GUILayout.EndHorizontal();
@@ -220,6 +224,9 @@ namespace Planetaria
 
         [Tooltip("")]
         public static bool is_field;
+
+        [Tooltip("")]
+        public static bool allow_self_intersections;
 
         /// <summary>Number of rows in the grid. Equator is drawn when rows is odd</summary>
         [Tooltip("")]

@@ -14,7 +14,7 @@ namespace Planetaria
             //if (LevelCreatorEditor.gizmos)
             //{
                 GeospatialCircle circle = arc.circle(extrusion);
-                Vector3 from = arc.position(0, extrusion);
+                Vector3 from = arc.begin(extrusion);
                 Vector3 normal = circle.center;
                 Vector3 center = Vector3.Project(from, normal);
                 normal *= -Mathf.Sign(circle.radius);

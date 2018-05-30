@@ -13,11 +13,15 @@ namespace Planetaria
         /// <param name="b">The right arc (neighboring left).</param>
         /// <param name="extrusion">The extrusion distance of both arcs</param>
         /// <returns></returns>
-        public static Vector3 arc_arc_intersection(Arc a, Arc b, float extrusion)
+        public static optional<Vector3> arc_arc_intersection(Arc a, Arc b, float extrusion)
         {
             Vector3[] intersections = circle_circle_intersections(a.circle(extrusion), b.circle(extrusion));
             intersections = valid_arc_intersections(a, intersections);
             intersections = valid_arc_intersections(b, intersections);
+            if (intersections.Length == 0)
+            {
+                return new optional<Vector3>();
+            }
             return intersections[0];
         }
 

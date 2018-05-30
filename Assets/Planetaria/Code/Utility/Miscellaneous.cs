@@ -74,13 +74,12 @@ namespace Planetaria
             {
                 GameObject child_object = new GameObject(name);
                 child_object.transform.parent = self.transform;
+                child_object.transform.localPosition = Vector3.zero; // Ensure all children are on the same planetarium as their parent
                 child = child_object.transform;
             }
             if (hidden_internal && Global.self.show_inspector)
             {
-                Debug.Log("Before Hiding: HideFlags." + child.data.hideFlags);
                 child.data.hideFlags = (HideFlags.HideInHierarchy | HideFlags.HideInInspector);
-                Debug.Log("After Hiding: HideFlags." + child.data.hideFlags);
             }
             return child.data.gameObject;
         }

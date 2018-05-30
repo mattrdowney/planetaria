@@ -27,7 +27,7 @@ namespace Planetaria
         public override void OnInspectorGUI()
         {
             PlanetariaCollider self = (PlanetariaCollider) target;
-            for (int bit_position = 0; bit_position < 8*sizeof(int) && bit_position < self.colliders.Length; ++bit_position)
+            for (int bit_position = 0; bit_position < mask.Length && bit_position < self.colliders.Length; ++bit_position)
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Label(" Collider Mask " + bit_position);
@@ -39,7 +39,7 @@ namespace Planetaria
         }
 
         Field self;
-        private static bool[] mask = new bool[sizeof(int)];
+        private static bool[] mask = new bool[8*sizeof(int)];
     }
 }
 

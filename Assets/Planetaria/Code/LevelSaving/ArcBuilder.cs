@@ -1,20 +1,23 @@
 ﻿#if UNITY_EDITOR 
 
-using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace Planetaria
 {
     [ExecuteInEditMode]
     public class ArcBuilder : MonoBehaviour
     {
-        public static ArcBuilder arc_builder(Vector3 original_point, bool is_field)
+        public static ArcBuilder arc_builder(Vector3 original_point, bool is_field, bool allow_self_intersections)
         {
             GameObject game_object = new GameObject("Arc Builder");
             ArcBuilder result = game_object.AddComponent<ArcBuilder>();
             result.point = result.original_point = original_point;
             result.arcs.Add(Arc.line(original_point, original_point));
             result.is_field = is_field;
+            result.must_be_convex = is_field; // Fields must be a "convex hull"
+            result.allow_self_intersections = allow_self_intersections && !is_field;
             return result;
         }
 
@@ -29,7 +32,7 @@ namespace Planetaria
             {
                 if (arcs.Count != 0)
                 {
-                    arcs[arcs.Count-1] = Arc.curve(arcs[arcs.Count-1].position(0), slope, point);
+                    arcs[arcs.Count-1] = Arc.curve(arcs[arcs.Count-1].begin(), slope, point);
                 }
                 point = vector;
             }
@@ -79,6 +82,71 @@ namespace Planetaria
             
             DestroyImmediate(this.gameObject);
         }
+
+        public bool valid()
+        {
+            if (must_be_convex)
+            {
+                if (!convex_hull())
+                {
+                    Debug.Log("Concave!");
+                    return false;
+                }
+            }
+            if (!allow_self_intersections)
+            {
+                if (!zero_intersections())
+                {
+                    Debug.Log("Intersects!");
+                    return false;
+                }
+            }
+            Debug.Log("All Good!");
+            return true;
+        }
+
+        private bool convex_hull()
+        {
+            if (arcs.Count > 1)
+            {
+                Arc closing_edge = Arc.line(arcs[arcs.Count - 1].end(), arcs[0].begin());
+                Arc last_arc = closing_edge;
+                foreach (Arc arc in arcs)
+                {
+                    if (!Arc.is_convex(last_arc, arc))
+                    {
+                        Debug.Log("We found a concave corner =(");
+                        return false;
+                    }
+                    last_arc = arc;
+                }
+                if (!Arc.is_convex(last_arc, closing_edge))
+                {
+                    Debug.Log("We found a concave corner =(");
+                    return false;
+                }
+            }
+            Debug.Log("Convex~!");
+            return true;
+        }
+
+        private bool zero_intersections()
+        {
+            for (int left = 0; left < arcs.Count; ++left)
+            {
+                for (int right = left+1; right < arcs.Count; ++right)
+                {
+                    optional<Vector3> intersection = PlanetariaIntersection.arc_arc_intersection(arcs[left], arcs[right], 0);
+                    if (intersection.exists)
+                    {
+                        Debug.Log("Unfortunately, two arcs intersect somewhere.");
+                        return false;
+                    }
+                }
+            }
+            Debug.Log("There were no intersections~!");
+            return true;
+        }
     
         public List<Arc> arcs = new List<Arc>();
         private List<GeospatialCurve> curves = new List<GeospatialCurve>();
@@ -87,6 +155,8 @@ namespace Planetaria
         private Vector3 slope { get; set; }
         private Vector3 original_point;
         private bool is_field;
+        private bool must_be_convex;
+        private bool allow_self_intersections;
 
         private enum CreationState
         {
