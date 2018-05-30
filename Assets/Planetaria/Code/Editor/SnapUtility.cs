@@ -9,17 +9,17 @@ namespace Planetaria
         {
             UnityEditor.Handles.color = Color.white;
 
-            for (float row = 1; row <= Global.self.rows; ++row) // equator lines
+            for (float row = 1; row <= EditorGlobal.self.rows; ++row) // equator lines
             {
-                float angle = Mathf.PI * row / (Global.self.rows + 1);
+                float angle = Mathf.PI * row / (EditorGlobal.self.rows + 1);
                 float radius = Mathf.Sin(angle);
                 Vector3 center = Vector3.down * Mathf.Cos(angle);
                 UnityEditor.Handles.DrawWireDisc(center, Vector3.up, radius);
             }
 
-            for (float column = 0; column < Global.self.columns; ++column) // time zone lines
+            for (float column = 0; column < EditorGlobal.self.columns; ++column) // time zone lines
             {
-                float angle = Mathf.PI * column / Global.self.columns;
+                float angle = Mathf.PI * column / EditorGlobal.self.columns;
                 Vector3 normal = PlanetariaMath.slerp(Vector3.forward, Vector3.right, angle);
                 UnityEditor.Handles.DrawWireDisc(Vector3.zero, normal, 1);
             }
@@ -35,7 +35,7 @@ namespace Planetaria
                     return edge_snap.data;
                 }
             }
-            else if (Global.self.v_pressed) // Vertex snap on V + click
+            else if (EditorGlobal.self.v_pressed) // Vertex snap on V + click
             {
                 optional<Vector3> vertex_snap = closest_heuristic(ArcUtility.snap_to_vertex, position);
                 if (vertex_snap.exists)
@@ -62,9 +62,9 @@ namespace Planetaria
             NormalizedSphericalCoordinates clamped_coordinates = new NormalizedSphericalCoordinates(0, 0);
             NormalizedSphericalCoordinates desired_coordinates = cartesian_position;
 
-            for (float row = 0; row <= Global.self.rows + 1; ++row) //going over with off by one errors won't ruin the program...
+            for (float row = 0; row <= EditorGlobal.self.rows + 1; ++row) //going over with off by one errors won't ruin the program...
             {
-                float angle = Mathf.PI * row / (Global.self.rows + 1);
+                float angle = Mathf.PI * row / (EditorGlobal.self.rows + 1);
                 float x = Mathf.Sin(angle);
                 float y = Mathf.Cos(angle);
                 NormalizedSphericalCoordinates test_coordinates = new NormalizedCartesianCoordinates(new Vector3(x, y, 0));
@@ -78,9 +78,9 @@ namespace Planetaria
                 }
             }
 
-            for (float column = 0; column < Global.self.columns * 2; ++column) //... but going under is bad
+            for (float column = 0; column < EditorGlobal.self.columns * 2; ++column) //... but going under is bad
             {
-                float angle = column / Global.self.columns * Mathf.PI;
+                float angle = column / EditorGlobal.self.columns * Mathf.PI;
                 float x = Mathf.Sin(angle);
                 float z = Mathf.Cos(angle);
                 NormalizedSphericalCoordinates test_coordinates = new NormalizedCartesianCoordinates(new Vector3(x, 0, z));

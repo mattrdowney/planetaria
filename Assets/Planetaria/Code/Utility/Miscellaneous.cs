@@ -49,7 +49,7 @@ namespace Planetaria
             {
                 game_object = new GameObject(name);
             }
-            if (hidden_internal && !Global.self.show_inspector)
+            if (hidden_internal && !EditorGlobal.self.show_inspector)
             {
                 game_object.data.hideFlags = (HideFlags.HideInHierarchy | HideFlags.HideInInspector);
             }
@@ -77,7 +77,7 @@ namespace Planetaria
                 child_object.transform.localPosition = Vector3.zero; // Ensure all children are on the same planetarium as their parent
                 child = child_object.transform;
             }
-            if (hidden_internal && Global.self.show_inspector)
+            if (hidden_internal && EditorGlobal.self.show_inspector)
             {
                 child.data.hideFlags = (HideFlags.HideInHierarchy | HideFlags.HideInInspector);
             }

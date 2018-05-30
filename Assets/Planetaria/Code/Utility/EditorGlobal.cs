@@ -1,12 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Planetaria
 {
-    public class Global : MonoBehaviour
+    public class EditorGlobal : MonoBehaviour // https://answers.unity.com/questions/964825/create-a-component-script-for-editor-only.html
     {
-        public static Global self
+        private void Awake()
+        {
+#if !UNITY_EDITOR
+            Destroy(this);
+#endif
+        }
+
+#if UNITY_EDITOR
+        public static EditorGlobal self
         {
             get
             {
@@ -16,12 +22,21 @@ namespace Planetaria
                 }
                 GameObject game_master = Miscellaneous.GetOrAddObject("GameMaster", false);
                 game_master.hideFlags = HideFlags.HideInHierarchy | HideFlags.HideInInspector; // hide by default
-                self_variable = game_master.transform.GetOrAddComponent<Global>();
+                self_variable = game_master.transform.GetOrAddComponent<EditorGlobal>();
                 return self_variable.data;
             }
         }
 
-        private static optional<Global> self_variable;
+        [SerializeField] public bool hide_graphics; // (Shift + g(raphics))
+        [SerializeField] public bool show_inspector; // (Shift + i(nspector))
+                                                     /// <summary>Number of rows in the grid. Equator is drawn when rows is odd</summary>     
+        [SerializeField] public int rows = 63;
+        /// <summary>Number of columns in the grid (per hemisphere).</summary>
+        [SerializeField] public int columns = 64;
+        [SerializeField] public bool v_pressed = false;
+
+        private static optional<EditorGlobal> self_variable;
+#endif
     }
 }
 

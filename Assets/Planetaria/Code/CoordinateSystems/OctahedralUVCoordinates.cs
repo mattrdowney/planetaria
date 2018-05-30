@@ -30,7 +30,7 @@ namespace Planetaria
         /// <returns>The normalized cartesian coordinates.</returns>
         public static implicit operator NormalizedCartesianCoordinates(OctahedralUVCoordinates uv)
         {
-            return (NormalizedOctahedralCoordinates) uv; // implicit chains of length three won't automatically work so convert OctahedralUVCoordinates -> NormalizedOctahedralCoordinates -> NormalizedCartesianCoordinates
+            return (NormalizedOctahedronCoordinates) uv; // implicit chains of length three won't automatically work so convert OctahedralUVCoordinates -> NormalizedOctahedralCoordinates -> NormalizedCartesianCoordinates
         }
 
         /// <summary>
@@ -38,10 +38,10 @@ namespace Planetaria
         /// </summary>
         /// <param name="uv">The coordinates in octahedral UV space that will be converted</param>
         /// <returns>The octahedral coordinates.</returns> 
-        public static implicit operator NormalizedOctahedralCoordinates(OctahedralUVCoordinates uv)
+        public static implicit operator NormalizedOctahedronCoordinates(OctahedralUVCoordinates uv)
         {
             Vector3 cartesian = Octahedron.uv_to_cartesian(uv.data);
-            return new NormalizedOctahedralCoordinates(cartesian);
+            return new NormalizedOctahedronCoordinates(cartesian);
         }
 
         /// <summary>

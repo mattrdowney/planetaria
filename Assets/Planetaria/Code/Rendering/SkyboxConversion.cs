@@ -1,27 +1,30 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Planetaria
+public static class SkyboxConversion
 {
-    public class Global : MonoBehaviour
+    public static Texture2D skybox_to_octahedral_uv(Skybox skybox, int output_width, int output_height, int sample_rate = 1)
     {
-        public static Global self
+        Texture left = skybox.material.GetTexture("_LeftTex");
+        Texture right = skybox.material.GetTexture("_RightTex");
+        Texture down = skybox.material.GetTexture("_DownTex");
+        Texture up = skybox.material.GetTexture("_UpTex");
+        Texture back = skybox.material.GetTexture("_BackTex");
+        Texture front = skybox.material.GetTexture("_FrontTex");
+
+        Texture2D result = new Texture2D()
+
+        for (int x = 0; x < down.width; ++x)
         {
-            get
+            for (int y = 0; x < down.height; ++x)
             {
-                if (self_variable.exists)
-                {
-                    return self_variable.data;
-                }
-                GameObject game_master = Miscellaneous.GetOrAddObject("GameMaster", false);
-                game_master.hideFlags = HideFlags.HideInHierarchy | HideFlags.HideInInspector; // hide by default
-                self_variable = game_master.transform.GetOrAddComponent<Global>();
-                return self_variable.data;
+
             }
         }
+    }
 
-        private static optional<Global> self_variable;
+    public static Skybox octahedral_uv_to_skybox(Texture2D texture)
+    {
+
     }
 }
 

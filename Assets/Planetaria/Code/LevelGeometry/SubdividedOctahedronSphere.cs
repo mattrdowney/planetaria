@@ -56,7 +56,7 @@ namespace Planetaria
                     float height = Mathf.Sin(angle);
                     float y = (manhattan_distance > Precision.threshold ? height / (Mathf.Abs(width) + Mathf.Abs(height)) : 1);
                     float xz_magnitude = 1 - Mathf.Abs(y);
-                    Vector3 unadjusted_point = ((NormalizedOctahedralCoordinates) new OctahedralUVCoordinates(u, v)).data;
+                    Vector3 unadjusted_point = ((NormalizedOctahedronCoordinates) new OctahedralUVCoordinates(u, v)).data;
                     unadjusted_point.y = 0;
                     if (unadjusted_point.sqrMagnitude > 0)
                     {
@@ -75,7 +75,7 @@ namespace Planetaria
                     }
                     float x = xz_magnitude * unadjusted_point.x;
                     float z = xz_magnitude * unadjusted_point.z;
-                    NormalizedOctahedralCoordinates final_point = new NormalizedOctahedralCoordinates(new Vector3(x,y,z));
+                    NormalizedOctahedronCoordinates final_point = new NormalizedOctahedronCoordinates(new Vector3(x,y,z));
                     uvs[row, column] = ((OctahedralUVCoordinates) final_point).data;
                     positions[row, column] = ((NormalizedCartesianCoordinates) final_point).data;
                 }

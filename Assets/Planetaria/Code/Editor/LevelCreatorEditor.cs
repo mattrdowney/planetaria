@@ -37,11 +37,11 @@ namespace Planetaria
         public override void OnInspectorGUI()
         {
             GUILayout.BeginHorizontal();
-            Global.self.hide_graphics = EditorGUILayout.Toggle("Debug Rendering", Global.self.hide_graphics);
+            EditorGlobal.self.hide_graphics = EditorGUILayout.Toggle("Debug Rendering", EditorGlobal.self.hide_graphics);
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            Global.self.show_inspector = EditorGUILayout.Toggle("Hidden Inspector", Global.self.show_inspector);
+            EditorGlobal.self.show_inspector = EditorGUILayout.Toggle("Hidden Inspector", EditorGlobal.self.show_inspector);
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
@@ -58,12 +58,12 @@ namespace Planetaria
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("Equator Rows");
-	        Global.self.rows = EditorGUILayout.IntField(Global.self.rows, GUILayout.Width(50));
+	        EditorGlobal.self.rows = EditorGUILayout.IntField(EditorGlobal.self.rows, GUILayout.Width(50));
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("Time Zone Columns");
-            Global.self.columns = EditorGUILayout.IntField(Global.self.columns, GUILayout.Width(50));
+            EditorGlobal.self.columns = EditorGUILayout.IntField(EditorGlobal.self.columns, GUILayout.Width(50));
 	        GUILayout.EndHorizontal();
 
             switch (draw_mode)
@@ -100,7 +100,7 @@ namespace Planetaria
                 case EventType.KeyDown:
                     if (Event.current.keyCode == (KeyCode.V))
                     {
-                        Global.self.v_pressed = true;
+                        EditorGlobal.self.v_pressed = true;
                         GUIUtility.hotControl = keyboard_control;
                         Event.current.Use();
                     }
@@ -108,7 +108,7 @@ namespace Planetaria
                 case EventType.KeyUp:
                     if (Event.current.keyCode == (KeyCode.V))
                     {
-                        Global.self.v_pressed = false;
+                        EditorGlobal.self.v_pressed = false;
                         GUIUtility.hotControl = 0;
                         Event.current.Use();
                     }
@@ -217,20 +217,20 @@ namespace Planetaria
         [MenuItem("Planetaria/Toggle Debug Graphics #g")]
         private static void toggle_debug_graphics() // (Shift + g(raphics))
         {
-            Global.self.hide_graphics = !Global.self.hide_graphics; // toggle state
+            EditorGlobal.self.hide_graphics = !EditorGlobal.self.hide_graphics; // toggle state
         }
 
         [MenuItem("Planetaria/Toggle Hidden Inspector #i")]
         private static void toggle_hidden_inspector() // (Shift + i(nspector))
         {
-            Global.self.show_inspector = !Global.self.show_inspector; // toggle state
+            EditorGlobal.self.show_inspector = !EditorGlobal.self.show_inspector; // toggle state
             foreach (GameObject game_object in GameObject.FindObjectsOfType<GameObject>())
             {
                 // Hide planetaria internals (GitHub Issue #43 and #75).
                 // Toggling the inspector shows these objects (Shift + i(nspector))
                 if (game_object.name.Substring(0, 2) == "__") // double underscore indicates hidden object
                 {
-                    if (!Global.self.show_inspector)
+                    if (!EditorGlobal.self.show_inspector)
                     {
                         game_object.hideFlags |= (HideFlags.HideInHierarchy | HideFlags.HideInInspector); // set
                     }

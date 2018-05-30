@@ -66,8 +66,10 @@
     <Compile Include="Assets\Planetaria\Code\Collision\RaycastSorter.cs" />
     <Compile Include="Assets\Planetaria\Code\Collision\Sphere.cs" />
     <Compile Include="Assets\Planetaria\Code\CoordinateSystems\Bearing.cs" />
+    <Compile Include="Assets\Planetaria\Code\CoordinateSystems\CubeUVCoordinates.cs" />
     <Compile Include="Assets\Planetaria\Code\CoordinateSystems\NormalizedCartesianCoordinates.cs" />
-    <Compile Include="Assets\Planetaria\Code\CoordinateSystems\NormalizedOctahedralCoordinates.cs" />
+    <Compile Include="Assets\Planetaria\Code\CoordinateSystems\NormalizedCubeCoordinates.cs" />
+    <Compile Include="Assets\Planetaria\Code\CoordinateSystems\NormalizedOctahedronCoordinates.cs" />
     <Compile Include="Assets\Planetaria\Code\CoordinateSystems\NormalizedSphericalCoordinates.cs" />
     <Compile Include="Assets\Planetaria\Code\CoordinateSystems\OctahedralUVCoordinates.cs" />
     <Compile Include="Assets\Planetaria\Code\CoordinateSystems\StereoscopicProjectionCoordinates.cs" />
@@ -100,6 +102,7 @@
     <Compile Include="Assets\Planetaria\Code\Rendering\QuadraticBezierCurve.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\RenderVectorGraphics.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\ShapeRenderer.cs" />
+    <Compile Include="Assets\Planetaria\Code\Rendering\SkyboxConversion.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\VectorGraphicsWriter.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\VolumeRenderer.cs" />
     <Compile Include="Assets\Planetaria\Code\Shutter\BlinkCameraShutter.cs" />
@@ -125,6 +128,7 @@
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaRenderer.cs" />
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaRigidbody.cs" />
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaTransform.cs" />
+    <Compile Include="Assets\Planetaria\Code\Utility\EditorGlobal.cs" />
     <Compile Include="Assets\Planetaria\Code\Utility\Global.cs" />
     <Compile Include="Assets\Planetaria\Code\Utility\Miscellaneous.cs" />
     <Compile Include="Assets\Planetaria\Code\Utility\Optional.cs" />
