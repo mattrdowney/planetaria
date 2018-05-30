@@ -70,14 +70,14 @@ namespace Planetaria
             else
             {
                 GameObject shape = Block.block(curves);
-                Block block = shape.GetComponent<Block>();
+                /*Block block = shape.GetComponent<Block>();
                 optional<TextAsset> svg_file = BlockRenderer.render(block, 0);
 
                 if (svg_file.exists)
                 {
-                    //PlanetariaRenderer renderer = shape.AddComponent<PlanetRenderer>();
-                    //renderer.material = RenderVectorGraphics.render(svg_file.data);
-                }
+                    PlanetariaRenderer renderer = shape.AddComponent<PlanetRenderer>();
+                    renderer.material = RenderVectorGraphics.render(svg_file.data);
+                }*/
             }
             
             DestroyImmediate(this.gameObject);
@@ -89,7 +89,6 @@ namespace Planetaria
             {
                 if (!convex_hull())
                 {
-                    Debug.Log("Concave!");
                     return false;
                 }
             }
@@ -97,11 +96,9 @@ namespace Planetaria
             {
                 if (!zero_intersections())
                 {
-                    Debug.Log("Intersects!");
                     return false;
                 }
             }
-            Debug.Log("All Good!");
             return true;
         }
 
@@ -115,18 +112,15 @@ namespace Planetaria
                 {
                     if (!Arc.is_convex(last_arc, arc))
                     {
-                        Debug.Log("We found a concave corner =(");
                         return false;
                     }
                     last_arc = arc;
                 }
                 if (!Arc.is_convex(last_arc, closing_edge))
                 {
-                    Debug.Log("We found a concave corner =(");
                     return false;
                 }
             }
-            Debug.Log("Convex~!");
             return true;
         }
 
@@ -139,12 +133,10 @@ namespace Planetaria
                     optional<Vector3> intersection = PlanetariaIntersection.arc_arc_intersection(arcs[left], arcs[right], 0);
                     if (intersection.exists)
                     {
-                        Debug.Log("Unfortunately, two arcs intersect somewhere.");
                         return false;
                     }
                 }
             }
-            Debug.Log("There were no intersections~!");
             return true;
         }
     

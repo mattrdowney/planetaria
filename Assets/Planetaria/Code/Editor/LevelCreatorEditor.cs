@@ -58,12 +58,12 @@ namespace Planetaria
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("Equator Rows");
-	        rows = EditorGUILayout.IntField(rows, GUILayout.Width(50));
+	        Global.self.rows = EditorGUILayout.IntField(Global.self.rows, GUILayout.Width(50));
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("Time Zone Columns");
-	        columns = EditorGUILayout.IntField(columns, GUILayout.Width(50));
+            Global.self.columns = EditorGUILayout.IntField(Global.self.columns, GUILayout.Width(50));
 	        GUILayout.EndHorizontal();
 
             switch (draw_mode)
@@ -81,15 +81,39 @@ namespace Planetaria
         {
             move_camera();
             center_camera_view();
-            GridUtility.draw_grid(rows, columns);
+            SnapUtility.draw_grid();
             if (EditorWindow.mouseOverWindow == SceneView.currentDrawingSceneView)
             {
                 HandleUtility.AddDefaultControl(mouse_control);
                 bool escape = Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape;
+                capture_v_press();
                 state_machine = state_machine(escape);
                 use_mouse_event();
             }
             Repaint();
+        }
+
+        public static void capture_v_press()
+        {
+            switch (Event.current.type)
+            {
+                case EventType.KeyDown:
+                    if (Event.current.keyCode == (KeyCode.V))
+                    {
+                        Global.self.v_pressed = true;
+                        GUIUtility.hotControl = keyboard_control;
+                        Event.current.Use();
+                    }
+                    break;
+                case EventType.KeyUp:
+                    if (Event.current.keyCode == (KeyCode.V))
+                    {
+                        Global.self.v_pressed = false;
+                        GUIUtility.hotControl = 0;
+                        Event.current.Use();
+                    }
+                    break;
+            }
         }
 
         public static CreateShape draw_initialize(bool escape = false)
@@ -125,9 +149,9 @@ namespace Planetaria
         public static Vector3 get_mouse_position()
         {
             Vector3 position = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition).direction;
-            Vector3 clamped_position = GridUtility.grid_snap(position, rows, columns);
+            Vector3 adjusted_position = SnapUtility.snap(position, false); // FIXME: BUG: HACK: TODO:
 
-            return clamped_position;
+            return adjusted_position;
         }
 
         private static void move_camera()
@@ -228,13 +252,7 @@ namespace Planetaria
         [Tooltip("")]
         public static bool allow_self_intersections;
 
-        /// <summary>Number of rows in the grid. Equator is drawn when rows is odd</summary>
-        [Tooltip("")]
-        public static int rows = 63;
-        
-        /// <summary>Number of columns in the grid (per hemisphere).</summary>
-        [Tooltip("")]
-	    public static int columns = 64;
+
 
         [Tooltip("")]
         public static int edges = 3;

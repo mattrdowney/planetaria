@@ -67,11 +67,11 @@
     <Compile Include="Assets\Planetaria\Code\Editor\EquilateralDrawMode.cs" />
     <Compile Include="Assets\Planetaria\Code\Editor\FieldEditor.cs" />
     <Compile Include="Assets\Planetaria\Code\Editor\FreeLineDrawMode.cs" />
-    <Compile Include="Assets\Planetaria\Code\Editor\GridUtility.cs" />
     <Compile Include="Assets\Planetaria\Code\Editor\LevelCreatorEditor.cs" />
     <Compile Include="Assets\Planetaria\Code\Editor\MasterBuild.cs" />
     <Compile Include="Assets\Planetaria\Code\Editor\PlanetariaColliderEditor.cs" />
     <Compile Include="Assets\Planetaria\Code\Editor\RendererUtility.cs" />
+    <Compile Include="Assets\Planetaria\Code\Editor\SnapUtility.cs" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>C:/Users/Fujitora/Dropbox/Planetaria/Planetaria/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>

@@ -23,6 +23,11 @@ namespace Planetaria
 
         [SerializeField] public bool hide_graphics; // (Shift + g(raphics))
         [SerializeField] public bool show_inspector; // (Shift + i(nspector))
+        /// <summary>Number of rows in the grid. Equator is drawn when rows is odd</summary>     
+        [SerializeField] public int rows = 63; 
+        /// <summary>Number of columns in the grid (per hemisphere).</summary>
+        [SerializeField] public int columns = 64;
+        [SerializeField] public bool v_pressed = false;
 
         private static optional<Global> self_variable;
     }
