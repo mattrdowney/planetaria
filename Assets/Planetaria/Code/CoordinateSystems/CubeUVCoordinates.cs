@@ -26,7 +26,27 @@ namespace Planetaria
         /// <returns>The normalized cube coordinates. (At least one of x,y,and z will be magnitude 1.)</returns>
         public static implicit operator NormalizedCubeCoordinates(CubeUVCoordinates skybox)
         {
+            Quaternion world_rotation = world_to_local_rotation[skybox.face_index_variable];
+            Vector3 local_position = new Vector3(skybox.uv_variable.x, skybox.uv_variable.y, +1);
+            Vector3 cube_world_position = world_rotation * local_position;
+            return new NormalizedCubeCoordinates(cube_world_position);
+        }
 
+        public static int face(Vector3 cartesian)
+        {
+            float x_magnitude = Mathf.Abs(cartesian.x);
+            float y_magnitude = Mathf.Abs(cartesian.y);
+            float z_magnitude = Mathf.Abs(cartesian.z);
+
+            if (x_magnitude >= Mathf.Max(y_magnitude, z_magnitude))
+            {
+                return Mathf.Sign(cartesian.x) == -1 ? 0 : 1;
+            }
+            else if (y_magnitude >= z_magnitude)
+            {
+                return Mathf.Sign(cartesian.y) == -1 ? 2 : 3;
+            }
+            return Mathf.Sign(cartesian.z) == -1 ? 4 : 5;
         }
 
         /// <summary>
@@ -44,6 +64,26 @@ namespace Planetaria
             }
             face_index_variable = (int)PlanetariaMath.modolo_using_euclidean_division(face_index_variable, 6); // HACK: CONSIDER: would anyone ever enter something like 2^31 in here?
         }
+
+        public static readonly Quaternion[] world_to_local_rotation = // TODO: is this the right name?
+        {
+            Quaternion.LookRotation(Vector3.left, Vector3.up), // relative rotation of _LeftTex of Skybox
+            Quaternion.LookRotation(Vector3.right, Vector3.up), // _RightTex
+            Quaternion.LookRotation(Vector3.down, Vector3.forward), // _DownTex
+            Quaternion.LookRotation(Vector3.up, Vector3.back), // _UpTex
+            Quaternion.LookRotation(Vector3.back, Vector3.up), // _BackTex
+            Quaternion.LookRotation(Vector3.forward, Vector3.up), // _FrontTex
+        };
+
+        public static readonly Quaternion[] local_rotation_to_world = // TODO: is this name good?
+        {
+            Quaternion.Inverse(world_to_local_rotation[0]), // relative rotation of _LeftTex of Skybox
+            Quaternion.Inverse(world_to_local_rotation[1]), // _RightTex
+            Quaternion.Inverse(world_to_local_rotation[2]), // _DownTex
+            Quaternion.Inverse(world_to_local_rotation[3]), // _UpTex
+            Quaternion.Inverse(world_to_local_rotation[4]), // _BackTex
+            Quaternion.Inverse(world_to_local_rotation[5]), // _FrontTex
+        };
 
         [SerializeField] private int face_index_variable;
         [SerializeField] private Vector2 uv_variable;

@@ -27,26 +27,26 @@ namespace Planetaria
         }
 
         /// <summary>
-        /// Inspector - Use Barycentric coordinates to convert from octahedral coordinates to octahedral UV coordinates.
+        /// Inspector - Use Barycentric coordinates to convert from octahedron coordinates to octahedron UV coordinates.
         /// </summary>
-        /// <param name="octahedral">The octahedral coordinates.</param>
+        /// <param name="octahedron">The octahedron coordinates.</param>
         /// <returns>The UV coordinates of an octahedron.</returns>
-        public static Vector2 cartesian_to_uv(Vector3 octahedral)
+        public static Vector2 cartesian_to_uv(Vector3 octahedron)
         {
             // get mapping index from 0-7
             int xyz_mask =
-                    (octahedral.x < 0 ? 1 : 0) + // x sign is 1s place
-                    (octahedral.y < 0 ? 2 : 0) + // y sign is 2s place
-                    (octahedral.z < 0 ? 4 : 0);  // z sign is 4s place
+                    (octahedron.x < 0 ? 1 : 0) + // x sign is 1s place
+                    (octahedron.y < 0 ? 2 : 0) + // y sign is 2s place
+                    (octahedron.z < 0 ? 4 : 0);  // z sign is 4s place
             
-            return convert(vertex_list, uv_list, octahedral, xyz_mask);
+            return convert(vertex_list, uv_list, octahedron, xyz_mask);
         }
 
         /// <summary>
-        /// Inspector - Use Barycentric coordinates to convert from octahedral UV coordinates to octahedral coordinates.
+        /// Inspector - Use Barycentric coordinates to convert from octahedron UV coordinates to octahedron coordinates.
         /// </summary>
         /// <param name="uv">The UV coordinates of the octahedron.</param>
-        /// <returns>The octahedral coordinates.</returns>
+        /// <returns>The octahedron coordinates.</returns>
         public static Vector3 uv_to_cartesian(Vector2 uv)
         {
             // get mapping index from 0-7

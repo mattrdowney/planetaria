@@ -26,7 +26,7 @@ namespace Planetaria
         /// <summary>
         /// Inspector - Converts octahedron UV coordinates into normalized cartesian coordinates.
         /// </summary>
-        /// <param name="uv">The coordinates in octahedral UV space that will be converted</param>
+        /// <param name="uv">The coordinates in octahedron UV space that will be converted</param>
         /// <returns>The normalized cartesian coordinates.</returns>
         public static implicit operator NormalizedCartesianCoordinates(OctahedralUVCoordinates uv)
         {
@@ -34,14 +34,20 @@ namespace Planetaria
         }
 
         /// <summary>
-        /// Inspector - Converts octahedron UV coordinates into octahedral coordinates.
+        /// Inspector - Converts octahedron UV coordinates into octahedron coordinates.
         /// </summary>
-        /// <param name="uv">The coordinates in octahedral UV space that will be converted</param>
-        /// <returns>The octahedral coordinates.</returns> 
+        /// <param name="uv">The coordinates in octahedron UV space that will be converted</param>
+        /// <returns>The octahedron coordinates.</returns> 
         public static implicit operator NormalizedOctahedronCoordinates(OctahedralUVCoordinates uv)
         {
-            Vector3 cartesian = Octahedron.uv_to_cartesian(uv.data);
-            return new NormalizedOctahedronCoordinates(cartesian);
+            float x = 2*uv.data.x - 1;
+            float y = 2*uv.data.y - 1;
+            float z = 1 - Mathf.Abs(uv.data.x) - Mathf.Abs(uv.data.y);
+            
+            float diamond_overshoot = Mathf.Max(-z, 0); // imagine that there is a diamond from uv={(0,.5)->(.5,1)->(1,.5)->(.5,0)}
+            x -= Mathf.Sign(x)*diamond_overshoot;
+            y -= Mathf.Sign(y)*diamond_overshoot;
+            return new NormalizedOctahedronCoordinates(new Vector3(x, y, z));
         }
 
         /// <summary>

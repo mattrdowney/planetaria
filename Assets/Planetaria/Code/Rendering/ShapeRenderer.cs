@@ -92,8 +92,6 @@ namespace Planetaria
 
         private static void subdivide(Arc arc, float begin_point_angle, float end_point_angle)
         {
-            //Debug.Log("          Arc: " + arc + " begin: " + begin_point_angle + " end: " + end_point_angle);
-
             float middle_point_angle = max_error_location(arc, begin_point_angle, end_point_angle);
 
             Vector3 begin = arc.position(begin_point_angle);
@@ -103,8 +101,6 @@ namespace Planetaria
             OctahedralUVCoordinates begin_point = new NormalizedCartesianCoordinates(begin);
             OctahedralUVCoordinates middle_point = new NormalizedCartesianCoordinates(middle);
             OctahedralUVCoordinates end_point = new NormalizedCartesianCoordinates(end);
-
-            //Debug.Log("                    Cartesian: " + begin + " octahedral UV: " + begin_point.data);
 
             if (PlanetariaMath.point_line_distance(begin_point.data, end_point.data, middle_point.data) > Precision.threshold) // if the max error is greater than a threshold, recursively add the left and right halves into the list of lines
             {

@@ -2,7 +2,7 @@
 
 public static class SkyboxConversion
 {
-    public static Texture2D skybox_to_octahedral_uv(Skybox skybox, int output_width, int output_height, int sample_rate = 1)
+    public static Texture2D skybox_to_octahedron_uv(Skybox skybox, int output_width, int output_height, int sample_rate = 1)
     {
         Texture left = skybox.material.GetTexture("_LeftTex");
         Texture right = skybox.material.GetTexture("_RightTex");
@@ -22,7 +22,7 @@ public static class SkyboxConversion
         }
     }
 
-    public static Skybox octahedral_uv_to_skybox(Texture2D texture)
+    public static Skybox octahedron_uv_to_skybox(Texture2D texture)
     {
 
     }
