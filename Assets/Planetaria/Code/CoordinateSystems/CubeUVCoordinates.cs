@@ -19,6 +19,24 @@ namespace Planetaria
             normalize();
         }
 
+        public int texture_index
+        {
+            get
+            {
+                return face_index_variable;
+            }
+        }
+
+        public int x(int width)
+        {
+            return Mathf.FloorToInt(uv_variable.x*width);
+        }
+
+        public int y(int height)
+        {
+            return Mathf.FloorToInt(uv_variable.y*height);
+        }
+
         /// <summary>
         /// Inspector - Converts cube UV coordinates into normalized cartesian coordinates.
         /// </summary>

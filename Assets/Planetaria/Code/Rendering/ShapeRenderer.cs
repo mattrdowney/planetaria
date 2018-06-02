@@ -60,8 +60,8 @@ namespace Planetaria
 
         private static float max_error_location(Arc arc, float begin_point_angle, float end_point_angle)
         {
-            OctahedralUVCoordinates begin_point = new NormalizedCartesianCoordinates(arc.position(begin_point_angle));
-            OctahedralUVCoordinates end_point = new NormalizedCartesianCoordinates(arc.position(end_point_angle));
+            OctahedronUVCoordinates begin_point = new NormalizedCartesianCoordinates(arc.position(begin_point_angle));
+            OctahedronUVCoordinates end_point = new NormalizedCartesianCoordinates(arc.position(end_point_angle));
 
             float begin = begin_point_angle;
             float end = end_point_angle;
@@ -71,8 +71,8 @@ namespace Planetaria
             {
                 float midpoint = (begin + end) / 2;
 
-                OctahedralUVCoordinates left_midpoint = new NormalizedCartesianCoordinates(arc.position(midpoint - Precision.delta));
-                OctahedralUVCoordinates right_midpoint = new NormalizedCartesianCoordinates(arc.position(midpoint + Precision.delta));
+                OctahedronUVCoordinates left_midpoint = new NormalizedCartesianCoordinates(arc.position(midpoint - Precision.delta));
+                OctahedronUVCoordinates right_midpoint = new NormalizedCartesianCoordinates(arc.position(midpoint + Precision.delta));
 
                 float error_left  = PlanetariaMath.point_line_distance(begin_point.data, end_point.data, left_midpoint.data);
                 float error_right = PlanetariaMath.point_line_distance(begin_point.data, end_point.data, right_midpoint.data);
@@ -98,9 +98,9 @@ namespace Planetaria
             Vector3 middle = arc.position(middle_point_angle);
             Vector3 end = arc.position(end_point_angle);
         
-            OctahedralUVCoordinates begin_point = new NormalizedCartesianCoordinates(begin);
-            OctahedralUVCoordinates middle_point = new NormalizedCartesianCoordinates(middle);
-            OctahedralUVCoordinates end_point = new NormalizedCartesianCoordinates(end);
+            OctahedronUVCoordinates begin_point = new NormalizedCartesianCoordinates(begin);
+            OctahedronUVCoordinates middle_point = new NormalizedCartesianCoordinates(middle);
+            OctahedronUVCoordinates end_point = new NormalizedCartesianCoordinates(end);
 
             if (PlanetariaMath.point_line_distance(begin_point.data, end_point.data, middle_point.data) > Precision.threshold) // if the max error is greater than a threshold, recursively add the left and right halves into the list of lines
             {

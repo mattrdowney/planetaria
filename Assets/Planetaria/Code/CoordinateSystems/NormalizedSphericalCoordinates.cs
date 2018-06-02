@@ -37,7 +37,7 @@ namespace Planetaria
             return new NormalizedCartesianCoordinates(cartesian);
         }
 
-        public static implicit operator OctahedralUVCoordinates(NormalizedSphericalCoordinates spherical)
+        public static implicit operator OctahedronUVCoordinates(NormalizedSphericalCoordinates spherical)
         {
             return (NormalizedCartesianCoordinates) spherical;
         }

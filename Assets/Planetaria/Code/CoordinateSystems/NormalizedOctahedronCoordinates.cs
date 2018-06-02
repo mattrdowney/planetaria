@@ -37,7 +37,7 @@ namespace Planetaria
         /// </summary>
         /// <param name="octahedron">The octahedron that will be converted</param>
         /// <returns>The UV coordinates of an octahedron.</returns> 
-        public static implicit operator OctahedralUVCoordinates(NormalizedOctahedronCoordinates octahedron)
+        public static implicit operator OctahedronUVCoordinates(NormalizedOctahedronCoordinates octahedron)
         {
             Vector2 uv = octahedron.data;
             if (octahedron.data.z < 0)
@@ -46,7 +46,7 @@ namespace Planetaria
             }
             uv.x = 0.5f + uv.x/2;
             uv.y = 0.5f + uv.y/2;
-            return new OctahedralUVCoordinates(uv.x, uv.y);
+            return new OctahedronUVCoordinates(uv.x, uv.y);
         }
 
         private static Vector2 reflect_across_diamond(Vector2 uv)

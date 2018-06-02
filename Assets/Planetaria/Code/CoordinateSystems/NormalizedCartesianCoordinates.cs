@@ -83,7 +83,7 @@ namespace Planetaria
         /// </summary>
         /// <param name="cartesian">The coordinates in Cartesian space that will be converted</param>
         /// <returns>The UV coordinates for an octahedron.</returns>
-        public static implicit operator OctahedralUVCoordinates(NormalizedCartesianCoordinates cartesian)
+        public static implicit operator OctahedronUVCoordinates(NormalizedCartesianCoordinates cartesian)
         {
             return (NormalizedOctahedronCoordinates) cartesian; // implicit chains of length three won't automatically work so convert NormalizedCartesianCoordinates -> NormalizedOctahedralCoordinates -> OctahedralUVCoordinates
         }

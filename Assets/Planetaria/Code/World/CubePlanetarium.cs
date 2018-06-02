@@ -17,64 +17,53 @@ namespace Planetaria
 
             for (int cube_face = 0; cube_face < cube_skybox_textures.Length; ++ cube_face)
             {
-                Texture2D texture = cube_skybox_textures[cube_face]; // TODO: isolate the behavior that varies: use a function that takes in a Texture2D, reference WorldPlanetarium, and delegate function
-                float pixel_width = 1f/texture.width;
-                float pixel_height = 1f/texture.height;
-                for (int y = 0; y < texture.height; ++y) // set pixels from first row
-                {
-                    float v_min = y*pixel_height;
-                    for (int x = 0; x < texture.width; ++x)
-                    {
-                        float u_min = x*pixel_width;
-                        Rect pixel_boundaries = new Rect(u_min, v_min, pixel_width, pixel_height);
-                        Vector2[] uv_points = Miscellaneous.uv_samples(pixel_boundaries, sample_rate);
-                        Vector3[] xyz_points = uv_points.Select(uv => ((NormalizedCartesianCoordinates)new CubeUVCoordinates(uv.x, uv.y, cube_face)).data).ToArray();
-                        Color32 color = reference_planetarium.sample_pixel(xyz_points);
-                        texture.SetPixel(x, y, color); // TODO: optimize? with SetPixels()
-                    }
-                }
+                Texture2D texture = cube_skybox_textures[cube_face]; // isolate the behavior that varies: use a function that takes in a Texture2D and delegate function
+                reference_planetarium.render_texture(texture, sample_rate,
+                        delegate (Vector2 uv) { return ((NormalizedCartesianCoordinates)new CubeUVCoordinates(uv.x, uv.y, cube_face)).data; });
             }
+        }
+
+        public override Color32 sample_pixel(Vector3 planetarium_position)
+        {
+            NormalizedCartesianCoordinates position = new NormalizedCartesianCoordinates(planetarium_position);
+            CubeUVCoordinates uv = position;
+            Texture2D texture = cube_skybox_textures[uv.texture_index];
+            return texture.GetPixel(uv.x(texture.width), uv.y(texture.height));
         }
 
         private void initialize(string name, int resolution)
         {
             identifier = name;
-            skybox = (Material)AssetDatabase.LoadAssetAtPath("Assets/Art/Textures/" + name + ".mat", typeof(Material));
-            if (skybox == null)
+            skybox = LoadOrCreateMaterial(name, "RenderFX/Skybox");
+            cube_skybox_textures = new Texture2D[directions.Length];
+            for (int index = 0; index < directions.Length; ++index)
             {
-                skybox = new Material(Shader.Find("RenderFX/Skybox"));
-                AssetDatabase.CreateAsset(skybox, "Assets/Art/Materials/" + name);
+                cube_skybox_textures[index] = LoadOrCreateTexture2D(skybox, name, directions[index], resolution);
             }
-            cube_skybox_textures = new Texture2D[6];
-            cube_skybox_textures[0] = LoadOrCreateTexture2D(name, "_LeftTex", resolution);
-            cube_skybox_textures[1] = LoadOrCreateTexture2D(name, "_RightTex", resolution);
-            cube_skybox_textures[2] = LoadOrCreateTexture2D(name, "_DownTex", resolution);
-            cube_skybox_textures[3] = LoadOrCreateTexture2D(name, "_UpTex", resolution);
-            cube_skybox_textures[4] = LoadOrCreateTexture2D(name, "_BackTex", resolution);
-            cube_skybox_textures[5] = LoadOrCreateTexture2D(name, "_FrontTex", resolution);
         }
 
-        private Texture2D LoadOrCreateTexture2D(string name, string cube_face, int resolution) // FIXME: HACK: support more filetypes than PNG!
-        {
-            Texture2D texture = (Texture2D) AssetDatabase.LoadAssetAtPath("Assets/Art/Textures/" + name + ".png", typeof(Texture2D));
-            if (texture == null)
-            {
-                texture = new Texture2D(resolution, resolution);
-                AssetDatabase.CreateAsset(texture, "Assets/Art/Textures/" + name);
-                skybox.SetTexture(cube_face, texture);
-            }
-            if (texture.width != resolution)
-            {
-                texture.Resize(resolution, resolution);
-            }
-            return texture;
-        }
+        private string identifier;
+        private Material skybox;
+        private Texture2D[] cube_skybox_textures;
 
-        string identifier;
-        Material skybox;
-        Texture2D[] cube_skybox_textures;
-
+        private static readonly string[] directions = { "_LeftTex", "_RightTex", "_DownTex", "_UpTex", "_BackTex", "_FrontTex" };
         private const int default_resolution = 1024;
     }
 }
 
+/*
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/

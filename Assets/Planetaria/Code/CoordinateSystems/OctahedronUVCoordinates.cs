@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Planetaria
 {
     [Serializable]
-    public struct OctahedralUVCoordinates
+    public struct OctahedronUVCoordinates
     {
         public Vector2 data
         {
@@ -17,7 +17,7 @@ namespace Planetaria
         /// </summary>
         /// <param name="u">The u coordinate in UV space for the octahedron. Range: [0,1]</param>
         /// <param name="v">The v coordinate in UV space for the octahedron. Range: [0,1]</param>
-        public OctahedralUVCoordinates(float u, float v)
+        public OctahedronUVCoordinates(float u, float v)
         {
             data_variable = new Vector2(u, v);
             normalize();
@@ -28,7 +28,7 @@ namespace Planetaria
         /// </summary>
         /// <param name="uv">The coordinates in octahedron UV space that will be converted</param>
         /// <returns>The normalized cartesian coordinates.</returns>
-        public static implicit operator NormalizedCartesianCoordinates(OctahedralUVCoordinates uv)
+        public static implicit operator NormalizedCartesianCoordinates(OctahedronUVCoordinates uv)
         {
             return (NormalizedOctahedronCoordinates) uv; // implicit chains of length three won't automatically work so convert OctahedralUVCoordinates -> NormalizedOctahedralCoordinates -> NormalizedCartesianCoordinates
         }
@@ -38,7 +38,7 @@ namespace Planetaria
         /// </summary>
         /// <param name="uv">The coordinates in octahedron UV space that will be converted</param>
         /// <returns>The octahedron coordinates.</returns> 
-        public static implicit operator NormalizedOctahedronCoordinates(OctahedralUVCoordinates uv)
+        public static implicit operator NormalizedOctahedronCoordinates(OctahedronUVCoordinates uv)
         {
             float x = 2*uv.data.x - 1;
             float y = 2*uv.data.y - 1;

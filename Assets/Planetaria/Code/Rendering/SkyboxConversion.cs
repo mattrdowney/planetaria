@@ -1,25 +1,17 @@
 ﻿using UnityEngine;
 
-public static class SkyboxConversion
+namespace Planetaria
 {
-    public static Texture2D skybox_to_octahedron_uv(Skybox skybox, int output_width, int output_height, int sample_rate = 1)
+    public static class SkyboxConversion
     {
-        
-
-        Texture2D result = new Texture2D()
-
-        for (int x = 0; x < down.width; ++x)
+        // TODO: menu item!
+        public static void skybox_to_octahedron_uv(Skybox skybox, int output_width, int output_height, int sample_rate = 1)
         {
-            for (int y = 0; x < down.height; ++x)
-            {
-
-            }
         }
-    }
 
-    public static Skybox octahedron_uv_to_skybox(Texture2D texture)
-    {
-
+        public static void octahedron_uv_to_skybox(Texture2D texture)
+        {
+        }
     }
 }
 

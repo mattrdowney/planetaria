@@ -1,35 +1,38 @@
 ﻿using UnityEngine;
 
-public class Color32Blender
+namespace Planetaria
 {
-    public Color32Blender() { }
-
-    public void blend(Color32 color)
+    public class Color32Blender
     {
-        red += color.r;
-        green += color.g;
-        blue += color.b;
-        alpha += color.a;
-    }
+        public Color32Blender() { }
 
-    public static implicit operator Color32(Color32Blender blender)
-    {
-        Color result = new Color();
-        if (blender.colors > 0)
+        public void blend(Color32 color)
         {
-            result.r = (blender.red / (float)(blender.colors * byte.MaxValue));
-            result.g = (blender.green / (float)(blender.colors * byte.MaxValue));
-            result.b = (blender.blue / (float)(blender.colors * byte.MaxValue));
-            result.a = (blender.alpha / (float)(blender.colors * byte.MaxValue));
+            red += color.r;
+            green += color.g;
+            blue += color.b;
+            alpha += color.a;
         }
-        return result;
-    }
 
-    private int red = 0;
-    private int green = 0;
-    private int blue = 0;
-    private int alpha = 0; // FIXME: how would you even blend alpha the right way? strict averages get weird
-    private int colors = 0;
+        public static implicit operator Color32(Color32Blender blender)
+        {
+            Color result = new Color();
+            if (blender.colors > 0)
+            {
+                result.r = (blender.red / (float)(blender.colors * byte.MaxValue));
+                result.g = (blender.green / (float)(blender.colors * byte.MaxValue));
+                result.b = (blender.blue / (float)(blender.colors * byte.MaxValue));
+                result.a = (blender.alpha / (float)(blender.colors * byte.MaxValue));
+            }
+            return result;
+        }
+
+        private int red = 0;
+        private int green = 0;
+        private int blue = 0;
+        private int alpha = 0; // FIXME: how would you even blend alpha the right way? strict averages get weird
+        private int colors = 0;
+    }
 }
 
 /*
