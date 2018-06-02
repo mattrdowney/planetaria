@@ -128,6 +128,7 @@
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaRenderer.cs" />
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaRigidbody.cs" />
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaTransform.cs" />
+    <Compile Include="Assets\Planetaria\Code\Utility\Color32Blender.cs" />
     <Compile Include="Assets\Planetaria\Code\Utility\EditorGlobal.cs" />
     <Compile Include="Assets\Planetaria\Code\Utility\Global.cs" />
     <Compile Include="Assets\Planetaria\Code\Utility\Miscellaneous.cs" />
@@ -136,6 +137,9 @@
     <Compile Include="Assets\Planetaria\Code\Utility\PlanetariaMath.cs" />
     <Compile Include="Assets\Planetaria\Code\Utility\Precision.cs" />
     <Compile Include="Assets\Planetaria\Code\Utility\ProceduralPacking.cs" />
+    <Compile Include="Assets\Planetaria\Code\World\CubePlanetarium.cs" />
+    <Compile Include="Assets\Planetaria\Code\World\OctahedronPlanetarium.cs" />
+    <Compile Include="Assets\Planetaria\Code\World\WorldPlanetarium.cs" />
     <Compile Include="Assets\UnitySVG\Extensions.cs" />
     <Compile Include="Assets\UnitySVG\Implement.cs" />
     <Compile Include="Assets\UnitySVG\Implementation\RenderingEngine\BasicType\SVGGArcAbs.cs" />

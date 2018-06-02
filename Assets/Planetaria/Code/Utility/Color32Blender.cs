@@ -1,26 +1,35 @@
 ﻿using UnityEngine;
 
-public static class SkyboxConversion
+public class Color32Blender
 {
-    public static Texture2D skybox_to_octahedron_uv(Skybox skybox, int output_width, int output_height, int sample_rate = 1)
+    public Color32Blender() { }
+
+    public void blend(Color32 color)
     {
-        
+        red += color.r;
+        green += color.g;
+        blue += color.b;
+        alpha += color.a;
+    }
 
-        Texture2D result = new Texture2D()
-
-        for (int x = 0; x < down.width; ++x)
+    public static implicit operator Color32(Color32Blender blender)
+    {
+        Color result = new Color();
+        if (blender.colors > 0)
         {
-            for (int y = 0; x < down.height; ++x)
-            {
-
-            }
+            result.r = (blender.red / (float)(blender.colors * byte.MaxValue));
+            result.g = (blender.green / (float)(blender.colors * byte.MaxValue));
+            result.b = (blender.blue / (float)(blender.colors * byte.MaxValue));
+            result.a = (blender.alpha / (float)(blender.colors * byte.MaxValue));
         }
+        return result;
     }
 
-    public static Skybox octahedron_uv_to_skybox(Texture2D texture)
-    {
-
-    }
+    private int red = 0;
+    private int green = 0;
+    private int blue = 0;
+    private int alpha = 0; // FIXME: how would you even blend alpha the right way? strict averages get weird
+    private int colors = 0;
 }
 
 /*

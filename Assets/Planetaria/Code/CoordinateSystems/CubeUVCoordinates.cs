@@ -20,6 +20,16 @@ namespace Planetaria
         }
 
         /// <summary>
+        /// Inspector - Converts cube UV coordinates into normalized cartesian coordinates.
+        /// </summary>
+        /// <param name="skybox">The coordinates in skybox UV space that will be converted.</param>
+        /// <returns>The normalized cartesian coordinates.</returns>
+        public static implicit operator NormalizedCartesianCoordinates(CubeUVCoordinates skybox)
+        {
+            return (NormalizedCubeCoordinates)skybox; // implicit chains of length three won't automatically work so convert OctahedralUVCoordinates -> NormalizedOctahedralCoordinates -> NormalizedCartesianCoordinates
+        }
+
+        /// <summary>
         /// Inspector - Converts cube UV coordinates into normalized cube coordinates.
         /// </summary>
         /// <param name="skybox">The coordinates in skybox UV space that will be converted.</param>

@@ -1,25 +1,18 @@
 ﻿using UnityEngine;
 
-public static class SkyboxConversion
+public abstract class WorldPlanetarium
 {
-    public static Texture2D skybox_to_octahedron_uv(Skybox skybox, int output_width, int output_height, int sample_rate = 1)
+    // TODO: name and filetype?
+    public abstract Color32 sample_pixel(Vector3 planetarium_position);
+
+    public Color32 sample_pixel(Vector3[] planetarium_positions)
     {
-        
-
-        Texture2D result = new Texture2D()
-
-        for (int x = 0; x < down.width; ++x)
+        Color32Blender pixel = new Color32Blender();
+        foreach (Vector3 planetarium_position in planetarium_positions)
         {
-            for (int y = 0; x < down.height; ++x)
-            {
-
-            }
+            pixel.blend(sample_pixel(planetarium_position));
         }
-    }
-
-    public static Skybox octahedron_uv_to_skybox(Texture2D texture)
-    {
-
+        return pixel;
     }
 }
 

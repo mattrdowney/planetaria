@@ -167,6 +167,18 @@ namespace Planetaria
             }
         }
 
+        public static Vector2[] uv_samples(Rect uv_boundaries, int samples)
+        {
+            Vector2[] result = new Vector2[Mathf.Max(0, samples)];
+            for (int sample = 0; sample < samples; ++sample)
+            {
+                float x = Random.Range(uv_boundaries.xMin, uv_boundaries.xMax);
+                float y = Random.Range(uv_boundaries.yMin, uv_boundaries.yMax);
+                result[sample] = new Vector2(x, y);
+            }
+            return result;
+        }
+
 #if UNITY_EDITOR
         /// <summary>
         /// Mutator (Operating System level) - Writes (or overwrites!) the file at location "file" with the string "text_contents". 

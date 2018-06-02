@@ -29,21 +29,7 @@ namespace Planetaria
         /// <returns>The Cartesian coordinates.</returns> 
         public static implicit operator NormalizedCartesianCoordinates(NormalizedCubeCoordinates cube) // LOCATION cube_to_sphere
         {
-            //sx = x * sqrt(1 - y * y / 2 - z * z / 2 + y * y * z * z / 3);
-            //sy = y * sqrt(1 - z * z / 2 - x * x / 2 + z * z * x * x / 3);
-            //sz = z * sqrt(1 - x * x / 2 - y * y / 2 + x * x * y * y / 3);
-
-            float x_squared = cube.data.x * cube.data.x;
-            float y_squared = cube.data.y * cube.data.y;
-            float z_squared = cube.data.z * cube.data.z;
-
-            Vector3 result = Vector3.one;
-            result.x = result.x - y_squared / 2 - z_squared / 2 + y_squared * z_squared / 3;
-            result.y = result.y - x_squared / 2 - z_squared / 2 + x_squared * z_squared / 3;
-            result.z = result.z - x_squared / 2 - y_squared / 2 + x_squared * y_squared / 3;
-            result = new Vector3(Mathf.Sqrt(result.x), Mathf.Sqrt(result.y), Mathf.Sqrt(result.z));
-            result = Vector3.Scale(result, cube.data);
-            return new NormalizedCartesianCoordinates(result);
+            return new NormalizedCartesianCoordinates(cube.data);
         }
 
         /// <summary>
