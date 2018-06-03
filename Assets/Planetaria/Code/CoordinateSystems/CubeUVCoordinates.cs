@@ -29,12 +29,12 @@ namespace Planetaria
 
         public int x(int width)
         {
-            return Mathf.FloorToInt(uv_variable.x*width);
+            return Mathf.Min(Mathf.FloorToInt(uv_variable.x * width), width - 1);
         }
 
         public int y(int height)
         {
-            return Mathf.FloorToInt(uv_variable.y*height);
+            return Mathf.Min(Mathf.FloorToInt(uv_variable.y*height), height - 1);
         }
 
         /// <summary>
@@ -54,9 +54,11 @@ namespace Planetaria
         /// <returns>The normalized cube coordinates. (At least one of x,y,and z will be magnitude 1.)</returns>
         public static implicit operator NormalizedCubeCoordinates(CubeUVCoordinates skybox)
         {
-            Quaternion world_rotation = world_to_local_rotation[skybox.face_index_variable];
-            Vector3 local_position = new Vector3(skybox.uv_variable.x, skybox.uv_variable.y, +1);
-            Vector3 cube_world_position = world_rotation * local_position;
+            float x = 2*skybox.uv_variable.x - 1;
+            float y = 2*skybox.uv_variable.y - 1;
+            Quaternion to_world = local_to_world_rotation[skybox.face_index_variable];
+            Vector3 local_position = new Vector3(x, y, +1);
+            Vector3 cube_world_position = to_world * local_position;
             return new NormalizedCubeCoordinates(cube_world_position);
         }
 
@@ -93,7 +95,7 @@ namespace Planetaria
             face_index_variable = (int)PlanetariaMath.modolo_using_euclidean_division(face_index_variable, 6); // HACK: CONSIDER: would anyone ever enter something like 2^31 in here?
         }
 
-        public static readonly Quaternion[] world_to_local_rotation = // TODO: is this the right name?
+        public static readonly Quaternion[] local_to_world_rotation = // FIXME: optimize
         {
             Quaternion.LookRotation(Vector3.left, Vector3.up), // relative rotation of _LeftTex of Skybox
             Quaternion.LookRotation(Vector3.right, Vector3.up), // _RightTex
@@ -103,14 +105,14 @@ namespace Planetaria
             Quaternion.LookRotation(Vector3.forward, Vector3.up), // _FrontTex
         };
 
-        public static readonly Quaternion[] local_rotation_to_world = // TODO: is this name good?
+        public static readonly Quaternion[] world_to_local_rotation =
         {
-            Quaternion.Inverse(world_to_local_rotation[0]), // relative rotation of _LeftTex of Skybox
-            Quaternion.Inverse(world_to_local_rotation[1]), // _RightTex
-            Quaternion.Inverse(world_to_local_rotation[2]), // _DownTex
-            Quaternion.Inverse(world_to_local_rotation[3]), // _UpTex
-            Quaternion.Inverse(world_to_local_rotation[4]), // _BackTex
-            Quaternion.Inverse(world_to_local_rotation[5]), // _FrontTex
+            Quaternion.Inverse(local_to_world_rotation[0]), // inverse rotation of _LeftTex of Skybox
+            Quaternion.Inverse(local_to_world_rotation[1]), // _RightTex
+            Quaternion.Inverse(local_to_world_rotation[2]), // _DownTex
+            Quaternion.Inverse(local_to_world_rotation[3]), // _UpTex
+            Quaternion.Inverse(local_to_world_rotation[4]), // _BackTex
+            Quaternion.Inverse(local_to_world_rotation[5]), // _FrontTex
         };
 
         [SerializeField] private int face_index_variable;

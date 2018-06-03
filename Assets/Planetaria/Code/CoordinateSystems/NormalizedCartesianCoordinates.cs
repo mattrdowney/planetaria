@@ -39,7 +39,6 @@ namespace Planetaria
         /// <returns>The unit cube coordinates. (At least one of x,y,and z will be magnitude 1.)</returns>
         public static implicit operator NormalizedCubeCoordinates(NormalizedCartesianCoordinates cartesian)
         {
-            int face_index = CubeUVCoordinates.face(cartesian.data);
             int largest_dimension = 0;
             for (int dimension = 1; dimension < 3; ++dimension)
             {

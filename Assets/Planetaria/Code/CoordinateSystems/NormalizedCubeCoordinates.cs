@@ -40,8 +40,8 @@ namespace Planetaria
         public static implicit operator CubeUVCoordinates(NormalizedCubeCoordinates cube)
         {
             int face_index = CubeUVCoordinates.face(cube.data);
-            Quaternion local_rotation = CubeUVCoordinates.world_to_local_rotation[face_index];
-            Vector3 local_cube_position = local_rotation * cube.data;
+            Quaternion to_local = CubeUVCoordinates.local_to_world_rotation[face_index];
+            Vector3 local_cube_position = to_local * cube.data;
             float u = local_cube_position.x / 2 + 0.5f;
             float v = local_cube_position.y / 2 + 0.5f;
             return new CubeUVCoordinates(u, v, face_index);
@@ -52,7 +52,11 @@ namespace Planetaria
         /// </summary>
         private void normalize()
         {
-            // TODO: implement
+            float x_scale = Mathf.Abs(data_variable.x);
+            float y_scale = Mathf.Abs(data_variable.y);
+            float z_scale = Mathf.Abs(data_variable.z);
+            float max_scale = Mathf.Max(x_scale, y_scale, z_scale);
+            data_variable /= max_scale;
         }
 
         [SerializeField] private Vector3 data_variable;

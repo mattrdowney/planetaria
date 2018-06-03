@@ -2,26 +2,27 @@
 
 namespace Planetaria
 {
-    public class PlanetariaOctahedron : WorldPlanetarium
+    public class OctahedronPlanetarium : WorldPlanetarium
     {
-        public PlanetariaOctahedron(string name)
+        public OctahedronPlanetarium(string name)
         {
             initialize(name, default_resolution);
         }
 
-        public PlanetariaOctahedron(string name, int resolution, WorldPlanetarium reference_planetarium, int sample_rate)
+        public OctahedronPlanetarium(string name, int resolution, WorldPlanetarium reference_planetarium, int sample_rate)
         {
             initialize(name, resolution);
 
             // isolate the behavior that varies: use a function that takes in a Texture2D and delegate function
             reference_planetarium.render_texture(texture, sample_rate,
                     delegate (Vector2 uv) { return ((NormalizedCartesianCoordinates)new OctahedronUVCoordinates(uv.x, uv.y)).data; });
+            SaveTexture2D(texture, name);
         }
 
         public override Color32 sample_pixel(Vector3 planetarium_position)
         {
             NormalizedCartesianCoordinates position = new NormalizedCartesianCoordinates(planetarium_position);
-            CubeUVCoordinates uv = position;
+            OctahedronUVCoordinates uv = position;
             return texture.GetPixel(uv.x(texture.width), uv.y(texture.height));
         }
 
@@ -31,8 +32,7 @@ namespace Planetaria
             material = LoadOrCreateMaterial(name, "Planetaria/Transparent Always");
             texture = LoadOrCreateTexture2D(material, name, "_MainTex", resolution);
         }
-
-        private string identifier;
+        
         private Material material;
         private Texture2D texture;
         

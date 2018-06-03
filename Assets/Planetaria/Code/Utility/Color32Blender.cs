@@ -12,6 +12,7 @@ namespace Planetaria
             green += color.g;
             blue += color.b;
             alpha += color.a;
+            ++colors;
         }
 
         public static implicit operator Color32(Color32Blender blender)

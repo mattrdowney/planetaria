@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEditor;
 
@@ -11,6 +12,10 @@ namespace Planetaria
 
         public Color32 sample_pixel(Vector3[] planetarium_positions)
         {
+            if (planetarium_positions.Length == 1) // NOTE: optimization for common case (speeds up quick tests)
+            {
+                return sample_pixel(planetarium_positions[0]);
+            }
             Color32Blender pixel = new Color32Blender();
             foreach (Vector3 planetarium_position in planetarium_positions)
             {
@@ -41,33 +46,45 @@ namespace Planetaria
         }
 
         protected Texture2D LoadOrCreateTexture2D(Material material, string name, string texture_identifier, int resolution) // FIXME: HACK: support more filetypes than PNG!
-        { // FIXME: move to WorldPlanetarium; requires Material parameter, re-name "cube_face" to texture_identifier
-            Texture2D texture = (Texture2D)AssetDatabase.LoadAssetAtPath("Assets/Art/Textures/" + name + ".png", typeof(Texture2D));
-            if (texture == null)
+        {
+            Texture2D texture = new Texture2D(resolution, resolution);
+            if (File.Exists(Application.dataPath + "/Planetaria/Art/Textures/" + name + ".png"))
             {
-                texture = new Texture2D(resolution, resolution);
-                AssetDatabase.CreateAsset(texture, "Assets/Art/Textures/" + name);
+                byte[] png_data = File.ReadAllBytes(Application.dataPath + "/Planetaria/Art/Textures/" + name + ".png");
+                texture.LoadImage(png_data);
+                if (texture.width != resolution || texture.height != resolution)
+                {
+                    texture.Resize(resolution, resolution);
+                }
                 material.SetTexture(texture_identifier, texture);
             }
-            if (texture.width != resolution)
+            else
             {
-                texture.Resize(resolution, resolution);
+                SaveTexture2D(texture, name);
             }
             return texture;
         }
 
+        protected void SaveTexture2D(Texture2D texture, string name) // FIXME: HACK: support more filetypes than PNG!
+        {
+            byte[] png_data = texture.EncodeToPNG();
+            File.WriteAllBytes(Application.dataPath + "/Planetaria/Art/Textures/" + name + ".png", png_data);
+        }
+
         protected Material LoadOrCreateMaterial(string name, string shader_name)
         {
-            Material material = (Material)AssetDatabase.LoadAssetAtPath("Assets/Art/Materials/" + name + ".mat", typeof(Material));
+            Material material = (Material)AssetDatabase.LoadAssetAtPath("Assets/Planetaria/Art/Materials/" + name + ".mat", typeof(Material));
             if (material == null)
             {
                 material = new Material(Shader.Find(shader_name));
-                AssetDatabase.CreateAsset(material, "Assets/Art/Materials/" + name);
+                AssetDatabase.CreateAsset(material, "Assets/Planetaria/Art/Materials/" + name + ".mat");
             }
             return material;
         }
 
-    public delegate Vector3 PointConverter(Vector2 uv);
+        public string identifier;
+
+        public delegate Vector3 PointConverter(Vector2 uv);
     }
 }
 

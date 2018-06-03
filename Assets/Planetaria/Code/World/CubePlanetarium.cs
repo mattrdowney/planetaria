@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using UnityEngine;
-using UnityEditor;
+﻿using UnityEngine;
 
 namespace Planetaria
 {
@@ -15,11 +13,12 @@ namespace Planetaria
         {
             initialize(name, resolution);
 
-            for (int cube_face = 0; cube_face < cube_skybox_textures.Length; ++ cube_face)
+            for (int cube_face = 0; cube_face < cube_skybox_textures.Length; ++cube_face)
             {
-                Texture2D texture = cube_skybox_textures[cube_face]; // isolate the behavior that varies: use a function that takes in a Texture2D and delegate function
-                reference_planetarium.render_texture(texture, sample_rate,
+                Texture2D texture = cube_skybox_textures[cube_face];
+                reference_planetarium.render_texture(texture, sample_rate, // isolate the behavior that varies: use a function that takes in a Texture2D and delegate function
                         delegate (Vector2 uv) { return ((NormalizedCartesianCoordinates)new CubeUVCoordinates(uv.x, uv.y, cube_face)).data; });
+                SaveTexture2D(texture, name + directions[cube_face]);
             }
         }
 
@@ -38,11 +37,10 @@ namespace Planetaria
             cube_skybox_textures = new Texture2D[directions.Length];
             for (int index = 0; index < directions.Length; ++index)
             {
-                cube_skybox_textures[index] = LoadOrCreateTexture2D(skybox, name, directions[index], resolution);
+                cube_skybox_textures[index] = LoadOrCreateTexture2D(skybox, name + directions[index], directions[index], resolution);
             }
         }
-
-        private string identifier;
+        
         private Material skybox;
         private Texture2D[] cube_skybox_textures;
 
