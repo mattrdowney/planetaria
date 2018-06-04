@@ -39,23 +39,17 @@ namespace Planetaria
         /// <returns>The UV coordinates of an octahedron.</returns> 
         public static implicit operator OctahedronUVCoordinates(NormalizedOctahedronCoordinates octahedron)
         {
-            Vector2 uv = octahedron.data;
-            if (octahedron.data.z < 0)
+            Vector2 uv = new Vector2(octahedron.data.x, octahedron.data.z);
+            if (octahedron.data.y < 0) // reflect across diamond
             {
-                uv = reflect_across_diamond(uv);
+                float immutable_u = uv.x; // the uv.y = ... would reference a changed variable otherwise
+                float immutable_v = uv.y;
+                uv.x = Mathf.Sign(immutable_u) * (1 - Mathf.Abs(immutable_v)); // invert (interchange x/y)
+                uv.y = Mathf.Sign(immutable_v) * (1 - Mathf.Abs(immutable_u));
             }
             uv.x = 0.5f + uv.x/2;
             uv.y = 0.5f + uv.y/2;
             return new OctahedronUVCoordinates(uv.x, uv.y);
-        }
-
-        private static Vector2 reflect_across_diamond(Vector2 uv)
-        {
-            float u = 1 - Mathf.Abs(uv.y); // invert points (note x/y switched)
-            float v = 1 - Mathf.Abs(uv.x);
-            u *= Mathf.Sign(uv.x); // but keep the sign
-            v *= Mathf.Sign(uv.y);
-            return new Vector2(u, v);
         }
 
         /// <summary>
@@ -65,12 +59,10 @@ namespace Planetaria
         {
             float length = PlanetariaMath.manhattan_distance(data_variable);
             float absolute_error = Mathf.Abs(length-1);
-            if (absolute_error < Precision.tolerance)
+            if (absolute_error > Precision.tolerance)
             {
-                return;
+                data_variable /= length;
             }
-
-            data_variable /= length;
         }
 
         [SerializeField] private Vector3 data_variable;

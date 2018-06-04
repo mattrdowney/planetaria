@@ -6,7 +6,7 @@ namespace Planetaria
     {
         public OctahedronPlanetarium(string name)
         {
-            initialize(name, default_resolution);
+            initialize(name);
         }
 
         public OctahedronPlanetarium(string name, int resolution, WorldPlanetarium reference_planetarium, int sample_rate)
@@ -26,17 +26,14 @@ namespace Planetaria
             return texture.GetPixel(uv.x(texture.width), uv.y(texture.height));
         }
 
-        private void initialize(string name, int resolution)
+        private void initialize(string name, optional<int> resolution = new optional<int>())
         {
             identifier = name;
             material = LoadOrCreateMaterial(name, "Planetaria/Transparent Always");
             texture = LoadOrCreateTexture2D(material, name, "_MainTex", resolution);
         }
         
-        private Material material;
         private Texture2D texture;
-        
-        private const int default_resolution = 1024;
     }
 }
 

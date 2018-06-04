@@ -56,7 +56,10 @@ namespace Planetaria
             float y_scale = Mathf.Abs(data_variable.y);
             float z_scale = Mathf.Abs(data_variable.z);
             float max_scale = Mathf.Max(x_scale, y_scale, z_scale);
-            data_variable /= max_scale;
+            if (max_scale != 1)
+            {
+                data_variable /= max_scale;
+            }
         }
 
         [SerializeField] private Vector3 data_variable;

@@ -45,21 +45,26 @@ namespace Planetaria
             texture.SetPixels(pixels);
         }
 
-        protected Texture2D LoadOrCreateTexture2D(Material material, string name, string texture_identifier, int resolution) // FIXME: HACK: support more filetypes than PNG!
+        protected Texture2D LoadOrCreateTexture2D(Material material, string name, string texture_identifier, optional<int> resolution = new optional<int>()) // FIXME: HACK: support more filetypes than PNG!
         {
-            Texture2D texture = new Texture2D(resolution, resolution);
+            Texture2D texture = new Texture2D(0,0);
+            if (resolution.exists)
+            {
+                texture = new Texture2D(resolution.data, resolution.data);
+            }
             if (File.Exists(Application.dataPath + "/Planetaria/Art/Textures/" + name + ".png"))
             {
                 byte[] png_data = File.ReadAllBytes(Application.dataPath + "/Planetaria/Art/Textures/" + name + ".png");
                 texture.LoadImage(png_data);
-                if (texture.width != resolution || texture.height != resolution)
+                if (resolution.exists && (texture.width != resolution || texture.height != resolution))
                 {
-                    texture.Resize(resolution, resolution);
+                    texture.Resize(resolution.data, resolution.data);
                 }
                 material.SetTexture(texture_identifier, texture);
             }
             else
             {
+                Debug.Log("NOT FOUND!");
                 SaveTexture2D(texture, name);
             }
             return texture;
@@ -82,9 +87,11 @@ namespace Planetaria
             return material;
         }
 
-        public string identifier;
+        protected string identifier;
+        protected Material material;
 
         public delegate Vector3 PointConverter(Vector2 uv);
+        protected const int default_resolution = 1024;
     }
 }
 

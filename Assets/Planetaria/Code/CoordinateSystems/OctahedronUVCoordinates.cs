@@ -51,12 +51,15 @@ namespace Planetaria
         public static implicit operator NormalizedOctahedronCoordinates(OctahedronUVCoordinates uv)
         {
             float x = 2*uv.data.x - 1;
-            float y = 2*uv.data.y - 1;
-            float z = 1 - Mathf.Abs(uv.data.x) - Mathf.Abs(uv.data.y);
-            
-            float diamond_overshoot = Mathf.Max(-z, 0); // imagine that there is a diamond from uv={(0,.5)->(.5,1)->(1,.5)->(.5,0)}
-            x -= Mathf.Sign(x)*diamond_overshoot;
-            y -= Mathf.Sign(y)*diamond_overshoot;
+            float z = 2*uv.data.y - 1;
+            float y = 1 - Mathf.Abs(x) - Mathf.Abs(z);
+            if (y < 0) // reflect across diamond
+            {
+                float immutable_x = x; // the z = ... would reference a changed variable otherwise
+                float immutable_z = z;
+                x = Mathf.Sign(immutable_x) * (1 - Mathf.Abs(immutable_z)); // invert (interchange x/z)
+                z = Mathf.Sign(immutable_z) * (1 - Mathf.Abs(immutable_x));
+            }
             return new NormalizedOctahedronCoordinates(new Vector3(x, y, z));
         }
 

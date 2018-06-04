@@ -6,19 +6,19 @@ namespace Planetaria
     {
         public CubePlanetarium(string name)
         {
-            initialize(name, default_resolution);
+            initialize(name);
         }
 
         public CubePlanetarium(string name, int resolution, WorldPlanetarium reference_planetarium, int sample_rate)
         {
             initialize(name, resolution);
 
-            for (int cube_face = 0; cube_face < cube_skybox_textures.Length; ++cube_face)
+            for (int index = 0; index < textures.Length; ++index)
             {
-                Texture2D texture = cube_skybox_textures[cube_face];
+                Texture2D texture = textures[index];
                 reference_planetarium.render_texture(texture, sample_rate, // isolate the behavior that varies: use a function that takes in a Texture2D and delegate function
-                        delegate (Vector2 uv) { return ((NormalizedCartesianCoordinates)new CubeUVCoordinates(uv.x, uv.y, cube_face)).data; });
-                SaveTexture2D(texture, name + directions[cube_face]);
+                        delegate (Vector2 uv) { return ((NormalizedCartesianCoordinates)new CubeUVCoordinates(uv.x, uv.y, index)).data; });
+                SaveTexture2D(texture, name + directions[index]);
             }
         }
 
@@ -26,26 +26,27 @@ namespace Planetaria
         {
             NormalizedCartesianCoordinates position = new NormalizedCartesianCoordinates(planetarium_position);
             CubeUVCoordinates uv = position;
-            Texture2D texture = cube_skybox_textures[uv.texture_index];
+            Texture2D texture = textures[uv.texture_index];
+            Debug.Log(uv.texture_index + " " + uv.x(100) + " " + uv.y(100));
+            Debug.Log(uv.texture_index + " " + uv.x(texture.width) + " " + uv.y(texture.height));
+            Debug.Log(texture.GetPixel(uv.x(texture.width), uv.y(texture.height)));
             return texture.GetPixel(uv.x(texture.width), uv.y(texture.height));
         }
 
-        private void initialize(string name, int resolution)
+        private void initialize(string name, optional<int> resolution = new optional<int>())
         {
             identifier = name;
-            skybox = LoadOrCreateMaterial(name, "RenderFX/Skybox");
-            cube_skybox_textures = new Texture2D[directions.Length];
+            material = LoadOrCreateMaterial(name, "RenderFX/Skybox");
+            textures = new Texture2D[directions.Length];
             for (int index = 0; index < directions.Length; ++index)
             {
-                cube_skybox_textures[index] = LoadOrCreateTexture2D(skybox, name + directions[index], directions[index], resolution);
+                textures[index] = LoadOrCreateTexture2D(material, name + directions[index], directions[index], resolution);
             }
         }
         
-        private Material skybox;
-        private Texture2D[] cube_skybox_textures;
+        private Texture2D[] textures;
 
         private static readonly string[] directions = { "_LeftTex", "_RightTex", "_DownTex", "_UpTex", "_BackTex", "_FrontTex" };
-        private const int default_resolution = 1024;
     }
 }
 
