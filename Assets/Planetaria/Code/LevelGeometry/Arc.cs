@@ -34,6 +34,7 @@ namespace Planetaria
         /// <returns>A concave or convex corner arc.</returns>
         public static optional<Arc> corner(Arc left, Arc right) // TODO: normal constructor
         {
+            // TODO: add ~180 degree angle case
             if (is_convex(left, right))
             {
                 return convex_corner(left, right);

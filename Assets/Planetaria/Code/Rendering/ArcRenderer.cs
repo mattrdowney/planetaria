@@ -1,23 +1,22 @@
-﻿using System;
-using UnityEditor;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Planetaria
 {
-    [CustomEditor(typeof(ArcBuilder))]
-    [Serializable]
-    public class ArcBuilderEditor : Editor
+    public class ArcRenderer : PlanetariaRenderer
     {
-        [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
-        static void draw_arc_builder_gizmos(ArcBuilder self, GizmoType gizmo_type)
+        protected sealed override void set_renderer()
         {
-            foreach (optional<Arc> arc in self.debug_shape.arcs)
+            if (internal_renderer == null)
             {
-                if (arc.exists)
-                {
-                    ArcEditor.draw_arc(arc.data);
-                }
+                internal_renderer = internal_transform.GetOrAddComponent<LineRenderer>();
             }
+            scalable = true;
+            internal_transform.position = internal_transform.forward;
+            internal_renderer.sharedMaterial = material;
         }
+
+        [SerializeField] public List<GeospatialCurve> curve_list;
     }
 }
 

@@ -82,6 +82,7 @@
     <Compile Include="Assets\Planetaria\Code\LevelGeometry\GeometryVisitor.cs" />
     <Compile Include="Assets\Planetaria\Code\LevelGeometry\GeospatialCurve.cs" />
     <Compile Include="Assets\Planetaria\Code\LevelGeometry\Octahedron.cs" />
+    <Compile Include="Assets\Planetaria\Code\LevelGeometry\Shape.cs" />
     <Compile Include="Assets\Planetaria\Code\LevelGeometry\SphericalCap.cs" />
     <Compile Include="Assets\Planetaria\Code\LevelGeometry\SubdividedOctahedronSphere.cs" />
     <Compile Include="Assets\Planetaria\Code\LevelLoading\BasicLoadingStrategy.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="Assets\Planetaria\Code\LevelSaving\EquilateralBuilder.cs" />
     <Compile Include="Assets\Planetaria\Code\LevelSaving\LevelCreator.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\ArcIterator.cs" />
+    <Compile Include="Assets\Planetaria\Code\Rendering\ArcRenderer.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\AreaRenderer.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\BlockRenderer.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\BlockRendererIterator.cs" />

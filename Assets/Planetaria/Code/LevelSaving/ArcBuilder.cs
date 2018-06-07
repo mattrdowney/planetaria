@@ -9,12 +9,15 @@ namespace Planetaria
     [ExecuteInEditMode]
     public class ArcBuilder : MonoBehaviour
     {
-        public static ArcBuilder arc_builder(Vector3 original_point, bool is_field, bool allow_self_intersections)
+        public static ArcBuilder arc_builder(Vector3 first_point, bool is_field, bool allow_self_intersections)
         {
             GameObject game_object = new GameObject("Arc Builder");
             ArcBuilder result = game_object.AddComponent<ArcBuilder>();
-            result.point = result.original_point = original_point;
-            result.arcs.Add(Arc.line(original_point, original_point));
+            result.point = result.original_point = first_point;
+            GeospatialCurve curve = GeospatialCurve.curve(first_point, first_point);
+            bool has_corners = !is_field;
+            result.final_shape = new Shape(false, has_corners);
+            result.debug_shape = result.final_shape.append(curve);
             result.is_field = is_field;
             result.must_be_convex = is_field; // Fields must be a "convex hull"
             result.allow_self_intersections = allow_self_intersections && !is_field;
@@ -26,15 +29,12 @@ namespace Planetaria
             if (state == CreationState.SetSlope)
             {
                 slope = vector;
-                arcs[arcs.Count-1] = Arc.line(point, slope);
+                debug_shape = final_shape.append(GeospatialCurve.curve(point, slope)).append(GeospatialCurve.curve(slope, original_point));
             }
             else // CreationState.SetPoint
             {
-                if (arcs.Count != 0)
-                {
-                    arcs[arcs.Count-1] = Arc.curve(arcs[arcs.Count-1].begin(), slope, point);
-                }
                 point = vector;
+                debug_shape = final_shape.append(GeospatialCurve.curve(point, original_point));
             }
         }
 
@@ -42,34 +42,26 @@ namespace Planetaria
         {
             if (state == CreationState.SetSlope)
             {
-                finalize();
+                final_shape = final_shape.append(GeospatialCurve.curve(point, slope));
             }
             state = (state == CreationState.SetSlope ? CreationState.SetPoint : CreationState.SetSlope); // state = !state;
-        }
-
-        public void finalize()
-        {
-            curves.Add(GeospatialCurve.curve(point, slope));
-            arcs.Add(arcs[arcs.Count-1]);
-            UnityEditor.EditorUtility.SetDirty(this.gameObject);
-            point = slope; // point should always be defined
         }
 
         public void close_shape()
         {
             if (state == CreationState.SetSlope)
             {
-                curves.Add(GeospatialCurve.curve(point, original_point));
+                final_shape = final_shape.append(GeospatialCurve.curve(point, original_point));
             }
 
             if (is_field)
             {
-                GameObject field = Field.field(curves);
+                GameObject field = Field.field(final_shape.to_curves());
                 Debug.Log(field);
             }
             else
             {
-                GameObject shape = Block.block(curves);
+                GameObject shape = Block.block(final_shape.to_curves());
                 /*Block block = shape.GetComponent<Block>();
                 optional<TextAsset> svg_file = BlockRenderer.render(block, 0);
 
@@ -87,14 +79,14 @@ namespace Planetaria
         {
             if (must_be_convex)
             {
-                if (!convex_hull())
+                if (!debug_shape.convex_hull())
                 {
                     return false;
                 }
             }
             if (!allow_self_intersections)
             {
-                if (!zero_intersections())
+                if (debug_shape.self_intersecting())
                 {
                     return false;
                 }
@@ -102,50 +94,12 @@ namespace Planetaria
             return true;
         }
 
-        private bool convex_hull()
-        {
-            if (arcs.Count > 1)
-            {
-                Arc closing_edge = Arc.line(arcs[arcs.Count - 1].end(), arcs[0].begin());
-                Arc last_arc = closing_edge;
-                foreach (Arc arc in arcs)
-                {
-                    if (!Arc.is_convex(last_arc, arc))
-                    {
-                        return false;
-                    }
-                    last_arc = arc;
-                }
-                if (!Arc.is_convex(last_arc, closing_edge))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        private bool zero_intersections()
-        {
-            for (int left = 0; left < arcs.Count; ++left)
-            {
-                for (int right = left+1; right < arcs.Count; ++right)
-                {
-                    optional<Vector3> intersection = PlanetariaIntersection.arc_arc_intersection(arcs[left], arcs[right], 0);
-                    if (intersection.exists)
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-    
-        public List<Arc> arcs = new List<Arc>();
-        private List<GeospatialCurve> curves = new List<GeospatialCurve>();
+        private Shape final_shape;
+        public Shape debug_shape;
         private CreationState state = CreationState.SetSlope;
         private Vector3 point { get; set; }
         private Vector3 slope { get; set; }
-        private Vector3 original_point;
+        private Vector3 original_point { get; set; }
         private bool is_field;
         private bool must_be_convex;
         private bool allow_self_intersections;

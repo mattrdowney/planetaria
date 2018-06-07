@@ -5,7 +5,7 @@ public class RaycastUnitTests : MonoBehaviour
 {
     private void Start()
     {
-        GameObject camera_object = GameObject.Find("MainCamera/__CameraDolly/__Camera");
+        GameObject camera_object = GameObject.Find("MainCamera/__CameraDolly/__LeftCamera");
         main_camera = camera_object.GetComponent<Camera>();
         player = GameObject.Find("Character").transform;
     }

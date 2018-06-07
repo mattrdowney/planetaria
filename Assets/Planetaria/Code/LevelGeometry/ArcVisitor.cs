@@ -1,18 +1,16 @@
-﻿using System.Collections.Generic;
-
-namespace Planetaria
+﻿namespace Planetaria
 {
     public struct ArcVisitor
     {
         /// <summary>
-        /// Constructor - finds the ArcVisitor at a given position in a list
+        /// Constructor - finds the ArcVisitor at a given position in a shape
         /// </summary>
-        /// <param name="arc_list">The list of Arc segments</param>
+        /// <param name="shape">The shape representing the list of Arc segments</param>
         /// <param name="index">The index of the referenced arc segment.</param>
         /// <returns>An ArcVisitor struct (for iterating across the arcs in a block).</returns>
-        public static ArcVisitor arc_visitor(List<optional<Arc>> arc_list, int index)
+        public static ArcVisitor arc_visitor(Shape shape, int index)
         {
-            return new ArcVisitor(arc_list, index);
+            return new ArcVisitor(shape, index);
         }
 
         /// <summary>
@@ -21,8 +19,8 @@ namespace Planetaria
         /// <returns>A (new!) ArcIndex struct referring to the arc segment to the right of current.</returns>
         public ArcVisitor right()
         {
-            int right_index = (index_variable >= (arc_list_variable.Count-1) ? 0 : (index_variable+1)); // cyclic behavior (wrap numbers from [0, size-1])
-            return arc_visitor(arc_list_variable, right_index);
+            int right_index = (index_variable >= (shape_variable.Length - 1) ? 0 : (index_variable+1)); // cyclic behavior (wrap numbers from [0, size-1])
+            return arc_visitor(shape_variable, right_index);
         }
 
         /// <summary>
@@ -31,46 +29,54 @@ namespace Planetaria
         /// <returns>A (new!) ArcIndex struct referring to the arc segment to the left of current.</returns>
         public ArcVisitor left()
         {
-            int left_index = (index_variable <= 0 ? (arc_list_variable.Count-1) : (index_variable-1)); // cyclic behavior (wrap numbers from [0, size-1])
-            return arc_visitor(arc_list_variable, left_index);
+            int left_index = (index_variable <= 0 ? (shape_variable.Length - 1) : (index_variable-1)); // cyclic behavior (wrap numbers from [0, size-1])
+            return arc_visitor(shape_variable, left_index);
         }
 
         public optional<Arc> arc
         {
             get
             {
-                return arc_list_variable[index_variable];
+                return shape_variable[index_variable];
             }
         }
 
-        private ArcVisitor(List<optional<Arc>> arc_list, int index)
+        private ArcVisitor(Shape shape, int index)
         {
-            arc_list_variable = arc_list;
+            shape_variable = shape;
             index_variable = index;
         }
 
         public static bool operator ==(ArcVisitor left, ArcVisitor right)
         {
-            return left.index_variable == right.index_variable &&
-                    left.arc_list_variable == right.arc_list_variable;
+            return left.Equals(right);
         }
 
         public static bool operator !=(ArcVisitor left, ArcVisitor right)
         {
-            return !(left == right);
+            return !left.Equals(right);
         }
 
         public override bool Equals(System.Object other)
         {
-            return other is ArcVisitor && this == (ArcVisitor) other;
+            bool same_type = other is ArcVisitor;
+            if (!same_type)
+            {
+                return false;
+            }
+            ArcVisitor other_visitor = (ArcVisitor) other;
+            bool same_data = this.index_variable == other_visitor.index_variable &&
+                    this.shape_variable == other_visitor.shape_variable;
+
+            return same_data;
         }
 
         public override int GetHashCode() 
         {
-            return arc_list_variable.GetHashCode() ^ index_variable.GetHashCode();
+            return shape_variable.GetHashCode() ^ index_variable.GetHashCode();
         }
 
-        private List<optional<Arc>> arc_list_variable;
+        private Shape shape_variable;
         private int index_variable;
     }
 }

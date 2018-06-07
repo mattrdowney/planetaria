@@ -25,25 +25,50 @@ namespace Planetaria
             {
                 transform = this.GetOrAddComponent<PlanetariaTransform>();
                 GameObject dolly = this.GetOrAddChild("CameraDolly");
-                GameObject camera = dolly.transform.GetOrAddChild("Camera");
                 dolly_transform = dolly.GetComponent<Transform>();
-                internal_camera = camera.transform.GetOrAddComponent<Camera>();
-                camera.transform.GetOrAddComponent<AudioListener>();
+                dolly.transform.GetOrAddComponent<AudioListener>();
+                GameObject left_camera = dolly.transform.GetOrAddChild("LeftCamera");
+                internal_left_camera = left_camera.transform.GetOrAddComponent<Camera>();
             }
-            internal_camera.useOcclusionCulling = false;
             dolly_transform.position = Vector3.forward * zoom;
             dolly_transform.localScale = Vector3.one; // CONSIDER: setting this to zero mirrors `XRDevice.SetTrackingSpaceType(TrackingSpaceType.Stationary);`
-            internal_camera.nearClipPlane = near_clip_plane;
-            internal_camera.farClipPlane = far_clip_plane;
+            if (two_cameras)
+            {
+                GameObject right_camera = dolly_transform.GetOrAddChild("RightCamera");
+                internal_right_camera = right_camera.transform.GetOrAddComponent<Camera>();
+                initialize_camera(internal_left_camera, new Rect(0.0f, 0, 0.5f, 1), 1);
+                initialize_camera(internal_right_camera, new Rect(0.5f, 0, 0.5f, 1), 0); // depth order hides bugs, but is generally good for end-users
+            }
+            else
+            {
+                DestroyImmediate(internal_right_camera.data.gameObject); // FIXME: Find gameobject?
+                internal_right_camera = new optional<Camera>();
+                initialize_camera(internal_left_camera, new Rect(0, 0, 1, 1), 1);
+            }
+        }
+
+        private void initialize_camera(optional<Camera> internal_camera, Rect screen, int draw_order)
+        {
+            if (internal_camera.exists)
+            {
+                Camera camera = internal_camera.data;
+                camera.rect = screen;
+                camera.depth = draw_order;
+                camera.useOcclusionCulling = false;
+                camera.nearClipPlane = near_clip_plane;
+                camera.farClipPlane = far_clip_plane;
+            }
         }
 
         public const float near_clip_plane = 0.0078125f;
         public const float far_clip_plane = 2.0f;
 
+        [SerializeField] public bool two_cameras = false;
         [SerializeField] public float zoom = 0;
         [SerializeField] [HideInInspector] protected new PlanetariaTransform transform;
         [SerializeField] [HideInInspector] protected Transform dolly_transform;
-        [SerializeField] [HideInInspector] protected Camera internal_camera;
+        [SerializeField] [HideInInspector] protected Camera internal_left_camera;
+        [SerializeField] [HideInInspector] protected optional<Camera> internal_right_camera;
     }
 }
 

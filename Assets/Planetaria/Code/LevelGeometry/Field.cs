@@ -13,7 +13,7 @@ namespace Planetaria
         {
             GameObject result = new GameObject("Field");
             Field field = result.AddComponent<Field>(); // FIXME: implement
-            field.curve_list = curves;
+            field.closed_shape = new Shape(curves, true, false); // CONSIDER: TODO: should corners be generated?
 
             return result;
         }
@@ -42,25 +42,16 @@ namespace Planetaria
             PlanetariaCache.self.uncache(this);
         }
 
-        public IEnumerable<Arc> iterator() // TODO: check
+        public IEnumerable<optional<Arc>> iterator() // TODO: check
         {
-            List<Arc> arcs = new List<Arc>();
-
-            GeospatialCurve last_curve = Enumerable.Last(curve_list);
-            foreach (GeospatialCurve curve in curve_list)
-            {
-                arcs.Add(Arc.curve(last_curve.point, last_curve.slope, curve.point));
-                last_curve = curve;
-            }
-
-            return arcs;
+            return closed_shape.arcs;
         }
 
         public bool active { get; set; }
         
         public bool is_dynamic;
         [NonSerialized] public new PlanetariaTransform transform;
-        [SerializeField] private List<GeospatialCurve> curve_list = new List<GeospatialCurve>();
+        [SerializeField] private Shape closed_shape;
     }
 }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,30 +17,24 @@ namespace Planetaria
         {
             GameObject result = new GameObject("Block");
             Block block = result.AddComponent<Block>();
-            block.curve_list = curves;
-            block.generate_arcs();
+            block.closed_shape = new Shape(curves, true, true);
             block.ignore.Add(block);
             return result;
         }
 
-        /// <summary>
-        /// Returns the index of any existing arc within the block that matches the external reference. Null arcs are never found.
-        /// </summary>
-        /// <param name="arc">The reference to the external arc that will be compared to the block's arc list.</param>
-        /// <returns>The index of the match if the arc exists in the container and is not null; a nonexistent index otherwise.</returns>
         public optional<ArcVisitor> arc_visitor(Arc arc)
         {
-            int arc_list_index = arc_list.IndexOf(arc);
-            if (arc_list_index == -1)
-            {
-                return new optional<ArcVisitor>();
-            }
-            return ArcVisitor.arc_visitor(arc_list, arc_list_index);
+            return closed_shape.arc_visitor(arc);
         }
 
-        public List<optional<Arc>> iterator()
+        public optional<Arc> arc_index(int index)
         {
-            return new List<optional<Arc>>(arc_list);
+            return closed_shape[index];
+        }
+
+        public IEnumerable<optional<Arc>> iterator()
+        {
+            return closed_shape.arcs;
         }
 
         public bool active
@@ -57,55 +52,26 @@ namespace Planetaria
         public Vector3 center_of_mass() // FIXME: proper volume integration (for convex hulls)
         {
             Vector3 result = Vector3.zero;
-            foreach (GeospatialCurve curve in curve_list)
+            foreach (optional<Arc> arc in closed_shape.arcs)
             {
-                result += curve.point;
+                if (arc.exists)
+                {
+                    result += arc.data.begin();
+                }
             }
             result.Normalize();
             return result; // FIXME: Vector3.zero can be returned
         }
 
-        public bool empty()
-        {
-            return curve_list.Count == 0;
-        }
-
-        /// <summary>
-        /// Inspector - (Unoptimized, use in editor only; otherwise use iterator())
-        /// </summary>
-        /// <returns>A new list of collision geometry.</returns>
-        public List<optional<Arc>> generate_arcs()
-        {
-            List<optional<Arc>> result = new List<optional<Arc>>();
-            for (int edge = 0; edge < curve_list.Count; ++edge)
-            {
-                GeospatialCurve[] curves = new GeospatialCurve[3];
-                for (int curve = 0; curve < 3; ++curve)
-                {
-                    curves[curve] = curve_list[(edge+curve)%curve_list.Count];
-                }
-                Arc left_arc = Arc.curve(curves[0].point, curves[0].slope, curves[1].point);
-                Arc right_arc = Arc.curve(curves[1].point, curves[1].slope, curves[2].point);
-                result.Add(left_arc);
-                if (Vector3.Angle(left_arc.end_normal(), right_arc.begin_normal()) > Precision.tolerance)
-                {
-                    result.Add(Arc.corner(left_arc, right_arc));
-                }
-            }
-
-            return result;
-        }
-
         private void Start()
         {
             initialize();
-            arc_list = generate_arcs();
             PlanetariaCache.self.cache(this);
         }
 
         private void Reset()
         {
-            curve_list = new List<GeospatialCurve>();
+            closed_shape = new Shape(new List<GeospatialCurve>(), true, true);
             ignore = new List<Block>();
             active = true;
             initialize();
@@ -127,7 +93,7 @@ namespace Planetaria
         {
             PlanetariaCache.self.uncache(this);
         }
-        
+
         public static PlanetariaPhysicMaterial fallback;
         [SerializeField] public bool active_variable;
         [SerializeField] public bool is_dynamic; // FIXME: move to PlanetariaRigidbody
@@ -135,10 +101,8 @@ namespace Planetaria
         [SerializeField] public PlanetariaPhysicMaterial material = fallback;
         [SerializeField] [HideInInspector] public new PlanetariaTransform transform;
         [SerializeField] [HideInInspector] public Transform internal_transform;
-        [SerializeField] private List<GeospatialCurve> curve_list;
+        [SerializeField] private Shape closed_shape;
         [SerializeField] public List<Block> ignore;
-
-        [NonSerialized] public List<optional<Arc>> arc_list;
     }
 }
 

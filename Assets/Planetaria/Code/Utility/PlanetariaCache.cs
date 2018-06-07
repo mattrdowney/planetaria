@@ -36,7 +36,7 @@ namespace Planetaria
             {
                 return new optional<Arc>();
             }
-            optional<Arc> arc = block.data.iterator()[arc_index.data];
+            optional<Arc> arc = block.data.arc_index(arc_index.data);
             return arc;
         }
 
@@ -106,10 +106,13 @@ namespace Planetaria
 
             Sphere[] colliders = new Sphere[Enumerable.Count(field.iterator())];
             int current_index = 0;
-            foreach (Arc arc in field.iterator())
+            foreach (optional<Arc> arc in field.iterator())
             {
-                colliders[current_index] = Sphere.uniform_collider(transformation, arc.floor());
-                ++current_index;
+                if (arc.exists)
+                {
+                    colliders[current_index] = Sphere.uniform_collider(transformation, arc.data.floor());
+                    ++current_index;
+                }
             }
             collider.set_colliders(colliders);
 
@@ -137,7 +140,6 @@ namespace Planetaria
             uncache_all();
             foreach (Block block in GameObject.FindObjectsOfType<Block>())
             {
-                block.generate_arcs();
                 PlanetariaCache.self.cache(block);
             }
             foreach (Field field in GameObject.FindObjectsOfType<Field>())

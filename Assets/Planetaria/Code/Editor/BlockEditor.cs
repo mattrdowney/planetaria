@@ -11,7 +11,7 @@ namespace Planetaria
         {
             if (!EditorGlobal.self.hide_graphics)
             {
-                foreach (optional<Arc> arc in self.generate_arcs())
+                foreach (optional<Arc> arc in self.iterator())
                 {
                     if (arc.exists)
                     {
