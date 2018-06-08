@@ -36,7 +36,7 @@ namespace Planetaria
             {
                 return new optional<Arc>();
             }
-            optional<Arc> arc = block.data.arc_index(arc_index.data);
+            optional<Arc> arc = block.data.shape[arc_index.data];
             return arc;
         }
 
@@ -70,7 +70,7 @@ namespace Planetaria
         public void cache(Block block)
         {
             int arc_index = 0;
-            foreach (optional<Arc> arc in block.iterator())
+            foreach (optional<Arc> arc in block.shape.arcs)
             {
                 if (arc.exists)
                 {
@@ -104,9 +104,9 @@ namespace Planetaria
             collider.is_field = true;
             sphere_collider.isTrigger = true;
 
-            Sphere[] colliders = new Sphere[Enumerable.Count(field.iterator())];
+            Sphere[] colliders = new Sphere[Enumerable.Count(field.shape.arcs)];
             int current_index = 0;
-            foreach (optional<Arc> arc in field.iterator())
+            foreach (optional<Arc> arc in field.shape.arcs)
             {
                 if (arc.exists)
                 {

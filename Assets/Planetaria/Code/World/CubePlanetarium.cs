@@ -22,15 +22,12 @@ namespace Planetaria
             }
         }
 
-        public override Color32 sample_pixel(Vector3 planetarium_position)
+        public override Color sample_pixel(Vector3 planetarium_position)
         {
             NormalizedCartesianCoordinates position = new NormalizedCartesianCoordinates(planetarium_position);
             CubeUVCoordinates uv = position;
             Texture2D texture = textures[uv.texture_index];
-            Debug.Log(uv.texture_index + " " + uv.x(100) + " " + uv.y(100));
-            Debug.Log(uv.texture_index + " " + uv.x(texture.width) + " " + uv.y(texture.height));
-            Debug.Log(texture.GetPixel(uv.x(texture.width), uv.y(texture.height)));
-            return texture.GetPixel(uv.x(texture.width), uv.y(texture.height));
+            return texture.GetPixel(uv.uv.x.scale(texture.width), uv.uv.y.scale(texture.height));
         }
 
         private void initialize(string name, optional<int> resolution = new optional<int>())

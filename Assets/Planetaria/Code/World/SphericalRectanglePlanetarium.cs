@@ -2,28 +2,25 @@
 
 namespace Planetaria
 {
-    public class OctahedronPlanetarium : WorldPlanetarium
+    public class SphericalRectanglePlanetarium : WorldPlanetarium
     {
-        public OctahedronPlanetarium(string name)
+        public SphericalRectanglePlanetarium(string name, float angular_width, float angular_height)
         {
             initialize(name);
-        }
-
-        public OctahedronPlanetarium(string name, int resolution, WorldPlanetarium reference_planetarium, int sample_rate)
-        {
-            initialize(name, resolution);
-
-            // isolate the behavior that varies: use a function that takes in a Texture2D and delegate function
-            reference_planetarium.render_texture(texture, sample_rate,
-                    delegate (Vector2 uv) { return ((NormalizedCartesianCoordinates)new OctahedronUVCoordinates(uv.x, uv.y)).data; });
-            SaveTexture2D(texture, name);
+            this.angular_width = angular_width;
+            this.angular_height = angular_height;
         }
 
         public override Color sample_pixel(Vector3 planetarium_position)
         {
             NormalizedCartesianCoordinates position = new NormalizedCartesianCoordinates(planetarium_position);
-            OctahedronUVCoordinates uv = position;
-            return texture.GetPixel(uv.data.x.scale(texture.width), uv.data.y.scale(texture.height));
+            NormalizedSphericalCoordinates spherical = position;
+            SphericalRectangleUVCoordinates spherical_rectangle = spherical.to_spherical_rectangle(angular_width, angular_height);
+            if (!spherical_rectangle.valid())
+            {
+                return Color.clear;
+            }
+            return texture.GetPixel(spherical_rectangle.uv.x.scale(texture.width), spherical_rectangle.uv.y.scale(texture.height));
         }
 
         private void initialize(string name, optional<int> resolution = new optional<int>())
@@ -32,8 +29,10 @@ namespace Planetaria
             material = LoadOrCreateMaterial(name, "Planetaria/Transparent Always");
             texture = LoadOrCreateTexture2D(material, name, "_MainTex", resolution);
         }
-        
+
         private Texture2D texture;
+        private float angular_width;
+        private float angular_height;
     }
 }
 

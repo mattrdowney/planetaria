@@ -2,11 +2,11 @@
 
 namespace Planetaria
 {
-    public class Color32Blender
+    public class ColorBlender
     {
-        public Color32Blender() { }
+        public ColorBlender() { }
 
-        public void blend(Color32 color)
+        public void blend(Color color)
         {
             red += color.r;
             green += color.g;
@@ -15,23 +15,23 @@ namespace Planetaria
             ++colors;
         }
 
-        public static implicit operator Color32(Color32Blender blender)
+        public static implicit operator Color(ColorBlender blender)
         {
-            Color result = new Color();
+            Color result = new Color(); // TODO: make sure this returns transparent by default
             if (blender.colors > 0)
             {
-                result.r = (blender.red / (float)(blender.colors * byte.MaxValue));
-                result.g = (blender.green / (float)(blender.colors * byte.MaxValue));
-                result.b = (blender.blue / (float)(blender.colors * byte.MaxValue));
-                result.a = (blender.alpha / (float)(blender.colors * byte.MaxValue));
+                result.r = blender.red/blender.colors;
+                result.g = blender.green/blender.colors;
+                result.b = blender.blue/blender.colors;
+                result.a = blender.alpha/blender.colors;
             }
             return result;
         }
 
-        private int red = 0;
-        private int green = 0;
-        private int blue = 0;
-        private int alpha = 0; // FIXME: how would you even blend alpha the right way? strict averages get weird
+        private float red = 0;
+        private float green = 0;
+        private float blue = 0;
+        private float alpha = 0; // FIXME: how would you even blend alpha the right way? strict averages get weird
         private int colors = 0;
     }
 }

@@ -9,7 +9,6 @@ namespace Planetaria
         public Vector2 data
         {
             get { return data_variable; }
-            set { data_variable = value; normalize(); }
         }
 
         /// <summary>
@@ -21,16 +20,6 @@ namespace Planetaria
         {
             data_variable = new Vector2(u, v);
             normalize();
-        }
-
-        public int x(int width)
-        {
-            return Mathf.Min(Mathf.FloorToInt(data_variable.x * width), width - 1);
-        }
-
-        public int y(int height)
-        {
-            return Mathf.Min(Mathf.FloorToInt(data_variable.y * height), height - 1);
         }
 
         /// <summary>

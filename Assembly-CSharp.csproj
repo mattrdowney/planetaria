@@ -72,6 +72,7 @@
     <Compile Include="Assets\Planetaria\Code\CoordinateSystems\NormalizedOctahedronCoordinates.cs" />
     <Compile Include="Assets\Planetaria\Code\CoordinateSystems\NormalizedSphericalCoordinates.cs" />
     <Compile Include="Assets\Planetaria\Code\CoordinateSystems\OctahedronUVCoordinates.cs" />
+    <Compile Include="Assets\Planetaria\Code\CoordinateSystems\SphericalRectangleUVCoordinates.cs" />
     <Compile Include="Assets\Planetaria\Code\CoordinateSystems\StereoscopicProjectionCoordinates.cs" />
     <Compile Include="Assets\Planetaria\Code\LevelGeometry\Arc.cs" />
     <Compile Include="Assets\Planetaria\Code\LevelGeometry\ArcUtility.cs" />
@@ -141,6 +142,7 @@
     <Compile Include="Assets\Planetaria\Code\Utility\ProceduralPacking.cs" />
     <Compile Include="Assets\Planetaria\Code\World\CubePlanetarium.cs" />
     <Compile Include="Assets\Planetaria\Code\World\OctahedronPlanetarium.cs" />
+    <Compile Include="Assets\Planetaria\Code\World\SphericalRectanglePlanetarium.cs" />
     <Compile Include="Assets\Planetaria\Code\World\WorldPlanetarium.cs" />
     <Compile Include="Assets\UnitySVG\Extensions.cs" />
     <Compile Include="Assets\UnitySVG\Implement.cs" />

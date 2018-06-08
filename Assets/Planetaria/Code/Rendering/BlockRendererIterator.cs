@@ -33,7 +33,7 @@ namespace Planetaria
         /// <param name="block">The block (set of arcs) to be inspected.</param>
         private static void find_discontinuities(Block block)
         {
-            foreach (optional<Arc> arc in block.iterator())
+            foreach (optional<Arc> arc in block.shape.arcs)
             {
                 for (int dimension = 0; dimension < 2; ++dimension) // Intersect already gets quadrants 3-4 by proxy
                 {
@@ -70,7 +70,7 @@ namespace Planetaria
 
         public static IEnumerable<ArcIterator> arc_iterator()
         {
-            foreach (optional<Arc> arc in block_variable.iterator())
+            foreach (optional<Arc> arc in block_variable.shape.arcs)
             { 
                 if (!arc.exists)
                 {

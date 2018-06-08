@@ -10,7 +10,7 @@ namespace Planetaria
             List<Arc> result = new List<Arc>();
             foreach (Block block in GameObject.FindObjectsOfType<Block>())
             {
-                foreach (optional<Arc> arc in block.iterator())
+                foreach (optional<Arc> arc in block.shape.arcs)
                 {
                     if (arc.exists)
                     {
@@ -20,7 +20,7 @@ namespace Planetaria
             }
             foreach (Field field in GameObject.FindObjectsOfType<Field>())
             {
-                foreach (optional<Arc> arc in field.iterator())
+                foreach (optional<Arc> arc in field.shape.arcs)
                 {
                     if (arc.exists)
                     {

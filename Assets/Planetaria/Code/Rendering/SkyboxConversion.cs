@@ -9,6 +9,7 @@ namespace Planetaria
         {
             Cube,
             Octahedron,
+            SphericalRectangle,
         }
 
         [MenuItem("Planetaria/Level Converter")]
@@ -43,6 +44,19 @@ namespace Planetaria
             sample_rate = EditorGUILayout.IntField("Sample rate", sample_rate);
             GUILayout.EndHorizontal();
 
+            switch (from_shape)
+            {
+                case Shape.SphericalRectangle:
+                    GUILayout.BeginHorizontal();
+                    width = EditorGUILayout.FloatField("Angular width", width);
+                    GUILayout.EndHorizontal();
+
+                    GUILayout.BeginHorizontal();
+                    height = EditorGUILayout.FloatField("Angular height", height);
+                    GUILayout.EndHorizontal();
+                    break;
+            }
+
             if (GUILayout.Button("Convert"))
             {
                 WorldPlanetarium from;
@@ -53,8 +67,11 @@ namespace Planetaria
                         from = new CubePlanetarium(from_file_name);
                         break;
                     case Shape.Octahedron:
-                    default: // FIXME:
                         from = new OctahedronPlanetarium(from_file_name);
+                        break;
+                    case Shape.SphericalRectangle:
+                    default: // FIXME:
+                        from = new SphericalRectanglePlanetarium(from_file_name, width, height);
                         break;
                 }
                 switch (to_shape)
@@ -73,6 +90,8 @@ namespace Planetaria
         private static string to_file_name;
         private static Shape from_shape = Shape.Octahedron;
         private static Shape to_shape = Shape.Cube;
+        private static float width;
+        private static float height;
         private static int resolution = 64;
         private static int sample_rate = 1;
     }

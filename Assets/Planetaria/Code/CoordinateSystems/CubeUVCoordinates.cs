@@ -21,20 +21,12 @@ namespace Planetaria
 
         public int texture_index
         {
-            get
-            {
-                return face_index_variable;
-            }
+            get { return face_index_variable; }
         }
 
-        public int x(int width)
+        public Vector2 uv
         {
-            return Mathf.Min(Mathf.FloorToInt(uv_variable.x * width), width - 1);
-        }
-
-        public int y(int height)
-        {
-            return Mathf.Min(Mathf.FloorToInt(uv_variable.y*height), height - 1);
+            get { return uv_variable; }
         }
 
         /// <summary>

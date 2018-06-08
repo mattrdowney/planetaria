@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Planetaria
 {
     [Serializable]
-    public struct Shape : ISerializationCallbackReceiver
+    public struct Shape : ISerializationCallbackReceiver // TODO: clean-up this file~
     {
         /// <summary>
         /// Constructor - Creates a shape based on a list of curves (generates cached list of optional<Arc>)
@@ -60,41 +60,6 @@ namespace Planetaria
             {
                 return arc_list;
             }
-        }
-
-        public bool self_intersecting()
-        {
-            List<Arc> edges = generate_edges();
-            for (int left = 0; left < edges.Count; ++left)
-            {
-                for (int right = left + 1; right < edges.Count; ++right)
-                {
-                    optional<Vector3> intersection = PlanetariaIntersection.arc_arc_intersection(edges[left], edges[right], 0);
-                    if (intersection.exists)
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        public bool convex_hull()
-        {
-            if (arc_list.Length > 1)
-            {
-                Shape closed_shape = this.close();
-                Arc last_arc = closed_shape.generate_edges().Last();
-                foreach (Arc arc in closed_shape.generate_edges())
-                {
-                    if (!Arc.is_convex(last_arc, arc))
-                    {
-                        return false;
-                    }
-                    last_arc = arc;
-                }
-            }
-            return true;
         }
 
         /// <summary>
@@ -160,6 +125,41 @@ namespace Planetaria
             return new List<GeospatialCurve>(curve_list);
         }
 
+        public bool self_intersecting()
+        {
+            List<Arc> edges = generate_edges();
+            for (int left = 0; left < edges.Count; ++left)
+            {
+                for (int right = left + 1; right < edges.Count; ++right)
+                {
+                    optional<Vector3> intersection = PlanetariaIntersection.arc_arc_intersection(edges[left], edges[right], 0);
+                    if (intersection.exists)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public bool convex_hull()
+        {
+            if (arc_list.Length > 1)
+            {
+                Shape closed_shape = this.close();
+                Arc last_arc = closed_shape.generate_edges().Last();
+                foreach (Arc arc in closed_shape.generate_edges())
+                {
+                    if (!Arc.is_convex(last_arc, arc))
+                    {
+                        return false;
+                    }
+                    last_arc = arc;
+                }
+            }
+            return true;
+        }
+
         public static bool operator ==(Shape left, Shape right)
         {
             return left.Equals(right);
@@ -170,7 +170,7 @@ namespace Planetaria
             return !left.Equals(right);
         }
 
-        public override bool Equals(System.Object other) // FIXME: TODO: do C# developers really define Equals and use it for == and !=? (seems inefficient if so)
+        public override bool Equals(System.Object other)
         {
             bool same_type = other is Shape;
             if (!same_type)
@@ -178,18 +178,13 @@ namespace Planetaria
                 return false;
             }
             Shape other_shape = (Shape)other;
-            bool same_data = this.closed == other_shape.closed &&
-                this.has_corners == other_shape.has_corners &&
-                this.curves == other_shape.curves; // CONSIDER: Linq.SequenceEquals()
-                    
+            bool same_data = this.curve_list == other_shape.curve_list; // compare by reference is intentional
             return same_data;
         }
 
         public override int GetHashCode()
         {
-            return this.closed.GetHashCode() ^
-                    this.has_corners.GetHashCode() ^
-                    this.curve_list.GetHashCode();
+            return this.curve_list.GetHashCode();
         }
 
         /// <summary>

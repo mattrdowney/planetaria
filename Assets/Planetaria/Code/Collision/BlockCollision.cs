@@ -6,7 +6,7 @@ namespace Planetaria
     {
         public static optional<BlockCollision> block_collision(CollisionObserver observer, Arc arc, Block block, PlanetariaCollider collider, PlanetariaTransform transformation, PlanetariaRigidbody rigidbody)
         {
-            optional<ArcVisitor> arc_visitor = block.arc_visitor(arc);
+            optional<ArcVisitor> arc_visitor = block.shape.arc_visitor(arc);
             if (!arc_visitor.exists)
             {
                 Debug.LogError("This should never happen");

@@ -17,24 +17,9 @@ namespace Planetaria
         {
             GameObject result = new GameObject("Block");
             Block block = result.AddComponent<Block>();
-            block.closed_shape = new Shape(curves, true, true);
+            block.shape_variable = new Shape(curves, true, true);
             block.ignore.Add(block);
             return result;
-        }
-
-        public optional<ArcVisitor> arc_visitor(Arc arc)
-        {
-            return closed_shape.arc_visitor(arc);
-        }
-
-        public optional<Arc> arc_index(int index)
-        {
-            return closed_shape[index];
-        }
-
-        public IEnumerable<optional<Arc>> iterator()
-        {
-            return closed_shape.arcs;
         }
 
         public bool active
@@ -52,7 +37,7 @@ namespace Planetaria
         public Vector3 center_of_mass() // FIXME: proper volume integration (for convex hulls)
         {
             Vector3 result = Vector3.zero;
-            foreach (optional<Arc> arc in closed_shape.arcs)
+            foreach (optional<Arc> arc in shape_variable.arcs)
             {
                 if (arc.exists)
                 {
@@ -63,6 +48,14 @@ namespace Planetaria
             return result; // FIXME: Vector3.zero can be returned
         }
 
+        public Shape shape
+        {
+            get
+            {
+                return shape_variable;
+            }
+        }
+
         private void Start()
         {
             initialize();
@@ -71,7 +64,7 @@ namespace Planetaria
 
         private void Reset()
         {
-            closed_shape = new Shape(new List<GeospatialCurve>(), true, true);
+            shape_variable = new Shape(new List<GeospatialCurve>(), true, true);
             ignore = new List<Block>();
             active = true;
             initialize();
@@ -101,7 +94,7 @@ namespace Planetaria
         [SerializeField] public PlanetariaPhysicMaterial material = fallback;
         [SerializeField] [HideInInspector] public new PlanetariaTransform transform;
         [SerializeField] [HideInInspector] public Transform internal_transform;
-        [SerializeField] private Shape closed_shape;
+        [SerializeField] private Shape shape_variable;
         [SerializeField] public List<Block> ignore;
     }
 }

@@ -9,7 +9,6 @@ namespace Planetaria
         public Vector3 data
         {
             get { return data_variable; }
-            set { data_variable = value; normalize(); }
         }
 
         /// <summary>

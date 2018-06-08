@@ -8,15 +8,15 @@ namespace Planetaria
     public abstract class WorldPlanetarium
     {
         // TODO: name and filetype?
-        public abstract Color32 sample_pixel(Vector3 planetarium_position);
+        public abstract Color sample_pixel(Vector3 planetarium_position);
 
-        public Color32 sample_pixel(Vector3[] planetarium_positions)
+        public Color sample_pixel(Vector3[] planetarium_positions)
         {
             if (planetarium_positions.Length == 1) // NOTE: optimization for common case (speeds up quick tests)
             {
                 return sample_pixel(planetarium_positions[0]);
             }
-            Color32Blender pixel = new Color32Blender();
+            ColorBlender pixel = new ColorBlender();
             foreach (Vector3 planetarium_position in planetarium_positions)
             {
                 pixel.blend(sample_pixel(planetarium_position));
@@ -38,7 +38,7 @@ namespace Planetaria
                     Rect pixel_boundaries = new Rect(u_min, v_min, pixel_width, pixel_height);
                     Vector2[] uv_points = Miscellaneous.uv_samples(pixel_boundaries, sample_rate);
                     Vector3[] xyz_points = uv_points.Select(uv => uv_converter(uv)).ToArray();
-                    Color32 color = sample_pixel(xyz_points);
+                    Color color = sample_pixel(xyz_points);
                     pixels[x + y*texture.width] = color;
                 }
             }

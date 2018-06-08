@@ -13,7 +13,7 @@ namespace Planetaria
         {
             GameObject result = new GameObject("Field");
             Field field = result.AddComponent<Field>(); // FIXME: implement
-            field.closed_shape = new Shape(curves, true, false); // CONSIDER: TODO: should corners be generated?
+            field.shape_variable = new Shape(curves, true, false); // CONSIDER: TODO: should corners be generated?
 
             return result;
         }
@@ -42,16 +42,19 @@ namespace Planetaria
             PlanetariaCache.self.uncache(this);
         }
 
-        public IEnumerable<optional<Arc>> iterator() // TODO: check
+        public Shape shape
         {
-            return closed_shape.arcs;
+            get
+            {
+                return shape_variable;
+            }
         }
 
         public bool active { get; set; }
         
         public bool is_dynamic;
         [NonSerialized] public new PlanetariaTransform transform;
-        [SerializeField] private Shape closed_shape;
+        [SerializeField] private Shape shape_variable;
     }
 }
 

@@ -147,6 +147,11 @@ namespace Planetaria
             return power(base_, exponent / 2) * power(base_, exponent / 2); // even
         }
 
+        public static int scale(this float self, int scale) // FIXME: misleading since scale only works correctly for [0,1]-size floats
+        {
+            return Mathf.Min(Mathf.FloorToInt(self * scale), scale - 1);
+        }
+
         public static void serialize<Key, Value>(this Dictionary<Key, Value> dictionary, List<Key> keys, List<Value> values)
         {
             keys.Clear();
