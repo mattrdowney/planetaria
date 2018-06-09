@@ -131,7 +131,8 @@
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaRenderer.cs" />
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaRigidbody.cs" />
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaTransform.cs" />
-    <Compile Include="Assets\Planetaria\Code\Utility\Color32Blender.cs" />
+    <Compile Include="Assets\Planetaria\Code\Utility\ColorBlender.cs" />
+    <Compile Include="Assets\Planetaria\Code\Utility\ColorUtility.cs" />
     <Compile Include="Assets\Planetaria\Code\Utility\EditorGlobal.cs" />
     <Compile Include="Assets\Planetaria\Code\Utility\Global.cs" />
     <Compile Include="Assets\Planetaria\Code\Utility\Miscellaneous.cs" />

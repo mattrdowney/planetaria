@@ -18,7 +18,7 @@ namespace Planetaria
         /// <returns>The UV coordinates for an cube skybox.</returns>
         public static implicit operator CubeUVCoordinates(NormalizedCartesianCoordinates cartesian)
         {
-            return (NormalizedCubeCoordinates)cartesian; // implicit chains of length three won't automatically work so convert NormalizedCartesianCoordinates -> NormalizedCubeCoordinates -> CubeUVCoordinates
+            return (NormalizedCubeCoordinates) cartesian; // implicit chains of length three won't automatically work so convert NormalizedCartesianCoordinates -> NormalizedCubeCoordinates -> CubeUVCoordinates
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace Planetaria
         /// <returns>The spherical coordinates.</returns>
         public static implicit operator NormalizedSphericalCoordinates(NormalizedCartesianCoordinates cartesian)
         {
-            float elevation = Mathf.Acos(-cartesian.data.y);
+            float elevation = Mathf.Acos(-cartesian.data.y); // FIXME: remove!!!
             float azimuth = Mathf.Atan2(cartesian.data.z, -cartesian.data.x);
             return new NormalizedSphericalCoordinates(elevation, azimuth);
         }

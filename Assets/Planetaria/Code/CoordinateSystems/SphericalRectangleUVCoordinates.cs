@@ -25,10 +25,10 @@ namespace Planetaria
         /// <summary>
         /// Constructor - Stores the spherical rectangle's UV coordinates in a wrapper class.
         /// </summary>
-        /// <param name="u">The u coordinate in UV space for the spherical rectangle. Range: (-inf,+inf)</param>
-        /// <param name="v">The v coordinate in UV space for the spherical rectangle. Range: (-inf,+inf)</param>
-        /// <param name="angular_width">The width of the spherical rectangle in radians. Range: (0,2pi)</param>
-        /// <param name="angular_height">The height of the spherical rectangle in radians. Range: (0,2pi)</param>
+        /// <param name="u">The u coordinate in UV space for the spherical rectangle. Range: (-INF, +INF)</param>
+        /// <param name="v">The v coordinate in UV space for the spherical rectangle. Range: (-INF, +INF)</param>
+        /// <param name="angular_width">The width of the spherical rectangle in radians. Range: (0, PI)</param>
+        /// <param name="angular_height">The height of the spherical rectangle in radians. Range: (0, PI)</param>
         public SphericalRectangleUVCoordinates(float u, float v, float angular_width, float angular_height)
         {
             uv_variable = new Vector2(u, v);
@@ -42,19 +42,14 @@ namespace Planetaria
         /// <returns>The normalized cartesian coordinates.</returns>
         public static implicit operator NormalizedCartesianCoordinates(SphericalRectangleUVCoordinates uv)
         {
-            return (NormalizedSphericalCoordinates)uv; // implicit chains of length three won't automatically work so convert SphericalRectangleUVCoordinates -> NormalizedSphericalCoordinates -> NormalizedCartesianCoordinates
-        }
-
-        /// <summary>
-        /// Inspector - Converts spherical rectangle UV coordinates into spherical coordinates.
-        /// </summary>
-        /// <param name="uv">The coordinates in spherical rectangle UV space that will be converted</param>
-        /// <returns>The spherical coordinates.</returns> 
-        public static implicit operator NormalizedSphericalCoordinates(SphericalRectangleUVCoordinates uv)
-        {
-            float elevation = Mathf.PI/2 + uv.size.x*(uv.uv.x-0.5f);
-            float azimuth = Mathf.PI/2 + uv.size.y*(uv.uv.y-0.5f);
-            return new NormalizedSphericalCoordinates(elevation, azimuth);
+            float x = uv.uv.x - 0.5f;
+            float y = uv.uv.y - 0.5f;
+            NormalizedCartesianCoordinates horizontal_point = new NormalizedSphericalCoordinates(Mathf.PI/2 - uv.size.x, Mathf.PI/2 + y*uv.size.y);
+            NormalizedCartesianCoordinates vertical_point = new NormalizedSphericalCoordinates(Mathf.PI/2 - x*uv.size.x, Mathf.PI/2 + uv.size.y);
+            Arc horizontal = Arc.curve(Vector3.left, horizontal_point.data, Vector3.right);
+            Arc vertical = Arc.curve(Vector3.down, vertical_point.data, Vector3.up);
+            optional<Vector3> intersection = PlanetariaIntersection.arc_arc_intersection(horizontal, vertical, 0); // FIXME: some paths won't intersect at a single point
+            return new NormalizedCartesianCoordinates(intersection.data); // FIXME: this code is very slow compared to most conversion functions
         }
 
         // CONSIDER: re-add normalize() for scaling width/height?
