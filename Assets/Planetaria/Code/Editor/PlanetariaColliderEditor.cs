@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using UnityEditor;
 using UnityEngine;
-using UnityEditor;
 
 namespace Planetaria
 {
     [CustomEditor(typeof(PlanetariaCollider))]
     public class PlanetariaColliderEditor : Editor
     {
-        public static List<int> hidden_colliders = new List<int>();
         [DrawGizmo(GizmoType.Selected)]
         private static void draw_planetaria_collider_gizmos(PlanetariaCollider self, GizmoType gizmo_type)
         {

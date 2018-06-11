@@ -3,10 +3,10 @@ using UnityEngine;
 
 namespace Planetaria
 {
-    [Serializable] // While this is one of my favorite types, I might have to forgo serializing it [I can still use it, just not between Unity sessions]
+    [Serializable]
     public struct optional<Type> // https://stackoverflow.com/questions/16199227/optional-return-in-c-net
     {
-        public bool exists
+        public bool exists // What happens when an object is deleted at runtime XD (don't trust this too much)
         {
             get
             {
@@ -31,7 +31,7 @@ namespace Planetaria
             }
         }
 
-        public optional(Type original) // FIXME: (?) This is far more expensive than it used to be
+        public optional(Type original)
         {
             // Unity overrides the definition of nullity, so check for Unity-specific "nulls"
             exists_variable = original != null && !original.Equals(null); // 2nd half isn't redundant: // https://blogs.unity3d.com/2014/05/16/custom-operator-should-we-keep-it/

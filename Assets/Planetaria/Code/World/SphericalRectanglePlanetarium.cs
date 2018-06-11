@@ -13,9 +13,8 @@ namespace Planetaria
 
         public override Color sample_pixel(Vector3 planetarium_position)
         {
-            NormalizedCartesianCoordinates position = new NormalizedCartesianCoordinates(planetarium_position);
-            NormalizedSphericalCoordinates spherical = position;
-            SphericalRectangleUVCoordinates spherical_rectangle = spherical.to_spherical_rectangle(angular_width, angular_height);
+            NormalizedCartesianCoordinates cartesian = new NormalizedCartesianCoordinates(planetarium_position);
+            SphericalRectangleUVCoordinates spherical_rectangle = cartesian.to_spherical_rectangle(angular_width, angular_height);
             if (!spherical_rectangle.valid())
             {
                 return Color.clear;

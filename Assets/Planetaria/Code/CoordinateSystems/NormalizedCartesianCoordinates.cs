@@ -104,6 +104,50 @@ namespace Planetaria
             return new StereoscopicProjectionCoordinates(stereoscopic_projection);
         }
 
+        public SphericalRectangleUVCoordinates to_spherical_rectangle(float angular_width, float angular_height)
+        {
+            float u;
+            float v;
+
+            Arc equator = Arc.curve(Vector3.forward, Vector3.right, Vector3.forward);
+            Arc meridian = Arc.curve(Vector3.forward, Vector3.up, Vector3.forward);
+            if (Mathf.Abs(data.x) > Mathf.Abs(data.y))
+            {
+                u = equator.position_to_angle(data_variable);
+                Vector3 u_position = equator.position(u);
+                Arc vertical = Arc.curve(u_position, Vector3.up, u_position);
+                v = vertical.position_to_angle(data_variable);
+
+                u = (u <= Mathf.PI ? u : u - 2 * Mathf.PI);
+                v = (v <= Mathf.PI ? v : v - 2 * Mathf.PI);
+
+                u = u/angular_width + 0.5f;
+
+                Arc upper_boundary = Arc.curve(Vector3.left, meridian.position(angular_height/2), Vector3.right);
+                Vector3 max_point = PlanetariaIntersection.arc_arc_intersection(vertical, upper_boundary, 0).data;
+                float local_height = vertical.position_to_angle(max_point)*2; // These functions are headed in the right direction
+                v = v/local_height + 0.5f; // The local_height above the diagonal line is what is important, though.
+            }
+            else
+            {
+                v = meridian.position_to_angle(data_variable);
+                Vector3 v_position = meridian.position(v);
+                Arc horizontal = Arc.curve(v_position, Vector3.right, v_position);
+                u = horizontal.position_to_angle(data_variable);
+
+                u = (u <= Mathf.PI ? u : u - 2 * Mathf.PI);
+                v = (v <= Mathf.PI ? v : v - 2 * Mathf.PI);
+
+                v = v/angular_height + 0.5f;
+
+                Arc right_boundary = Arc.curve(Vector3.down, equator.position(angular_width/2), Vector3.up);
+                Vector3 max_point = PlanetariaIntersection.arc_arc_intersection(horizontal, right_boundary, 0).data;
+                float local_width = horizontal.position_to_angle(max_point)*2;
+                u = u/local_width + 0.5f;
+            }
+            return new SphericalRectangleUVCoordinates(u, v, angular_width, angular_height);
+        }
+
         /// <summary>
         /// Mutator - Project the Cartesian coordinates onto a unit sphere.
         /// </summary>

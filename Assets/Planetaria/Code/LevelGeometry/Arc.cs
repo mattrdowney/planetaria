@@ -177,7 +177,7 @@ namespace Planetaria
         /// <param name="position">The position along the arc (elevation doesn't matter).</param>
         /// <param name="extrusion">The elevation (which is ignored).</param>
         /// <returns>The angle along the arc starting from the forward vector.</returns>
-        public float position_to_angle(Vector3 position, float extrusion = 0f)
+        public float position_to_angle(Vector3 position, float extrusion = 0f) // FIXME: I don't think this works because the position isn't projected
         {
             float x = Vector3.Dot(position, forward_axis);
             float y = Vector3.Dot(position, right_axis);

@@ -36,17 +36,10 @@ namespace Planetaria
             return new NormalizedCartesianCoordinates(cartesian);
         }
 
-        public static implicit operator OctahedronUVCoordinates(NormalizedSphericalCoordinates spherical)
+        /*public static implicit operator OctahedronUVCoordinates(NormalizedSphericalCoordinates spherical)
         {
             return (NormalizedCartesianCoordinates) spherical;
-        }
-
-        public SphericalRectangleUVCoordinates to_spherical_rectangle(float angular_width, float angular_height)
-        {
-            float u = (data.x - Mathf.PI/2)/angular_width + 0.5f;
-            float v = (data.y - Mathf.PI/2)/angular_height + 0.5f;
-            return new SphericalRectangleUVCoordinates(u, v, angular_width, angular_height);
-        }
+        }*/
 
         /// <summary>
         /// Mutator - Wrap elevation and azimuth so they are within [0, PI] and [0, 2*PI) respectively.

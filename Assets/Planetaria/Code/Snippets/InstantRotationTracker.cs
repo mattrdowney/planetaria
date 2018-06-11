@@ -3,7 +3,7 @@ using Planetaria;
 
 public class InstantRotationTracker : PlanetariaTracker
 {
-    public override void setup()
+    public override void setup() // FIXME: this could (and should) be generalized
     {
         target = GameObject.Find("Character").GetComponent<PlanetariaTransform>();
         character = GameObject.Find("Character").GetComponent<PlanetariaCharacter>();
