@@ -36,6 +36,12 @@ public struct SphericalCap
         }
     }
 
+    public bool contains(Vector3 position)
+    {
+        float dot_product = Vector3.Dot(pole, position);
+        return dot_product > distance;
+    }
+
     /// <summary>
     /// Constructor - Creates a SphericalCap (i.e. a volume formed by cutting a sphere by a planar intersection) [may go past equator]
     /// </summary>

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Planetaria
 {
     [Serializable]
-    public struct SphericalRectangleUVCoordinates
+    public struct SphericalRectangleUVCoordinates // similar to picture here: https://math.stackexchange.com/questions/1205927/how-to-calculate-the-area-covered-by-any-spherical-rectangle
     {
         public Vector2 uv
         {

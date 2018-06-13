@@ -111,7 +111,8 @@ namespace Planetaria
 
             Arc equator = Arc.curve(Vector3.forward, Vector3.right, Vector3.forward);
             Arc meridian = Arc.curve(Vector3.forward, Vector3.up, Vector3.forward);
-            if (Mathf.Abs(data.x) > Mathf.Abs(data.y))
+
+            if (Mathf.Abs(data.x) > Mathf.Abs(data.y)) // FIXME: assumes angular_width==angular_height
             {
                 u = equator.position_to_angle(data_variable);
                 Vector3 u_position = equator.position(u);
@@ -123,10 +124,14 @@ namespace Planetaria
 
                 u = u/angular_width + 0.5f;
 
-                Arc upper_boundary = Arc.curve(Vector3.left, meridian.position(angular_height/2), Vector3.right);
-                Vector3 max_point = PlanetariaIntersection.arc_arc_intersection(vertical, upper_boundary, 0).data;
-                float local_height = vertical.position_to_angle(max_point)*2; // These functions are headed in the right direction
-                v = v/local_height + 0.5f; // The local_height above the diagonal line is what is important, though.
+                Arc diagonal = closest_diagonal(angular_width, angular_height);
+                Arc diagonal2point0 = Arc.curve(diagonal.begin(), diagonal.end(), Vector3.back);
+                Vector3 local_max = PlanetariaIntersection.arc_arc_intersection(vertical, diagonal2point0, 0).data;
+                float local_height = vertical.position_to_angle(local_max);
+                local_height = (local_height <= Mathf.PI ? local_height : local_height - 2*Mathf.PI);
+                local_height *= 2;
+                float diagonal_fraction = diagonal.position_to_angle(local_max) / diagonal.angle();
+                v = v/local_height*diagonal_fraction + 0.5f;
             }
             else
             {
@@ -140,12 +145,29 @@ namespace Planetaria
 
                 v = v/angular_height + 0.5f;
 
-                Arc right_boundary = Arc.curve(Vector3.down, equator.position(angular_width/2), Vector3.up);
-                Vector3 max_point = PlanetariaIntersection.arc_arc_intersection(horizontal, right_boundary, 0).data;
-                float local_width = horizontal.position_to_angle(max_point)*2;
-                u = u/local_width + 0.5f;
+                Arc diagonal = closest_diagonal(angular_width, angular_height);
+                Arc diagonal2point0 = Arc.curve(diagonal.begin(), diagonal.end(), Vector3.back);
+                Vector3 local_max = PlanetariaIntersection.arc_arc_intersection(horizontal, diagonal2point0, 0).data;
+                float local_width = horizontal.position_to_angle(local_max);
+                local_width = (local_width <= Mathf.PI ? local_width : local_width - 2*Mathf.PI);
+                local_width *= 2;
+                float diagonal_fraction = diagonal.position_to_angle(local_max) / diagonal.angle();
+                u = u/local_width*diagonal_fraction + 0.5f;
             }
             return new SphericalRectangleUVCoordinates(u, v, angular_width, angular_height);
+        }
+
+        private Arc closest_diagonal(float angular_width, float angular_height)
+        {
+            float x_sign = Mathf.Sign(data.x);
+            float y_sign = Mathf.Sign(data.y);
+
+            Arc equator = Arc.curve(Vector3.forward, Vector3.right, Vector3.forward);
+            Arc meridian = Arc.curve(Vector3.forward, Vector3.up, Vector3.forward);
+            Arc x_boundary = Arc.curve(Vector3.down, equator.position(x_sign*angular_width/2), Vector3.up);
+            Arc y_boundary = Arc.curve(Vector3.left, meridian.position(y_sign*angular_height/2), Vector3.right);
+            Vector3 corner = PlanetariaIntersection.arc_arc_intersection(x_boundary, y_boundary, 0).data;
+            return Arc.line(Vector3.forward, corner);
         }
 
         /// <summary>
