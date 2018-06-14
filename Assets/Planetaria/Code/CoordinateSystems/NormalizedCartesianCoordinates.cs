@@ -119,17 +119,17 @@ namespace Planetaria
                 Arc vertical = Arc.curve(u_position, Vector3.up, u_position);
                 v = vertical.position_to_angle(data_variable);
 
-                u = (u <= Mathf.PI ? u : u - 2 * Mathf.PI);
-                v = (v <= Mathf.PI ? v : v - 2 * Mathf.PI);
+                u = (u <= Mathf.PI ? u : u - 2*Mathf.PI);
+                v = (v <= Mathf.PI ? v : v - 2*Mathf.PI);
 
                 u = u/angular_width + 0.5f;
 
                 Arc diagonal = closest_diagonal(angular_width, angular_height);
-                Arc diagonal2point0 = Arc.curve(diagonal.begin(), diagonal.end(), Vector3.back);
-                Vector3 local_max = PlanetariaIntersection.arc_arc_intersection(vertical, diagonal2point0, 0).data;
-                float local_height = vertical.position_to_angle(local_max);
+                Arc diagonal2p0 = Arc.curve(diagonal.begin(), diagonal.end(), Vector3.back); // FIXME: how to fix this?
+                Vector3 local_max = PlanetariaIntersection.arc_arc_intersection(vertical, diagonal2p0, 0).data;
+                float local_height = Mathf.Abs(vertical.position_to_angle(local_max));
                 local_height = (local_height <= Mathf.PI ? local_height : local_height - 2*Mathf.PI);
-                local_height *= 2;
+                local_height = Mathf.Abs(local_height)*2;
                 float diagonal_fraction = diagonal.position_to_angle(local_max) / diagonal.angle();
                 v = v/local_height*diagonal_fraction + 0.5f;
             }
@@ -140,8 +140,8 @@ namespace Planetaria
                 Arc horizontal = Arc.curve(v_position, Vector3.right, v_position);
                 u = horizontal.position_to_angle(data_variable);
 
-                u = (u <= Mathf.PI ? u : u - 2 * Mathf.PI);
-                v = (v <= Mathf.PI ? v : v - 2 * Mathf.PI);
+                u = (u <= Mathf.PI ? u : u - 2*Mathf.PI);
+                v = (v <= Mathf.PI ? v : v - 2*Mathf.PI);
 
                 v = v/angular_height + 0.5f;
 
@@ -150,7 +150,7 @@ namespace Planetaria
                 Vector3 local_max = PlanetariaIntersection.arc_arc_intersection(horizontal, diagonal2point0, 0).data;
                 float local_width = horizontal.position_to_angle(local_max);
                 local_width = (local_width <= Mathf.PI ? local_width : local_width - 2*Mathf.PI);
-                local_width *= 2;
+                local_width = Mathf.Abs(local_width)*2;
                 float diagonal_fraction = diagonal.position_to_angle(local_max) / diagonal.angle();
                 u = u/local_width*diagonal_fraction + 0.5f;
             }
