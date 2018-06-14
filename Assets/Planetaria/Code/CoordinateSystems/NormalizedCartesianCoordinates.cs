@@ -112,6 +112,8 @@ namespace Planetaria
             Arc equator = Arc.curve(Vector3.forward, Vector3.right, Vector3.forward);
             Arc meridian = Arc.curve(Vector3.forward, Vector3.up, Vector3.forward);
 
+            // possible: closest_axis + closest_diagonal (exploit problem symmytry on 8 cells).
+
             if (Mathf.Abs(data.x) > Mathf.Abs(data.y)) // FIXME: assumes angular_width==angular_height
             {
                 u = equator.position_to_angle(data_variable);
@@ -157,15 +159,26 @@ namespace Planetaria
             return new SphericalRectangleUVCoordinates(u, v, angular_width, angular_height);
         }
 
-        private Arc closest_diagonal(float angular_width, float angular_height)
+        private Arc closest_axis(float angular_width, float angular_height)
         {
-            float x_sign = Mathf.Sign(data.x);
-            float y_sign = Mathf.Sign(data.y);
+            float x_fraction = Mathf.Abs(data.x/angular_width);
+            float y_fraction = Mathf.Abs(data.y/angular_height);
 
             Arc equator = Arc.curve(Vector3.forward, Vector3.right, Vector3.forward);
             Arc meridian = Arc.curve(Vector3.forward, Vector3.up, Vector3.forward);
-            Arc x_boundary = Arc.curve(Vector3.down, equator.position(x_sign*angular_width/2), Vector3.up);
-            Arc y_boundary = Arc.curve(Vector3.left, meridian.position(y_sign*angular_height/2), Vector3.right);
+            if (x_fraction > y_fraction)
+            {
+                return Arc.line(Vector3.forward, equator.position(Mathf.Sign(data.x)*angular_width/2));
+            }
+            return Arc.line(Vector3.forward, meridian.position(Mathf.Sign(data.y)*angular_height/2));
+        }
+
+        private Arc closest_diagonal(float angular_width, float angular_height)
+        {
+            Arc equator = Arc.curve(Vector3.forward, Vector3.right, Vector3.forward);
+            Arc meridian = Arc.curve(Vector3.forward, Vector3.up, Vector3.forward);
+            Arc x_boundary = Arc.curve(Vector3.down, equator.position(Mathf.Sign(data.x)*angular_width/2), Vector3.up);
+            Arc y_boundary = Arc.curve(Vector3.left, meridian.position(Mathf.Sign(data.y)*angular_height/2), Vector3.right);
             Vector3 corner = PlanetariaIntersection.arc_arc_intersection(x_boundary, y_boundary, 0).data;
             return Arc.line(Vector3.forward, corner);
         }
