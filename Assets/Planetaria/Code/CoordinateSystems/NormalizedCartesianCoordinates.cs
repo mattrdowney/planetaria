@@ -104,58 +104,25 @@ namespace Planetaria
             return new StereoscopicProjectionCoordinates(stereoscopic_projection);
         }
 
+        // I've gone through a lot of prototypes: thinking about using world space -> camera viewport transformations, dual cylindrical coordinates (x-z and y-z), but I think I have a better idea:
+        // For each quadrant: get x-axis, y-axis, Vector3.forward, and diagonal point (area is ~ PI cross PI, so you don't have odd wrapping phenomenon)
+        // From these points, get the interpolator percent on the top and bottom rails, then a composite rail from the interpolator points on those rails.
+        // The interpolator percent on the top and bottom rails should rarely match, so to fix this a strategy would be to blend the two based on the vertical interpolation fraction
+        // Another possibility with more symmetry is to interpolate as a kite (but even that doesn't work for non-squares--perfectly at least)
         public SphericalRectangleUVCoordinates to_spherical_rectangle(float angular_width, float angular_height)
         {
-            float u;
-            float v;
-
             Arc equator = Arc.curve(Vector3.forward, Vector3.right, Vector3.forward);
             Arc meridian = Arc.curve(Vector3.forward, Vector3.up, Vector3.forward);
 
-            // possible: closest_axis + closest_diagonal (exploit problem symmytry on 8 cells).
+            float u = equator.position_to_angle(data);
+            float v = meridian.position_to_angle(data);
 
-            if (Mathf.Abs(data.x) > Mathf.Abs(data.y)) // FIXME: assumes angular_width==angular_height
-            {
-                u = equator.position_to_angle(data_variable);
-                Vector3 u_position = equator.position(u);
-                Arc vertical = Arc.curve(u_position, Vector3.up, u_position);
-                v = vertical.position_to_angle(data_variable);
+            u = (u <= Mathf.PI ? u : u - 2 * Mathf.PI);
+            v = (v <= Mathf.PI ? v : v - 2 * Mathf.PI);
 
-                u = (u <= Mathf.PI ? u : u - 2*Mathf.PI);
-                v = (v <= Mathf.PI ? v : v - 2*Mathf.PI);
+            u = u/angular_width + 0.5f;
+            v = v/angular_height + 0.5f;
 
-                u = u/angular_width + 0.5f;
-
-                Arc diagonal = closest_diagonal(angular_width, angular_height);
-                Arc diagonal2p0 = Arc.curve(diagonal.begin(), diagonal.end(), Vector3.back); // FIXME: how to fix this?
-                Vector3 local_max = PlanetariaIntersection.arc_arc_intersection(vertical, diagonal2p0, 0).data;
-                float local_height = Mathf.Abs(vertical.position_to_angle(local_max));
-                local_height = (local_height <= Mathf.PI ? local_height : local_height - 2*Mathf.PI);
-                local_height = Mathf.Abs(local_height)*2;
-                float diagonal_fraction = diagonal.position_to_angle(local_max) / diagonal.angle();
-                v = v/local_height*diagonal_fraction + 0.5f;
-            }
-            else
-            {
-                v = meridian.position_to_angle(data_variable);
-                Vector3 v_position = meridian.position(v);
-                Arc horizontal = Arc.curve(v_position, Vector3.right, v_position);
-                u = horizontal.position_to_angle(data_variable);
-
-                u = (u <= Mathf.PI ? u : u - 2*Mathf.PI);
-                v = (v <= Mathf.PI ? v : v - 2*Mathf.PI);
-
-                v = v/angular_height + 0.5f;
-
-                Arc diagonal = closest_diagonal(angular_width, angular_height);
-                Arc diagonal2point0 = Arc.curve(diagonal.begin(), diagonal.end(), Vector3.back);
-                Vector3 local_max = PlanetariaIntersection.arc_arc_intersection(horizontal, diagonal2point0, 0).data;
-                float local_width = horizontal.position_to_angle(local_max);
-                local_width = (local_width <= Mathf.PI ? local_width : local_width - 2*Mathf.PI);
-                local_width = Mathf.Abs(local_width)*2;
-                float diagonal_fraction = diagonal.position_to_angle(local_max) / diagonal.angle();
-                u = u/local_width*diagonal_fraction + 0.5f;
-            }
             return new SphericalRectangleUVCoordinates(u, v, angular_width, angular_height);
         }
 
