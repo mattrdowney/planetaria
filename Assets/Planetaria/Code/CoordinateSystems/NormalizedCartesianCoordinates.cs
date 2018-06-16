@@ -111,22 +111,52 @@ namespace Planetaria
         // Another possibility with more symmetry is to interpolate as a kite (but even that doesn't work for non-squares--perfectly at least)
         public SphericalRectangleUVCoordinates to_spherical_rectangle(float angular_width, float angular_height)
         {
-            Arc equator = Arc.curve(Vector3.forward, Vector3.right, Vector3.forward);
-            Arc meridian = Arc.curve(Vector3.forward, Vector3.up, Vector3.forward);
+            Vector3 axis = closest_axis(angular_width, angular_height);
+            Vector3 corner = closest_diagonal(angular_width, angular_height);
+            Arc horizontal;
+            Arc vertical;
+            float horizontal_angle;
+            float vertical_angle;
+            if (Mathf.Abs(axis.x) > Mathf.Abs(axis.y)) // tipped-over hourglass half of the texture
+            {
+                horizontal = Arc.curve(Vector3.forward, axis, Vector3.forward);
+                vertical = Arc.curve(axis, corner, axis);
+                horizontal_angle = Vector3.Angle(Vector3.forward, axis)*Mathf.Deg2Rad;
+                vertical_angle = Vector3.Angle(axis, corner)*Mathf.Deg2Rad;
+            }
+            else // right-side-up hourglass half of the texture
+            {
+                horizontal = Arc.curve(axis, corner, axis);
+                vertical = Arc.curve(Vector3.forward, axis, Vector3.forward);
+                horizontal_angle = Vector3.Angle(axis, corner)*Mathf.Deg2Rad;
+                vertical_angle = Vector3.Angle(Vector3.forward, axis)*Mathf.Deg2Rad;
+            }
 
-            float u = equator.position_to_angle(data);
-            float v = meridian.position_to_angle(data);
+            float u = horizontal.position_to_angle(data);
+            float v = vertical.position_to_angle(data);
 
-            u = (u <= Mathf.PI ? u : u - 2 * Mathf.PI);
-            v = (v <= Mathf.PI ? v : v - 2 * Mathf.PI);
+            //u = (u <= Mathf.PI ? u : u - 2 * Mathf.PI);
+            //v = (v <= Mathf.PI ? v : v - 2 * Mathf.PI);
 
-            u = u/angular_width + 0.5f;
-            v = v/angular_height + 0.5f;
+            u = u*Mathf.Sign(data.x)/horizontal_angle;
+            v = v*Mathf.Sign(data.y)/vertical_angle;
+
+            if (Mathf.Abs(axis.x) > Mathf.Abs(axis.y)) // tipped-over hourglass half of the texture
+            {
+                u = u/2 + 0.5f;
+                v = v/2 + 0.5f;
+            }
+            else // right-side-up hourglass half of the texture
+            {
+                u = u/2 + 0.5f;
+                v = v/2 + 0.5f;
+            }
+
 
             return new SphericalRectangleUVCoordinates(u, v, angular_width, angular_height);
         }
 
-        private Arc closest_axis(float angular_width, float angular_height)
+        private Vector3 closest_axis(float angular_width, float angular_height)
         {
             float x_fraction = Mathf.Abs(data.x/angular_width);
             float y_fraction = Mathf.Abs(data.y/angular_height);
@@ -135,19 +165,19 @@ namespace Planetaria
             Arc meridian = Arc.curve(Vector3.forward, Vector3.up, Vector3.forward);
             if (x_fraction > y_fraction)
             {
-                return Arc.line(Vector3.forward, equator.position(Mathf.Sign(data.x)*angular_width/2));
+                return equator.position(Mathf.Sign(data.x)*angular_width/2);
             }
-            return Arc.line(Vector3.forward, meridian.position(Mathf.Sign(data.y)*angular_height/2));
+            return meridian.position(Mathf.Sign(data.y)*angular_height/2);
         }
 
-        private Arc closest_diagonal(float angular_width, float angular_height)
+        private Vector3 closest_diagonal(float angular_width, float angular_height)
         {
             Arc equator = Arc.curve(Vector3.forward, Vector3.right, Vector3.forward);
             Arc meridian = Arc.curve(Vector3.forward, Vector3.up, Vector3.forward);
             Arc x_boundary = Arc.curve(Vector3.down, equator.position(Mathf.Sign(data.x)*angular_width/2), Vector3.up);
             Arc y_boundary = Arc.curve(Vector3.left, meridian.position(Mathf.Sign(data.y)*angular_height/2), Vector3.right);
             Vector3 corner = PlanetariaIntersection.arc_arc_intersection(x_boundary, y_boundary, 0).data;
-            return Arc.line(Vector3.forward, corner);
+            return corner;
         }
 
         /// <summary>
