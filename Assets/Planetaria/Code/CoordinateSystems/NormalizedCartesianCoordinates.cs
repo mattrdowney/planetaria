@@ -135,23 +135,20 @@ namespace Planetaria
             float u = horizontal.position_to_angle(data);
             float v = vertical.position_to_angle(data);
 
-            //u = (u <= Mathf.PI ? u : u - 2 * Mathf.PI);
-            //v = (v <= Mathf.PI ? v : v - 2 * Mathf.PI);
-
             u = u*Mathf.Sign(data.x)/horizontal_angle;
             v = v*Mathf.Sign(data.y)/vertical_angle;
 
             if (Mathf.Abs(axis.x) > Mathf.Abs(axis.y)) // tipped-over hourglass half of the texture
             {
-                u = u/2 + 0.5f;
-                v = v/2 + 0.5f;
+                v *= Mathf.Abs(u);
             }
             else // right-side-up hourglass half of the texture
             {
-                u = u/2 + 0.5f;
-                v = v/2 + 0.5f;
+                u *= Mathf.Abs(v);
             }
 
+            u = u/2 + 0.5f;
+            v = v/2 + 0.5f;
 
             return new SphericalRectangleUVCoordinates(u, v, angular_width, angular_height);
         }
