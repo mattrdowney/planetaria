@@ -254,9 +254,9 @@ namespace Planetaria
         }
 
         /// <summary>Does the shape have corners between line segments?</summary>
-        [SerializeField] [HideInInspector] private bool has_corners;
+        [SerializeField] private bool has_corners;
         /// <summary>Is the shape closed? (i.e. does the shape draw the final arc from the last point to the first point?)</summary>
-        [SerializeField] [HideInInspector] private bool closed;
+        [SerializeField] private bool closed;
         /// <summary>List of point-slope pairs in spherical space that define a shape.</summary>
         [SerializeField] private GeospatialCurve[] curve_list;
         /// <summary>List of arcs on a unit sphere that define a shape.</summary>

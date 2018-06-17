@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Planetaria
 {
-    public class ArcRenderer : PlanetariaRenderer
+    public class ArcRenderer : PlanetariaRenderer // TODO: ? number of vertices should be variable based on the curvature of the arc.
     {
         protected sealed override void set_renderer()
         {
@@ -11,11 +11,32 @@ namespace Planetaria
             {
                 internal_renderer = internal_transform.GetOrAddComponent<LineRenderer>();
             }
-            internal_transform.position = internal_transform.forward;
             internal_renderer.sharedMaterial = material;
+            LineRenderer line_renderer = internal_transform.GetComponent<LineRenderer>();
+            line_renderer.alignment = LineAlignment.View; // both options suck, but this one renders on both sides (the right shader could fix it, but it's not gonna work well no matter what)
+            line_renderer.startWidth = line_renderer.endWidth = angular_width;
+            List<Vector3> vertices = new List<Vector3>();
+            foreach (optional<Arc> arc in shape.arcs)
+            {
+                if (arc.exists)
+                {
+                    float angle = arc.data.angle();
+                    int line_segment_count = Mathf.CeilToInt(360*angle/(Mathf.PI*2));
+                    for (int vertex = 0; vertex <= line_segment_count; ++vertex)
+                    {
+                        float fraction = vertex/(float)line_segment_count;
+                        float local_angle = angle*fraction;
+                        Vector3 position = arc.data.position(local_angle);
+                        vertices.Add(position/2); // FIXME: why does Unity need me to divide by two here? - *mindset* this has to be a bug?
+                    }
+                }
+            }
+            line_renderer.positionCount = vertices.Count; // TODO: this is confusing as fuck, unity says this sets the number of SEGMENTS, is that right?
+            line_renderer.SetPositions(vertices.ToArray()); // why is setting the vertex count even necessary anyway?
         }
 
-        [SerializeField] public List<GeospatialCurve> curve_list;
+        [SerializeField] public float angular_width = 0.01f;
+        [SerializeField] public Shape shape;
     }
 }
 
