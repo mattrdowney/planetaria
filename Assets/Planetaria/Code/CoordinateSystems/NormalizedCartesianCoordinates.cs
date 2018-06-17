@@ -155,11 +155,16 @@ namespace Planetaria
 
         private Vector3 closest_axis(float angular_width, float angular_height)
         {
-            float x_fraction = Mathf.Abs(data.x/angular_width);
-            float y_fraction = Mathf.Abs(data.y/angular_height);
-
             Arc equator = Arc.curve(Vector3.forward, Vector3.right, Vector3.forward);
             Arc meridian = Arc.curve(Vector3.forward, Vector3.up, Vector3.forward);
+            /*float x_angle = equator.position_to_angle(data);
+            float y_angle = meridian.position_to_angle(data);
+            x_angle = (x_angle < Mathf.PI ? x_angle : x_angle - 2*Mathf.PI);
+            y_angle = (y_angle < Mathf.PI ? y_angle : y_angle - 2*Mathf.PI);
+            float x_fraction = Mathf.Abs(x_angle)/angular_width;
+            float y_fraction = Mathf.Abs(y_angle)/angular_height;*/
+            float x_fraction = Mathf.Abs(data.x)/angular_width;
+            float y_fraction = Mathf.Abs(data.y)/angular_height;
             if (x_fraction > y_fraction)
             {
                 return equator.position(Mathf.Sign(data.x)*angular_width/2);

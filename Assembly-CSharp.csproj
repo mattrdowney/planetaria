@@ -101,7 +101,6 @@
     <Compile Include="Assets\Planetaria\Code\Rendering\BlockRendererIterator.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\Discontinuity.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\PixelArtRenderer.cs" />
-    <Compile Include="Assets\Planetaria\Code\Rendering\PlanetRenderer.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\QuadraticBezierCurve.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\RenderVectorGraphics.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\ShapeRenderer.cs" />
@@ -111,12 +110,6 @@
     <Compile Include="Assets\Planetaria\Code\Shutter\BlinkCameraShutter.cs" />
     <Compile Include="Assets\Planetaria\Code\Shutter\PlanetariaCameraShutter.cs" />
     <Compile Include="Assets\Planetaria\Code\Shutter\RegularPolygonCameraShutter.cs" />
-    <Compile Include="Assets\Planetaria\Code\Snippets\Asteroids\Ship.cs" />
-    <Compile Include="Assets\Planetaria\Code\Snippets\Door.cs" />
-    <Compile Include="Assets\Planetaria\Code\Snippets\Elevator.cs" />
-    <Compile Include="Assets\Planetaria\Code\Snippets\InstantRotationTracker.cs" />
-    <Compile Include="Assets\Planetaria\Code\Snippets\PlanetariaCharacter.cs" />
-    <Compile Include="Assets\Planetaria\Code\Snippets\RaycastUnitTests.cs" />
     <Compile Include="Assets\Planetaria\Code\Tracker\BlinkTracker.cs" />
     <Compile Include="Assets\Planetaria\Code\Tracker\InstantHorizontalTracker.cs" />
     <Compile Include="Assets\Planetaria\Code\Tracker\InstantTracker.cs" />
@@ -147,6 +140,12 @@
     <Compile Include="Assets\Planetaria\Code\World\OctahedronPlanetarium.cs" />
     <Compile Include="Assets\Planetaria\Code\World\SphericalRectanglePlanetarium.cs" />
     <Compile Include="Assets\Planetaria\Code\World\WorldPlanetarium.cs" />
+    <Compile Include="Assets\Planetaria\ExampleProjects\Platformer\Code\Door.cs" />
+    <Compile Include="Assets\Planetaria\ExampleProjects\Platformer\Code\Elevator.cs" />
+    <Compile Include="Assets\Planetaria\ExampleProjects\Platformer\Code\InstantRotationTracker.cs" />
+    <Compile Include="Assets\Planetaria\ExampleProjects\Platformer\Code\PlanetariaCharacter.cs" />
+    <Compile Include="Assets\Planetaria\ExampleProjects\Platformer\Code\RaycastUnitTests.cs" />
+    <Compile Include="Assets\Planetaria\ExampleProjects\SpaceShooter\Code\Ship.cs" />
     <Compile Include="Assets\UnitySVG\Extensions.cs" />
     <Compile Include="Assets\UnitySVG\Implement.cs" />
     <Compile Include="Assets\UnitySVG\Implementation\RenderingEngine\BasicType\SVGGArcAbs.cs" />

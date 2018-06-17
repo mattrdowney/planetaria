@@ -29,11 +29,11 @@ namespace Planetaria
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            from_shape = (Shape)EditorGUILayout.EnumPopup("Shape", from_shape);
+            from_shape = (Shape)EditorGUILayout.EnumPopup("Current shape format", from_shape);
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            to_shape = (Shape) EditorGUILayout.EnumPopup("Shape", to_shape);
+            to_shape = (Shape) EditorGUILayout.EnumPopup("Target shape format", to_shape);
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
@@ -86,14 +86,14 @@ namespace Planetaria
             }
         }
 
-        private static string from_file_name;
-        private static string to_file_name;
-        private static Shape from_shape = Shape.Octahedron;
-        private static Shape to_shape = Shape.Cube;
-        private static float width;
-        private static float height;
-        private static int resolution = 64;
-        private static int sample_rate = 1;
+        [SerializeField] [HideInInspector] private string from_file_name;
+        [SerializeField] [HideInInspector] private string to_file_name;
+        [SerializeField] [HideInInspector] private Shape from_shape = Shape.Octahedron;
+        [SerializeField] [HideInInspector] private Shape to_shape = Shape.Cube;
+        [SerializeField] [HideInInspector] private float width = 1;
+        [SerializeField] [HideInInspector] private float height = 1;
+        [SerializeField] [HideInInspector] private int resolution = 256;
+        [SerializeField] [HideInInspector] private int sample_rate = 1;
     }
 }
 

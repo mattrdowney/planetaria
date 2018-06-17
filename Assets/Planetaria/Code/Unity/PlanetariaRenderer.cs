@@ -49,6 +49,7 @@ namespace Planetaria
             {
                 GameObject child = this.GetOrAddChild("Renderer");
                 internal_transform = child.GetComponent<Transform>();
+                internal_transform.position = offset*internal_transform.forward;
             }
         }
 
@@ -85,10 +86,7 @@ namespace Planetaria
             set
             {
                 scale_variable = value;
-                if (scalable)
-                {
-                    internal_transform.localScale = Vector3.one * scale_variable / 2;
-                }
+                internal_transform.localScale = Vector3.one * scale_variable / 2;
             }
         }
 
@@ -97,10 +95,11 @@ namespace Planetaria
         [SerializeField] protected optional<short> sorting_order;
         
         private float scale_variable;
-        protected bool scalable;
 
         [SerializeField] [HideInInspector] protected Transform internal_transform;
         [SerializeField] [HideInInspector] protected Renderer internal_renderer;
+
+        [SerializeField] public float offset = 1;
 
         protected static short next_available_order(int layer_identifier)
         {

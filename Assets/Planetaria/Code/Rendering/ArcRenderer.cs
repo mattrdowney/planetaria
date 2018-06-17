@@ -11,7 +11,6 @@ namespace Planetaria
             {
                 internal_renderer = internal_transform.GetOrAddComponent<LineRenderer>();
             }
-            scalable = true;
             internal_transform.position = internal_transform.forward;
             internal_renderer.sharedMaterial = material;
         }
