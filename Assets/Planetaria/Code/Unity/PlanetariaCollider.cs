@@ -7,15 +7,17 @@ namespace Planetaria
 {
     [DisallowMultipleComponent]
     [Serializable]
-    public class PlanetariaCollider : MonoBehaviour // FIXME: while not incredibly complicated, I think there might be a way to simplify this
+    public sealed class PlanetariaCollider : PlanetariaComponent // FIXME: while not incredibly complicated, I think there might be a way to simplify this
     {
-        private void Awake()
+        protected override void Awake()
         {
             initialize();
             StartCoroutine(wait_for_fixed_update());
             observer = new CollisionObserver();
             observer.initialize(planetaria_transform, this.GetComponentsInParent<PlanetariaMonoBehaviour>());
         }
+
+        protected override void OnDestroy() { }
 
         private void Reset()
         {
@@ -27,11 +29,11 @@ namespace Planetaria
             GameObject internal_game_object = this.GetOrAddChild("InternalCollider");
             if (internal_collider == null)
             {
-                internal_collider = internal_game_object.transform.GetOrAddComponent<SphereCollider>();
+                internal_collider = Miscellaneous.GetOrAddComponent<SphereCollider>(internal_game_object);
             }
             if (internal_transform == null)
             {
-                internal_transform = this.GetComponent<Transform>();
+                internal_transform = Miscellaneous.GetOrAddComponent<Transform>(this);
             }
             if (planetaria_transform == null)
             {
@@ -170,6 +172,16 @@ namespace Planetaria
             }
         }
 
+        public new PlanetariaTransform transform
+        {
+            get { return game_object_variable.transform; }
+        }
+
+        public new PlanetariaGameObject gameObject
+        {
+            get { return game_object_variable; }
+        }
+        
         [SerializeField] public PlanetariaPhysicMaterial material = fallback;
         [SerializeField] [HideInInspector] private CollisionObserver observer;
         [SerializeField] [HideInInspector] private Transform internal_transform;

@@ -6,12 +6,14 @@ namespace Planetaria
     // FIXME: find a way to serialize
     [DisallowMultipleComponent]
     [Serializable]
-    public class PlanetariaTransform : MonoBehaviour // CONSIDER: C#-style extension methods only: no need for separate object at risk of extra confusion; NOTE: some concepts like direction would no longer work in the same way
+    public sealed class PlanetariaTransform : PlanetariaComponent // CONSIDER: C#-style extension methods only: no need for separate object at risk of extra confusion; NOTE: some concepts like direction would no longer work in the same way
     {
-        private void Awake()
+        protected override void Awake()
         {
             initialize();
         }
+
+        protected override void OnDestroy() { }
 
         private void Reset()
         {
@@ -22,7 +24,7 @@ namespace Planetaria
         {
             if (internal_transform == null)
             {
-                internal_transform = this.GetComponent<Transform>();
+                internal_transform = transform.internal_transform;
             }
             if (!internal_collider.exists)
             {

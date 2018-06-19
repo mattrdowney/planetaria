@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Planetaria
 {
     [Serializable]
-    public abstract class PlanetariaMonoBehaviour : MonoBehaviour
+    public abstract class PlanetariaMonoBehaviour : PlanetariaComponent
     {
         protected abstract void OnConstruction();
         protected abstract void OnDestruction();
@@ -21,9 +21,10 @@ namespace Planetaria
         protected optional<TriggerDelegate> OnFieldExit = null;
         protected optional<TriggerDelegate> OnFieldStay = null;
 
-        protected void Awake()
+        protected override sealed void Awake()
         {
-            transform = this.GetOrAddComponent<PlanetariaTransform>();
+            MonoBehaviour parent_class = this;
+            game_object_variable = new PlanetariaGameObject(parent_class.gameObject);
             foreach (PlanetariaCollider collider in this.GetComponentsInChildren<PlanetariaCollider>()) // FIXME:
             {
                 collider.register(this);
@@ -33,7 +34,7 @@ namespace Planetaria
             OnConstruction();
         }
 
-        protected void OnDestroy()
+        protected override sealed void OnDestroy()
         {
             OnDestruction();
             // FIXME: still need to un-cache (properly)
@@ -91,7 +92,22 @@ namespace Planetaria
             }
         }
 
-        [SerializeField] [HideInInspector] public new PlanetariaTransform transform;
+        public new PlanetariaGameObject gameObject
+        {
+            get
+            {
+                return game_object_variable;
+            }
+        }
+
+        public new PlanetariaTransform transform
+        {
+            get
+            {
+                return gameObject.transform;
+            }
+        }
+        
         [NonSerialized] [HideInInspector] private List<CollisionObserver> observers = new List<CollisionObserver>();
     }
 }

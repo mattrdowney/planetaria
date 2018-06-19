@@ -22,7 +22,7 @@ namespace Planetaria
                 }
                 GameObject game_master = Miscellaneous.GetOrAddObject("GameMaster", false);
                 game_master.hideFlags = HideFlags.HideInHierarchy | HideFlags.HideInInspector; // hide by default
-                self_variable = game_master.transform.GetOrAddComponent<EditorGlobal>();
+                self_variable = Miscellaneous.GetOrAddComponent<EditorGlobal>(game_master);
                 return self_variable.data;
             }
         }

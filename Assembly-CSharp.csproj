@@ -117,6 +117,8 @@
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaAudioSource.cs" />
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaCamera.cs" />
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaCollider.cs" />
+    <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaComponent.cs" />
+    <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaGameObject.cs" />
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaInput.cs" />
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaMonoBehaviour.cs" />
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaPhysicMaterial.cs" />

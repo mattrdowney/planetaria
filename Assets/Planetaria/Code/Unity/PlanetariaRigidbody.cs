@@ -5,12 +5,14 @@ namespace Planetaria
 {
     [DisallowMultipleComponent]
     [Serializable]
-    public class PlanetariaRigidbody : MonoBehaviour
+    public sealed class PlanetariaRigidbody : PlanetariaComponent
     {
-        private void Awake()
+        protected override void Awake()
         {
             initialize();
         }
+
+        protected override void OnDestroy() { }
 
         private void Reset()
         {
@@ -19,18 +21,16 @@ namespace Planetaria
 
         private void initialize()
         {
-            if (transform == null)
-            {
-                transform = this.GetOrAddComponent<PlanetariaTransform>();
-            }
+            MonoBehaviour unity_base = this;
+            game_object_variable = unity_base.gameObject;
             if (internal_transform == null)
             {
-                internal_transform = this.GetOrAddComponent<Transform>();
+                internal_transform = gameObject.internal_game_object.GetComponent<Transform>();
             }
             //collider = this.GetOrAddComponent<PlanetariaCollider>();
             if (internal_rigidbody == null)
             {
-                internal_rigidbody = this.GetOrAddComponent<Rigidbody>();
+                internal_rigidbody = Miscellaneous.GetOrAddComponent<Rigidbody>(this);
             }
             internal_rigidbody.isKinematic = true;
             internal_rigidbody.useGravity = false;
@@ -255,6 +255,16 @@ namespace Planetaria
             return previous_position;
         }
 
+        public new PlanetariaTransform transform
+        {
+            get { return game_object_variable.transform; }
+        }
+
+        public new PlanetariaGameObject gameObject
+        {
+            get { return game_object_variable; }
+        }
+
         // position
         private Vector3 previous_position; // magnitude = 1
         private Vector3 position; // magnitude = 1
@@ -268,8 +278,7 @@ namespace Planetaria
 
         // gravity
         [SerializeField] public Vector3[] gravity_wells;
-
-        [SerializeField] [HideInInspector] public new PlanetariaTransform transform;
+        
         [SerializeField] [HideInInspector] private Transform internal_transform;
         [SerializeField] [HideInInspector] private Rigidbody internal_rigidbody;
         [SerializeField] [HideInInspector] private optional<CollisionObserver> observer;

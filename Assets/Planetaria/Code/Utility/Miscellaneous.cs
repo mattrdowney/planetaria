@@ -33,6 +33,38 @@ namespace Planetaria
         }
 
         /// <summary>
+        /// Mutator - Gets the attached Component if it exists; otherwise it adds and returns it.
+        /// </summary>
+        /// <typeparam name="Subtype">The type of the Component to be fetched.</typeparam>
+        /// <param name="self">Calling object (explicit)</param>
+        /// <returns>The found or newly added Component.</returns>
+        public static Subtype GetOrAddComponent<Subtype>(GameObject self) where Subtype : Component
+        {
+            optional<Subtype> result = self.GetComponent<Subtype>();
+            if (!result.exists)
+            {
+                result = self.AddComponent<Subtype>();
+            }
+            return result.data;
+        }
+
+        /// <summary>
+        /// Mutator - Gets the attached Component if it exists; otherwise it adds and returns it.
+        /// </summary>
+        /// <typeparam name="Subtype">The type of the Component to be fetched.</typeparam>
+        /// <param name="self">Calling object (explicit)</param>
+        /// <returns>The found or newly added Component.</returns>
+        public static Subtype GetOrAddComponent<Subtype>(Component self) where Subtype : Component
+        {
+            optional<Subtype> result = self.GetComponent<Subtype>();
+            if (!result.exists)
+            {
+                result = self.gameObject.AddComponent<Subtype>();
+            }
+            return result.data;
+        }
+
+        /// <summary>
         /// Mutator - Gets the designated object from the root of the scene if it exists; otherwise it creates and returns it.
         /// </summary>
         /// <param name="name">The name of the object (without double leading underscores i.e. "__").</param>
@@ -82,22 +114,6 @@ namespace Planetaria
                 child.data.hideFlags = (HideFlags.HideInHierarchy | HideFlags.HideInInspector);
             }
             return child.data.gameObject;
-        }
-
-        /// <summary>
-        /// Mutator - Gets the attached Component if it exists; otherwise it adds and returns it.
-        /// </summary>
-        /// <typeparam name="Subtype">The type of the Component to be fetched.</typeparam>
-        /// <param name="self">Calling object - extension method (implicit).</param>
-        /// <returns>The found or newly added Component.</returns>
-        public static Subtype GetOrAddComponent<Subtype>(this Component self) where Subtype : Component
-        {
-            optional<Subtype> result = self.GetComponent<Subtype>();
-            if (!result.exists)
-            {
-                result = self.gameObject.AddComponent<Subtype>();
-            }
-            return result.data;
         }
 
         /// <summary>

@@ -2,13 +2,13 @@
 
 namespace Planetaria
 {
-    public class AreaRenderer : PlanetariaRenderer
+    public sealed class AreaRenderer : PlanetariaRenderer
     {
         protected sealed override void set_renderer()
         {
             if (internal_renderer == null)
             {
-                internal_renderer = internal_transform.GetOrAddComponent<SpriteRenderer>();
+                internal_renderer = Miscellaneous.GetOrAddComponent<SpriteRenderer>(internal_transform);
             }
             internal_renderer.sharedMaterial = material;
         }

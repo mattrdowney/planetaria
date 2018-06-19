@@ -18,7 +18,7 @@ namespace Planetaria
                     return self_variable.data;
                 }
                 GameObject game_object = Miscellaneous.GetOrAddObject("GameMaster");
-                self_variable = game_object.transform.GetOrAddComponent<PlanetariaCache>();
+                self_variable = Miscellaneous.GetOrAddComponent<PlanetariaCache>(game_object);
                 return self_variable.data;
             }
         }
@@ -74,7 +74,7 @@ namespace Planetaria
                 if (arc.exists)
                 {
                     GameObject game_object = block.GetOrAddChild("Collider", false); // TODO: Zero out transform.position for GitHub Issue #37
-                    PlanetariaCollider collider = game_object.transform.GetOrAddComponent<PlanetariaCollider>();
+                    PlanetariaCollider collider = Miscellaneous.GetOrAddComponent<PlanetariaCollider>(game_object);
                     SphereCollider sphere_collider = collider.get_sphere_collider();
 
                     optional<Transform> transformation = (block.is_dynamic ? block.gameObject.transform : null);
@@ -95,7 +95,7 @@ namespace Planetaria
         public void cache(Field field)
         {
             GameObject game_object = field.GetOrAddChild("Collider", false);
-            PlanetariaCollider collider = game_object.transform.GetOrAddComponent<PlanetariaCollider>();
+            PlanetariaCollider collider = Miscellaneous.GetOrAddComponent<PlanetariaCollider>(game_object);
             SphereCollider sphere_collider = collider.get_sphere_collider();
 
             optional<Transform> transformation = (field.is_dynamic ? field.gameObject.transform : null);
@@ -122,7 +122,7 @@ namespace Planetaria
         {
             foreach (PlanetariaCollider collider in script.GetComponentsInChildren<PlanetariaCollider>())
             {
-                Destroy(collider.gameObject);
+                Destroy(collider.gameObject.internal_game_object);
             }
         }
 

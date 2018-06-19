@@ -5,12 +5,16 @@ namespace Planetaria
 {
     [DisallowMultipleComponent]
     [Serializable]
-    public abstract class PlanetariaRenderer : MonoBehaviour
+    public abstract class PlanetariaRenderer : PlanetariaComponent
     {
-        private void Awake()
+        protected override void Awake()
         {
+            MonoBehaviour parent_class = this;
+            game_object_variable = new PlanetariaGameObject(parent_class.gameObject);
             initialize();
         }
+
+        protected override void OnDestroy() { }
 
         private void Reset()
         {
@@ -90,12 +94,22 @@ namespace Planetaria
             }
         }
 
+        public new PlanetariaTransform transform
+        {
+            get { return game_object_variable.transform; }
+        }
+
+        public new PlanetariaGameObject gameObject
+        {
+            get { return game_object_variable; }
+        }
+
         [SerializeField] public Material material;
         [SerializeField] public SortingLayer sorting_layer;
         [SerializeField] protected optional<short> sorting_order;
         
         private float scale_variable;
-
+        
         [SerializeField] [HideInInspector] protected Transform internal_transform;
         [SerializeField] [HideInInspector] protected Renderer internal_renderer;
 

@@ -2,7 +2,7 @@
 
 namespace Planetaria
 {
-    public class PlanetariaRaycastHit
+    public sealed class PlanetariaRaycastHit
     {
         /// <summary>
         /// Named Constructor - creates the Planetaria equivalent of UnityEngine.RaycastHit
@@ -51,7 +51,7 @@ namespace Planetaria
             normal = arc_to_world * local_normal;
             point = intersection_point;
             rigidbody = block.GetComponent<PlanetariaRigidbody>();
-            transform = block.GetOrAddComponent<PlanetariaTransform>();
+            transform = Miscellaneous.GetOrAddComponent<PlanetariaTransform>(block);
         }
 
         /// <summary>The Arc with which the Raycast collided.</summary>

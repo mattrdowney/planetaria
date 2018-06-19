@@ -7,7 +7,7 @@ public class Elevator : PlanetariaTracker
 
     public override void setup()
     {
-        Vector3 start_position = self.GetComponent<Block>().center_of_mass();
+        Vector3 start_position = self.gameObject.internal_game_object.GetComponent<Block>().center_of_mass();
         NormalizedSphericalCoordinates spherical = new NormalizedCartesianCoordinates(start_position);
         NormalizedSphericalCoordinates shifted_spherical = new NormalizedSphericalCoordinates(spherical.data.x + Mathf.PI*0.75f, spherical.data.y);
         NormalizedCartesianCoordinates shifted_cartesian = shifted_spherical;

@@ -33,7 +33,7 @@ namespace Planetaria
         {
             if (transform == null)
             {
-                transform = this.GetOrAddComponent<PlanetariaTransform>();
+                transform = Miscellaneous.GetOrAddComponent<PlanetariaTransform>(this);
             }
         }
 

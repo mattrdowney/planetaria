@@ -6,13 +6,15 @@ namespace Planetaria
 {
     [DisallowMultipleComponent]
     [Serializable]
-    public class PlanetariaCamera : MonoBehaviour
+    public sealed class PlanetariaCamera : PlanetariaComponent
     {
-        private void Awake()
+        protected override void Awake()
         {
             initialize();
             XRDevice.SetTrackingSpaceType(TrackingSpaceType.Stationary);
         }
+
+        protected override void OnDestroy() { }
 
         private void Reset()
         {
@@ -21,21 +23,24 @@ namespace Planetaria
 
         private void initialize()
         {
+            if (!game_object_variable)
+            {
+                game_object_variable = this;
+            }
             if (transform == null)
             {
-                transform = this.GetOrAddComponent<PlanetariaTransform>();
                 GameObject dolly = this.GetOrAddChild("CameraDolly");
                 dolly_transform = dolly.GetComponent<Transform>();
-                dolly.transform.GetOrAddComponent<AudioListener>();
+                Miscellaneous.GetOrAddComponent<AudioListener>(dolly);
                 GameObject left_camera = dolly.transform.GetOrAddChild("LeftCamera");
-                internal_left_camera = left_camera.transform.GetOrAddComponent<Camera>();
+                internal_left_camera = Miscellaneous.GetOrAddComponent<Camera>(left_camera);
             }
             dolly_transform.position = Vector3.forward * zoom;
             dolly_transform.localScale = Vector3.one; // CONSIDER: setting this to zero mirrors `XRDevice.SetTrackingSpaceType(TrackingSpaceType.Stationary);`
             if (two_cameras)
             {
                 GameObject right_camera = dolly_transform.GetOrAddChild("RightCamera");
-                internal_right_camera = right_camera.transform.GetOrAddComponent<Camera>();
+                internal_right_camera = Miscellaneous.GetOrAddComponent<Camera>(right_camera);
                 initialize_camera(internal_left_camera, new Rect(0.0f, 0, 0.5f, 1), 1);
                 initialize_camera(internal_right_camera, new Rect(0.5f, 0, 0.5f, 1), 0); // depth order hides bugs, but is generally good for end-users
             }
@@ -60,15 +65,24 @@ namespace Planetaria
             }
         }
 
+        public new PlanetariaTransform transform
+        {
+            get { return game_object_variable.transform; }
+        }
+
+        public new PlanetariaGameObject gameObject
+        {
+            get { return game_object_variable; }
+        }
+
         public const float near_clip_plane = 0.0078125f;
         public const float far_clip_plane = 2.0f;
 
-        [SerializeField] public bool two_cameras = false;
+        [SerializeField] public bool two_cameras = false; // TODO: remove (most likely)
         [SerializeField] public float zoom = 0;
-        [SerializeField] [HideInInspector] protected new PlanetariaTransform transform;
-        [SerializeField] [HideInInspector] protected Transform dolly_transform;
-        [SerializeField] [HideInInspector] protected Camera internal_left_camera;
-        [SerializeField] [HideInInspector] protected optional<Camera> internal_right_camera;
+        [SerializeField] [HideInInspector] private Transform dolly_transform;
+        [SerializeField] [HideInInspector] private Camera internal_left_camera;
+        [SerializeField] [HideInInspector] private optional<Camera> internal_right_camera;
     }
 }
 

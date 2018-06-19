@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace Planetaria
 {
-    public class ArcRenderer : PlanetariaRenderer // TODO: ? number of vertices should be variable based on the curvature of the arc.
+    public sealed class ArcRenderer : PlanetariaRenderer // TODO: ? number of vertices should be variable based on the curvature of the arc.
     {
         protected sealed override void set_renderer()
         {
             if (internal_renderer == null)
             {
-                internal_renderer = internal_transform.GetOrAddComponent<LineRenderer>();
+                internal_renderer = Miscellaneous.GetOrAddComponent<LineRenderer>(internal_transform);
             }
             internal_renderer.sharedMaterial = material;
             LineRenderer line_renderer = internal_transform.GetComponent<LineRenderer>();
