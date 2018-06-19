@@ -23,8 +23,6 @@ namespace Planetaria
 
         protected override sealed void Awake()
         {
-            MonoBehaviour parent_class = this;
-            game_object_variable = new PlanetariaGameObject(parent_class.gameObject);
             foreach (PlanetariaCollider collider in this.GetComponentsInChildren<PlanetariaCollider>()) // FIXME:
             {
                 collider.register(this);
@@ -89,22 +87,6 @@ namespace Planetaria
             if (OnFieldExit.exists)
             {
                 OnFieldExit.data(field);
-            }
-        }
-
-        public new PlanetariaGameObject gameObject
-        {
-            get
-            {
-                return game_object_variable;
-            }
-        }
-
-        public new PlanetariaTransform transform
-        {
-            get
-            {
-                return gameObject.transform;
             }
         }
         

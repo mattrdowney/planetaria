@@ -26,14 +26,14 @@ namespace Planetaria
 
         private void initialize()
         {
-            GameObject internal_game_object = this.GetOrAddChild("InternalCollider");
+            gameObject = this.GetOrAddChild("InternalCollider");
             if (internal_collider == null)
             {
-                internal_collider = Miscellaneous.GetOrAddComponent<SphereCollider>(internal_game_object);
+                internal_collider = Miscellaneous.GetOrAddComponent<SphereCollider>(gameObject.internal_game_object);
             }
             if (internal_transform == null)
             {
-                internal_transform = Miscellaneous.GetOrAddComponent<Transform>(this);
+                internal_transform = Miscellaneous.GetOrAddComponent<Transform>(gameObject.internal_game_object);
             }
             if (planetaria_transform == null)
             {
@@ -170,16 +170,6 @@ namespace Planetaria
                 yield return new WaitForFixedUpdate();
                 observer.notify();
             }
-        }
-
-        public new PlanetariaTransform transform
-        {
-            get { return game_object_variable.transform; }
-        }
-
-        public new PlanetariaGameObject gameObject
-        {
-            get { return game_object_variable; }
         }
         
         [SerializeField] public PlanetariaPhysicMaterial material = fallback;

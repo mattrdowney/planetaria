@@ -9,55 +9,70 @@ namespace Planetaria
 
         public new PlanetariaTransform transform
         {
-            get { return game_object_variable.transform; }
+            get { return gameObject.transform; }
         }
 
+        /// <summary>
+        /// Warning - setting this value is dangerous and should be done at your own peril
+        /// </summary>
         public new PlanetariaGameObject gameObject
         {
-            get { return game_object_variable; }
+            get
+            {
+                if (game_object_variable)
+                {
+                    return game_object_variable;
+                }
+                game_object_variable = (PlanetariaGameObject) this;
+                return game_object_variable;
+            }
+            protected set // TODO: verify the setter is a good idea
+            {
+                game_object_variable = value;
+            }
         }
 
-        public Subtype AddComponent<Subtype>() where Subtype : PlanetariaComponent
+        public Subtype AddComponent<Subtype>() where Subtype : PlanetariaComponent // mostly boilerplate code
         {
-            return gameObject.AddComponent<Subtype>();
+            return gameObject.internal_game_object.AddComponent<Subtype>();
         }
 
         public new Subtype GetComponent<Subtype>() where Subtype : PlanetariaComponent
         {
-            return gameObject.GetComponent<Subtype>();
+            return gameObject.internal_game_object.GetComponent<Subtype>();
         }
 
         public new Subtype[] GetComponents<Subtype>() where Subtype : PlanetariaComponent
         {
-            return gameObject.GetComponents<Subtype>();
+            return gameObject.internal_game_object.GetComponents<Subtype>();
         }
 
         public Subtype GetOrAddComponent<Subtype>() where Subtype : PlanetariaComponent
         {
-            return gameObject.GetOrAddComponent<Subtype>();
+            return Miscellaneous.GetOrAddComponent<Subtype>(gameObject.internal_game_object);
         }
 
         public new Subtype GetComponentInChildren<Subtype>(bool include_inactive = false) where Subtype : PlanetariaComponent
         {
-            return gameObject.GetComponentInChildren<Subtype>(include_inactive);
+            return gameObject.internal_game_object.GetComponentInChildren<Subtype>(include_inactive);
         }
 
         public new Subtype GetComponentInParent<Subtype>() where Subtype : PlanetariaComponent
         {
-            return gameObject.GetComponentInParent<Subtype>();
+            return gameObject.internal_game_object.GetComponentInParent<Subtype>();
         }
 
         public new Subtype[] GetComponentsInChildren<Subtype>(bool include_inactive = false) where Subtype : PlanetariaComponent
         {
-            return gameObject.GetComponentsInChildren<Subtype>(include_inactive);
+            return gameObject.internal_game_object.GetComponentsInChildren<Subtype>(include_inactive);
         }
 
         public new Subtype[] GetComponentsInParent<Subtype>() where Subtype : PlanetariaComponent
         {
-            return gameObject.GetComponentsInParent<Subtype>();
+            return gameObject.internal_game_object.GetComponentsInParent<Subtype>();
         }
 
-       [SerializeField] [HideInInspector] protected PlanetariaGameObject game_object_variable;
+       [SerializeField] [HideInInspector] private PlanetariaGameObject game_object_variable;
     }
 }
 

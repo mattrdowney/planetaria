@@ -20,13 +20,14 @@ namespace Planetaria
 
         private void OnGUI()
         {
-            GUILayout.BeginHorizontal();
-            from_file_name = EditorGUILayout.TextField("Existing file name", from_file_name);
-            GUILayout.EndHorizontal();
-
-            GUILayout.BeginHorizontal();
-            to_file_name = EditorGUILayout.TextField("Saving file name", to_file_name);
-            GUILayout.EndHorizontal();
+            if (GUILayout.Button("PNG to convert"))
+            {
+                from_file_name = EditorUtility.OpenFilePanel("PNG to convert", "Assets", "png"); // TODO: multiple types
+            }
+            if (GUILayout.Button("Generated PNG filename"))
+            {
+                to_file_name = EditorUtility.OpenFilePanel("Generated PNG filename", "Assets", "png"); // TODO: multiple types and use output in conversion
+            }
 
             GUILayout.BeginHorizontal();
             from_shape = (Shape)EditorGUILayout.EnumPopup("Current shape format", from_shape);

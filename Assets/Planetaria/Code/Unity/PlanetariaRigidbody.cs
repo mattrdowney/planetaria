@@ -21,8 +21,6 @@ namespace Planetaria
 
         private void initialize()
         {
-            MonoBehaviour unity_base = this;
-            game_object_variable = unity_base.gameObject;
             if (internal_transform == null)
             {
                 internal_transform = gameObject.internal_game_object.GetComponent<Transform>();
@@ -253,16 +251,6 @@ namespace Planetaria
         public Vector3 get_previous_position()
         {
             return previous_position;
-        }
-
-        public new PlanetariaTransform transform
-        {
-            get { return game_object_variable.transform; }
-        }
-
-        public new PlanetariaGameObject gameObject
-        {
-            get { return game_object_variable; }
         }
 
         // position

@@ -8,7 +8,7 @@ namespace Planetaria
     public struct PlanetariaGameObject // TODO: test this... a lot
     {
         // Properties
-        public bool activeInHierarchy
+        public bool activeInHierarchy // mostly boilerplate code
         {
             get { return internal_game_object.activeInHierarchy; }
         }
@@ -78,12 +78,6 @@ namespace Planetaria
             return new PlanetariaGameObject(game_object);
         }
 
-        public static implicit operator PlanetariaGameObject(PlanetariaComponent component)
-        {
-            MonoBehaviour unity_base = component;
-            return new PlanetariaGameObject(unity_base.gameObject);
-        }
-
         // Public Methods
         public Subtype AddComponent<Subtype>() where Subtype : PlanetariaComponent
         {
@@ -108,6 +102,12 @@ namespace Planetaria
         public Subtype GetComponentInParent<Subtype>() where Subtype : PlanetariaComponent
         {
             return internal_game_object.GetComponentInParent<Subtype>();
+        }
+
+        public static explicit operator PlanetariaGameObject (PlanetariaComponent component)
+        {
+            MonoBehaviour unity_base = component;
+            return new PlanetariaGameObject(unity_base.gameObject);
         }
 
         /// <summary>

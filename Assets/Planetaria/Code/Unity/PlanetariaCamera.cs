@@ -23,10 +23,6 @@ namespace Planetaria
 
         private void initialize()
         {
-            if (!game_object_variable)
-            {
-                game_object_variable = this;
-            }
             if (transform == null)
             {
                 GameObject dolly = this.GetOrAddChild("CameraDolly");
@@ -63,16 +59,6 @@ namespace Planetaria
                 camera.nearClipPlane = near_clip_plane;
                 camera.farClipPlane = far_clip_plane;
             }
-        }
-
-        public new PlanetariaTransform transform
-        {
-            get { return game_object_variable.transform; }
-        }
-
-        public new PlanetariaGameObject gameObject
-        {
-            get { return game_object_variable; }
         }
 
         public const float near_clip_plane = 0.0078125f;

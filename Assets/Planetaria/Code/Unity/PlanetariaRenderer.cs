@@ -9,8 +9,6 @@ namespace Planetaria
     {
         protected override void Awake()
         {
-            MonoBehaviour parent_class = this;
-            game_object_variable = new PlanetariaGameObject(parent_class.gameObject);
             initialize();
         }
 
@@ -92,16 +90,6 @@ namespace Planetaria
                 scale_variable = value;
                 internal_transform.localScale = Vector3.one * scale_variable / 2;
             }
-        }
-
-        public new PlanetariaTransform transform
-        {
-            get { return game_object_variable.transform; }
-        }
-
-        public new PlanetariaGameObject gameObject
-        {
-            get { return game_object_variable; }
         }
 
         [SerializeField] public Material material;
