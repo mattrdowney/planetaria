@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,7 +6,7 @@ namespace Planetaria
 {
     [DisallowMultipleComponent]
     [Serializable]
-    public class Block : MonoBehaviour
+    public class Block : MonoBehaviour // TODO: PlanetariaComponent
     {
         /// <summary>
         /// Constructor - Creates a block matching a curves list.

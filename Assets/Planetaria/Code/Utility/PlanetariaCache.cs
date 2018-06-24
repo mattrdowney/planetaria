@@ -69,12 +69,13 @@ namespace Planetaria
         public void cache(Block block)
         {
             int arc_index = 0;
+            Transform child;
             foreach (optional<Arc> arc in block.shape.arcs)
             {
                 if (arc.exists)
                 {
-                    GameObject game_object = block.GetOrAddChild("Collider", false); // TODO: Zero out transform.position for GitHub Issue #37
-                    PlanetariaCollider collider = Miscellaneous.GetOrAddComponent<PlanetariaCollider>(game_object);
+                    child = block.GetOrAddChild("Collider" + arc_index, false).transform; // TODO: Zero out transform.position for GitHub Issue #37
+                    PlanetariaCollider collider = Miscellaneous.GetOrAddComponent<PlanetariaCollider>(child.gameObject);
                     SphereCollider sphere_collider = collider.get_sphere_collider();
 
                     optional<Transform> transformation = (block.is_dynamic ? block.gameObject.transform : null);
@@ -89,6 +90,10 @@ namespace Planetaria
                     PlanetariaCache.self.collider_cache.Add(sphere_collider, collider);
                 }
                 ++arc_index;
+            }
+            while (child = block.internal_transform.Find("Collider" + arc_index)) // clear out extra (old) colliders with while loop
+            {
+                Destroy(child.gameObject);
             }
         }
 

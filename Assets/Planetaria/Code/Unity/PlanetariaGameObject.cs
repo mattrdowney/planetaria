@@ -31,7 +31,16 @@ namespace Planetaria
 
         public GameObject internal_game_object
         {
-            get { return game_object_variable; }
+            get
+            {
+                if (initialized)
+                {
+                    return game_object_variable;
+                }
+                game_object_variable = new GameObject();
+                initialized = true;
+                return game_object_variable;
+            }
         }
 
         public int layer
@@ -59,18 +68,20 @@ namespace Planetaria
 
         public PlanetariaTransform transform
         {
-            get { return GetComponent<PlanetariaTransform>(); }
+            get { return GetOrAddComponent<PlanetariaTransform>(); }
         }
 
         // Constructors
-        public PlanetariaGameObject(string name = "Unnamed") // TODO: test for empty (I think it's gonna set GameObject to null, which would be useless)
+        public PlanetariaGameObject(string name) // TODO: test for empty (I think it's gonna set GameObject to null, which would be useless)
         {
             game_object_variable = new GameObject(name);
+            initialized = true;
         }
 
         public PlanetariaGameObject(GameObject game_object)
         {
             game_object_variable = game_object;
+            initialized = true;
         }
 
         public static implicit operator PlanetariaGameObject(GameObject game_object)
@@ -81,7 +92,7 @@ namespace Planetaria
         // Public Methods
         public Subtype AddComponent<Subtype>() where Subtype : PlanetariaComponent
         {
-            return game_object_variable.AddComponent<Subtype>();
+            return internal_game_object.AddComponent<Subtype>();
         }
 
         public void BroadcastMessage(string message_name, object parameter = null, SendMessageOptions options = SendMessageOptions.RequireReceiver)
@@ -91,7 +102,7 @@ namespace Planetaria
 
         public Subtype GetComponent<Subtype>() where Subtype : PlanetariaComponent
         {
-            return game_object_variable.GetComponent<Subtype>();
+            return internal_game_object.GetComponent<Subtype>();
         }
 
         public Subtype GetComponentInChildren<Subtype>(bool include_inactive = false) where Subtype : PlanetariaComponent
@@ -104,7 +115,7 @@ namespace Planetaria
             return internal_game_object.GetComponentInParent<Subtype>();
         }
 
-        public static explicit operator PlanetariaGameObject (PlanetariaComponent component)
+        public static explicit operator PlanetariaGameObject(PlanetariaComponent component)
         {
             MonoBehaviour unity_base = component;
             return new PlanetariaGameObject(unity_base.gameObject);
@@ -238,10 +249,11 @@ namespace Planetaria
         // Operators
         public static implicit operator bool(PlanetariaGameObject game_object)
         {
-            return game_object.internal_game_object; // TODO: make sure this works with nulls and Unity nulls (destroyed objects)
+            return game_object.initialized && game_object.internal_game_object; // TODO: make sure this works with nulls and Unity nulls (destroyed objects)
         }
 
-        [SerializeField] [HideInInspector] private GameObject game_object_variable;
+        [SerializeField] [HideInInspector] private bool initialized;
+        [SerializeField] private GameObject game_object_variable; // TODO: re-evaluate [HideInInspector] and [SerializeField] and public/private // TODO: set initialized when this is set in inspector
     }
 }
 

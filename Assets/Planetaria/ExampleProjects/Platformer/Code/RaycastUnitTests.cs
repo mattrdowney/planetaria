@@ -3,6 +3,8 @@ using Planetaria;
 
 public class RaycastUnitTests : MonoBehaviour
 {
+    public GameObject prefabricated_object;
+
     private void Start()
     {
         GameObject camera_object = GameObject.Find("MainCamera/__CameraDolly/__LeftCamera");
@@ -29,6 +31,12 @@ public class RaycastUnitTests : MonoBehaviour
         }
         color = blue ? Color.blue : Color.red;
         Debug.DrawLine(last_position, mouse_position, color);
+
+        if (Input.GetButtonDown("Jump"))
+        {
+            PlanetariaGameObject game_object = new PlanetariaGameObject("Empty");
+            PlanetariaGameObject.Instantiate(prefabricated_object, Vector3.right);
+        }
     }
 
     private Camera main_camera;

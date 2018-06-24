@@ -85,15 +85,15 @@
     <Compile Include="Assets\Planetaria\Code\LevelGeometry\Octahedron.cs" />
     <Compile Include="Assets\Planetaria\Code\LevelGeometry\Shape.cs" />
     <Compile Include="Assets\Planetaria\Code\LevelGeometry\SphericalCap.cs" />
-    <Compile Include="Assets\Planetaria\Code\LevelGeometry\SubdividedOctahedronSphere.cs" />
     <Compile Include="Assets\Planetaria\Code\LevelLoading\BasicLoadingStrategy.cs" />
     <Compile Include="Assets\Planetaria\Code\LevelLoading\LevelLoader.cs" />
     <Compile Include="Assets\Planetaria\Code\LevelLoading\LoadingStrategy.cs" />
     <Compile Include="Assets\Planetaria\Code\LevelLoading\Planetarium.cs" />
     <Compile Include="Assets\Planetaria\Code\LevelLoading\SingleLoadingStrategy.cs" />
     <Compile Include="Assets\Planetaria\Code\LevelSaving\ArcBuilder.cs" />
-    <Compile Include="Assets\Planetaria\Code\LevelSaving\EquilateralBuilder.cs" />
     <Compile Include="Assets\Planetaria\Code\LevelSaving\LevelCreator.cs" />
+    <Compile Include="Assets\Planetaria\Code\Procedural\EquilateralBuilder.cs" />
+    <Compile Include="Assets\Planetaria\Code\Procedural\OctahedronSphere.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\ArcIterator.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\ArcRenderer.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\AreaRenderer.cs" />
@@ -114,6 +114,7 @@
     <Compile Include="Assets\Planetaria\Code\Tracker\InstantHorizontalTracker.cs" />
     <Compile Include="Assets\Planetaria\Code\Tracker\InstantTracker.cs" />
     <Compile Include="Assets\Planetaria\Code\Tracker\PlanetariaTracker.cs" />
+    <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaActuator.cs" />
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaAudioSource.cs" />
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaCamera.cs" />
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaCollider.cs" />

@@ -3,10 +3,9 @@ using UnityEngine;
 
 namespace Planetaria
 {
-    // FIXME: find a way to serialize
     [DisallowMultipleComponent]
     [Serializable]
-    public sealed class PlanetariaTransform : PlanetariaComponent // CONSIDER: C#-style extension methods only: no need for separate object at risk of extra confusion; NOTE: some concepts like direction would no longer work in the same way
+    public sealed class PlanetariaTransform : PlanetariaComponent // TODO: implement Transform.* functions and properties like .Find()
     {
         protected override void Awake()
         {
@@ -24,9 +23,9 @@ namespace Planetaria
         {
             if (internal_transform == null)
             {
-                internal_transform = transform.internal_transform;
+                internal_transform = gameObject.internal_game_object.GetComponent<Transform>();
             }
-            if (!internal_collider.exists)
+            if (!internal_collider.exists) // FIXME: components added at runtime won't link properly
             {
                 internal_collider = internal_transform.GetComponent<PlanetariaCollider>(); // TODO: better way to do this - observer pattern
             }
@@ -92,14 +91,14 @@ namespace Planetaria
             }
         }
 
-        [SerializeField] [HideInInspector] private Transform internal_transform; // FIXME: hide these 3
+        [SerializeField] [HideInInspector] private Transform internal_transform;
         [SerializeField] [HideInInspector] private optional<PlanetariaCollider> internal_collider; // Observer pattern would be more elegant but slower
         [SerializeField] [HideInInspector] private optional<PlanetariaRenderer> internal_renderer;
 
         //private Planetarium planetarium_variable; // cartesian_transform's position
-        [SerializeField] [HideInInspector] private Vector3 position_variable = Vector3.forward; // CONSIDER: [HideInInspector] 
-        [SerializeField] [HideInInspector] private Vector3 direction_variable = Vector3.up; // CONSIDER: how do non-normalized vectors affect Quaternion.LookRotation()? Vector3.zero is the biggest issue.
-        [SerializeField] private float scale_variable; // CONSIDER: without editor OnValidate() setting Transform.scale, these methods are extremely misleading
+        [SerializeField] private Vector3 position_variable = Vector3.forward;
+        [SerializeField] private Vector3 direction_variable = Vector3.up; // CONSIDER: how do non-normalized vectors affect Quaternion.LookRotation()? Vector3.zero is the biggest issue.
+        [SerializeField] private float scale_variable;
     }
 }
 

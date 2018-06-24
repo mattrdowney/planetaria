@@ -35,7 +35,7 @@ namespace Planetaria
                     case Shape.Cube:
                         break;
                     case Shape.Octahedron:
-                        SubdividedOctahedronSphere tesselated_octahedron = SubdividedOctahedronSphere.generate(resolution);
+                        OctahedronSphere tesselated_octahedron = OctahedronSphere.generate(resolution);
                         AssetDatabase.CreateAsset(tesselated_octahedron.get_shared_mesh(),
                                 "Assets/Planetaria/Procedural/Mesh/octahedron_" + resolution + ".asset");
                         break;
