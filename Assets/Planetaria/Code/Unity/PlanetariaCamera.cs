@@ -8,8 +8,9 @@ namespace Planetaria
     [Serializable]
     public sealed class PlanetariaCamera : PlanetariaComponent
     {
-        protected override void Awake()
+        protected override sealed void Awake()
         {
+            base.Awake();
             initialize();
             XRDevice.SetTrackingSpaceType(TrackingSpaceType.Stationary);
         }

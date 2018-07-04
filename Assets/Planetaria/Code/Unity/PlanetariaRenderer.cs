@@ -7,8 +7,9 @@ namespace Planetaria
     [Serializable]
     public abstract class PlanetariaRenderer : PlanetariaComponent
     {
-        protected override void Awake()
+        protected override sealed void Awake()
         {
+            base.Awake();
             initialize();
         }
 

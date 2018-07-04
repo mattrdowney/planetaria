@@ -23,6 +23,7 @@ namespace Planetaria
 
         protected override sealed void Awake()
         {
+            base.Awake();
             foreach (PlanetariaCollider collider in this.GetComponentsInChildren<PlanetariaCollider>()) // FIXME:
             {
                 collider.register(this);

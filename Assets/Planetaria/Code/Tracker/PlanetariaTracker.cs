@@ -2,7 +2,7 @@
 
 namespace Planetaria
 {
-    public abstract class PlanetariaTracker : MonoBehaviour
+    public abstract class PlanetariaTracker : MonoBehaviour // TODO: PlanetariaComponent
     {
         public abstract void setup();
         public abstract void cleanup();

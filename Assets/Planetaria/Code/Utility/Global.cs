@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Planetaria
 {
-    public class Global : MonoBehaviour
+    public class Global : MonoBehaviour  // TODO: PlanetariaComponent
     {
         public static Global self
         {

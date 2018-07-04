@@ -7,7 +7,7 @@ namespace Planetaria
 {
     [DisallowMultipleComponent]
     [Serializable]
-    public class Field : MonoBehaviour
+    public class Field : MonoBehaviour  // TODO: PlanetariaComponent
     {   
         public static GameObject field(List<GeospatialCurve> curves) // TODO: add convex check asserts.
         {

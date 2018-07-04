@@ -2,7 +2,7 @@
 
 namespace Planetaria
 {
-    public class LevelLoader : MonoBehaviour
+    public class LevelLoader : MonoBehaviour  // TODO: PlanetariaComponent
     {
         public static LoadingStrategy loader // CONSIDER: set: are levels properly reloaded?
         {

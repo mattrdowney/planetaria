@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Planetaria
 {
-    public class LevelCreator : MonoBehaviour
+    public class LevelCreator : MonoBehaviour  // TODO: PlanetariaComponent
     {
         private void Start()
         {

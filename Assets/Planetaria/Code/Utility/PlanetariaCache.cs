@@ -7,7 +7,7 @@ namespace Planetaria
 {
     // TODO: Multiton Design Pattern for multiple levels?
     [DisallowMultipleComponent]
-    public class PlanetariaCache : MonoBehaviour
+    public class PlanetariaCache : MonoBehaviour  // TODO: PlanetariaComponent
     {
         public static PlanetariaCache self
         {

@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Planetaria
 {
     [ExecuteInEditMode]
-    public class ArcBuilder : MonoBehaviour
+    public class ArcBuilder : MonoBehaviour  // TODO: PlanetariaComponent
     {
         public static ArcBuilder arc_builder(Vector3 first_point, bool is_field, bool allow_self_intersections)
         {

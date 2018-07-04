@@ -104,6 +104,16 @@ namespace Planetaria
             return new StereoscopicProjectionCoordinates(stereoscopic_projection);
         }
 
+        /// <summary>
+        /// Inspector - Encapsulates and normalizes cartesian point.
+        /// </summary>
+        /// <param name="cartesian">The plain (possibly un-normalized) cartesian coordinates.</param>
+        /// <returns>The wrapped and normalized cartesian coordinates.</returns>
+        public static explicit operator NormalizedCartesianCoordinates(Vector3 cartesian)
+        {
+            return new NormalizedCartesianCoordinates(cartesian);
+        }
+
         // I've gone through a lot of prototypes: thinking about using world space -> camera viewport transformations, dual cylindrical coordinates (x-z and y-z), but I think I have a better idea:
         // For each quadrant: get x-axis, y-axis, Vector3.forward, and diagonal point (area is ~ PI cross PI, so you don't have odd wrapping phenomenon)
         // From these points, get the interpolator percent on the top and bottom rails, then a composite rail from the interpolator points on those rails.

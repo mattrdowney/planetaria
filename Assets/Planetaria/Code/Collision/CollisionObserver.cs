@@ -10,11 +10,11 @@ namespace Planetaria
     {
         public CollisionObserver() { }
 
-        public void initialize (PlanetariaTransform planetaria_transformation, PlanetariaMonoBehaviour[] observers)
+        public void initialize (PlanetariaCollider observed, PlanetariaMonoBehaviour[] observers)
         {
-            this.planetaria_transformation = planetaria_transformation;
-            this.planetaria_collider = planetaria_transformation.GetComponent<PlanetariaCollider>();
-            this.planetaria_rigidbody = planetaria_transformation.GetComponent<PlanetariaRigidbody>();
+            this.planetaria_collider = observed;
+            this.planetaria_rigidbody = observed.GetComponent<PlanetariaRigidbody>();
+            this.planetaria_transformation = observed.GetComponent<PlanetariaTransform>();
             foreach (PlanetariaMonoBehaviour observer in observers)
             {
                 this.observers.Add(observer);

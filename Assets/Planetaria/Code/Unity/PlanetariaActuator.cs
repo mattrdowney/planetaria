@@ -1,9 +1,10 @@
 ﻿namespace Planetaria
 {
-    public class PlanetariaActuator : PlanetariaComponent // while this is not a Unity class, I have a hypothesis that something similar will be implemented.
+    public sealed class PlanetariaActuator : PlanetariaComponent // while this is not a Unity class, I have a hypothesis that something similar will be implemented.
     {
-        protected override void Awake()
+        protected override sealed void Awake()
         {
+            base.Awake();
             throw new System.NotImplementedException();
         }
 

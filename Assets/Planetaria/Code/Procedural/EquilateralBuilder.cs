@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Planetaria
 {
     [ExecuteInEditMode]
-    public class EquilateralBuilder : MonoBehaviour
+    public class EquilateralBuilder : MonoBehaviour  // TODO: PlanetariaComponent
     {
         public static EquilateralBuilder equilateral_builder(Vector3 center, int sides)
         {

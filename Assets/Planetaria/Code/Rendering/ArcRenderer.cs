@@ -27,7 +27,7 @@ namespace Planetaria
                         float fraction = vertex/(float)line_segment_count;
                         float local_angle = angle*fraction;
                         Vector3 position = arc.data.position(local_angle);
-                        vertices.Add(position/2); // FIXME: why does Unity need me to divide by two here? - *mindset* this has to be a bug?
+                        vertices.Add(position);
                     }
                 }
             }

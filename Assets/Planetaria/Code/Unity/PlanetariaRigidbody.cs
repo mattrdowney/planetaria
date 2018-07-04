@@ -7,8 +7,9 @@ namespace Planetaria
     [Serializable]
     public sealed class PlanetariaRigidbody : PlanetariaComponent
     {
-        protected override void Awake()
+        protected override sealed void Awake()
         {
+            base.Awake();
             initialize();
         }
 
@@ -32,13 +33,13 @@ namespace Planetaria
             }
             internal_rigidbody.isKinematic = true;
             internal_rigidbody.useGravity = false;
-            previous_position = position = internal_transform.forward;
+            previous_position = get_position();
             get_acceleration();
         }
 
         private void FixedUpdate()
         {
-            previous_position = position;
+            previous_position = get_position();
             if (observer.exists && observer.data.colliding()) // grounded
             {
                 grounded_track(Time.deltaTime/2);
@@ -72,7 +73,7 @@ namespace Planetaria
             Vector3 result = Vector3.zero; // in theory this could mess things up
             for (int force = 0; force < gravity_wells.Length; ++force)
             {
-                result += Bearing.attractor(position, gravity_wells[force])*gravity_wells[force].magnitude;
+                result += Bearing.attractor(get_position(), gravity_wells[force])*gravity_wells[force].magnitude;
             }
             return result;
         }
@@ -89,7 +90,7 @@ namespace Planetaria
             this.observer = observer;
             this.collision = collision;
             
-            horizontal_velocity = Vector3.Dot(velocity, Bearing.right(position, collision.normal().data));
+            horizontal_velocity = Vector3.Dot(velocity, Bearing.right(get_position(), collision.normal().data));
             vertical_velocity = Vector3.Dot(velocity, collision.normal().data);
             if (vertical_velocity < 0)
             {
@@ -103,12 +104,11 @@ namespace Planetaria
 
         private void aerial_move(float delta)
         {
-            Debug.DrawRay(position, velocity, Color.green);
-            Vector3 next_position = PlanetariaMath.slerp(position, velocity.normalized, delta); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
-            Vector3 next_velocity = PlanetariaMath.slerp(position, velocity.normalized, delta + Mathf.PI/2);
+            Debug.DrawRay(get_position(), velocity, Color.green);
+            Vector3 next_position = PlanetariaMath.slerp(get_position(), velocity.normalized, delta); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
+            Vector3 next_velocity = PlanetariaMath.slerp(get_position(), velocity.normalized, delta + Mathf.PI/2);
             
             transform.position = new NormalizedCartesianCoordinates(next_position);
-            position = transform.position.data; // get normalized data
             velocity = next_velocity.normalized * velocity.magnitude;
             
             // TODO: occasionally ensure velocity and position are orthogonal
@@ -117,8 +117,7 @@ namespace Planetaria
         private void grounded_position()
         {
             collision.move(horizontal_velocity * Time.deltaTime, transform.scale/2);
-            transform.position = collision.position();
-            position = transform.position.data; // NOTE: required so get_acceleration() functions
+            transform.position = collision.position(); // NOTE: required so get_acceleration() functions
             // project velocity
         }
 
@@ -146,7 +145,7 @@ namespace Planetaria
             }
         }
         
-        public void derail(float x_velocity, float y_velocity) // FIXME: GitHub issue #67
+        public void derail(float x_velocity, float y_velocity)
         {
             if (observer.exists && observer.data.colliding())
             {
@@ -155,12 +154,11 @@ namespace Planetaria
                 collision.move(0, transform.scale/2 * (1 + 1e-3f)); // extrude the player so they do not accidentally re-collide (immediately) // FIXME: magic number, move to Precision.*
                 x_velocity += horizontal_velocity;
                 //y_velocity += vertical_velocity;
-                position = collision.position().data;
-                transform.position = new NormalizedCartesianCoordinates(position);
+                transform.position = collision.position();
                 Vector3 normal = collision.normal().data;
-                Vector3 right = Bearing.right(position, normal);
+                Vector3 right = Bearing.right(get_position(), normal);
                 velocity = right*x_velocity + normal*y_velocity;
-                Debug.DrawRay(position, velocity, Color.yellow, 1f);
+                Debug.DrawRay(get_position(), velocity, Color.yellow, 1f);
                 acceleration = get_acceleration();
                 // TODO: accelerate vertically
                 
@@ -173,7 +171,7 @@ namespace Planetaria
         {
             if (observer.exists)
             {
-                Vector3 x = horizontal_velocity * Bearing.right(position, collision.normal().data);
+                Vector3 x = horizontal_velocity * Bearing.right(get_position(), collision.normal().data);
                 Vector3 y = vertical_acceleration * Time.deltaTime * collision.normal().data;
                 velocity = x + y;
             }
@@ -183,7 +181,7 @@ namespace Planetaria
         {
             if (observer.exists)
             {
-                horizontal_velocity = Vector3.Dot(velocity, Bearing.right(position, collision.normal().data));
+                horizontal_velocity = Vector3.Dot(velocity, Bearing.right(get_position(), collision.normal().data));
                 vertical_velocity = Vector3.Dot(velocity, collision.normal().data);
             }
         }
@@ -201,16 +199,16 @@ namespace Planetaria
             get
             {
                 synchronize_velocity_ground_to_air();
-                Vector3 right = Bearing.right(position, transform.direction.data);
-                Vector3 up = Bearing.up(position, transform.direction.data);
+                Vector3 right = Bearing.right(get_position(), transform.direction.data);
+                Vector3 up = Bearing.up(get_position(), transform.direction.data);
                 float x = Vector3.Dot(velocity, right);
                 float y = Vector3.Dot(velocity, up);
                 return new Vector2(x, y);
             }
             set
             {
-                Vector3 x = Bearing.right(position, transform.direction.data) * value.x;
-                Vector3 y = Bearing.up(position, transform.direction.data) * value.y;
+                Vector3 x = Bearing.right(get_position(), transform.direction.data) * value.x;
+                Vector3 y = Bearing.up(get_position(), transform.direction.data) * value.y;
                 velocity = x + y;
                 synchronize_velocity_air_to_ground();
             }
@@ -221,14 +219,14 @@ namespace Planetaria
             get
             {
                 synchronize_velocity_ground_to_air();
-                float x = Vector3.Dot(velocity, Bearing.east(position));
-                float y = Vector3.Dot(velocity, Bearing.north(position));
+                float x = Vector3.Dot(velocity, Bearing.east(get_position()));
+                float y = Vector3.Dot(velocity, Bearing.north(get_position()));
                 return new Vector2(x, y);
             }
             set
             {
-                Vector3 x = Bearing.east(position) * value.x;
-                Vector3 y = Bearing.north(position) * value.y;
+                Vector3 x = Bearing.east(get_position()) * value.x;
+                Vector3 y = Bearing.north(get_position()) * value.y;
                 velocity = x + y;
                 synchronize_velocity_air_to_ground();
             }
@@ -245,7 +243,7 @@ namespace Planetaria
 
         public Vector3 get_position()
         {
-            return position;
+            return transform.position.data;
         }
 
         public Vector3 get_previous_position()
@@ -255,7 +253,6 @@ namespace Planetaria
 
         // position
         private Vector3 previous_position; // magnitude = 1
-        private Vector3 position; // magnitude = 1
         private Vector3 velocity; // magnitude in [0, infinity]
         private Vector3 acceleration; // magnitude in [0, infinity]
 

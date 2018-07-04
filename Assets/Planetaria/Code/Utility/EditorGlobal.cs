@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 namespace Planetaria
-{
+{  // TODO: PlanetariaComponent
     public class EditorGlobal : MonoBehaviour // https://answers.unity.com/questions/964825/create-a-component-script-for-editor-only.html
     {
         private void Awake()

@@ -4,7 +4,14 @@ namespace Planetaria
 {
     public abstract class PlanetariaComponent : MonoBehaviour
     {
-        protected abstract void Awake();
+        protected virtual void Awake()
+        {
+            if (!game_object_variable)
+            {
+                game_object_variable = (PlanetariaGameObject) this;
+            }
+        }
+
         protected abstract void OnDestroy();
 
         public new PlanetariaTransform transform
@@ -12,24 +19,9 @@ namespace Planetaria
             get { return gameObject.transform; }
         }
 
-        /// <summary>
-        /// Warning - setting this value is dangerous and should be done at your own peril
-        /// </summary>
         public new PlanetariaGameObject gameObject
         {
-            get
-            {
-                if (game_object_variable)
-                {
-                    return game_object_variable;
-                }
-                game_object_variable = (PlanetariaGameObject) this;
-                return game_object_variable;
-            }
-            protected set // TODO: verify the setter is a good idea
-            {
-                game_object_variable = value;
-            }
+            get { return game_object_variable; }
         }
 
         public Subtype AddComponent<Subtype>() where Subtype : PlanetariaComponent // mostly boilerplate code

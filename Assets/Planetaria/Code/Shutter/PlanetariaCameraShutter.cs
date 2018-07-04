@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Planetaria
 {
     [Serializable]
-    public abstract class PlanetariaCameraShutter : MonoBehaviour
+    public abstract class PlanetariaCameraShutter : MonoBehaviour // TODO: PlanetariaComponent
     {
         public delegate void OnShutterBlink();
         public event OnShutterBlink blink_event;

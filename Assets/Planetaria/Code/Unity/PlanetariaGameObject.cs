@@ -4,6 +4,9 @@ using UnityEngine.SceneManagement;
 
 namespace Planetaria
 {
+    /// <summary>
+    /// Mutable Struct! - A wrapper class that encapsulates a reference to a GameObject (WARNING: this class invalidates typical immutable struct rules)
+    /// </summary>
     [Serializable]
     public struct PlanetariaGameObject // TODO: test this... a lot
     {
@@ -38,6 +41,7 @@ namespace Planetaria
                     return game_object_variable;
                 }
                 game_object_variable = new GameObject();
+                Debug.LogError("Happening");
                 initialized = true;
                 return game_object_variable;
             }
@@ -228,21 +232,21 @@ namespace Planetaria
             return new PlanetariaGameObject(GameObject.FindWithTag(tag));
         }
 
-        public static PlanetariaGameObject Instantiate(GameObject template, Transform parent = null, bool world_position_stays = false)
+        public static PlanetariaGameObject Instantiate(GameObject template, Transform parent = null)
         {
-            GameObject game_object = GameObject.Instantiate(template, parent, world_position_stays);
+            GameObject game_object = GameObject.Instantiate(template, parent);
             return new PlanetariaGameObject(game_object);
         }
 
         public static PlanetariaGameObject Instantiate(GameObject template, Vector3 position)
         {
-            GameObject game_object = GameObject.Instantiate(template, position, Quaternion.LookRotation(position, Vector3.up));
+            GameObject game_object = GameObject.Instantiate(template, Vector3.zero, Quaternion.LookRotation(position, Vector3.up));
             return new PlanetariaGameObject(game_object);
         }
 
         public static PlanetariaGameObject Instantiate(GameObject template, Vector3 position, Vector3 up, Transform parent = null)
         {
-            GameObject game_object = GameObject.Instantiate(template, position, Quaternion.LookRotation(position, up), parent);
+            GameObject game_object = GameObject.Instantiate(template, Vector3.zero, Quaternion.LookRotation(position, up), parent);
             return new PlanetariaGameObject(game_object);
         }
 

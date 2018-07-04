@@ -17,6 +17,7 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
     {
         planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
         transform.direction = new NormalizedCartesianCoordinates(Vector3.up);
+        transform.localScale = 0.1f;
     }
 
     private void Update()

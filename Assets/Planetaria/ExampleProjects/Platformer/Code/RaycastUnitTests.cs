@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Planetaria;
 
-public class RaycastUnitTests : MonoBehaviour
+public class RaycastUnitTests : MonoBehaviour  // TODO: PlanetariaComponent
 {
     public GameObject prefabricated_object;
 
@@ -34,8 +34,8 @@ public class RaycastUnitTests : MonoBehaviour
 
         if (Input.GetButtonDown("Jump"))
         {
-            PlanetariaGameObject game_object = new PlanetariaGameObject("Empty");
-            PlanetariaGameObject.Instantiate(prefabricated_object, Vector3.right);
+            PlanetariaGameObject.Instantiate(prefabricated_object, mouse_position);
+            //Destroy(new object, 3 seconds) + test Destroy for PlanetariaGameObject
         }
     }
 

@@ -9,12 +9,13 @@ namespace Planetaria
     [Serializable]
     public sealed class PlanetariaCollider : PlanetariaComponent // FIXME: while not incredibly complicated, I think there might be a way to simplify this
     {
-        protected override void Awake()
+        protected override sealed void Awake()
         {
+            base.Awake();
             initialize();
             StartCoroutine(wait_for_fixed_update());
             observer = new CollisionObserver();
-            observer.initialize(planetaria_transform, this.GetComponentsInParent<PlanetariaMonoBehaviour>());
+            observer.initialize(this, this.GetComponentsInParent<PlanetariaMonoBehaviour>());
         }
 
         protected override void OnDestroy() { }
@@ -26,14 +27,14 @@ namespace Planetaria
 
         private void initialize()
         {
-            gameObject = this.GetOrAddChild("InternalCollider");
+            GameObject game_object = this.GetOrAddChild("InternalCollider");
             if (internal_collider == null)
             {
-                internal_collider = Miscellaneous.GetOrAddComponent<SphereCollider>(gameObject.internal_game_object);
+                internal_collider = Miscellaneous.GetOrAddComponent<SphereCollider>(game_object);
             }
             if (internal_transform == null)
             {
-                internal_transform = Miscellaneous.GetOrAddComponent<Transform>(gameObject.internal_game_object);
+                internal_transform = Miscellaneous.GetOrAddComponent<Transform>(game_object);
             }
             if (planetaria_transform == null)
             {
@@ -55,12 +56,9 @@ namespace Planetaria
             set
             {
                 scale_variable = value;
-                if (scalable)
-                {
-                    colliders = new Sphere[] { Sphere.ideal_collider(internal_transform, SphericalCap.cap(Vector3.forward, Mathf.Cos(value/2))) };
-                    set_internal_collider(colliders[0]);
-                    internal_collider.center = Vector3.forward * internal_collider.center.magnitude;
-                }
+                colliders = new Sphere[] { Sphere.ideal_collider(internal_transform, SphericalCap.cap(Vector3.forward, Mathf.Cos(value/2))) };
+                set_internal_collider(colliders[0]);
+                internal_collider.center = Vector3.forward * internal_collider.center.magnitude;
             }
         }
 
@@ -180,7 +178,6 @@ namespace Planetaria
         [SerializeField] [HideInInspector] public new optional<PlanetariaRigidbody> rigidbody;
         [SerializeField] [HideInInspector] public Sphere[] colliders = new Sphere[0]; // FIXME: private
         [SerializeField] private float scale_variable;
-        [SerializeField] public bool scalable = false;
         [SerializeField] private bool is_field_variable = false;
         public static PlanetariaPhysicMaterial fallback;
     }
