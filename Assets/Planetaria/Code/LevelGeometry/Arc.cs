@@ -34,7 +34,10 @@ namespace Planetaria
         /// <returns>A concave or convex corner arc.</returns>
         public static optional<Arc> corner(Arc left, Arc right) // TODO: normal constructor
         {
-            // TODO: add ~180 degree angle case
+            if (is_straight_angle(left, right))
+            {
+                return straight_corner(left, right);
+            }
             if (is_convex(left, right))
             {
                 return convex_corner(left, right);
@@ -111,8 +114,7 @@ namespace Planetaria
         }
 
         /// <summary>
-        /// Inspector - Determine if the corner between between left's end and right's beginning is convex
-        /// (i.e. a reflex angle).
+        /// Inspector - Determine if the corner between between left's end and right's beginning is convex (i.e. a reflex angle).
         /// </summary>
         /// <param name="left">Arc that will connect to beginning.</param>
         /// <param name="right">Arc that will connect to end.</param>
@@ -125,6 +127,22 @@ namespace Planetaria
             Vector3 normal_for_left = left.end_normal();
             Vector3 rightward_for_right = Bearing.right(right.begin(), right.begin_normal());
             return Vector3.Dot(normal_for_left, rightward_for_right) < Precision.tolerance;
+        }
+
+        /// <summary>
+        /// Inspector - Determine if the corner between between left's end and right's beginning is a straight angle (i.e. 180 degrees).
+        /// </summary>
+        /// <param name="left">Arc that will connect to beginning.</param>
+        /// <param name="right">Arc that will connect to end.</param>
+        /// <returns>
+        /// True if the arc is a straight angle.
+        /// False if the arc is not a straight angle.
+        /// </returns>
+        public static bool is_straight_angle(Arc left, Arc right)
+        {
+            Vector3 normal_for_left = left.end_normal();
+            Vector3 normal_for_right = right.begin_normal();
+            return Vector3.Dot(normal_for_left, normal_for_right) > 1 - Precision.tolerance;
         }
 
         /// <summary>
@@ -278,7 +296,7 @@ namespace Planetaria
         /// <param name="left">The arc that attaches to the beginning of the corner.</param>
         /// <param name="right">The arc that attaches to the end of the corner.</param>
         /// <returns>A convex corner arc.</returns>
-        private static Arc convex_corner(Arc left, Arc right) // CHECKME: does this work when latitude is >0?
+        private static Arc convex_corner(Arc left, Arc right) // TODO: does this work when latitude is >0?
         {
             // find the arc along the equator and set the latitude to -PI/2 (implicitly, that means the arc radius is ~0)
 
@@ -294,6 +312,25 @@ namespace Planetaria
 
             // And move the arc to the "South Pole" instead
             result.arc_latitude = -Mathf.PI/2;
+
+            return result;
+        }
+
+        /// <summary>
+        /// Constructor - Create a straight corner arc (should have zero length).
+        /// </summary>
+        /// <param name="left">The arc that attaches to the beginning of the corner.</param>
+        /// <param name="right">The arc that attaches to the end of the corner.</param>
+        /// <returns>A straight corner arc.</returns>
+        private static Arc straight_corner(Arc left, Arc right)
+        {
+            Vector3 start = left.end();
+            Vector3 direction = Bearing.right(start, left.end_normal()); // idk why it's left instead of right, but it works so w/e
+
+            Arc result = Arc.line(start, direction);
+
+            // Straight arcs have no length / angle
+            result.arc_angle = Precision.just_above_zero;
 
             return result;
         }
