@@ -7,7 +7,7 @@ public class RaycastUnitTests : MonoBehaviour  // TODO: PlanetariaComponent
 
     private void Start()
     {
-        GameObject camera_object = GameObject.Find("MainCamera/__CameraDolly/__LeftCamera");
+        GameObject camera_object = GameObject.Find("MainCamera/__CameraDolly/__Camera");
         main_camera = camera_object.GetComponent<Camera>();
         player = GameObject.Find("Character").transform;
     }
