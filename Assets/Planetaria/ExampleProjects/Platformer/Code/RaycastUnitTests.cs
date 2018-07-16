@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using Planetaria;
 
 public class RaycastUnitTests : MonoBehaviour  // TODO: PlanetariaComponent
@@ -7,18 +8,34 @@ public class RaycastUnitTests : MonoBehaviour  // TODO: PlanetariaComponent
 
     private void Start()
     {
-        GameObject camera_object = GameObject.Find("MainCamera/__CameraDolly/__Camera");
-        main_camera = camera_object.GetComponent<Camera>();
-        player = GameObject.Find("Character").transform;
+        main_camera = GameObject.FindObjectOfType<PlanetariaCamera>().gameObject.internal_game_object.transform;
+        main_character = GameObject.FindObjectOfType<PlanetariaCharacter>().gameObject.internal_game_object.transform;
+        main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
+        arc_renderer = GameObject.FindObjectOfType<ArcRenderer>();
     }
 
     private void Update()
     {
-        Vector3 screen_point = Input.mousePosition;
-        Vector3 mouse_position = main_camera.ScreenPointToRay(screen_point).direction;
+        Vector3 character_position = main_character.forward;
+        Vector3 controller_position = main_camera.rotation * main_controller.forward;
+        List<GeospatialCurve> laser = new List<GeospatialCurve>
+        {
+            GeospatialCurve.curve(character_position, controller_position),
+            GeospatialCurve.curve(controller_position, character_position),
+        };
+        arc_renderer.shape = new Shape(laser, false, false);
+        arc_renderer.recalculate();
 
-        Vector3 character_position = player.forward;
-        PlanetariaRaycastHit[] collision_info = PlanetariaPhysics.raycast_all(Arc.line(character_position, mouse_position));
+        if (Input.GetAxis("Oculus_GearVR_IndexTrigger") > .9f)
+        {
+            arc_renderer.material.color = Color.red;
+        }
+        else
+        {
+            arc_renderer.material.color = Color.blue;
+        }
+
+        /*PlanetariaRaycastHit[] collision_info = PlanetariaPhysics.raycast_all(Arc.line(character_position, controller_position));
         Vector3 last_position = character_position;
         bool blue = true;
         Color color;
@@ -30,17 +47,20 @@ public class RaycastUnitTests : MonoBehaviour  // TODO: PlanetariaComponent
             blue = !blue;
         }
         color = blue ? Color.blue : Color.red;
-        Debug.DrawLine(last_position, mouse_position, color);
+        Debug.DrawLine(last_position, controller_position, color);
+        arc_renderer.*/
 
-        if (Input.GetButtonDown("Jump"))
+        /*if (Input.GetButtonDown("Jump"))
         {
-            PlanetariaGameObject.Instantiate(prefabricated_object, mouse_position);
+            PlanetariaGameObject.Instantiate(prefabricated_object, controller_position);
             //Destroy(new object, 3 seconds) + test Destroy for PlanetariaGameObject
-        }
+        }*/
     }
 
-    private Camera main_camera;
-    private Transform player;
+    private Transform main_camera;
+    private Transform main_character;
+    private Transform main_controller;
+    private ArcRenderer arc_renderer;
 }
 
 /*

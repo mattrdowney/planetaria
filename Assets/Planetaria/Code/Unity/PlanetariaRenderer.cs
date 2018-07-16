@@ -52,8 +52,8 @@ namespace Planetaria
             {
                 GameObject child = this.GetOrAddChild("Renderer");
                 internal_transform = child.GetComponent<Transform>();
-                internal_transform.position = offset*internal_transform.forward;
             }
+            internal_transform.localPosition = offset * Vector3.forward;
         }
 
         /// <summary>

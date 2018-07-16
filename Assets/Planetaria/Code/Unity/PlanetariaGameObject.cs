@@ -5,10 +5,10 @@ using UnityEngine.SceneManagement;
 namespace Planetaria
 {
     /// <summary>
-    /// Mutable Struct! - A wrapper class that encapsulates a reference to a GameObject (WARNING: this class invalidates typical immutable struct rules)
+    /// A wrapper class that encapsulates a reference to a GameObject
     /// </summary>
     [Serializable]
-    public struct PlanetariaGameObject // TODO: test this... a lot
+    public class PlanetariaGameObject // TODO: test this... a lot
     {
         // Properties
         public bool activeInHierarchy // mostly boilerplate code
@@ -36,13 +36,6 @@ namespace Planetaria
         {
             get
             {
-                if (initialized)
-                {
-                    return game_object_variable;
-                }
-                game_object_variable = new GameObject();
-                Debug.LogError("Happening");
-                initialized = true;
                 return game_object_variable;
             }
         }
@@ -76,16 +69,14 @@ namespace Planetaria
         }
 
         // Constructors
-        public PlanetariaGameObject(string name) // TODO: test for empty (I think it's gonna set GameObject to null, which would be useless)
+        public PlanetariaGameObject(string name = "GameObject")
         {
             game_object_variable = new GameObject(name);
-            initialized = true;
         }
 
         public PlanetariaGameObject(GameObject game_object)
         {
             game_object_variable = game_object;
-            initialized = true;
         }
 
         public static implicit operator PlanetariaGameObject(GameObject game_object)
@@ -253,10 +244,9 @@ namespace Planetaria
         // Operators
         public static implicit operator bool(PlanetariaGameObject game_object)
         {
-            return game_object.initialized && game_object.internal_game_object; // TODO: make sure this works with nulls and Unity nulls (destroyed objects)
+            return game_object != null && game_object.internal_game_object; // TODO: make sure this works with nulls and Unity nulls (destroyed objects)
         }
 
-        [SerializeField] [HideInInspector] private bool initialized;
         [SerializeField] private GameObject game_object_variable; // TODO: re-evaluate [HideInInspector] and [SerializeField] and public/private // TODO: set initialized when this is set in inspector
     }
 }

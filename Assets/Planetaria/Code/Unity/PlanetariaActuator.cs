@@ -1,17 +1,54 @@
-﻿namespace Planetaria
+﻿using UnityEngine;
+using UnityEngine.XR;
+
+namespace Planetaria
 {
     public sealed class PlanetariaActuator : PlanetariaComponent // while this is not a Unity class, I have a hypothesis that something similar will be implemented.
     {
+        public enum InputDevice { DualAxis, Gyroscope, Mouse, Touchpad, Touchscreen };
+
         protected override sealed void Awake()
         {
             base.Awake();
-            throw new System.NotImplementedException();
+            internal_camera = GameObject.FindObjectOfType<Camera>();
+            internal_transform = gameObject.internal_game_object.GetComponent<Transform>();
         }
 
-        protected override void OnDestroy()
+        protected override void OnDestroy() { }
+
+        private void Update()
         {
-            throw new System.NotImplementedException();
+            switch (input_device_type)
+            {
+                // Analog stick (e.g. for conventional console controllers)
+                case InputDevice.DualAxis:
+                    Debug.LogError("Not Implemented"); // TODO: implement
+                    break;
+                // Motion controllers (e.g. virtual reality)
+                case InputDevice.Gyroscope:
+                    internal_transform.rotation = InputTracking.GetLocalRotation(XRNode.RightHand);
+                    break;
+                // Computer mouse
+                case InputDevice.Mouse:
+                    internal_transform.rotation = Quaternion.LookRotation(internal_camera.ScreenPointToRay(Input.mousePosition).direction);
+                    break;
+                // Touch devices (e.g. laptops and tablets)
+                case InputDevice.Touchpad:
+                    Debug.LogError("Not Implemented"); // TODO: implement
+                    break;
+                // Touch devices (e.g. laptops and tablets)
+                case InputDevice.Touchscreen:
+                    if (Input.touches.Length > 0)
+                    {
+                        internal_transform.rotation = Quaternion.LookRotation(internal_camera.ScreenPointToRay(Input.touches[0].position).direction);
+                    }
+                    break;
+            }
         }
+
+        public InputDevice input_device_type = InputDevice.Gyroscope;
+        private Camera internal_camera;
+        private Transform internal_transform;
     }
 }
 

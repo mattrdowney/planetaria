@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿#if UNITY_EDITOR
+
+using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEditor;
@@ -94,6 +96,8 @@ namespace Planetaria
         protected const int default_resolution = 1024;
     }
 }
+
+#endif
 
 /*
 Permission is hereby granted, free of charge, to any person obtaining a copy

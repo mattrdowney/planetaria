@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+
+using UnityEngine;
 
 namespace Planetaria
 {
@@ -34,6 +36,8 @@ namespace Planetaria
         private float angular_height;
     }
 }
+
+#endif
 
 /*
 Permission is hereby granted, free of charge, to any person obtaining a copy

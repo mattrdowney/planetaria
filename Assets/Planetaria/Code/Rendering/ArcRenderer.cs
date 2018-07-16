@@ -15,24 +15,30 @@ namespace Planetaria
             LineRenderer line_renderer = internal_transform.GetComponent<LineRenderer>();
             line_renderer.alignment = LineAlignment.View; // both options suck, but this one renders on both sides (the right shader could fix it, but it's not gonna work well no matter what)
             line_renderer.startWidth = line_renderer.endWidth = angular_width;
+            recalculate();
+        }
+
+        public void recalculate()
+        {
             List<Vector3> vertices = new List<Vector3>();
             foreach (optional<Arc> arc in shape.arcs)
             {
                 if (arc.exists)
                 {
                     float angle = arc.data.angle();
-                    int line_segment_count = Mathf.CeilToInt(360*angle/(Mathf.PI*2));
+                    int line_segment_count = Mathf.CeilToInt(360 * angle / (Mathf.PI * 2));
                     for (int vertex = 0; vertex <= line_segment_count; ++vertex)
                     {
-                        float fraction = vertex/(float)line_segment_count;
-                        float local_angle = angle*fraction;
+                        float fraction = vertex / (float)line_segment_count;
+                        float local_angle = angle * fraction;
                         Vector3 position = arc.data.position(local_angle);
                         vertices.Add(position);
                     }
                 }
             }
-            line_renderer.positionCount = vertices.Count; // TODO: this is confusing as fuck, unity says this sets the number of SEGMENTS, is that right?
-            line_renderer.SetPositions(vertices.ToArray()); // why is setting the vertex count even necessary anyway?
+            LineRenderer line_renderer = internal_transform.GetComponent<LineRenderer>();
+            line_renderer.positionCount = vertices.Count;
+            line_renderer.SetPositions(vertices.ToArray());
         }
 
         [SerializeField] public float angular_width = 0.01f;

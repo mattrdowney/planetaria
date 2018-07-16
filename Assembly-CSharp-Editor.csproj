@@ -76,7 +76,6 @@
     <Compile Include="Assets\Planetaria\Code\Editor\FieldEditor.cs" />
     <Compile Include="Assets\Planetaria\Code\Editor\FreeLineDrawMode.cs" />
     <Compile Include="Assets\Planetaria\Code\Editor\LevelCreatorEditor.cs" />
-    <Compile Include="Assets\Planetaria\Code\Editor\MasterBuild.cs" />
     <Compile Include="Assets\Planetaria\Code\Editor\PlanetariaColliderEditor.cs" />
     <Compile Include="Assets\Planetaria\Code\Editor\ProceduralMesh.cs" />
     <Compile Include="Assets\Planetaria\Code\Editor\RendererUtility.cs" />

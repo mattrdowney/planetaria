@@ -22,17 +22,28 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
 
     private void Update()
     {
+#if UNITY_EDITOR
         if (Input.GetButtonDown("Jump"))
         {
             last_jump_attempt = Time.time;
         }
+#else
+        if (Input.GetButtonDown("Oculus_GearVR_Dpad_Press"))
+        {
+            last_jump_attempt = Time.time;
+        }
+#endif
     }
 
     private void FixedUpdate()
     {
         if (!planetaria_rigidbody.colliding)
         {
+#if UNITY_EDITOR
             planetaria_rigidbody.absolute_velocity += Vector2.right * Input.GetAxis("Horizontal") * Time.deltaTime * transform.scale * acceleration * 1f;
+#else
+            planetaria_rigidbody.absolute_velocity += Vector2.right * Input.GetAxis("Oculus_GearVR_ThumbstickX") * Time.deltaTime * transform.scale * acceleration * 1f;
+#endif
         }
     }
 
@@ -45,7 +56,13 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
                 magnet_floor = true;
             }
             float velocity = planetaria_rigidbody.relative_velocity.x;
+
+#if UNITY_EDITOR
             velocity += Input.GetAxis("Horizontal") * -planetaria_rigidbody.relative_velocity.y * transform.scale * acceleration * 20f;
+#else
+            velocity += Input.GetAxis("Oculus_GearVR_ThumbstickX") * -planetaria_rigidbody.relative_velocity.y * transform.scale * acceleration * 20f;
+#endif
+
             if (Mathf.Abs(velocity) > 3f*transform.scale)
             {
                 velocity = Mathf.Sign(velocity)*3f*transform.scale;
@@ -77,10 +94,18 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
 
     private void on_field_stay(PlanetariaCollider collider)
     {
+#if UNITY_EDITOR
         if (Input.GetAxisRaw("Vertical") == -1)
         {
             LevelLoader.loader.activate_level(1);
         }
+#else
+        if (Input.GetAxis("Oculus_GearVR_ThumbstickY") > -.8f)
+        {
+            LevelLoader.loader.activate_level(1);
+        }
+#endif
+
     }
 
     private PlanetariaRigidbody planetaria_rigidbody;

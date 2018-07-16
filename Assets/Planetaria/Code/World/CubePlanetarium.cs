@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+
+using UnityEngine;
 
 namespace Planetaria
 {
@@ -46,6 +48,8 @@ namespace Planetaria
         private static readonly string[] directions = { "_LeftTex", "_RightTex", "_DownTex", "_UpTex", "_BackTex", "_FrontTex" };
     }
 }
+
+#endif
 
 /*
 Permission is hereby granted, free of charge, to any person obtaining a copy
