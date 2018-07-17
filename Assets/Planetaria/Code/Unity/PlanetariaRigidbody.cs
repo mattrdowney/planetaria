@@ -15,8 +15,9 @@ namespace Planetaria
 
         protected override void OnDestroy() { }
 
-        private void Reset()
+        protected override sealed void Reset()
         {
+            base.Reset();
             initialize();
         }
 
@@ -34,7 +35,7 @@ namespace Planetaria
             internal_rigidbody.isKinematic = true;
             internal_rigidbody.useGravity = false;
             previous_position = get_position();
-            get_acceleration();
+            acceleration = get_acceleration();
         }
 
         private void FixedUpdate()
@@ -53,7 +54,7 @@ namespace Planetaria
                 // "This is especially useful when computing orbital dynamics, as many other integration schemes, such as the (order-4) Runge-Kutta method, do not conserve energy and allow the system to drift substantially over time." - Wikipedia
                 // http://lolengine.net/blog/2011/12/14/understanding-motion-in-games
                 // http://www.richardlord.net/presentations/physics-for-flash-games.html
-                velocity = velocity + acceleration * (Time.deltaTime / 2);
+                velocity += acceleration * (Time.deltaTime/2);
                 aerial_move(velocity.magnitude * Time.deltaTime);
                 acceleration = get_acceleration();
             }
@@ -64,7 +65,7 @@ namespace Planetaria
             }
             else // non-grounded / "aerial"
             {
-                velocity = velocity + acceleration * (Time.deltaTime / 2);
+                velocity += acceleration * (Time.deltaTime/2);
             }
         }
 

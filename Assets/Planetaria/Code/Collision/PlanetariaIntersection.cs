@@ -16,6 +16,7 @@ namespace Planetaria
         public static optional<Vector3> arc_arc_intersection(Arc a, Arc b, float extrusion)
         {
             Vector3[] intersections = circle_circle_intersections(a.circle(extrusion), b.circle(extrusion));
+            intersections = nontrivial_arc_intersections(a, b, intersections);
             intersections = valid_arc_intersections(a, intersections);
             intersections = valid_arc_intersections(b, intersections);
             if (intersections.Length == 0)
@@ -144,6 +145,35 @@ namespace Planetaria
             float magnitude_squared = (right.center - left.center).sqrMagnitude;
             float sum_of_radii = left.radius + right.radius;
             return magnitude_squared < sum_of_radii*sum_of_radii;
+        }
+
+        public static Vector3[] nontrivial_arc_intersections(Arc arc_a, Arc arc_b, Vector3[] intersections)
+        {
+            Vector3[] results = new Vector3[0];
+            for (int intersection_index = 0; intersection_index < intersections.Length; ++intersection_index)
+            {
+                Vector3 intersection_point = intersections[intersection_index];
+                if (Vector3.Dot(arc_a.begin(), arc_b.end()) > 1 - Precision.threshold)
+                {
+                    if (Vector3.Dot(arc_a.begin(), intersection_point) > 1 - Precision.threshold)
+                    {
+                        continue;
+                    }
+                }
+
+                if (Vector3.Dot(arc_a.end(), arc_b.begin()) > 1 - Precision.threshold)
+                {
+                    if (Vector3.Dot(arc_a.end(), intersection_point) > 1 - Precision.threshold)
+                    {
+                        continue;
+                    }
+                }
+
+                Array.Resize(ref results, results.Length + 1);
+                results[results.Length - 1] = intersections[intersection_index];
+            }
+
+            return results;
         }
 
         public static Vector3[] valid_arc_intersections(Arc arc, Vector3[] intersections, // TODO: research and development

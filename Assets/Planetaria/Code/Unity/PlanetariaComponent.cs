@@ -14,6 +14,14 @@ namespace Planetaria
 
         protected abstract void OnDestroy();
 
+        protected virtual void Reset()
+        {
+            if (!game_object_variable)
+            {
+                game_object_variable = (PlanetariaGameObject)this;
+            }
+        }
+
         public new PlanetariaTransform transform
         {
             get { return gameObject.transform; }
@@ -64,7 +72,7 @@ namespace Planetaria
             return gameObject.internal_game_object.GetComponentsInParent<Subtype>();
         }
 
-       [SerializeField] [HideInInspector] private PlanetariaGameObject game_object_variable;
+        [SerializeField] [HideInInspector] private PlanetariaGameObject game_object_variable;
     }
 }
 

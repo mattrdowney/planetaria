@@ -242,12 +242,12 @@ namespace Planetaria
         }
 
         // Operators
-        public static implicit operator bool(PlanetariaGameObject game_object)
+        public static implicit operator bool(PlanetariaGameObject game_object) // FIXME: TODO: make sure `PlanetariaGameObject` and `PlanetariaGameObject != null` do the same thing
         {
             return game_object != null && game_object.internal_game_object; // TODO: make sure this works with nulls and Unity nulls (destroyed objects)
         }
 
-        [SerializeField] private GameObject game_object_variable; // TODO: re-evaluate [HideInInspector] and [SerializeField] and public/private // TODO: set initialized when this is set in inspector
+        [SerializeField] private GameObject game_object_variable; // TODO: re-evaluate [HideInInspector] and [SerializeField] and public/private
     }
 }
 

@@ -81,6 +81,7 @@ namespace Planetaria
             {
                 if (!debug_shape.convex_hull())
                 {
+                    Debug.LogWarning("Not a convex shape! Turn off the LevelEditor setting if you want to ignore this.");
                     return false;
                 }
             }
@@ -88,6 +89,7 @@ namespace Planetaria
             {
                 if (debug_shape.self_intersecting())
                 {
+                    Debug.LogWarning("Shape intersects self! Turn off the LevelEditor setting if you want to ignore this.");
                     return false;
                 }
             }

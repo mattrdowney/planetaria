@@ -20,8 +20,9 @@ namespace Planetaria
 
         protected override void OnDestroy() { }
 
-        private void Reset()
+        protected override sealed void Reset()
         {
+            base.Reset();
             initialize();
         }
 

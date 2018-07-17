@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using Planetaria;
 
 public class PlanetariaCharacter : PlanetariaMonoBehaviour
@@ -16,6 +17,7 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
     private void Start()
     {
         planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
+        this.GetComponent<PlanetariaCollider>().material = material;
         transform.direction = new NormalizedCartesianCoordinates(Vector3.up);
         transform.localScale = 0.1f;
     }
@@ -28,7 +30,11 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
             last_jump_attempt = Time.time;
         }
 #else
-        if (Input.GetButtonDown("Oculus_GearVR_Dpad_Press"))
+        if (Mathf.Approximately(Input.GetAxis("OpenVR_ThumbAxisX"), 0))
+        {
+            last_idle = Time.time;
+        }
+        if (Input.GetButtonDown("OpenVR_ThumbPress") && Time.time - last_idle > .2f)
         {
             last_jump_attempt = Time.time;
         }
@@ -42,7 +48,7 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
 #if UNITY_EDITOR
             planetaria_rigidbody.absolute_velocity += Vector2.right * Input.GetAxis("Horizontal") * Time.deltaTime * transform.scale * acceleration * 1f;
 #else
-            planetaria_rigidbody.absolute_velocity += Vector2.right * Input.GetAxis("Oculus_GearVR_ThumbstickX") * Time.deltaTime * transform.scale * acceleration * 1f;
+            planetaria_rigidbody.absolute_velocity += Vector2.right * Input.GetAxis("OpenVR_ThumbAxisX") * Time.deltaTime * transform.scale * acceleration * 1f;
 #endif
         }
     }
@@ -58,9 +64,9 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
             float velocity = planetaria_rigidbody.relative_velocity.x;
 
 #if UNITY_EDITOR
-            velocity += Input.GetAxis("Horizontal") * -planetaria_rigidbody.relative_velocity.y * transform.scale * acceleration * 20f;
+            velocity += Input.GetAxis("Horizontal") * -planetaria_rigidbody.relative_velocity.y * transform.scale * acceleration * 20f; // Time.deltaTime omitted intentionally (included in relative_velocity.y)
 #else
-            velocity += Input.GetAxis("Oculus_GearVR_ThumbstickX") * -planetaria_rigidbody.relative_velocity.y * transform.scale * acceleration * 20f;
+            velocity += Input.GetAxis("OpenVR_ThumbAxisX") * -planetaria_rigidbody.relative_velocity.y * transform.scale * acceleration * 20f;
 #endif
 
             if (Mathf.Abs(velocity) > 3f*transform.scale)
@@ -71,7 +77,7 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
             transform.direction = collision.normal();
             if (Time.time - last_jump_attempt < .2f)
             {
-                planetaria_rigidbody.derail(0, 4*transform.scale);
+                planetaria_rigidbody.derail(0, 3*transform.scale);
             }
         }
         else
@@ -100,7 +106,7 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
             LevelLoader.loader.activate_level(1);
         }
 #else
-        if (Input.GetAxis("Oculus_GearVR_ThumbstickY") > -.8f)
+        if (Input.GetAxis("OpenVR_ThumbAxisY") > -.8f)
         {
             LevelLoader.loader.activate_level(1);
         }
@@ -108,11 +114,13 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
 
     }
 
-    private PlanetariaRigidbody planetaria_rigidbody;
-    private float last_jump_attempt = -1;
-    private const float acceleration = 5f;
+    [SerializeField] public PlanetariaPhysicMaterial material;
+    [SerializeField] private const float acceleration = 5f;
 
-    public bool magnet_floor = false;
+    [NonSerialized] private PlanetariaRigidbody planetaria_rigidbody;
+    [NonSerialized] private float last_jump_attempt = -1;
+    [NonSerialized] private float last_idle = -1;
+    [NonSerialized] public bool magnet_floor = false;
 }
 
 /*

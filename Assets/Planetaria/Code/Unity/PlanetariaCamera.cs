@@ -12,13 +12,13 @@ namespace Planetaria
         {
             base.Awake();
             initialize();
-            XRDevice.SetTrackingSpaceType(TrackingSpaceType.Stationary);
         }
 
         protected override void OnDestroy() { }
 
-        private void Reset()
+        protected override sealed void Reset()
         {
+            base.Reset();
             initialize();
         }
 
@@ -32,8 +32,9 @@ namespace Planetaria
                 GameObject camera_object = dolly.transform.GetOrAddChild("Camera");
                 internal_camera = Miscellaneous.GetOrAddComponent<Camera>(camera_object);
             }
+            XRDevice.SetTrackingSpaceType(TrackingSpaceType.Stationary);
             dolly_transform.position = Vector3.forward * zoom;
-            dolly_transform.localScale = Vector3.one; // CONSIDER: setting this to zero mirrors `XRDevice.SetTrackingSpaceType(TrackingSpaceType.Stationary);`
+            dolly_transform.localScale = Vector3.zero; // sets interpupillary  distance (IPD) to zero so there is no eye distance and therefore no depth // TODO: I thought there was something wrong with this
             initialize_camera(internal_camera, new Rect(0, 0, 1, 1), 1);
         }
 
@@ -47,6 +48,8 @@ namespace Planetaria
                 camera.useOcclusionCulling = false;
                 camera.nearClipPlane = near_clip_plane;
                 camera.farClipPlane = far_clip_plane;
+                camera.stereoSeparation = 0;
+                camera.stereoConvergence = 0.01f;
             }
         }
 

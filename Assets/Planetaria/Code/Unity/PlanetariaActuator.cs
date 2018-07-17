@@ -30,7 +30,7 @@ namespace Planetaria
                     break;
                 // Computer mouse
                 case InputDevice.Mouse:
-                    internal_transform.rotation = Quaternion.LookRotation(internal_camera.ScreenPointToRay(Input.mousePosition).direction);
+                    internal_transform.rotation = Quaternion.LookRotation(internal_camera.transform.InverseTransformDirection(internal_camera.ScreenPointToRay(Input.mousePosition).direction));
                     break;
                 // Touch devices (e.g. laptops and tablets)
                 case InputDevice.Touchpad:
@@ -40,7 +40,7 @@ namespace Planetaria
                 case InputDevice.Touchscreen:
                     if (Input.touches.Length > 0)
                     {
-                        internal_transform.rotation = Quaternion.LookRotation(internal_camera.ScreenPointToRay(Input.touches[0].position).direction);
+                        internal_transform.rotation = Quaternion.LookRotation(internal_camera.transform.InverseTransformDirection(internal_camera.ScreenPointToRay(Input.touches[0].position).direction));
                     }
                     break;
             }

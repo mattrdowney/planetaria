@@ -140,11 +140,12 @@
     <Compile Include="Assets\Planetaria\Code\LevelLoading\SingleLoadingStrategy.cs" />
     <Compile Include="Assets\Planetaria\Code\LevelSaving\ArcBuilder.cs" />
     <Compile Include="Assets\Planetaria\Code\LevelSaving\LevelCreator.cs" />
+    <Compile Include="Assets\Planetaria\Code\PlanetariaRenderer\ArcRenderer.cs" />
+    <Compile Include="Assets\Planetaria\Code\PlanetariaRenderer\AreaRenderer.cs" />
+    <Compile Include="Assets\Planetaria\Code\PlanetariaRenderer\VolumeRenderer.cs" />
     <Compile Include="Assets\Planetaria\Code\Procedural\EquilateralBuilder.cs" />
     <Compile Include="Assets\Planetaria\Code\Procedural\OctahedronSphere.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\ArcIterator.cs" />
-    <Compile Include="Assets\Planetaria\Code\Rendering\ArcRenderer.cs" />
-    <Compile Include="Assets\Planetaria\Code\Rendering\AreaRenderer.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\BlockRenderer.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\BlockRendererIterator.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\Discontinuity.cs" />
@@ -154,7 +155,6 @@
     <Compile Include="Assets\Planetaria\Code\Rendering\ShapeRenderer.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\SkyboxConversion.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\VectorGraphicsWriter.cs" />
-    <Compile Include="Assets\Planetaria\Code\Rendering\VolumeRenderer.cs" />
     <Compile Include="Assets\Planetaria\Code\Shutter\BlinkCameraShutter.cs" />
     <Compile Include="Assets\Planetaria\Code\Shutter\PlanetariaCameraShutter.cs" />
     <Compile Include="Assets\Planetaria\Code\Shutter\RegularPolygonCameraShutter.cs" />
@@ -194,8 +194,8 @@
     <Compile Include="Assets\Planetaria\ExampleProjects\Platformer\Code\Door.cs" />
     <Compile Include="Assets\Planetaria\ExampleProjects\Platformer\Code\Elevator.cs" />
     <Compile Include="Assets\Planetaria\ExampleProjects\Platformer\Code\InstantRotationTracker.cs" />
+    <Compile Include="Assets\Planetaria\ExampleProjects\Platformer\Code\Laser.cs" />
     <Compile Include="Assets\Planetaria\ExampleProjects\Platformer\Code\PlanetariaCharacter.cs" />
-    <Compile Include="Assets\Planetaria\ExampleProjects\Platformer\Code\RaycastUnitTests.cs" />
     <Compile Include="Assets\Planetaria\ExampleProjects\SpaceShooter\Code\Ship.cs" />
     <Compile Include="Assets\UnitySVG\Extensions.cs" />
     <Compile Include="Assets\UnitySVG\Implement.cs" />
