@@ -30,11 +30,7 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
             last_jump_attempt = Time.time;
         }
 #else
-        if (Mathf.Approximately(Input.GetAxis("OpenVR_ThumbAxisX"), 0))
-        {
-            last_idle = Time.time;
-        }
-        if (Input.GetButtonDown("OpenVR_ThumbPress") && Time.time - last_idle > .2f)
+        if (Input.GetButtonDown("OpenVR_ThumbPress"))
         {
             last_jump_attempt = Time.time;
         }
@@ -119,7 +115,6 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
 
     [NonSerialized] private PlanetariaRigidbody planetaria_rigidbody;
     [NonSerialized] private float last_jump_attempt = -1;
-    [NonSerialized] private float last_idle = -1;
     [NonSerialized] public bool magnet_floor = false;
 }
 

@@ -20,7 +20,10 @@ namespace Planetaria
 
         public void recalculate()
         {
+            LineRenderer line_renderer = internal_transform.GetComponent<LineRenderer>();
             List<Vector3> vertices = new List<Vector3>();
+            line_renderer.positionCount = 0;
+            line_renderer.SetPositions(new Vector3[0]);
             foreach (optional<Arc> arc in shape.arcs)
             {
                 if (arc.exists)
@@ -36,7 +39,6 @@ namespace Planetaria
                     }
                 }
             }
-            LineRenderer line_renderer = internal_transform.GetComponent<LineRenderer>();
             line_renderer.positionCount = vertices.Count;
             line_renderer.SetPositions(vertices.ToArray());
         }

@@ -19,6 +19,7 @@ namespace Planetaria
             closed = closed_shape;
             has_corners = generate_corners;
             arc_list = new optional<Arc>[0];
+            arc_list_types = new GeometryType[0];
             curve_list = curves.ToArray();
             generate_arcs();
         }
@@ -33,6 +34,7 @@ namespace Planetaria
             closed = closed_shape;
             has_corners = generate_corners;
             arc_list = new optional<Arc>[0];
+            arc_list_types = new GeometryType[0];
             curve_list = new GeospatialCurve[0];
         }
 
@@ -261,6 +263,8 @@ namespace Planetaria
         [SerializeField] private GeospatialCurve[] curve_list;
         /// <summary>List of arcs on a unit sphere that define a shape.</summary>
         [NonSerialized] private optional<Arc>[] arc_list;
+        /// <summary>The types of arcs in arc_list. Note: arc_list.Length == arc_list_types.Length</summary>
+        [NonSerialized] private GeometryType[] arc_list_types;
     }
 }
 

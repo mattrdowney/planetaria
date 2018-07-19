@@ -401,6 +401,8 @@ namespace Planetaria
         [SerializeField] private float arc_angle;
         /// <summary>The angle of the arc from its parallel "equator".</summary>
         [SerializeField] private float arc_latitude;
+        /// <summary>The curvature of the arc (e.g. Corner/Edge, Straight/Convex/Concave).</summary>
+        //[SerializeField] private GeometryType curvature;
     }
 }
 

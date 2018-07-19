@@ -59,14 +59,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Oculus\VR\Editor\OVRBuild.cs" />
-    <Compile Include="Assets\Oculus\VR\Editor\OVREngineConfigurationUpdater.cs" />
-    <Compile Include="Assets\Oculus\VR\Editor\OVRLayerAttributeEditor.cs" />
-    <Compile Include="Assets\Oculus\VR\Editor\OVRManifestPreprocessor.cs" />
-    <Compile Include="Assets\Oculus\VR\Editor\OVRPluginUpdater.cs" />
-    <Compile Include="Assets\Oculus\VR\Editor\OVRPluginUpdaterStub.cs" />
-    <Compile Include="Assets\Oculus\VR\Editor\OVRScreenshotWizard.cs" />
-    <Compile Include="Assets\Oculus\VR\Scripts\Editor\OVRManagerEditor.cs" />
     <Compile Include="Assets\Planetaria\Code\Editor\ArcBuilderEditor.cs" />
     <Compile Include="Assets\Planetaria\Code\Editor\ArcEditor.cs" />
     <Compile Include="Assets\Planetaria\Code\Editor\BlockEditor.cs" />
@@ -80,7 +72,6 @@
     <Compile Include="Assets\Planetaria\Code\Editor\ProceduralMesh.cs" />
     <Compile Include="Assets\Planetaria\Code\Editor\RendererUtility.cs" />
     <Compile Include="Assets\Planetaria\Code\Editor\SnapUtility.cs" />
-    <None Include="Assets\Oculus\VR\Editor\AndroidManifest.OVRSubmission.xml" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>C:/Users/Fujitora/Dropbox/Planetaria/Planetaria/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
