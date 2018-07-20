@@ -33,18 +33,15 @@ namespace Planetaria
         /// <param name="block">The block (set of arcs) to be inspected.</param>
         private static void find_discontinuities(Block block)
         {
-            foreach (optional<Arc> arc in block.shape.arcs)
+            foreach (Arc arc in block.shape.arcs)
             {
                 for (int dimension = 0; dimension < 2; ++dimension) // Intersect already gets quadrants 3-4 by proxy
                 {
-                    if (arc.exists)
-                    {
-                        float angle = (Mathf.PI/2)*dimension;
-                        Vector3 begin = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
-                        Vector3 end = Vector3.down;
-                        Vector3[] intersections = PlanetariaIntersection.arc_path_intersections(arc.data, begin, end, 0);
-                        add_intersections(arc.data, intersections);
-                    }
+                    float angle = (Mathf.PI/2)*dimension;
+                    Vector3 begin = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
+                    Vector3 end = Vector3.down;
+                    Vector3[] intersections = PlanetariaIntersection.arc_path_intersections(arc, begin, end, 0);
+                    add_intersections(arc, intersections);
                 }
             }
         }
@@ -70,26 +67,21 @@ namespace Planetaria
 
         public static IEnumerable<ArcIterator> arc_iterator()
         {
-            foreach (optional<Arc> arc in block_variable.shape.arcs)
+            foreach (Arc arc in block_variable.shape.arcs)
             { 
-                if (!arc.exists)
-                {
-                    continue;
-                }
-            
                 float begin_angle = 0;
 
-                if (discontinuities.ContainsKey(arc.data))
+                if (discontinuities.ContainsKey(arc))
                 {
-                    for (int list_index = 0; list_index < discontinuities[arc.data].Count; ++list_index)
+                    for (int list_index = 0; list_index < discontinuities[arc].Count; ++list_index)
                     {
-                        float end_angle = discontinuities[arc.data][list_index].angle;
-                        yield return new ArcIterator(arc.data, begin_angle, end_angle);
+                        float end_angle = discontinuities[arc][list_index].angle;
+                        yield return new ArcIterator(arc, begin_angle, end_angle);
                         begin_angle = end_angle;
                     }
                 }
             
-                yield return new ArcIterator(arc.data, begin_angle, arc.data.angle());
+                yield return new ArcIterator(arc, begin_angle, arc.angle());
             }
         }
 

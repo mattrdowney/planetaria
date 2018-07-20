@@ -33,7 +33,7 @@
             return arc_visitor(shape_variable, left_index);
         }
 
-        public optional<Arc> arc
+        public Arc arc
         {
             get
             {

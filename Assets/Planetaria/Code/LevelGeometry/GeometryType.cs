@@ -7,7 +7,7 @@ public enum GeometryType
     StraightEdge,
     ConcaveEdge,
     ConvexCorner,
-    EmptyCorner,
+    StraightCorner,
     ConcaveCorner,
 }
 

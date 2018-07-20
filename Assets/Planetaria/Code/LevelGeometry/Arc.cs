@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Planetaria
@@ -8,7 +7,7 @@ namespace Planetaria
     /// An immutable class that stores an arc along the surface of a unit sphere.
     /// Includes convex corners, great edges, convex edges, and concave edges. Cannot store concave corners!
     /// </summary>
-    [Serializable]
+    [Serializable] // FIXME: NonSerialized
     public struct Arc // possibility: Quaternion to store right/up/forward (conveniently 24 bytes: https://stackoverflow.com/questions/1082311/why-should-a-net-struct-be-less-than-16-bytes)
     {
         /// <summary>
@@ -32,7 +31,7 @@ namespace Planetaria
         /// <param name="left">The arc that attaches to the beginning of the corner.</param>
         /// <param name="right">The arc that attaches to the end of the corner.</param>
         /// <returns>A concave or convex corner arc.</returns>
-        public static optional<Arc> corner(Arc left, Arc right) // TODO: normal constructor
+        public static Arc corner(Arc left, Arc right) // TODO: normal constructor
         {
             if (is_straight_angle(left, right))
             {
@@ -122,7 +121,7 @@ namespace Planetaria
         /// True if the arc is convex.
         /// False if the arc is concave.
         /// </returns>
-        public static bool is_convex(Arc left, Arc right)
+        public static bool is_convex(Arc left, Arc right) // CONSIDER: combine with is_straight_angle and return a GeometryType instead
         {
             Vector3 normal_for_left = left.end_normal();
             Vector3 rightward_for_right = Bearing.right(right.begin(), right.begin_normal());
@@ -209,6 +208,15 @@ namespace Planetaria
             return result;
         }
 
+        /// <summary>
+        /// Inspector - gets the curvature of the arc (e.g. Corner/Edge, Straight/Convex/Concave).
+        /// </summary>
+        /// <returns>The curvature of the arc (e.g. Corner/Edge, Straight/Convex/Concave).</returns>
+        public GeometryType type()
+        {
+            return curvature;
+        }
+
         public static bool operator==(Arc left, Arc right)
         {
             return left.Equals(right);
@@ -231,7 +239,8 @@ namespace Planetaria
                     this.right_axis == other.right_axis &&
                     this.center_axis == other.center_axis &&
                     this.arc_angle == other.arc_angle &&
-                    this.arc_latitude == other.arc_latitude;
+                    this.arc_latitude == other.arc_latitude &&
+                    this.curvature == other.curvature;
         }
 
         public override int GetHashCode()
@@ -240,12 +249,13 @@ namespace Planetaria
                     right_axis.GetHashCode() ^
                     center_axis.GetHashCode() ^
                     arc_latitude.GetHashCode() ^
-                    arc_angle.GetHashCode();
+                    arc_angle.GetHashCode() ^
+                    curvature.GetHashCode();
         }
 
         public override string ToString()
         {
-            return "{ " + forward_axis.ToString("F4") + ", " + right_axis.ToString("F4") + ", " + center_axis.ToString("F4") + "}" +
+            return curvature.ToString() + ": { " + forward_axis.ToString("F4") + ", " + right_axis.ToString("F4") + ", " + center_axis.ToString("F4") + "}" +
                     " : " + arc_latitude + ", " + arc_angle;
         }
 
@@ -276,18 +286,46 @@ namespace Planetaria
             {
                 arc_angle = 2*Mathf.PI - arc_angle;
             }
+
+            if (Mathf.Approximately(arc_latitude, Mathf.PI/2))
+            {
+                curvature = GeometryType.StraightEdge;
+            }
+            else if (arc_latitude < 0)
+            {
+                curvature = GeometryType.ConvexEdge; // TODO: verify
+            }
+            else // if (arc_latitude > 0)
+            {
+                curvature = GeometryType.ConcaveEdge; // TODO: verify
+            }
         }
 
         /// <summary>
-        /// Constructor - Spoof a concave corner arc with a null value
-        /// (since concave corner arcs do not extrude concentrically).
+        /// Constructor - Create a concave corner arc (for underground path)
         /// </summary>
         /// <param name="left">The arc that attaches to the beginning of the corner.</param>
         /// <param name="right">The arc that attaches to the end of the corner.</param>
-        /// <returns>A null arc (special value for a concave corner).</returns>
-        private static optional<Arc> concave_corner(Arc left, Arc right)
+        /// <returns>An arc that represents the path of a burrowed object.</returns>
+        private static Arc concave_corner(Arc left, Arc right)
         {
-            return new optional<Arc>(); // Concave corners are not actually arcs; it's complicated...
+            // find the arc along the equator and set the latitude to -PI/2 (implicitly, that means the arc radius is ~0)
+
+            // The equatorial positions can be found by extruding the edges by -PI/2 (i.e down not up)
+            Vector3 start = left.end(-Mathf.PI/2);
+            Vector3 end = right.begin(-Mathf.PI/2);
+
+            // The left tangent slope vector should point away from the position "start"
+            Vector3 slope = Bearing.right(start, left.end_normal(-Mathf.PI/2));
+
+            // Create arc along equator
+            Arc result = new Arc(start, slope, end);
+
+            // And move the arc to the "South Pole" instead
+            result.arc_latitude = -Mathf.PI/2;
+
+            result.curvature = GeometryType.ConcaveCorner;
+            return result;
         }
         
         /// <summary>
@@ -305,7 +343,7 @@ namespace Planetaria
             Vector3 end = right.begin(Mathf.PI/2);
 
             // The left tangent slope vector should point away from the position "start"
-            Vector3 slope = Bearing.right(start, left.end_normal(Mathf.PI/2)); // idk why it's left instead of right, but it works so w/e
+            Vector3 slope = Bearing.right(start, left.end_normal(Mathf.PI/2));
 
             // Create arc along equator
             Arc result = new Arc(start, slope, end);
@@ -313,6 +351,7 @@ namespace Planetaria
             // And move the arc to the "South Pole" instead
             result.arc_latitude = -Mathf.PI/2;
 
+            result.curvature = GeometryType.ConvexCorner;
             return result;
         }
 
@@ -332,6 +371,7 @@ namespace Planetaria
             // Straight arcs have no length / angle
             result.arc_angle = Precision.just_above_zero;
 
+            result.curvature = GeometryType.StraightCorner;
             return result;
         }
 
@@ -391,18 +431,18 @@ namespace Planetaria
         }
 
         /// <summary>An axis that includes the center of the circle that defines the arc.</summary>
-        [SerializeField] private Vector3 center_axis;
+        [SerializeField] private Vector3 center_axis; // FIXME: NonSerialized
         /// <summary>An axis that helps define the beginning of the arc.</summary>
         [SerializeField] private Vector3 forward_axis;
         /// <summary>A binormal to center_axis and forward_axis. Determines points after the beginning of the arc.</summary>
         [SerializeField] private Vector3 right_axis;
     
-        /// <summary>The length of the arc</summary>
+        /// <summary>The angle of the arc in radians (must be positive). Range: [0, 2PI]</summary>
         [SerializeField] private float arc_angle;
-        /// <summary>The angle of the arc from its parallel "equator".</summary>
+        /// <summary>The angle of the arc from its parallel "equator". Range: [-PI/2, +PI/2]</summary>
         [SerializeField] private float arc_latitude;
         /// <summary>The curvature of the arc (e.g. Corner/Edge, Straight/Convex/Concave).</summary>
-        //[SerializeField] private GeometryType curvature;
+        [SerializeField] private GeometryType curvature;
     }
 }
 

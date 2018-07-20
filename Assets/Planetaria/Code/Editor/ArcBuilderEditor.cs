@@ -10,12 +10,9 @@ namespace Planetaria
         [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
         static void draw_arc_builder_gizmos(ArcBuilder self, GizmoType gizmo_type)
         {
-            foreach (optional<Arc> arc in self.debug_shape.arcs)
+            foreach (Arc arc in self.debug_shape.arcs)
             {
-                if (arc.exists)
-                {
-                    ArcEditor.draw_arc(arc.data);
-                }
+                ArcEditor.draw_arc(arc);
             }
         }
     }

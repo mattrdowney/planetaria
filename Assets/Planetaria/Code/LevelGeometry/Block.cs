@@ -33,15 +33,14 @@ namespace Planetaria
             }
         }
 
-        public Vector3 center_of_mass() // FIXME: proper volume integration (for convex hulls)
+        public Vector3 center_of_mass() // TODO: verify this is a proper volume integration (for convex hulls)
         {
             Vector3 result = Vector3.zero;
-            foreach (optional<Arc> arc in shape_variable.arcs)
+            foreach (Arc arc in shape_variable.arcs)
             {
-                if (arc.exists)
-                {
-                    result += arc.data.begin();
-                }
+                float weight = arc.length(); // multiply be the weight of the arc (length is an integration of sorts)
+                Vector3 arc_center = arc.position(arc.angle()/2); // get the center of mass of each arc
+                result += arc_center * weight;
             }
             result.Normalize();
             return result; // FIXME: Vector3.zero can be returned

@@ -9,7 +9,7 @@ namespace Planetaria
     public struct Shape : ISerializationCallbackReceiver // TODO: clean-up this file~
     {
         /// <summary>
-        /// Constructor - Creates a shape based on a list of curves (generates cached list of optional<Arc>)
+        /// Constructor - Creates a shape based on a list of curves (generates cached list of Arc)
         /// </summary>
         /// <param name="curves">The list of curves that uniquely defines a shape.</param>
         /// <param name="closed_shape">Is the shape closed? (i.e. does the shape draw the final arc from the last point to the first point?)</param>
@@ -18,8 +18,7 @@ namespace Planetaria
         {
             closed = closed_shape;
             has_corners = generate_corners;
-            arc_list = new optional<Arc>[0];
-            arc_list_types = new GeometryType[0];
+            arc_list = new Arc[0];
             curve_list = curves.ToArray();
             generate_arcs();
         }
@@ -33,13 +32,12 @@ namespace Planetaria
         {
             closed = closed_shape;
             has_corners = generate_corners;
-            arc_list = new optional<Arc>[0];
-            arc_list_types = new GeometryType[0];
+            arc_list = new Arc[0];
             curve_list = new GeospatialCurve[0];
         }
 
         /// <summary>Get the nth arc in the arc_list.</summary>
-        public optional<Arc> this[int index]
+        public Arc this[int index]
         {
             get
             {
@@ -56,7 +54,7 @@ namespace Planetaria
         }
 
         /// <summary>The list of arcs that define a shape.</summary>
-        public IEnumerable<optional<Arc>> arcs
+        public IEnumerable<Arc> arcs
         {
             get
             {
@@ -98,7 +96,7 @@ namespace Planetaria
             Shape result = new Shape();
             result.closed = this.closed;
             result.has_corners = this.has_corners;
-            result.arc_list = new optional<Arc>[0];
+            result.arc_list = new Arc[0];
 
             result.curve_list = new GeospatialCurve[this.curve_list.Length + 1]; // appending array so length += 1
             Array.Copy(this.curve_list, result.curve_list, this.curve_list.Length); // copy the original array
@@ -116,7 +114,7 @@ namespace Planetaria
             Shape shape = new Shape();
             shape.closed = true;
             shape.has_corners = this.has_corners;
-            shape.arc_list = new optional<Arc>[0];
+            shape.arc_list = new Arc[0];
             shape.curve_list = this.curve_list;
             shape.generate_arcs();
             return shape;
@@ -210,8 +208,8 @@ namespace Planetaria
         /// </summary>
         private void generate_arcs()
         {
-            List<Arc> edges = generate_edges();
-            List<optional<Arc>> result = add_corners_between_edges(edges);
+            List<Arc> result = generate_edges();
+            result = add_corners_between_edges(result);
             arc_list = result.ToArray();
         }
 
@@ -238,9 +236,9 @@ namespace Planetaria
         /// </summary>
         /// <param name="edges">The arc edges that define the shape.</param>
         /// <returns>Returns a list of edges interspliced with corners.</returns>
-        private List<optional<Arc>> add_corners_between_edges(List<Arc> edges)
+        private List<Arc> add_corners_between_edges(List<Arc> edges)
         {
-            List<optional<Arc>> result = new List<optional<Arc>>();
+            List<Arc> result = new List<Arc>();
             for (int edge = 0; edge < edges.Count; ++edge)
             {
                 Arc left_edge = edges[(edge + 0) % edges.Count];
@@ -262,9 +260,7 @@ namespace Planetaria
         /// <summary>List of point-slope pairs in spherical space that define a shape.</summary>
         [SerializeField] private GeospatialCurve[] curve_list;
         /// <summary>List of arcs on a unit sphere that define a shape.</summary>
-        [NonSerialized] private optional<Arc>[] arc_list;
-        /// <summary>The types of arcs in arc_list. Note: arc_list.Length == arc_list_types.Length</summary>
-        [NonSerialized] private GeometryType[] arc_list_types;
+        [NonSerialized] private Arc[] arc_list;
     }
 }
 

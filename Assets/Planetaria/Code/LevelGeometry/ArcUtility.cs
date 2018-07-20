@@ -10,22 +10,16 @@ namespace Planetaria
             List<Arc> result = new List<Arc>();
             foreach (Block block in GameObject.FindObjectsOfType<Block>())
             {
-                foreach (optional<Arc> arc in block.shape.arcs)
+                foreach (Arc arc in block.shape.arcs)
                 {
-                    if (arc.exists)
-                    {
-                        result.Add(arc.data);
-                    }
+                    result.Add(arc);
                 }
             }
             foreach (Field field in GameObject.FindObjectsOfType<Field>())
             {
-                foreach (optional<Arc> arc in field.shape.arcs)
+                foreach (Arc arc in field.shape.arcs)
                 {
-                    if (arc.exists)
-                    {
-                        result.Add(arc.data);
-                    }
+                    result.Add(arc);
                 }
             }
             return result;

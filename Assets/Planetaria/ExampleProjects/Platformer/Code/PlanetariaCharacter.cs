@@ -107,7 +107,6 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
             LevelLoader.loader.activate_level(1);
         }
 #endif
-
     }
 
     [SerializeField] public PlanetariaPhysicMaterial material;

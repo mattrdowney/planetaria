@@ -12,18 +12,15 @@ namespace Planetaria
         {
             if (!EditorGlobal.self.hide_graphics)
             {
-                foreach (optional<Arc> arc in self.shape.arcs)
+                foreach (Arc arc in self.shape.arcs)
                 {
-                    if (arc.exists)
+                    if (!self.is_dynamic)
                     {
-                        if (!self.is_dynamic)
-                        {
-                            ArcEditor.draw_arc(arc.data, 0, Color.green);
-                        }
-                        else
-                        {
-                            ArcEditor.draw_arc(arc.data, 0, Color.green, self.GetComponent<Transform>());
-                        }
+                        ArcEditor.draw_arc(arc, 0, Color.green);
+                    }
+                    else
+                    {
+                        ArcEditor.draw_arc(arc, 0, Color.green, self.GetComponent<Transform>());
                     }
                 }
             }

@@ -48,9 +48,9 @@ namespace Planetaria
                 position = Quaternion.Inverse(block_transform.data.rotation)*position;
             }
 
-            bool left_contains = left_arc.arc.exists ? left_arc.arc.data.contains(position, last_extrusion) : false;
-            bool center_contains = center_arc.arc.exists ? center_arc.arc.data.contains(position, last_extrusion) : false;
-            bool right_contains = right_arc.arc.exists ? right_arc.arc.data.contains(position, last_extrusion) : false;
+            bool left_contains = left_arc.arc.contains(position, last_extrusion);
+            bool center_contains = center_arc.arc.contains(position, last_extrusion);
+            bool right_contains = right_arc.arc.contains(position, last_extrusion);
 
             return left_contains || center_contains || right_contains;
         }

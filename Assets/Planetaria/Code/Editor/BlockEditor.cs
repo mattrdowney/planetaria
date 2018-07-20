@@ -11,23 +11,20 @@ namespace Planetaria
         {
             if (!EditorGlobal.self.hide_graphics)
             {
-                foreach (optional<Arc> arc in self.shape.arcs)
+                foreach (Arc arc in self.shape.arcs)
                 {
-                    if (arc.exists)
+                    if (!self.is_dynamic)
                     {
-                        if (!self.is_dynamic)
-                        {
-                            ArcEditor.draw_arc(arc.data);
-                        }
-                        else if (Mathf.Abs(arc.data.circle(0).radius) > Precision.threshold)
-                        {
-                            ArcEditor.draw_arc(arc.data, self.GetComponent<Transform>());
-                        }
-                        else
-                        {
-                            ArcEditor.draw_arc(arc.data, self.GetComponent<Transform>());
-                            // FIXME: add corners for dynamic blocks
-                        }
+                        ArcEditor.draw_arc(arc);
+                    }
+                    else if (Mathf.Abs(arc.circle(0).radius) > Precision.threshold)
+                    {
+                        ArcEditor.draw_arc(arc, self.GetComponent<Transform>());
+                    }
+                    else
+                    {
+                        ArcEditor.draw_arc(arc, self.GetComponent<Transform>());
+                        // FIXME: add corners for dynamic blocks
                     }
                 }
             }

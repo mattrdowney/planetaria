@@ -24,19 +24,16 @@ namespace Planetaria
             List<Vector3> vertices = new List<Vector3>();
             line_renderer.positionCount = 0;
             line_renderer.SetPositions(new Vector3[0]);
-            foreach (optional<Arc> arc in shape.arcs)
+            foreach (Arc arc in shape.arcs)
             {
-                if (arc.exists)
+                float angle = arc.angle();
+                int line_segment_count = Mathf.CeilToInt(360 * angle / (Mathf.PI * 2));
+                for (int vertex = 0; vertex <= line_segment_count; ++vertex)
                 {
-                    float angle = arc.data.angle();
-                    int line_segment_count = Mathf.CeilToInt(360 * angle / (Mathf.PI * 2));
-                    for (int vertex = 0; vertex <= line_segment_count; ++vertex)
-                    {
-                        float fraction = vertex / (float)line_segment_count;
-                        float local_angle = angle * fraction;
-                        Vector3 position = arc.data.position(local_angle);
-                        vertices.Add(position);
-                    }
+                    float fraction = vertex / (float)line_segment_count;
+                    float local_angle = angle * fraction;
+                    Vector3 position = arc.position(local_angle);
+                    vertices.Add(position);
                 }
             }
             line_renderer.positionCount = vertices.Count;
