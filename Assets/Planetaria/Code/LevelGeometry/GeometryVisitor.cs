@@ -71,7 +71,7 @@ namespace Planetaria
         private static GeometryVisitor geometry_visitor(ArcVisitor arc_visitor, float extrusion, optional<Transform> transformation)
         {
             GeometryVisitor result;
-            if (arc_visitor.arc.type() == GeometryType.ConcaveCorner)
+            if (arc_visitor.arc.type == GeometryType.ConcaveCorner)
             {
                 result = new ConcaveGeometryVisitor(arc_visitor, extrusion, transformation);
             }
@@ -155,12 +155,12 @@ namespace Planetaria
             float ceiling_length = center_arc.arc.length(2*center_of_mass_extrusion); // corner case
             arc_length = Mathf.Max(floor_length, ceiling_length); // use longer distance to make movement feel consistent
 
-            if (right_arc.arc.type() == GeometryType.ConcaveCorner && delta_length > 0) // set right boundary
+            if (right_arc.arc.type == GeometryType.ConcaveCorner && delta_length > 0) // set right boundary
             {
                 optional<Vector3> intersection = PlanetariaIntersection.arc_arc_intersection(center_arc.arc, right_of_right_arc.arc, center_of_mass_extrusion);
                 right_angle_boundary = center_arc.arc.position_to_angle(intersection.data);
             }
-            else if (right_arc.arc.type() == GeometryType.ConcaveCorner && delta_length < 0) // set left boundary // no need to redefine boundaries if player isn't moving (delta_length == 0)
+            else if (right_arc.arc.type == GeometryType.ConcaveCorner && delta_length < 0) // set left boundary // no need to redefine boundaries if player isn't moving (delta_length == 0)
             {
                 optional<Vector3> intersection = PlanetariaIntersection.arc_arc_intersection(center_arc.arc, left_of_left_arc.arc, center_of_mass_extrusion);
                 left_angle_boundary = center_arc.arc.position_to_angle(intersection.data);

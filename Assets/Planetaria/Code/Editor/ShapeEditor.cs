@@ -12,19 +12,15 @@ namespace Planetaria
             {
                 foreach (Arc arc in self.arcs)
                 {
-                    if (arc.type() != GeometryType.StraightCorner)
+                    if (arc.type != GeometryType.StraightCorner)
                     {
                         if (!transform.exists)
                         {
-                            if (arc.type() == GeometryType.ConcaveCorner)
-                            {
-                                Debug.Log(arc);
-                            }
                             ArcEditor.draw_arc(arc);
                         }
-                        else if (arc.type() == GeometryType.StraightEdge ||
-                                arc.type() == GeometryType.ConvexEdge ||
-                                arc.type() == GeometryType.ConcaveEdge)
+                        else if (arc.type == GeometryType.StraightEdge ||
+                                arc.type == GeometryType.ConvexEdge ||
+                                arc.type == GeometryType.ConcaveEdge)
                         {
                             ArcEditor.draw_arc(arc, transform.data);
                         }

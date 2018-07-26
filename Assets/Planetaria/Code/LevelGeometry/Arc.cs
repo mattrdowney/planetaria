@@ -82,6 +82,7 @@ namespace Planetaria
         /// </returns>
         public bool contains(Vector3 position, float extrusion = 0f)
         {
+            extrusion = curvature == GeometryType.ConcaveCorner ? -extrusion : extrusion;
             bool above_floor = Mathf.Asin(Vector3.Dot(position, center_axis)) >= arc_latitude; // TODO: verify - potential bug?
             bool below_ceiling = Mathf.Asin(Vector3.Dot(position, center_axis)) <= arc_latitude + extrusion;
             bool correct_latitude = above_floor && below_ceiling;
@@ -119,18 +120,17 @@ namespace Planetaria
         /// <param name="left">Arc that will connect to beginning.</param>
         /// <param name="right">Arc that will connect to end.</param>
         /// <returns>
-        /// GeometryType.ConvexCorner if the arc is convex.
-        /// GeometryType.ConcaveCorner if the arc is concave.
-        /// GeometryType.StraightCorner if the arc is a straight angle.
+        /// GeometryType.ConvexCorner if the corner arc is convex.
+        /// GeometryType.ConcaveCorner if the corner arc is concave.
+        /// GeometryType.StraightCorner if the corner arc is a straight angle.
         /// </returns>
         public static GeometryType corner_type(Arc left, Arc right)
         {
-
-            // Straight angle
+            // Both cases
             Vector3 normal_for_left = left.end_normal();
+            // Straight angle check
             Vector3 normal_for_right = right.begin_normal();
-
-            // Convex (true) / Concave (false)
+            // Convex/Concave check
             Vector3 rightward_for_right = Bearing.right(right.begin(), right.begin_normal());
 
             if (Vector3.Dot(normal_for_left, normal_for_right) > 1 - Precision.tolerance)
@@ -233,9 +233,12 @@ namespace Planetaria
         /// Inspector - gets the curvature of the arc (e.g. Corner/Edge, Straight/Convex/Concave).
         /// </summary>
         /// <returns>The curvature of the arc (e.g. Corner/Edge, Straight/Convex/Concave).</returns>
-        public GeometryType type()
+        public GeometryType type
         {
-            return curvature;
+            get
+            {
+                return curvature;
+            }
         }
 
         public static bool operator==(Arc left, Arc right)
@@ -321,12 +324,12 @@ namespace Planetaria
         {
             // find the arc along the equator and set the latitude to -PI/2 (implicitly, that means the arc radius is ~0)
 
-            // The equatorial positions can be found by extruding the edges by -PI/2
-            Vector3 start = left.end(-Mathf.PI/2);
-            Vector3 end = right.begin(-Mathf.PI/2);
+            // The equatorial positions can be found by extruding the edges by PI/2
+            Vector3 start = right.begin(-Mathf.PI/2);
+            Vector3 end = left.end(-Mathf.PI/2);
 
             // The left tangent slope vector should point away from the position "start"
-            Vector3 slope = Bearing.right(start, left.end_normal(-Mathf.PI/2));
+            Vector3 slope = Bearing.left(start, right.begin_normal(-Mathf.PI/2));
 
             // Create arc along equator
             Arc result = new Arc(start, slope, end);
@@ -334,10 +337,16 @@ namespace Planetaria
             // And move the arc to the "South Pole" instead
             result.arc_latitude = -Mathf.PI/2;
 
-            // Flip the handedness from clockwise to counterclockwise
-            result.center_axis *= -1;
+            // FIXME: swap begin/end
+            /*
+            // Swap begin/end
+            Vector3 real_forward = result.end_normal();
+            Vector3 real_right = Bearing.left(real_forward, result.center_axis);
+            result.forward_axis = real_forward;
+            result.right_axis = real_right;
+            */
 
-            result.curvature = GeometryType.ConcaveCorner;
+            result.curvature = GeometryType.ConvexCorner;
             return result;
         }
         

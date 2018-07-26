@@ -19,11 +19,8 @@ namespace Planetaria
             float angle = arc.angle()*Mathf.Rad2Deg;
             float radius = (from - center).magnitude;
 
-
             UnityEditor.Handles.color = color;
             UnityEditor.Handles.DrawWireArc(center, normal, from - center, angle, radius);
-
-            //Debug.Log(arc.ToString());
         }
 
         /// <summary>

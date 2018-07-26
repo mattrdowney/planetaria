@@ -78,7 +78,7 @@ namespace Planetaria
         public static Arc[] shifted_arc(Arc arc, float extrusion, optional<Transform> transformation = new optional<Transform>())
         {
             Arc[] result = new Arc[2];
-            for (int half = 0; half < 2; ++half) // Necessary because of non-equator lines
+            for (int half = 0; half < 2; ++half) // Necessary because of non-great circles
             {
                 float start_angle = (0f + half)/2 * arc.angle();
                 float end_angle = (1f + half)/2 * arc.angle();
