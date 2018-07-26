@@ -35,7 +35,7 @@ namespace Planetaria
             {
                 return new optional<Arc>();
             }
-            optional<Arc> arc = block.data.shape[arc_index.data];
+            Arc arc = block.data.shape[arc_index.data];
             return arc;
         }
 
@@ -70,25 +70,22 @@ namespace Planetaria
         {
             int arc_index = 0;
             Transform child;
-            foreach (optional<Arc> arc in block.shape.arcs)
+            foreach (Arc arc in block.shape.arcs) // TODO: verify that concave corners work as expected
             {
-                if (arc.exists)
-                {
-                    child = block.GetOrAddChild("Collider" + arc_index, false).transform; // TODO: Zero out transform.position for GitHub Issue #37
-                    PlanetariaCollider collider = Miscellaneous.GetOrAddComponent<PlanetariaCollider>(child.gameObject);
-                    SphereCollider sphere_collider = collider.get_sphere_collider();
+                child = block.GetOrAddChild("Collider" + arc_index, false).transform; // TODO: Zero out transform.position for GitHub Issue #37
+                PlanetariaCollider collider = Miscellaneous.GetOrAddComponent<PlanetariaCollider>(child.gameObject);
+                SphereCollider sphere_collider = collider.get_sphere_collider();
 
-                    optional<Transform> transformation = (block.is_dynamic ? block.gameObject.transform : null);
-                    Sphere[] colliders = Sphere.arc_collider(transformation, arc.data);
-                    collider.set_colliders(colliders);
-                    collider.is_field = false;
-                    collider.material = block.material;
-                    sphere_collider.isTrigger = true;
+                optional<Transform> transformation = (block.is_dynamic ? block.gameObject.transform : null);
+                Sphere[] colliders = Sphere.arc_collider(transformation, arc);
+                collider.set_colliders(colliders);
+                collider.is_field = false;
+                collider.material = block.material;
+                sphere_collider.isTrigger = true;
 
-                    PlanetariaCache.self.index_cache.Add(sphere_collider, arc_index);
-                    PlanetariaCache.self.block_cache.Add(sphere_collider, block);
-                    PlanetariaCache.self.collider_cache.Add(sphere_collider, collider);
-                }
+                PlanetariaCache.self.index_cache.Add(sphere_collider, arc_index);
+                PlanetariaCache.self.block_cache.Add(sphere_collider, block);
+                PlanetariaCache.self.collider_cache.Add(sphere_collider, collider);
                 ++arc_index;
             }
             while (child = block.internal_transform.Find("Collider" + arc_index)) // clear out extra (old) colliders with while loop
@@ -110,13 +107,10 @@ namespace Planetaria
 
             Sphere[] colliders = new Sphere[Enumerable.Count(field.shape.arcs)];
             int current_index = 0;
-            foreach (optional<Arc> arc in field.shape.arcs)
+            foreach (Arc arc in field.shape.arcs)
             {
-                if (arc.exists)
-                {
-                    colliders[current_index] = Sphere.uniform_collider(transformation, arc.data.floor());
-                    ++current_index;
-                }
+                colliders[current_index] = Sphere.uniform_collider(transformation, arc.floor());
+                ++current_index;
             }
             collider.set_colliders(colliders);
 

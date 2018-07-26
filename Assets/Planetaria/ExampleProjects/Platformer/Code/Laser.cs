@@ -31,6 +31,16 @@ public class Laser : MonoBehaviour  // TODO: PlanetariaComponent
         arc_renderer.shape = new Shape(laser, false, false);
         arc_renderer.recalculate();
 
+#if UNITY_EDITOR
+        if (Input.GetButton("Fire1"))
+        {
+            arc_renderer.material.color = Color.red;
+        }
+        else
+        {
+            arc_renderer.material.color = Color.blue;
+        }
+#else
         if (Input.GetAxis("OpenVR_IndexTrigger") > .9f)
         {
             arc_renderer.material.color = Color.red;
@@ -39,6 +49,7 @@ public class Laser : MonoBehaviour  // TODO: PlanetariaComponent
         {
             arc_renderer.material.color = Color.blue;
         }
+#endif
 
         /*PlanetariaRaycastHit[] collision_info = PlanetariaPhysics.raycast_all(Arc.line(character_position, controller_position));
         Vector3 last_position = character_position;

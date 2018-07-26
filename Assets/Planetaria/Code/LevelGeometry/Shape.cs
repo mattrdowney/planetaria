@@ -63,10 +63,10 @@ namespace Planetaria
         }
 
         /// <summary>
-        /// Returns the index of any existing arc within the shape that matches the external reference. Null arcs are never found.
+        /// Returns the index of any existing arc within the shape that matches the external reference.
         /// </summary>
         /// <param name="arc">The reference to the external arc that will be compared to the shape's arc list.</param>
-        /// <returns>The index of the match if the arc exists in the container and is not null; a nonexistent index otherwise.</returns>
+        /// <returns>The index of the match if the arc exists in the container; a nonexistent index otherwise.</returns>
         public optional<ArcVisitor> arc_visitor(Arc arc)
         {
             int arc_list_index = Array.IndexOf(arc_list, arc);
