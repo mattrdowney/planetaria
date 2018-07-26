@@ -6,7 +6,7 @@ namespace Planetaria
 {
     [DisallowMultipleComponent]
     [Serializable]
-    public class Block : MonoBehaviour // TODO: PlanetariaComponent
+    public class Block : PlanetariaComponent
     {
         /// <summary>
         /// Constructor - Creates a block matching a curves list.
@@ -60,7 +60,7 @@ namespace Planetaria
             PlanetariaCache.self.cache(this);
         }
 
-        private void Reset()
+        protected override void Reset()
         {
             shape_variable = new Shape(new List<GeospatialCurve>(), true, true);
             ignore = new List<Block>();
@@ -76,11 +76,11 @@ namespace Planetaria
             }
             if (internal_transform == null)
             {
-                internal_transform = this.GetComponent<Transform>();
+                internal_transform = this.gameObject.internal_game_object.GetComponent<Transform>();
             }
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
             PlanetariaCache.self.uncache(this);
         }

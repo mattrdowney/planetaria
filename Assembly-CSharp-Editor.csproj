@@ -71,6 +71,7 @@
     <Compile Include="Assets\Planetaria\Code\Editor\PlanetariaColliderEditor.cs" />
     <Compile Include="Assets\Planetaria\Code\Editor\ProceduralMesh.cs" />
     <Compile Include="Assets\Planetaria\Code\Editor\RendererUtility.cs" />
+    <Compile Include="Assets\Planetaria\Code\Editor\ShapeEditor.cs" />
     <Compile Include="Assets\Planetaria\Code\Editor\SnapUtility.cs" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>C:/Users/Fujitora/Dropbox/Planetaria/Planetaria/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>

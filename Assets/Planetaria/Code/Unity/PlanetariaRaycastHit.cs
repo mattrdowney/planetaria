@@ -40,7 +40,7 @@ namespace Planetaria
             }
             positive_face_collision = true; // FIXME: HACK: LAZY: // also dynamic changes
 
-            Transform internal_transform = block.GetComponent<Transform>();
+            Transform internal_transform = block.gameObject.internal_game_object.GetComponent<Transform>();
             Quaternion arc_to_world = internal_transform.rotation;
             Quaternion world_to_arc = Quaternion.Inverse(arc_to_world);
 

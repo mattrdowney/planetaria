@@ -76,7 +76,7 @@ namespace Planetaria
                 PlanetariaCollider collider = Miscellaneous.GetOrAddComponent<PlanetariaCollider>(child.gameObject);
                 SphereCollider sphere_collider = collider.get_sphere_collider();
 
-                optional<Transform> transformation = (block.is_dynamic ? block.gameObject.transform : null);
+                optional<Transform> transformation = (block.is_dynamic ? block.gameObject.internal_game_object.transform : null);
                 Sphere[] colliders = Sphere.arc_collider(transformation, arc);
                 collider.set_colliders(colliders);
                 collider.is_field = false;

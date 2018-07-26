@@ -11,19 +11,19 @@ namespace Planetaria
         /// <param name="color">The color of the drawn arc.</param>
         public static void draw_arc(Arc arc, float extrusion, Color color)
         {
-            //if (LevelCreatorEditor.gizmos)
-            //{
-                GeospatialCircle circle = arc.circle(extrusion);
-                Vector3 from = arc.begin(extrusion);
-                Vector3 normal = circle.center;
-                Vector3 center = Vector3.Project(from, normal);
-                normal *= -Mathf.Sign(circle.radius);
-                float angle = arc.angle()*Mathf.Rad2Deg;
-                float radius = (from - center).magnitude;
+            GeospatialCircle circle = arc.circle(extrusion);
+            Vector3 from = arc.begin(extrusion);
+            Vector3 normal = circle.center;
+            Vector3 center = Vector3.Project(from, normal);
+            normal *= -Mathf.Sign(circle.radius);
+            float angle = arc.angle()*Mathf.Rad2Deg;
+            float radius = (from - center).magnitude;
 
-                UnityEditor.Handles.color = color;
-                UnityEditor.Handles.DrawWireArc(center, normal, from - center, angle, radius);
-            //}
+
+            UnityEditor.Handles.color = color;
+            UnityEditor.Handles.DrawWireArc(center, normal, from - center, angle, radius);
+
+            //Debug.Log(arc.ToString());
         }
 
         /// <summary>

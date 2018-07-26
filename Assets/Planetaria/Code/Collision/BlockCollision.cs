@@ -13,7 +13,7 @@ namespace Planetaria
                 return new optional<BlockCollision>();
             }
             
-            Quaternion block_to_world = block.gameObject.transform.rotation;
+            Quaternion block_to_world = block.gameObject.internal_game_object.transform.rotation;
             Quaternion world_to_block = Quaternion.Inverse(block_to_world);
 
             Vector3 last_position = world_to_block * rigidbody.get_previous_position();
@@ -41,7 +41,7 @@ namespace Planetaria
             }
             BlockCollision result = new BlockCollision();
             float angle = arc.position_to_angle(intersection_point.data);
-            result.geometry_visitor = GeometryVisitor.geometry_visitor(arc_visitor.data, angle, extrusion, block.gameObject.transform);
+            result.geometry_visitor = GeometryVisitor.geometry_visitor(arc_visitor.data, angle, extrusion, block.gameObject.internal_game_object.transform);
             intersection_point.data = block_to_world * intersection_point.data;
             result.distance = Vector3.Angle(intersection_point.data, rigidbody.get_previous_position())*Mathf.Deg2Rad;
             result.overshoot = Vector3.Angle(intersection_point.data, rigidbody.get_position())*Mathf.Deg2Rad;

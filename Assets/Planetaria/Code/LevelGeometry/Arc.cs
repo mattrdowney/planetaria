@@ -33,11 +33,12 @@ namespace Planetaria
         /// <returns>A concave or convex corner arc.</returns>
         public static Arc corner(Arc left, Arc right) // TODO: normal constructor
         {
-            if (is_straight_angle(left, right))
+            GeometryType type = corner_type(left, right);
+            if (type == GeometryType.StraightCorner)
             {
                 return straight_corner(left, right);
             }
-            if (is_convex(left, right))
+            if (type == GeometryType.ConvexCorner)
             {
                 return convex_corner(left, right);
             }
@@ -113,35 +114,55 @@ namespace Planetaria
         }
 
         /// <summary>
-        /// Inspector - Determine if the corner between between left's end and right's beginning is convex (i.e. a reflex angle).
+        /// Inspector - Determine the type of corner connecting the left-hand-side and right-hand-side Arcs (concave/convex/straight).
         /// </summary>
         /// <param name="left">Arc that will connect to beginning.</param>
         /// <param name="right">Arc that will connect to end.</param>
         /// <returns>
-        /// True if the arc is convex.
-        /// False if the arc is concave.
+        /// GeometryType.ConvexCorner if the arc is convex.
+        /// GeometryType.ConcaveCorner if the arc is concave.
+        /// GeometryType.StraightCorner if the arc is a straight angle.
         /// </returns>
-        public static bool is_convex(Arc left, Arc right) // CONSIDER: combine with is_straight_angle and return a GeometryType instead
+        public static GeometryType corner_type(Arc left, Arc right)
         {
+
+            // Straight angle
             Vector3 normal_for_left = left.end_normal();
+            Vector3 normal_for_right = right.begin_normal();
+
+            // Convex (true) / Concave (false)
             Vector3 rightward_for_right = Bearing.right(right.begin(), right.begin_normal());
-            return Vector3.Dot(normal_for_left, rightward_for_right) < Precision.tolerance;
+
+            if (Vector3.Dot(normal_for_left, normal_for_right) > 1 - Precision.tolerance)
+            {
+                return GeometryType.StraightCorner;
+            }
+            else
+            {
+                return Vector3.Dot(normal_for_left, rightward_for_right) < Precision.tolerance ?
+                        GeometryType.ConvexCorner : GeometryType.ConcaveCorner;
+            }
         }
 
         /// <summary>
-        /// Inspector - Determine if the corner between between left's end and right's beginning is a straight angle (i.e. 180 degrees).
+        /// Inspector - Determine the type of edge (concave/convex/straight).
         /// </summary>
-        /// <param name="left">Arc that will connect to beginning.</param>
-        /// <param name="right">Arc that will connect to end.</param>
+        /// <param name="latitude">The latitude of the arc (i.e. the arc_latitude).</param>
         /// <returns>
-        /// True if the arc is a straight angle.
-        /// False if the arc is not a straight angle.
+        /// GeometryType.ConvexEdge if the arc is small circle with convex focus.
+        /// GeometryType.ConcaveEdge if the arc is small circle with concave focus.
+        /// GeometryType.StraightEdge if the arc is a great circle.
         /// </returns>
-        public static bool is_straight_angle(Arc left, Arc right)
+        public static GeometryType edge_type(float latitude)
         {
-            Vector3 normal_for_left = left.end_normal();
-            Vector3 normal_for_right = right.begin_normal();
-            return Vector3.Dot(normal_for_left, normal_for_right) > 1 - Precision.tolerance;
+            if (Mathf.Abs(latitude) < Precision.tolerance)
+            {
+                return GeometryType.StraightEdge;
+            }
+            else
+            {
+                return latitude < 0 ? GeometryType.ConvexEdge : GeometryType.ConcaveEdge;
+            }
         }
 
         /// <summary>
@@ -287,18 +308,7 @@ namespace Planetaria
                 arc_angle = 2*Mathf.PI - arc_angle;
             }
 
-            if (Mathf.Approximately(arc_latitude, Mathf.PI/2))
-            {
-                curvature = GeometryType.StraightEdge;
-            }
-            else if (arc_latitude < 0)
-            {
-                curvature = GeometryType.ConvexEdge; // TODO: verify
-            }
-            else // if (arc_latitude > 0)
-            {
-                curvature = GeometryType.ConcaveEdge; // TODO: verify
-            }
+            curvature = edge_type(arc_latitude);
         }
 
         /// <summary>
@@ -311,7 +321,7 @@ namespace Planetaria
         {
             // find the arc along the equator and set the latitude to -PI/2 (implicitly, that means the arc radius is ~0)
 
-            // The equatorial positions can be found by extruding the edges by -PI/2 (i.e down not up)
+            // The equatorial positions can be found by extruding the edges by -PI/2
             Vector3 start = left.end(-Mathf.PI/2);
             Vector3 end = right.begin(-Mathf.PI/2);
 
@@ -323,6 +333,9 @@ namespace Planetaria
 
             // And move the arc to the "South Pole" instead
             result.arc_latitude = -Mathf.PI/2;
+
+            // Flip the handedness from clockwise to counterclockwise
+            result.center_axis *= -1;
 
             result.curvature = GeometryType.ConcaveCorner;
             return result;

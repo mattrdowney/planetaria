@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using System.Collections.Generic;
 
 namespace Planetaria
 {
@@ -10,19 +9,13 @@ namespace Planetaria
         [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
         private static void draw_block_gizmos(Field self, GizmoType gizmo_type)
         {
-            if (!EditorGlobal.self.hide_graphics)
+            if (self.is_dynamic)
             {
-                foreach (Arc arc in self.shape.arcs)
-                {
-                    if (!self.is_dynamic)
-                    {
-                        ArcEditor.draw_arc(arc, 0, Color.green);
-                    }
-                    else
-                    {
-                        ArcEditor.draw_arc(arc, 0, Color.green, self.GetComponent<Transform>());
-                    }
-                }
+                ShapeEditor.draw_shape(self.shape, self.GetComponent<Transform>());
+            }
+            else
+            {
+                ShapeEditor.draw_shape(self.shape);
             }
         }
     }

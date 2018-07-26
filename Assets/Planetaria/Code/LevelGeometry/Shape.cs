@@ -150,7 +150,7 @@ namespace Planetaria
                 Arc last_arc = closed_shape.generate_edges().Last();
                 foreach (Arc arc in closed_shape.generate_edges())
                 {
-                    if (!Arc.is_convex(last_arc, arc))
+                    if (Arc.corner_type(last_arc, arc) == GeometryType.ConcaveCorner)
                     {
                         return false;
                     }
