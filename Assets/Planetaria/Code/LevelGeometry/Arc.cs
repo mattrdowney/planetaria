@@ -8,41 +8,21 @@ namespace Planetaria
     /// Includes convex corners, great edges, convex edges, and concave edges. Cannot store concave corners!
     /// </summary>
     [Serializable] // FIXME: NonSerialized
-    public struct Arc // possibility: Quaternion to store right/up/forward (conveniently 24 bytes: https://stackoverflow.com/questions/1082311/why-should-a-net-struct-be-less-than-16-bytes)
+    public partial struct Arc // possibility: Quaternion to store right/up/forward (conveniently 24 bytes: https://stackoverflow.com/questions/1082311/why-should-a-net-struct-be-less-than-16-bytes)
     {
         /// <summary>
-        /// Constructor - Creates convex, concave, or great arcs.
+        /// Constructor (Named) - Creates convex, concave, or great arcs.
         /// </summary>
         /// <param name="curve">The GeospatialCurve that defines an arc on a unit sphere.</param>
         /// <returns>An arc along the surface of a unit sphere.</returns>
-        public static Arc curve(Vector3 from, Vector3 slope, Vector3 to)
+        public static Arc curve(Vector3 from, Vector3 slope, Vector3 to, bool clockwise = true)
         {
-            return validify(from, slope, to);
+            return validify(from, slope, to, clockwise);
         }
 
-        public static Arc line(Vector3 from, Vector3 to)
+        public static Arc line(Vector3 from, Vector3 to, bool clockwise = true)
         {
-            return curve(from, to, to);
-        }
-
-        /// <summary>
-        /// Constructor - Determines whether a corner is concave or convex and delegates accordingly.
-        /// </summary>
-        /// <param name="left">The arc that attaches to the beginning of the corner.</param>
-        /// <param name="right">The arc that attaches to the end of the corner.</param>
-        /// <returns>A concave or convex corner arc.</returns>
-        public static Arc corner(Arc left, Arc right) // TODO: normal constructor
-        {
-            GeometryType type = corner_type(left, right);
-            if (type == GeometryType.StraightCorner)
-            {
-                return straight_corner(left, right);
-            }
-            if (type == GeometryType.ConvexCorner)
-            {
-                return convex_corner(left, right);
-            }
-            return concave_corner(left, right);
+            return curve(from, to, to, clockwise);
         }
 
         /// <summary>
@@ -65,7 +45,7 @@ namespace Planetaria
             return normal(0, extrusion);
         }
 
-        public GeospatialCircle circle(float extrusion = 0)
+        public GeospatialCircle circle(float extrusion = 0) // TODO: combine with floor()
         {
             Vector3 center = pole(extrusion);
             float radius = elevation(extrusion);
@@ -80,9 +60,8 @@ namespace Planetaria
         /// True if a collision is detected;
         /// False otherwise.
         /// </returns>
-        public bool contains(Vector3 position, float extrusion = 0f)
+        public bool contains(Vector3 position, float extrusion = 0f) // FIXME: TODO: ensure this works with 1) negative extrusions and 2) concave corners
         {
-            extrusion = curvature == GeometryType.ConcaveCorner ? -extrusion : extrusion;
             bool above_floor = Mathf.Asin(Vector3.Dot(position, center_axis)) >= arc_latitude; // TODO: verify - potential bug?
             bool below_ceiling = Mathf.Asin(Vector3.Dot(position, center_axis)) <= arc_latitude + extrusion;
             bool correct_latitude = above_floor && below_ceiling;
@@ -104,6 +83,16 @@ namespace Planetaria
         }
 
         /// <summary>
+        /// Inspector - Creates a SphericalCap that represents the floor (at given elevation).
+        /// </summary>
+        /// <param name="extrusion">The radius of the collider touching the floor.</param>
+        /// <returns>A SphericalCap representing the floor. Normal goes "down" - towards floor.</returns>
+        public SphericalCap floor(float extrusion = 0) // TODO: combine with circle()
+        {
+            return SphericalCap.cap(center_axis, Mathf.Sin(arc_latitude + extrusion)).complement();
+        }
+
+        /// <summary>
         /// Inspector - Get the position at a particular interpolation factor [0,1].
         /// </summary>
         /// <param name="interpolator">The interpolation factor [0,1] along the arc.</param>
@@ -112,57 +101,6 @@ namespace Planetaria
         public Vector3 interpolate(float interpolator, float extrusion = 0f)
         {
             return position(interpolator*angle(), extrusion);
-        }
-
-        /// <summary>
-        /// Inspector - Determine the type of corner connecting the left-hand-side and right-hand-side Arcs (concave/convex/straight).
-        /// </summary>
-        /// <param name="left">Arc that will connect to beginning.</param>
-        /// <param name="right">Arc that will connect to end.</param>
-        /// <returns>
-        /// GeometryType.ConvexCorner if the corner arc is convex.
-        /// GeometryType.ConcaveCorner if the corner arc is concave.
-        /// GeometryType.StraightCorner if the corner arc is a straight angle.
-        /// </returns>
-        public static GeometryType corner_type(Arc left, Arc right)
-        {
-            // Both cases
-            Vector3 normal_for_left = left.end_normal();
-            // Straight angle check
-            Vector3 normal_for_right = right.begin_normal();
-            // Convex/Concave check
-            Vector3 rightward_for_right = Bearing.right(right.begin(), right.begin_normal());
-
-            if (Vector3.Dot(normal_for_left, normal_for_right) > 1 - Precision.tolerance)
-            {
-                return GeometryType.StraightCorner;
-            }
-            else
-            {
-                return Vector3.Dot(normal_for_left, rightward_for_right) < Precision.tolerance ?
-                        GeometryType.ConvexCorner : GeometryType.ConcaveCorner;
-            }
-        }
-
-        /// <summary>
-        /// Inspector - Determine the type of edge (concave/convex/straight).
-        /// </summary>
-        /// <param name="latitude">The latitude of the arc (i.e. the arc_latitude).</param>
-        /// <returns>
-        /// GeometryType.ConvexEdge if the arc is small circle with convex focus.
-        /// GeometryType.ConcaveEdge if the arc is small circle with concave focus.
-        /// GeometryType.StraightEdge if the arc is a great circle.
-        /// </returns>
-        public static GeometryType edge_type(float latitude)
-        {
-            if (Mathf.Abs(latitude) < Precision.tolerance)
-            {
-                return GeometryType.StraightEdge;
-            }
-            else
-            {
-                return latitude < 0 ? GeometryType.ConvexEdge : GeometryType.ConcaveEdge;
-            }
         }
 
         /// <summary>
@@ -184,16 +122,6 @@ namespace Planetaria
         public Vector3 normal(float angle, float extrusion = 0f)
         {
             return position(angle, extrusion + Mathf.PI/2);
-        }
-
-        /// <summary>
-        /// Inspector - Creates a SphericalCap that represents the floor (at given elevation).
-        /// </summary>
-        /// <param name="extrusion">The radius of the collider touching the floor.</param>
-        /// <returns>A SphericalCap representing the floor. Normal goes "down" - towards floor.</returns>
-        public SphericalCap floor(float extrusion = 0)
-        {
-            return SphericalCap.cap(center_axis, Mathf.Sin(arc_latitude + extrusion)).complement();
         }
 
         /// <summary>
@@ -280,176 +208,7 @@ namespace Planetaria
         public override string ToString()
         {
             return curvature.ToString() + ": { " + forward_axis.ToString("F4") + ", " + right_axis.ToString("F4") + ", " + center_axis.ToString("F4") + "}" +
-                    " : " + arc_latitude + ", " + arc_angle;
-        }
-
-        /// <summary>
-        /// Constructor - Creates convex, concave, or great arcs.
-        /// </summary>
-        /// <param name="curve">The GeospatialCurve that defines an arc on a unit sphere.</param>
-        /// <returns>An arc along the surface of a unit sphere.</returns>
-        private Arc(Vector3 from, Vector3 slope, Vector3 to)
-        {
-            right_axis = slope;
-            forward_axis = from; // for great circles only
-            if (from != to) // typical case (for all arcs)
-            {
-                forward_axis = Vector3.ProjectOnPlane(from - to, slope).normalized; // [from - to] is within the arc's plane
-            }
-            center_axis = Vector3.Cross(forward_axis, right_axis).normalized; // get binormal using left-hand rule
-
-            float elevation = Vector3.Dot(from, center_axis);
-            Vector3 center = elevation * center_axis;
-
-            Vector3 end_axis = (to - center).normalized;
-            bool long_path = Vector3.Dot(right_axis, end_axis) < 0 || from == to;
-            arc_angle = Vector3.Angle(from - center, to - center)*Mathf.Deg2Rad;
-            arc_latitude = Mathf.Asin(elevation);
-
-            if (long_path)
-            {
-                arc_angle = 2*Mathf.PI - arc_angle;
-            }
-
-            curvature = edge_type(arc_latitude);
-        }
-
-        /// <summary>
-        /// Constructor - Create a concave corner arc (for underground path)
-        /// </summary>
-        /// <param name="left">The arc that attaches to the beginning of the corner.</param>
-        /// <param name="right">The arc that attaches to the end of the corner.</param>
-        /// <returns>An arc that represents the path of a burrowed object.</returns>
-        private static Arc concave_corner(Arc left, Arc right)
-        {
-            // find the arc along the equator and set the latitude to -PI/2 (implicitly, that means the arc radius is ~0)
-
-            // The equatorial positions can be found by extruding the edges by PI/2
-            Vector3 start = right.begin(-Mathf.PI/2);
-            Vector3 end = left.end(-Mathf.PI/2);
-
-            // The left tangent slope vector should point away from the position "start"
-            Vector3 slope = Bearing.left(start, right.begin_normal(-Mathf.PI/2));
-
-            // Create arc along equator
-            Arc result = new Arc(start, slope, end);
-
-            // And move the arc to the "South Pole" instead
-            result.arc_latitude = -Mathf.PI/2;
-
-            // FIXME: swap begin/end
-            /*
-            // Swap begin/end
-            Vector3 real_forward = result.end_normal();
-            Vector3 real_right = Bearing.left(real_forward, result.center_axis);
-            result.forward_axis = real_forward;
-            result.right_axis = real_right;
-            */
-
-            result.curvature = GeometryType.ConvexCorner;
-            return result;
-        }
-        
-        /// <summary>
-        /// Constructor - Create a convex corner arc.
-        /// </summary>
-        /// <param name="left">The arc that attaches to the beginning of the corner.</param>
-        /// <param name="right">The arc that attaches to the end of the corner.</param>
-        /// <returns>A convex corner arc.</returns>
-        private static Arc convex_corner(Arc left, Arc right) // TODO: does this work when latitude is >0?
-        {
-            // find the arc along the equator and set the latitude to -PI/2 (implicitly, that means the arc radius is ~0)
-
-            // The equatorial positions can be found by extruding the edges by PI/2
-            Vector3 start = left.end(Mathf.PI/2);
-            Vector3 end = right.begin(Mathf.PI/2);
-
-            // The left tangent slope vector should point away from the position "start"
-            Vector3 slope = Bearing.right(start, left.end_normal(Mathf.PI/2));
-
-            // Create arc along equator
-            Arc result = new Arc(start, slope, end);
-
-            // And move the arc to the "South Pole" instead
-            result.arc_latitude = -Mathf.PI/2;
-
-            result.curvature = GeometryType.ConvexCorner;
-            return result;
-        }
-
-        /// <summary>
-        /// Constructor - Create a straight corner arc (should have zero length).
-        /// </summary>
-        /// <param name="left">The arc that attaches to the beginning of the corner.</param>
-        /// <param name="right">The arc that attaches to the end of the corner.</param>
-        /// <returns>A straight corner arc.</returns>
-        private static Arc straight_corner(Arc left, Arc right)
-        {
-            Vector3 start = left.end();
-            Vector3 direction = Bearing.right(start, left.end_normal()); // idk why it's left instead of right, but it works so w/e
-
-            Arc result = Arc.line(start, direction);
-
-            // Straight arcs have no length / angle
-            result.arc_angle = Precision.just_above_zero;
-
-            result.curvature = GeometryType.StraightCorner;
-            return result;
-        }
-
-        /// <summary>
-        /// Inspector - Determine the elevation of the extruded radius compared to its pole.
-        /// </summary>
-        /// <param name="extrusion">The radius to extrude the arc.</param>
-        /// <returns>
-        /// For poles towards the normal, returns a negative number [-PI/2, 0]
-        /// representing the angle of decline of the extruded point from the pole.
-        /// For poles away from the normal, returns a positive number [0, PI/2]
-        /// representing the angle of incline of the extruded point from the pole. 
-        /// </returns>
-        private float elevation(float extrusion = 0f)
-        {
-            float latitude = arc_latitude + extrusion;
-        
-            if (latitude >= 0f) // pole towards normal
-            {
-                return latitude - Mathf.PI/2; // elevation is zero or negative 
-            }
-
-            // pole away from normal
-            return latitude + Mathf.PI/2; // elevation is positive
-        }
-
-        /// <summary>
-        /// Inspector - Returns the axis perpendicular to all movement along the arc.
-        /// Returns the closer pole, so the pole can be above or below the arc (with respect to the normal).
-        /// </summary>
-        /// <returns>The closest pole, which is perpendicular to the axes of motion.</returns>
-        private Vector3 pole(float extrusion = 0f)
-        {
-            float latitude = arc_latitude + extrusion;
-
-            if (latitude >= 0)
-            {
-                return center_axis;
-            }
-        
-            return -center_axis;
-        }
-
-        private static Arc validify(Vector3 from, Vector3 slope, Vector3 to)
-        {
-            if (from == slope)
-            {
-                slope = Vector3.up;
-            }
-
-            from.Normalize();
-            slope = Vector3.ProjectOnPlane(slope, from);
-            slope.Normalize();
-            to.Normalize();
-
-            return new Arc(from, slope, to);
+                    " : " + arc_latitude + "/3.141, " + arc_angle + "/6.283";
         }
 
         /// <summary>An axis that includes the center of the circle that defines the arc.</summary>

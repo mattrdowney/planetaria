@@ -93,7 +93,7 @@ namespace Planetaria
                     from_tangent = transformation.data.rotation * from_tangent;
                     to = transformation.data.rotation * to;
                 }
-                result[half] = Arc.curve(from, from_tangent, to);
+                result[half] = Arc.curve(from, from_tangent, to, arc.type != GeometryType.ConcaveCorner);
             }
 
             return result;

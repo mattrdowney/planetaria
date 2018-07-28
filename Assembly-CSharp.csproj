@@ -75,6 +75,7 @@
     <Compile Include="Assets\Planetaria\Code\CoordinateSystems\SphericalRectangleUVCoordinates.cs" />
     <Compile Include="Assets\Planetaria\Code\CoordinateSystems\StereoscopicProjectionCoordinates.cs" />
     <Compile Include="Assets\Planetaria\Code\LevelGeometry\Arc.cs" />
+    <Compile Include="Assets\Planetaria\Code\LevelGeometry\ArcInternal.cs" />
     <Compile Include="Assets\Planetaria\Code\LevelGeometry\ArcUtility.cs" />
     <Compile Include="Assets\Planetaria\Code\LevelGeometry\ArcVisitor.cs" />
     <Compile Include="Assets\Planetaria\Code\LevelGeometry\Block.cs" />
@@ -102,7 +103,6 @@
     <Compile Include="Assets\Planetaria\Code\Rendering\BlockRenderer.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\BlockRendererIterator.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\Discontinuity.cs" />
-    <Compile Include="Assets\Planetaria\Code\Rendering\PixelArtRenderer.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\QuadraticBezierCurve.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\RenderVectorGraphics.cs" />
     <Compile Include="Assets\Planetaria\Code\Rendering\ShapeRenderer.cs" />
