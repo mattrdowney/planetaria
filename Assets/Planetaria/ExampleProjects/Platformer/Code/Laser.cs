@@ -8,7 +8,6 @@ public class Laser : MonoBehaviour  // TODO: PlanetariaComponent
 
     private void Start()
     {
-        main_camera = GameObject.FindObjectOfType<PlanetariaCamera>().gameObject.internal_game_object.transform;
         main_character = GameObject.FindObjectOfType<PlanetariaCharacter>().gameObject.internal_game_object.transform;
         main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
         arc_renderer = GameObject.FindObjectOfType<ArcRenderer>();
@@ -22,7 +21,7 @@ public class Laser : MonoBehaviour  // TODO: PlanetariaComponent
     private void Update()
     {
         Vector3 character_position = main_character.forward;
-        Vector3 controller_position = main_camera.rotation * main_controller.forward;
+        Vector3 controller_position = main_controller.forward;
         List<GeospatialCurve> laser = new List<GeospatialCurve>
         {
             GeospatialCurve.curve(character_position, controller_position),
@@ -72,8 +71,7 @@ public class Laser : MonoBehaviour  // TODO: PlanetariaComponent
             //Destroy(new object, 3 seconds) + test Destroy for PlanetariaGameObject
         }*/
     }
-
-    private Transform main_camera;
+    
     private Transform main_character;
     private Transform main_controller;
     private ArcRenderer arc_renderer;

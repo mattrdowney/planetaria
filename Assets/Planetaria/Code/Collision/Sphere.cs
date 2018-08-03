@@ -52,7 +52,6 @@ namespace Planetaria
             Array.Copy(elevation_colliders, colliders, elevation_colliders.Length);
             Array.Copy(boundary_colliders, 0, colliders, elevation_colliders.Length, boundary_colliders.Length);
 
-            Debug.Log(arc.type + " " + colliders.Length);
             return colliders;
         }
         

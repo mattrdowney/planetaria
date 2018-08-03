@@ -11,6 +11,7 @@ namespace Planetaria
         {
             base.Awake();
             internal_camera = GameObject.FindObjectOfType<Camera>();
+            camera_transform = internal_camera.GetComponent<Transform>();
             internal_transform = gameObject.internal_game_object.GetComponent<Transform>();
         }
 
@@ -26,11 +27,11 @@ namespace Planetaria
                     break;
                 // Motion controllers (e.g. virtual reality)
                 case InputDevice.Gyroscope:
-                    internal_transform.rotation = InputTracking.GetLocalRotation(XRNode.RightHand);
+                    internal_transform.rotation = camera_transform.rotation * InputTracking.GetLocalRotation(XRNode.RightHand);
                     break;
                 // Computer mouse
                 case InputDevice.Mouse:
-                    internal_transform.rotation = Quaternion.LookRotation(internal_camera.transform.InverseTransformDirection(internal_camera.ScreenPointToRay(Input.mousePosition).direction));
+                    internal_transform.rotation = Quaternion.LookRotation(internal_camera.ScreenPointToRay(Input.mousePosition).direction);
                     break;
                 // Touch devices (e.g. laptops and tablets)
                 case InputDevice.Touchpad:
@@ -40,7 +41,7 @@ namespace Planetaria
                 case InputDevice.Touchscreen:
                     if (Input.touches.Length > 0)
                     {
-                        internal_transform.rotation = Quaternion.LookRotation(internal_camera.transform.InverseTransformDirection(internal_camera.ScreenPointToRay(Input.touches[0].position).direction));
+                        internal_transform.rotation = Quaternion.LookRotation(internal_camera.ScreenPointToRay(Input.touches[0].position).direction);
                     }
                     break;
             }
@@ -48,6 +49,7 @@ namespace Planetaria
 
         public InputDevice input_device_type = InputDevice.Gyroscope;
         private Camera internal_camera;
+        private Transform camera_transform;
         private Transform internal_transform;
     }
 }

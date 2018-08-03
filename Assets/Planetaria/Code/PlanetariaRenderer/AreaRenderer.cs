@@ -11,7 +11,12 @@ namespace Planetaria
                 internal_renderer = Miscellaneous.GetOrAddComponent<SpriteRenderer>(internal_transform);
             }
             internal_renderer.sharedMaterial = material;
+
+            SpriteRenderer renderer = Miscellaneous.GetOrAddComponent<SpriteRenderer>(internal_transform);
+            renderer.sprite = sprite;
         }
+        
+        [SerializeField] private Sprite sprite;
     }
 }
 

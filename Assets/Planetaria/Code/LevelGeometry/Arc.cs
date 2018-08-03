@@ -8,7 +8,7 @@ namespace Planetaria
     /// Includes convex corners, great edges, convex edges, and concave edges. Cannot store concave corners!
     /// </summary>
     [Serializable] // FIXME: NonSerialized
-    public partial struct Arc // possibility: Quaternion to store right/up/forward (conveniently 24 bytes: https://stackoverflow.com/questions/1082311/why-should-a-net-struct-be-less-than-16-bytes)
+    public partial struct Arc
     {
         /// <summary>
         /// Constructor (Named) - Creates convex, concave, or great arcs.
