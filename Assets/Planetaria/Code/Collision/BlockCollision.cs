@@ -69,9 +69,9 @@ namespace Planetaria
             return result;
         }
 
-        public void move(float delta_length, float extrusion)
+        public void move(float delta_length, optional<float> extrusion = new optional<float>())
         {
-            geometry_visitor = geometry_visitor.move_position(delta_length, extrusion);
+            geometry_visitor = geometry_visitor.move_position(delta_length);
         }
 
         public NormalizedCartesianCoordinates position()

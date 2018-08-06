@@ -18,15 +18,15 @@ namespace Planetaria
             return concave;
         }
 
-        public GeometryVisitor move_position(float delta_length, float extrusion)
+        public GeometryVisitor move_position(float delta_length, optional<float> extrusion = new optional<float>())
         {
-            if (extrusion != last_extrusion)
+            if (extrusion.exists && extrusion.data != last_extrusion)
             {
-                upkeep(delta_length, extrusion);
-                last_extrusion = extrusion;
+                upkeep(delta_length, extrusion.data);
+                last_extrusion = extrusion.data;
             }
             float delta_angle = delta_length * (arc_angle/arc_length);
-            return set_position(angular_position + delta_angle, extrusion);
+            return set_position(angular_position + delta_angle, last_extrusion);
         }
 
         public Vector3 normal()
@@ -47,7 +47,7 @@ namespace Planetaria
             return cached_position;
         }
 
-        public bool contains(Vector3 position)
+        public bool contains(Vector3 position) // FIXME: bug with GeometryType.ConcaveCorner (negative extrusion)
         {
             position.Normalize(); // FIXME ? : this is an approximation
 
@@ -89,6 +89,11 @@ namespace Planetaria
             }
 
             return result;
+        }
+
+        public float extrusion()
+        {
+            return last_extrusion;
         }
 
         private static GeometryVisitor right_visitor(ArcVisitor arc_visitor, float rightward_length_from_boundary, float extrusion, optional<Transform> transformation)

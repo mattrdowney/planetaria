@@ -66,10 +66,14 @@ namespace Planetaria
             bool below_ceiling = Mathf.Asin(Vector3.Dot(position, center_axis)) <= arc_latitude + extrusion;
             bool correct_latitude = above_floor && below_ceiling;
 
+            bool concave_underground = curvature == GeometryType.ConcaveCorner && extrusion > 0;
+            bool convex_underground = curvature != GeometryType.ConcaveCorner && extrusion < 0;
+            bool underground = concave_underground || convex_underground;
+
             float angle = position_to_angle(position, extrusion);
             bool correct_angle = angle < arc_angle;
 
-            return correct_latitude && correct_angle;
+            return (correct_latitude || underground) && correct_angle;
         }
 
         public Vector3 end(float extrusion = 0f)
