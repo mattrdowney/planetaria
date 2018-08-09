@@ -10,23 +10,23 @@ namespace Planetaria
             return result.set_position(angular_position, extrusion);
         }
 
-        public static bool concave(ArcVisitor arc_visitor, float extrusion)
+        public static bool concave(Arc arc, float extrusion)
         {
-            bool concave_surfaced = arc_visitor.arc.type == GeometryType.ConcaveCorner && extrusion > 0;
-            bool concave_burrowed = arc_visitor.arc.type == GeometryType.ConvexCorner && extrusion < 0;
+            bool concave_surfaced = arc.type == GeometryType.ConcaveCorner && extrusion > 0;
+            bool concave_burrowed = arc.type == GeometryType.ConvexCorner && extrusion < 0;
             bool concave = concave_surfaced || concave_burrowed;
             return concave;
         }
 
         public GeometryVisitor move_position(float delta_length, optional<float> extrusion = new optional<float>())
         {
-            if (extrusion.exists && extrusion.data != last_extrusion)
+            Debug.Log(offset);
+            if (extrusion.exists)
             {
-                upkeep(delta_length, extrusion.data);
-                last_extrusion = extrusion.data;
+                offset = extrusion.data;
             }
             float delta_angle = delta_length * (arc_angle/arc_length);
-            return set_position(angular_position + delta_angle, last_extrusion);
+            return set_position(angular_position + delta_angle, offset);
         }
 
         public Vector3 normal()
@@ -56,30 +56,27 @@ namespace Planetaria
                 position = Quaternion.Inverse(block_transform.data.rotation)*position;
             }
 
-            bool left_contains = left_arc.arc.contains(position, last_extrusion);
-            bool center_contains = center_arc.arc.contains(position, last_extrusion);
-            bool right_contains = right_arc.arc.contains(position, last_extrusion);
+            bool left_contains = arc_visitor[-1].contains(position, offset);
+            bool center_contains = arc_visitor[0].contains(position, offset);
+            bool right_contains = arc_visitor[+1].contains(position, offset);
 
             return left_contains || center_contains || right_contains;
         }
 
         protected GeometryVisitor(ArcVisitor arc_visitor, float extrusion, optional<Transform> transformation)
         {
-            center_arc = arc_visitor;
-            left_arc = arc_visitor.left();
-            right_arc = arc_visitor.right();
+            this.arc_visitor = arc_visitor;
             block_transform = transformation;
+            arc_angle = arc_visitor.arc.angle();
 
             initialize();
-            upkeep(-1, extrusion); // FIXME: magic numbers
-            upkeep(+1, extrusion);
-            last_extrusion = extrusion;
+            offset = extrusion;
         }
 
         private static GeometryVisitor geometry_visitor(ArcVisitor arc_visitor, float extrusion, optional<Transform> transformation)
         {
             GeometryVisitor result;
-            if (concave(arc_visitor, extrusion))
+            if (concave(arc_visitor.arc, extrusion))
             {
                 result = new ConcaveGeometryVisitor(arc_visitor, extrusion, transformation);
             }
@@ -91,9 +88,21 @@ namespace Planetaria
             return result;
         }
 
-        public float extrusion()
+        /// <summary>
+        /// The (positive or negative) offset from the path. Negative for (at least partially) submerged objects; scale/2 for typical objects.
+        /// </summary>
+        public float offset
         {
-            return last_extrusion;
+            get
+            {
+                return last_extrusion;
+            }
+            set
+            {
+                extrude(value);
+                calculate_location();
+                last_extrusion = value;
+            }
         }
 
         private static GeometryVisitor right_visitor(ArcVisitor arc_visitor, float rightward_length_from_boundary, float extrusion, optional<Transform> transformation)
@@ -114,27 +123,25 @@ namespace Planetaria
             if (angular_position < left_angle_boundary)
             {
                 float extra_length = Mathf.Abs((left_angle_boundary - angular_position) * (arc_length/arc_angle));
-                result = left_visitor(center_arc, extra_length, extrusion, block_transform);
+                result = left_visitor(arc_visitor, extra_length, extrusion, block_transform);
             }
             else if (angular_position > right_angle_boundary)
             {
                 float extra_length = Mathf.Abs((angular_position - right_angle_boundary) * (arc_length/arc_angle));
-                result = right_visitor(center_arc, extra_length, extrusion, block_transform);
+                result = right_visitor(arc_visitor, extra_length, extrusion, block_transform);
             }
             this.angular_position = angular_position;
             calculate_location();
             return result;
         }
 
-        protected abstract void upkeep(float delta_length, float extrusion);
+        protected abstract void extrude(float extrusion); // This is a subtle bug because flipping to negative/positive extrusion on corners should return a GeometryVisitor - last piece of proof I need for scrapping most of this file and augmenting Arc (most significant (practical) change to that file yet)
         protected abstract void initialize();
         protected abstract void calculate_location();
     
         protected optional<Transform> block_transform;
 
-        protected ArcVisitor center_arc;
-        protected ArcVisitor left_arc;
-        protected ArcVisitor right_arc;
+        protected ArcVisitor arc_visitor;
 
         protected Vector3 cached_position;
         protected Vector3 cached_normal;
@@ -155,39 +162,41 @@ namespace Planetaria
 
         protected override void initialize()
         {
-            left_of_left_arc = left_arc.left();
-            right_of_right_arc = right_arc.right();
-            arc_angle = center_arc.arc.angle();
             left_angle_boundary = 0;
             right_angle_boundary = arc_angle;
         }
 
-        protected override void upkeep(float delta_length, float center_of_mass_extrusion)
+        protected override void extrude(float center_of_mass_extrusion)
         {
-            float floor_length = center_arc.arc.length(); // edge case
-            float ceiling_length = center_arc.arc.length(2*center_of_mass_extrusion); // corner case
+            float floor_length = arc_visitor.arc.length(); // edge case
+            float ceiling_length = arc_visitor.arc.length(2*center_of_mass_extrusion); // corner case
             arc_length = Mathf.Max(floor_length, ceiling_length); // use longer distance to make movement feel consistent
 
-            if (delta_length > 0 && concave(right_arc, center_of_mass_extrusion)) // set right boundary
+            if (concave(arc_visitor[+1], center_of_mass_extrusion)) // set right boundary
             {
-                optional<Vector3> intersection = PlanetariaIntersection.arc_arc_intersection(center_arc.arc, right_of_right_arc.arc, center_of_mass_extrusion);
-                right_angle_boundary = center_arc.arc.position_to_angle(intersection.data);
+                optional<Vector3> intersection = PlanetariaIntersection.arc_arc_intersection(arc_visitor[0], arc_visitor[+2], center_of_mass_extrusion);
+                right_angle_boundary = arc_visitor.arc.position_to_angle(intersection.data);
             }
-            else if (delta_length < 0 && concave(left_arc, center_of_mass_extrusion)) // set left boundary // no need to redefine boundaries if player isn't moving (delta_length == 0)
+            else if (concave(arc_visitor[-1], center_of_mass_extrusion)) // set left boundary // no need to redefine boundaries if player isn't moving (delta_length == 0)
             {
-                optional<Vector3> intersection = PlanetariaIntersection.arc_arc_intersection(center_arc.arc, left_of_left_arc.arc, center_of_mass_extrusion);
-                left_angle_boundary = center_arc.arc.position_to_angle(intersection.data);
+                optional<Vector3> intersection = PlanetariaIntersection.arc_arc_intersection(arc_visitor[0], arc_visitor[-2], center_of_mass_extrusion);
+                left_angle_boundary = arc_visitor.arc.position_to_angle(intersection.data);
             }
         }
 
         protected override void calculate_location()
         {
-            cached_position = center_arc.arc.position(angular_position, last_extrusion);
-            cached_normal = center_arc.arc.normal(angular_position, last_extrusion);
+            if (arc_visitor.arc.type != GeometryType.ConcaveCorner)
+            {
+                cached_position = arc_visitor.arc.position(angular_position, offset);
+                cached_normal = arc_visitor.arc.normal(angular_position, offset);
+            }
+            else
+            {
+                cached_position = arc_visitor.arc.position(angular_position, Mathf.Abs(offset));
+                cached_normal = arc_visitor.arc.normal(angular_position, Mathf.Abs(offset));
+            }
         }
-
-        ArcVisitor left_of_left_arc;
-        ArcVisitor right_of_right_arc;
     }
 
     internal sealed class ConcaveGeometryVisitor : GeometryVisitor
@@ -196,21 +205,20 @@ namespace Planetaria
 
         protected override void initialize()
         {
-            left_normal = left_arc.arc.end_normal(); // intentionally no extrusion
-            right_normal = right_arc.arc.begin_normal(); // these normals will be overwritten
-            arc_angle = Vector3.Angle(left_normal, right_normal)*Mathf.Deg2Rad; // doesn't vary (in theory) // TODO: verify
+            left_normal = arc_visitor[-1].end_normal(); // intentionally no extrusion
+            right_normal = arc_visitor[+1].begin_normal(); // these normals will be overwritten
             left_angle_boundary = 0;
             right_angle_boundary = arc_angle;
         }
 
-        protected override void upkeep(float delta_length, float center_of_mass_extrusion)
+        protected override void extrude(float center_of_mass_extrusion)
         {
             arc_length = arc_angle * center_of_mass_extrusion * 2; // TODO: verify
-            cached_position = PlanetariaIntersection.arc_arc_intersection(left_arc.arc, right_arc.arc, Mathf.Abs(center_of_mass_extrusion)).data;
-            float left_angle = left_arc.arc.position_to_angle(cached_position);
-            float right_angle = right_arc.arc.position_to_angle(cached_position);
-            left_normal = left_arc.arc.normal(left_angle, center_of_mass_extrusion);
-            right_normal = right_arc.arc.normal(right_angle, center_of_mass_extrusion);
+            cached_position = PlanetariaIntersection.arc_arc_intersection(arc_visitor[-1], arc_visitor[+1], Mathf.Abs(center_of_mass_extrusion)).data;
+            float left_angle = arc_visitor[-1].position_to_angle(cached_position);
+            float right_angle = arc_visitor[+1].position_to_angle(cached_position);
+            left_normal = arc_visitor[-1].normal(left_angle, center_of_mass_extrusion);
+            right_normal = arc_visitor[+1].normal(right_angle, center_of_mass_extrusion);
         }
 
         protected override void calculate_location()

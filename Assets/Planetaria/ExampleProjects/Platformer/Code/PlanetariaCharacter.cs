@@ -37,8 +37,6 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
         {
             last_jump_attempt = Time.time;
         }
-
-        Debug.Log(transform.localScale);
     }
 
     private void FixedUpdate()
@@ -67,11 +65,7 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
             }
             if (Time.time > 2f)
             {
-                Debug.Log("Before: " + collision.geometry_visitor.extrusion());
-                collision.move(Mathf.Epsilon, new optional<float>(-0.05f));
-                Debug.Log("After: " + -0.05f + " vs " + collision.geometry_visitor.extrusion());
-                optional<float> negative_i_swear = -0.05f;
-                Debug.Log("Hmmm? " + negative_i_swear.data);
+                collision.geometry_visitor.offset = -0.05f;
             }
             planetaria_rigidbody.relative_velocity = new Vector2(velocity, 0);
             transform.direction = collision.normal();

@@ -47,6 +47,17 @@
             index_variable = index;
         }
 
+        public Arc this[int relative_index]
+        {
+            get
+            {
+                int absolute_index = index_variable + relative_index;
+                absolute_index = absolute_index < 0 ? absolute_index + shape_variable.Length : absolute_index;
+                absolute_index = absolute_index >= shape_variable.Length ? absolute_index - shape_variable.Length : absolute_index;
+                return shape_variable[absolute_index];
+            }
+        }
+
         public static bool operator ==(ArcVisitor left, ArcVisitor right)
         {
             return left.Equals(right);

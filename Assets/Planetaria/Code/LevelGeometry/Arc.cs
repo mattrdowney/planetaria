@@ -7,7 +7,6 @@ namespace Planetaria
     /// An immutable class that stores an arc along the surface of a unit sphere.
     /// Includes convex corners, great edges, convex edges, and concave edges. Cannot store concave corners!
     /// </summary>
-    [Serializable] // FIXME: NonSerialized
     public partial struct Arc
     {
         /// <summary>
@@ -216,18 +215,18 @@ namespace Planetaria
         }
 
         /// <summary>An axis that includes the center of the circle that defines the arc.</summary>
-        [SerializeField] private Vector3 center_axis; // FIXME: NonSerialized
+        [NonSerialized] private Vector3 center_axis; // FIXME: NonSerialized
         /// <summary>An axis that helps define the beginning of the arc.</summary>
-        [SerializeField] private Vector3 forward_axis;
+        [NonSerialized] private Vector3 forward_axis;
         /// <summary>A binormal to center_axis and forward_axis. Determines points after the beginning of the arc.</summary>
-        [SerializeField] private Vector3 right_axis;
+        [NonSerialized] private Vector3 right_axis;
     
         /// <summary>The angle of the arc in radians (must be positive). Range: [0, 2PI]</summary>
-        [SerializeField] private float arc_angle;
+        [NonSerialized] private float arc_angle; // CONSIDER: use half angle: speed improvements on 1) negative extrusions (e.g. concave corners (sort of)) 2) better angle checking because of arctangent2 (atan2)
         /// <summary>The angle of the arc from its parallel "equator". Range: [-PI/2, +PI/2]</summary>
-        [SerializeField] private float arc_latitude;
+        [NonSerialized] private float arc_latitude;
         /// <summary>The curvature of the arc (e.g. Corner/Edge, Straight/Convex/Concave).</summary>
-        [SerializeField] private GeometryType curvature;
+        [NonSerialized] private GeometryType curvature;
     }
 }
 

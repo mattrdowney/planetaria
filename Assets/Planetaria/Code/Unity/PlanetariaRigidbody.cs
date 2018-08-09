@@ -117,7 +117,7 @@ namespace Planetaria
 
         private void grounded_position()
         {
-            collision.move(horizontal_velocity * Time.deltaTime, transform.scale/2);
+            collision.move(horizontal_velocity * Time.deltaTime);
             transform.position = collision.position(); // NOTE: required so get_acceleration() functions
             // project velocity
         }

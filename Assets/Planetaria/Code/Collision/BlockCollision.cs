@@ -71,7 +71,7 @@ namespace Planetaria
 
         public void move(float delta_length, optional<float> extrusion = new optional<float>())
         {
-            geometry_visitor = geometry_visitor.move_position(delta_length);
+            geometry_visitor = geometry_visitor.move_position(delta_length, extrusion);
         }
 
         public NormalizedCartesianCoordinates position()
