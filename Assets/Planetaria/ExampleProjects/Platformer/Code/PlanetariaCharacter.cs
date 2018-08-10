@@ -29,7 +29,7 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
         horizontal = Input.GetAxis("Horizontal");
         vertical = Input.GetAxis("Vertical");
 #else
-        jump_press = Input.GetButtonDown("OpenVR_ThumbPress"); // FIXME: OSVR not OpenVR (typo)
+        jump_pressed = Input.GetButtonDown("OpenVR_ThumbPress"); // FIXME: OSVR not OpenVR (typo)
         horizontal = Input.GetAxis("OpenVR_ThumbAxisX");
         vertical = Input.GetAxis("OpenVR_ThumbAxisY");
 #endif
@@ -65,7 +65,7 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
             }
             if (Time.time > 2f)
             {
-                collision.geometry_visitor.offset = -0.05f;
+                //collision.geometry_visitor.offset = -0.05f;
             }
             planetaria_rigidbody.relative_velocity = new Vector2(velocity, 0);
             transform.direction = collision.normal();

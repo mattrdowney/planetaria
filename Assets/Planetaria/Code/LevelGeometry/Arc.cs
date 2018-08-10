@@ -31,19 +31,20 @@ namespace Planetaria
         /// <returns>The angle of the arc in radians.</returns>
         public float angle(float extrusion = 0f)
         {
-            return arc_angle;
+            return 2*half_angle;
         }
 
         public Vector3 begin(float extrusion = 0f)
         {
-            return position(0, extrusion);
+            return position(-half_angle, extrusion);
         }
 
         public Vector3 begin_normal(float extrusion = 0f)
         {
-            return normal(0, extrusion);
+            return normal(-half_angle, extrusion);
         }
 
+        [Obsolete("Arc.circle() is deprecated, please use Arc.floor() instead.")]
         public GeospatialCircle circle(float extrusion = 0) // TODO: combine with floor()
         {
             Vector3 center = pole(extrusion);
@@ -70,19 +71,19 @@ namespace Planetaria
             bool underground = concave_underground || convex_underground;
 
             float angle = position_to_angle(position, extrusion);
-            bool correct_angle = angle < arc_angle;
+            bool correct_angle = Mathf.Abs(angle) <= half_angle;
 
             return (correct_latitude || underground) && correct_angle;
         }
 
         public Vector3 end(float extrusion = 0f)
         {
-            return position(angle(), extrusion);
+            return position(+half_angle, extrusion);
         }
 
         public Vector3 end_normal(float extrusion = 0f)
         {
-            return normal(angle(), extrusion);
+            return normal(+half_angle, extrusion);
         }
 
         /// <summary>
@@ -96,24 +97,13 @@ namespace Planetaria
         }
 
         /// <summary>
-        /// Inspector - Get the position at a particular interpolation factor [0,1].
-        /// </summary>
-        /// <param name="interpolator">The interpolation factor [0,1] along the arc.</param>
-        /// <param name="extrusion">The radius to extrude.</param>
-        /// <returns>A position on the arc.</returns>
-        public Vector3 interpolate(float interpolator, float extrusion = 0f)
-        {
-            return position(interpolator*angle(), extrusion);
-        }
-
-        /// <summary>
         /// Inspector - Get the arc length.
         /// </summary>
         /// <param name="extrusion">The radius to extrude.</param>
         /// <returns>The arc length.</returns>
         public float length(float extrusion = 0f)
         {
-            return Mathf.Abs(arc_angle * Mathf.Cos(arc_latitude + extrusion));
+            return Mathf.Abs(angle() * Mathf.Cos(arc_latitude + extrusion));
         }
 
         /// <summary>
@@ -124,6 +114,7 @@ namespace Planetaria
         /// <returns>A normal on the arc.</returns>
         public Vector3 normal(float angle, float extrusion = 0f)
         {
+            // TODO: proper negative extrusions (adding to a negative extrusion will provide an answer for a different position).
             return position(angle, extrusion + Mathf.PI/2);
         }
 
@@ -136,7 +127,7 @@ namespace Planetaria
         public Vector3 position(float angle, float extrusion = 0f)
         {
             //for concave corners: extrusion / Mathf.Cos(arc_angle / 2) distance at angle/2
-            Vector3 equator_position = PlanetariaMath.slerp(forward_axis, right_axis, angle);
+            Vector3 equator_position = PlanetariaMath.slerp(forward_axis, right_axis, angle - half_angle);
             return PlanetariaMath.slerp(equator_position, center_axis, arc_latitude + extrusion);
         }
 
@@ -145,19 +136,18 @@ namespace Planetaria
         /// </summary>
         /// <param name="position">The position along the arc (elevation doesn't matter).</param>
         /// <param name="extrusion">The elevation (which is ignored).</param>
-        /// <returns>The angle along the arc starting from the forward vector.</returns>
+        /// <returns>The angle along the arc starting from the center of the arc. Range: [-PI, PI]</returns>
         public float position_to_angle(Vector3 position, float extrusion = 0f) // FIXME: I don't think this works because the position isn't projected
         {
             float x = Vector3.Dot(position, forward_axis);
             float y = Vector3.Dot(position, right_axis);
             float angle = Mathf.Atan2(y,x);
-            float result = (angle >= 0 ? angle : angle + 2*Mathf.PI);
-            if (float.IsNaN(result) || float.IsInfinity(result) || result > this.angle())
+            if (float.IsNaN(angle) || float.IsInfinity(angle) || Mathf.Abs(angle) > half_angle)
             {
-                result = this.angle();
+                angle = this.angle(); // This angle is 2*half_angle, which is far outside the range of the arc
             }
-            Debug.Assert(0 <= result && result <= this.angle(), result);
-            return result;
+            Debug.Assert(Mathf.Abs(angle) <= half_angle || angle == this.angle(), angle);
+            return angle;
         }
 
         /// <summary>
@@ -193,7 +183,7 @@ namespace Planetaria
             return this.forward_axis == other.forward_axis &&
                     this.right_axis == other.right_axis &&
                     this.center_axis == other.center_axis &&
-                    this.arc_angle == other.arc_angle &&
+                    this.half_angle == other.half_angle &&
                     this.arc_latitude == other.arc_latitude &&
                     this.curvature == other.curvature;
         }
@@ -204,25 +194,25 @@ namespace Planetaria
                     right_axis.GetHashCode() ^
                     center_axis.GetHashCode() ^
                     arc_latitude.GetHashCode() ^
-                    arc_angle.GetHashCode() ^
+                    half_angle.GetHashCode() ^
                     curvature.GetHashCode();
         }
 
         public override string ToString()
         {
             return curvature.ToString() + ": { " + forward_axis.ToString("F4") + ", " + right_axis.ToString("F4") + ", " + center_axis.ToString("F4") + "}" +
-                    " : " + arc_latitude + "/3.141, " + arc_angle + "/6.283";
+                    " : " + arc_latitude + "/3.141, " + half_angle + "/6.283";
         }
 
         /// <summary>An axis that includes the center of the circle that defines the arc.</summary>
-        [NonSerialized] private Vector3 center_axis; // FIXME: NonSerialized
+        [NonSerialized] private Vector3 center_axis;
         /// <summary>An axis that helps define the beginning of the arc.</summary>
         [NonSerialized] private Vector3 forward_axis;
         /// <summary>A binormal to center_axis and forward_axis. Determines points after the beginning of the arc.</summary>
         [NonSerialized] private Vector3 right_axis;
     
-        /// <summary>The angle of the arc in radians (must be positive). Range: [0, 2PI]</summary>
-        [NonSerialized] private float arc_angle; // CONSIDER: use half angle: speed improvements on 1) negative extrusions (e.g. concave corners (sort of)) 2) better angle checking because of arctangent2 (atan2)
+        /// <summary>The angle of the arc in radians (must be positive). Range: [-PI, +PI]</summary>
+        [NonSerialized] private float half_angle; // CONSIDER: use half angle: speed improvements on 1) negative extrusions (e.g. concave corners (sort of)) 2) better angle checking because of arctangent2 (atan2)
         /// <summary>The angle of the arc from its parallel "equator". Range: [-PI/2, +PI/2]</summary>
         [NonSerialized] private float arc_latitude;
         /// <summary>The curvature of the arc (e.g. Corner/Edge, Straight/Convex/Concave).</summary>

@@ -83,13 +83,7 @@ namespace Planetaria
         /// <returns>An arc along the surface of a unit sphere.</returns>
         private Arc(Vector3 from, Vector3 slope, Vector3 to, bool clockwise)
         {
-            right_axis = slope;
-            forward_axis = from; // for great circles only
-            if (from != to) // typical case (for all arcs)
-            {
-                forward_axis = Vector3.ProjectOnPlane(from - to, slope).normalized; // [from - to] is within the arc's plane
-            }
-            center_axis = Vector3.Cross(forward_axis, right_axis).normalized; // get binormal using left-hand rule
+            center_axis = Vector3.Cross(from, slope);
             if (!clockwise) // Invert (e.g. for GeometryType.ConcaveCorner)
             {
                 center_axis *= -1;
@@ -98,18 +92,24 @@ namespace Planetaria
             float elevation = Vector3.Dot(from, center_axis);
             Vector3 center = elevation * center_axis;
 
+            Vector3 begin_axis = (from - center).normalized;
             Vector3 end_axis = (to - center).normalized;
-            bool long_path = Vector3.Dot(right_axis, end_axis) < 0 || from == to;
+            bool long_path = Vector3.Dot(begin_axis, end_axis) < 0 || from == to; // INCORRECT
             long_path ^= !clockwise; // Long path is inverted if going counterclockwise
-            arc_angle = Vector3.Angle(from - center, to - center) * Mathf.Deg2Rad;
+            float arc_angle = Vector3.Angle(begin_axis, end_axis) * Mathf.Deg2Rad;
             arc_latitude = Mathf.Asin(elevation);
 
             if (long_path)
             {
-                arc_angle = 2 * Mathf.PI - arc_angle;
+                arc_angle = 2*Mathf.PI - arc_angle;
             }
 
+            half_angle = arc_angle/2;
+
             curvature = edge_type(arc_latitude);
+
+            forward_axis = PlanetariaMath.slerp(begin_axis, slope, half_angle); // for great circles only
+            right_axis = PlanetariaMath.slerp(begin_axis, slope, half_angle + Mathf.PI/2);
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace Planetaria
         /// <param name="left">The arc that attaches to the beginning of the corner.</param>
         /// <param name="right">The arc that attaches to the end of the corner.</param>
         /// <returns>An arc that represents the path of a burrowed object.</returns>
-        private static Arc concave_corner(Arc left, Arc right)
+        private static Arc concave_corner(Arc left, Arc right) // CONSIDER: combine with convex_corner?
         {
             // find the arc along the equator and set the latitude to -PI/2 (implicitly, that means the arc radius is ~0)
 
@@ -134,7 +134,7 @@ namespace Planetaria
 
             // And move the arc to the "South Pole" instead
             result.arc_latitude = -Mathf.PI/2;
-            result.arc_angle = 2*Mathf.PI - result.arc_angle;
+            result.half_angle = Mathf.PI - result.half_angle;
             
             result.curvature = GeometryType.ConcaveCorner;
             return result;
@@ -181,7 +181,7 @@ namespace Planetaria
             Arc result = Arc.line(start, direction);
 
             // Straight arcs have no length / angle
-            result.arc_angle = Precision.just_above_zero;
+            result.half_angle = Precision.just_above_zero;
 
             result.curvature = GeometryType.StraightCorner;
             return result;
@@ -203,11 +203,11 @@ namespace Planetaria
 
             if (latitude >= 0f) // pole towards normal
             {
-                return latitude - Mathf.PI / 2; // elevation is zero or negative 
+                return latitude - Mathf.PI/2; // elevation is zero or negative 
             }
 
             // pole away from normal
-            return latitude + Mathf.PI / 2; // elevation is positive
+            return latitude + Mathf.PI/2; // elevation is positive
         }
 
         /// <summary>
@@ -215,6 +215,7 @@ namespace Planetaria
         /// Returns the closer pole, so the pole can be above or below the arc (with respect to the normal).
         /// </summary>
         /// <returns>The closest pole, which is perpendicular to the axes of motion.</returns>
+        [Obsolete("Arc.pole() is deprecated, please use Arc.floor().normal instead.")]
         private Vector3 pole(float extrusion = 0f)
         {
             float latitude = arc_latitude + extrusion;

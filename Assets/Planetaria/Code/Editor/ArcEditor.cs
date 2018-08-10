@@ -80,8 +80,8 @@ namespace Planetaria
             Arc[] result = new Arc[2];
             for (int half = 0; half < 2; ++half) // Necessary because of non-great circles
             {
-                float start_angle = (0f + half)/2 * arc.angle();
-                float end_angle = (1f + half)/2 * arc.angle();
+                float start_angle = (0 + half)/2 * arc.angle() - arc.angle()/2;
+                float end_angle = (1f + half)/2 * arc.angle() - arc.angle()/2;
                 Vector3 from = arc.position(start_angle, extrusion);
                 Vector3 from_normal = arc.normal(start_angle, extrusion);
                 Vector3 from_tangent = Bearing.right(from, from_normal);
