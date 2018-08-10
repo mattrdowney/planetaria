@@ -41,6 +41,7 @@ namespace Planetaria
             }
             BlockCollision result = new BlockCollision();
             float angle = arc.position_to_angle(intersection_point.data);
+            Debug.Log("2.0: " + angle);
             result.geometry_visitor = GeometryVisitor.geometry_visitor(arc_visitor.data, angle, extrusion, block.gameObject.internal_game_object.transform);
             intersection_point.data = block_to_world * intersection_point.data;
             result.distance = Vector3.Angle(intersection_point.data, rigidbody.get_previous_position())*Mathf.Deg2Rad;

@@ -127,7 +127,7 @@ namespace Planetaria
         public Vector3 position(float angle, float extrusion = 0f)
         {
             //for concave corners: extrusion / Mathf.Cos(arc_angle / 2) distance at angle/2
-            Vector3 equator_position = PlanetariaMath.slerp(forward_axis, right_axis, angle - half_angle);
+            Vector3 equator_position = PlanetariaMath.slerp(forward_axis, right_axis, angle);
             return PlanetariaMath.slerp(equator_position, center_axis, arc_latitude + extrusion);
         }
 
@@ -147,6 +147,7 @@ namespace Planetaria
                 angle = this.angle(); // This angle is 2*half_angle, which is far outside the range of the arc
             }
             Debug.Assert(Mathf.Abs(angle) <= half_angle || angle == this.angle(), angle);
+            Debug.Log(angle + "/" + this.angle()/2);
             return angle;
         }
 
@@ -201,7 +202,7 @@ namespace Planetaria
         public override string ToString()
         {
             return curvature.ToString() + ": { " + forward_axis.ToString("F4") + ", " + right_axis.ToString("F4") + ", " + center_axis.ToString("F4") + "}" +
-                    " : " + arc_latitude + "/3.141, " + half_angle + "/6.283";
+                    " : " + arc_latitude + "/+-1.570, " + half_angle + "/+-3.141";
         }
 
         /// <summary>An axis that includes the center of the circle that defines the arc.</summary>

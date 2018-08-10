@@ -70,7 +70,6 @@
     <Compile Include="Assets\Planetaria\Code\Editor\LevelCreatorEditor.cs" />
     <Compile Include="Assets\Planetaria\Code\Editor\PlanetariaColliderEditor.cs" />
     <Compile Include="Assets\Planetaria\Code\Editor\ProceduralMesh.cs" />
-    <Compile Include="Assets\Planetaria\Code\Editor\RendererUtility.cs" />
     <Compile Include="Assets\Planetaria\Code\Editor\ShapeEditor.cs" />
     <Compile Include="Assets\Planetaria\Code\Editor\SnapUtility.cs" />
     <Reference Include="UnityEditor.StandardEvents">
