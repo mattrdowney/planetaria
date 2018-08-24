@@ -75,9 +75,8 @@ namespace Planetaria
                 child = block.GetOrAddChild("Collider" + arc_index, false).transform; // TODO: Zero out transform.position for GitHub Issue #37
                 PlanetariaCollider collider = Miscellaneous.GetOrAddComponent<PlanetariaCollider>(child.gameObject);
                 SphereCollider sphere_collider = collider.get_sphere_collider();
-
-                optional<Transform> transformation = (block.is_dynamic ? block.gameObject.internal_game_object.transform : null);
-                Sphere[] colliders = Sphere.arc_collider(transformation, arc);
+                
+                Sphere[] colliders = Sphere.arc_collider(block.internal_transform, arc);
                 collider.set_colliders(colliders);
                 collider.is_field = false;
                 collider.material = block.material;
@@ -100,8 +99,6 @@ namespace Planetaria
             PlanetariaCollider collider = Miscellaneous.GetOrAddComponent<PlanetariaCollider>(game_object);
             SphereCollider sphere_collider = collider.get_sphere_collider();
 
-            optional<Transform> transformation = (field.is_dynamic ? field.gameObject.transform : null);
-
             collider.is_field = true;
             sphere_collider.isTrigger = true;
 
@@ -109,7 +106,7 @@ namespace Planetaria
             int current_index = 0;
             foreach (Arc arc in field.shape.arcs)
             {
-                colliders[current_index] = Sphere.uniform_collider(transformation, arc.floor());
+                colliders[current_index] = Sphere.uniform_collider(field.internal_transform, arc.floor());
                 ++current_index;
             }
             collider.set_colliders(colliders);

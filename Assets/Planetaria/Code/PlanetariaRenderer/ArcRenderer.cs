@@ -31,7 +31,7 @@ namespace Planetaria
                 for (int vertex = 0; vertex <= line_segment_count; ++vertex)
                 {
                     float fraction = vertex / (float)line_segment_count;
-                    float local_angle = angle * fraction;
+                    float local_angle = Mathf.Lerp(-angle/2, +angle/2, fraction);
                     Vector3 position = arc.position(local_angle);
                     vertices.Add(position);
                 }

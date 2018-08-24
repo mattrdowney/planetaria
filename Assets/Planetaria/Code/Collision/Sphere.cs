@@ -10,9 +10,9 @@ namespace Planetaria
         {
             get
             {
-                if (transform_variable.exists)
+                if (transform_variable.rotation == Quaternion.identity)
                 {
-                    return transform_variable.data.rotation * center_variable;
+                    return transform_variable.rotation * center_variable;
                 }
                 return center_variable;
             }
@@ -22,9 +22,9 @@ namespace Planetaria
         {
             get
             {
-                if (transform_variable.exists)
+                if (transform_variable.rotation == Quaternion.identity)
                 {
-                    return transform_variable.data.position + transform_variable.data.rotation * center_variable;
+                    return transform_variable.position + transform_variable.rotation * center_variable;
                 }
                 return center_variable;
             }
@@ -44,7 +44,7 @@ namespace Planetaria
         /// <param name="transformation">For static objects no transform is better, otherwise the Transform-relative movement will be considered for dynamic objects.</param>
         /// <param name="arc">The arc for which the colliders will be generated.</param>
         /// <returns>A set of three Spheres that define an arc collision.</returns>
-        public static Sphere[] arc_collider(optional<Transform> transformation, Arc arc) // FIXME: delegation, remove redundancy
+        public static Sphere[] arc_collider(Transform transformation, Arc arc) // FIXME: delegation, remove redundancy
         {
             Sphere[] boundary_colliders = boundary_collider(transformation, arc);
             Sphere[] elevation_colliders = elevation_collider(transformation, arc.floor());
@@ -65,7 +65,7 @@ namespace Planetaria
         /// This collider has the special property that all sphere colliders will only collide if the planetaria sphere is intersecting.
         /// This is because the sphere is formed at the focal point of a cone from the planetaria sphere's tangent lines.
         /// </details>
-        public static Sphere ideal_collider(optional<Transform> transformation, SphericalCap cap)
+        public static Sphere ideal_collider(Transform transformation, SphericalCap cap)
         {
             float distance = extrude_distance(cap, Precision.collider_extrusion);
             float tangent = Mathf.Tan(Mathf.Acos(distance));
@@ -80,7 +80,7 @@ namespace Planetaria
         /// <param name="transformation">An optional Transform that will be used to shift the center (if moved).</param>
         /// <param name="cap">The SphericalCap that will be encapsulated by a Sphere (collider).</param>
         /// <returns>A Sphere that can be used as a collider.</returns>
-        public static Sphere uniform_collider(optional<Transform> transformation, SphericalCap cap) // TODO: FIXME: documentation
+        public static Sphere uniform_collider(Transform transformation, SphericalCap cap) // TODO: FIXME: documentation
         {
         // Background 1:
         // imagine two spheres:
@@ -128,7 +128,7 @@ namespace Planetaria
             return new Sphere(transformation, cap.normal*axial_distance, 2);
         }
 
-        private static Sphere[] boundary_collider(optional<Transform> transformation, Arc arc)
+        private static Sphere[] boundary_collider(Transform transformation, Arc arc)
         {
             Sphere result;
             Vector3 corner = arc.begin();
@@ -152,7 +152,7 @@ namespace Planetaria
             return new Sphere[1] { result };
         }
 
-        private static Sphere[] elevation_collider(optional<Transform> transformation, SphericalCap cap)
+        private static Sphere[] elevation_collider(Transform transformation, SphericalCap cap)
         {
             if (cap.offset > 1f - Precision.threshold)
             {
@@ -169,14 +169,14 @@ namespace Planetaria
             return Mathf.Cos(Mathf.Acos(Mathf.Clamp(cap.offset, -1, +1)) - extrusion);
         }
 
-        private Sphere(optional<Transform> transformation, Vector3 center, float radius)
+        private Sphere(Transform transformation, Vector3 center, float radius)
         {
             transform_variable = transformation;
             center_variable = center;
             radius_variable = radius;
         }
 
-        [SerializeField] private optional<Transform> transform_variable;
+        [SerializeField] private Transform transform_variable;
         [SerializeField] private Vector3 center_variable;
         [SerializeField] private float radius_variable;
     }

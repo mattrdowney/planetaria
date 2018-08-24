@@ -18,7 +18,7 @@ namespace Planetaria
         {
             if (!game_object_variable)
             {
-                game_object_variable = (PlanetariaGameObject)this;
+                game_object_variable = (PlanetariaGameObject) this;
             }
         }
 

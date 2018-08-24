@@ -3,33 +3,15 @@ using UnityEditor;
 
 namespace Planetaria
 {
-    [CustomEditor(typeof(Shape))]
     public class ShapeEditor : Editor
     {
-        public static void draw_shape(Shape self, optional<Transform> transform = new optional<Transform>())
+        public static void draw_shape(Shape self, Quaternion orientation)
         {
             if (!EditorGlobal.self.hide_graphics)
             {
                 foreach (Arc arc in self.arcs)
                 {
-                    if (arc.type != GeometryType.StraightCorner)
-                    {
-                        if (!transform.exists)
-                        {
-                            ArcEditor.draw_arc(arc);
-                        }
-                        else if (arc.type == GeometryType.StraightEdge ||
-                                arc.type == GeometryType.ConvexEdge ||
-                                arc.type == GeometryType.ConcaveEdge)
-                        {
-                            ArcEditor.draw_arc(arc, transform.data);
-                        }
-                        else
-                        {
-                            ArcEditor.draw_arc(arc, transform.data);
-                            // FIXME: add corners for dynamic blocks
-                        }
-                    }
+                    ArcEditor.draw_arc(arc, orientation);
                 }
             }
         }

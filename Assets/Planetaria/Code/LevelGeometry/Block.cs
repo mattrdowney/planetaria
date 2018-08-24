@@ -54,6 +54,12 @@ namespace Planetaria
             }
         }
 
+        protected override void Awake()
+        {
+            base.Awake();
+            initialize();
+        }
+
         private void Start()
         {
             initialize();
@@ -62,6 +68,7 @@ namespace Planetaria
 
         protected override void Reset()
         {
+            base.Reset();
             shape_variable = new Shape(new List<GeospatialCurve>(), true, true);
             ignore = new List<Block>();
             active = true;

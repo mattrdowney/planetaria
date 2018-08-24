@@ -155,7 +155,7 @@ namespace Planetaria
             Vector3 end = right.begin(Mathf.PI/2);
 
             // The left tangent slope vector should point away from the position "start"
-            Vector3 slope = Bearing.right(start, left.end_normal(Mathf.PI/2));
+            Vector3 slope = Bearing.right(start, right.begin_normal(Mathf.PI/2));
 
             // Create arc along equator
             Arc result = new Arc(start, slope, end, true);
@@ -209,6 +209,24 @@ namespace Planetaria
             // pole away from normal
             return latitude + Mathf.PI/2; // elevation is positive
         }
+
+        /// <summary>
+        /// Inspector - Is the Arc an edge?
+        /// </summary>
+        /// <returns>
+        /// True if the arc is a great or small circle (i.e. GeometryType.ConcaveEdge/ConvexEdge/StraightEdge)
+        /// False otherwise (e.g. GeometryType.ConcaveCorner/ConvexCorner/StraightCorner)
+        /// </returns>
+        public bool is_edge()
+        {
+            switch(curvature)
+            {
+                case GeometryType.ConcaveEdge: case GeometryType.ConvexEdge: case GeometryType.StraightEdge:
+                    return true;
+            }
+            return false;
+        }
+        
 
         /// <summary>
         /// Inspector - Returns the axis perpendicular to all movement along the arc.

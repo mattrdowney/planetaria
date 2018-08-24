@@ -147,7 +147,6 @@ namespace Planetaria
                 angle = this.angle(); // This angle is 2*half_angle, which is far outside the range of the arc
             }
             Debug.Assert(Mathf.Abs(angle) <= half_angle || angle == this.angle(), angle);
-            Debug.Log(angle + "/" + this.angle()/2);
             return angle;
         }
 

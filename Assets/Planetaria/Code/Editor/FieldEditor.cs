@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using UnityEditor;
+﻿using UnityEditor;
 
 namespace Planetaria
 {
@@ -9,14 +8,7 @@ namespace Planetaria
         [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
         private static void draw_block_gizmos(Field self, GizmoType gizmo_type)
         {
-            if (self.is_dynamic)
-            {
-                ShapeEditor.draw_shape(self.shape, self.GetComponent<Transform>());
-            }
-            else
-            {
-                ShapeEditor.draw_shape(self.shape);
-            }
+            ShapeEditor.draw_shape(self.shape, self.internal_transform.rotation);
         }
     }
 }

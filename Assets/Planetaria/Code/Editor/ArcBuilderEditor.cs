@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEditor;
+using UnityEngine;
 
 namespace Planetaria
 {
@@ -12,7 +13,7 @@ namespace Planetaria
         {
             foreach (Arc arc in self.debug_shape.arcs)
             {
-                ArcEditor.draw_arc(arc);
+                ArcEditor.draw_arc(arc, Quaternion.identity);
             }
         }
     }

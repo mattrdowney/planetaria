@@ -7,7 +7,7 @@ namespace Planetaria
 {
     [DisallowMultipleComponent]
     [Serializable]
-    public class Field : MonoBehaviour  // TODO: PlanetariaComponent
+    public class Field : PlanetariaComponent
     {   
         public static GameObject field(List<GeospatialCurve> curves) // TODO: add convex check asserts.
         {
@@ -18,14 +18,21 @@ namespace Planetaria
             return result;
         }
 
+        protected override void Awake()
+        {
+            base.Awake();
+            initialize();
+        }
+
         private void Start()
         {
             initialize();
             PlanetariaCache.self.cache(this);
         }
 
-        private void Reset()
+        protected override void Reset()
         {
+            base.Reset();
             initialize();
         }
 
@@ -35,9 +42,13 @@ namespace Planetaria
             {
                 transform = Miscellaneous.GetOrAddComponent<PlanetariaTransform>(this);
             }
+            if (internal_transform == null)
+            {
+                internal_transform = gameObject.internal_game_object.GetComponent<Transform>();
+            }
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
             PlanetariaCache.self.uncache(this);
         }
@@ -54,6 +65,7 @@ namespace Planetaria
         
         public bool is_dynamic;
         [NonSerialized] public new PlanetariaTransform transform;
+        [SerializeField] [HideInInspector] public Transform internal_transform;
         [SerializeField] private Shape shape_variable;
     }
 }

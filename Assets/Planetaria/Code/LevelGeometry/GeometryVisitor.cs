@@ -120,17 +120,14 @@ namespace Planetaria
             GeometryVisitor result = this;
             if (angular_position < left_angle_boundary)
             {
-                Debug.LogError("Left shift");
                 float extra_length = Mathf.Abs((left_angle_boundary - angular_position) * (arc_length/arc_angle));
                 result = left_visitor(arc_visitor, extra_length, extrusion, block_transform);
             }
             else if (angular_position > right_angle_boundary)
             {
-                Debug.LogError("Right shift");
                 float extra_length = Mathf.Abs((angular_position - right_angle_boundary) * (arc_length/arc_angle));
                 result = right_visitor(arc_visitor, extra_length, extrusion, block_transform);
             }
-            Debug.Log("Angular: " + angular_position);
             this.angular_position = angular_position;
             calculate_location();
             return result;
