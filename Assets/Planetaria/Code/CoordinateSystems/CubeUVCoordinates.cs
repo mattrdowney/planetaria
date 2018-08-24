@@ -97,16 +97,6 @@ namespace Planetaria
             Quaternion.LookRotation(Vector3.forward, Vector3.up), // _FrontTex
         };
 
-        public static readonly Quaternion[] world_to_local_rotation =
-        {
-            Quaternion.Inverse(local_to_world_rotation[0]), // inverse rotation of _LeftTex of Skybox
-            Quaternion.Inverse(local_to_world_rotation[1]), // _RightTex
-            Quaternion.Inverse(local_to_world_rotation[2]), // _DownTex
-            Quaternion.Inverse(local_to_world_rotation[3]), // _UpTex
-            Quaternion.Inverse(local_to_world_rotation[4]), // _BackTex
-            Quaternion.Inverse(local_to_world_rotation[5]), // _FrontTex
-        };
-
         [SerializeField] private int face_index_variable;
         [SerializeField] private Vector2 uv_variable;
     }

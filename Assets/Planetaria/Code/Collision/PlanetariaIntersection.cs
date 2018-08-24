@@ -17,8 +17,8 @@ namespace Planetaria
         {
             Vector3[] intersections = circle_circle_intersections(a.circle(extrusion), b.circle(extrusion));
             intersections = nontrivial_arc_intersections(a, b, intersections);
-            intersections = valid_arc_intersections(a, intersections);
-            intersections = valid_arc_intersections(b, intersections);
+            intersections = valid_arc_intersections(a, intersections, Quaternion.identity);
+            intersections = valid_arc_intersections(b, intersections, Quaternion.identity);
             if (intersections.Length == 0)
             {
                 return new optional<Vector3>();
@@ -32,7 +32,7 @@ namespace Planetaria
             GeospatialCircle path_circle = GeospatialCircle.circle(Vector3.Cross(begin, end).normalized, Mathf.PI/2);
 
             Vector3[] intersections = circle_circle_intersections(arc_circle, path_circle);
-            return valid_arc_intersections(arc, intersections);
+            return valid_arc_intersections(arc, intersections, Quaternion.identity);
         }
 
         public static optional<Vector3> arc_path_intersection(Arc arc, Vector3 begin, Vector3 end, float extrusion)
@@ -123,20 +123,19 @@ namespace Planetaria
             return true;
         }
 
-        public static Vector3[] raycast_intersection(Arc raycast_arc, Arc geometry_arc, float raycast_angle,
-                optional<Transform> geometry_transform = new optional<Transform>())
+        public static Vector3[] raycast_intersection(Arc raycast_arc, Arc geometry_arc, float raycast_angle, Quaternion orientation)
         {
             GeospatialCircle relative_geometry_circle = geometry_arc.circle();
-            if (geometry_transform.exists)
+            if (orientation != Quaternion.identity)
             {
-                Quaternion arc_to_world = geometry_transform.data.rotation;
+                Quaternion arc_to_world = orientation;
                 Debug.DrawRay(Vector3.zero, relative_geometry_circle.center, Color.green, 1f);
                 relative_geometry_circle = GeospatialCircle.circle(arc_to_world * relative_geometry_circle.center, relative_geometry_circle.radius);
                 Debug.DrawRay(Vector3.zero, relative_geometry_circle.center, Color.cyan, 1f);
             }
             Vector3[] intersections = circle_circle_intersections(raycast_arc.circle(), relative_geometry_circle);
-            intersections = valid_arc_intersections(raycast_arc, intersections, new optional<Transform>(), raycast_angle);
-            intersections = valid_arc_intersections(geometry_arc, intersections, geometry_transform);
+            intersections = valid_arc_intersections(raycast_arc, intersections, Quaternion.identity, raycast_angle);
+            intersections = valid_arc_intersections(geometry_arc, intersections, orientation);
             return intersections;
         }
 
@@ -177,7 +176,7 @@ namespace Planetaria
         }
 
         public static Vector3[] valid_arc_intersections(Arc arc, Vector3[] intersections, // TODO: research and development
-                optional<Transform> arc_transform = new optional<Transform>(),
+                Quaternion orientation,
                 optional<float> max_angle = new optional<float>())
         {
             if (!max_angle.exists)
@@ -189,16 +188,16 @@ namespace Planetaria
             for (int intersection_index = 0; intersection_index < intersections.Length; ++intersection_index)
             {
                 Vector3 intersection_point = intersections[intersection_index];
-                if (arc_transform.exists)
+                if (orientation != Quaternion.identity)
                 {
-                    Quaternion arc_to_world = arc_transform.data.rotation;
+                    Quaternion arc_to_world = orientation;
                     Quaternion world_to_arc = Quaternion.Inverse(arc_to_world);
                     intersection_point = world_to_arc * intersection_point;
                 }
 
-                Vector3 arc_left = arc.position(0);
-                Vector3 arc_center = arc.position(max_angle.data/2);
-                Vector3 arc_right = arc.position(max_angle.data);
+                Vector3 arc_left = arc.position(-max_angle.data/2);
+                Vector3 arc_center = arc.position(0);
+                Vector3 arc_right = arc.position(+max_angle.data/2);
                 Vector3 boundary_midpoint = (arc_left + arc_right)/2;
 
                 Plane arc_validator = new Plane(arc_center, boundary_midpoint);

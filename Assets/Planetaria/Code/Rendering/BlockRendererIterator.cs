@@ -69,7 +69,7 @@ namespace Planetaria
         {
             foreach (Arc arc in block_variable.shape.arcs)
             { 
-                float begin_angle = 0;
+                float begin_angle = -arc.angle()/2; // Start at the beginning of the arc (i.e. -arc.angle()/2)
 
                 if (discontinuities.ContainsKey(arc))
                 {
@@ -81,7 +81,7 @@ namespace Planetaria
                     }
                 }
             
-                yield return new ArcIterator(arc, begin_angle, arc.angle());
+                yield return new ArcIterator(arc, begin_angle, +arc.angle()/2); // The last segment goes until the end (i.e. +arc.angle()/2)
             }
         }
 

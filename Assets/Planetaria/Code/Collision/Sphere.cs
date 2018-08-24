@@ -41,7 +41,7 @@ namespace Planetaria
         /// <summary>
         /// The intersection of two spheres is a circle, and adding a third sphere generates a set of colliders that define an arc
         /// </summary>
-        /// <param name="transformation">For static objects no transform is better, otherwise the Transform-relative movement will be considered for dynamic objects.</param>
+        /// <param name="transformation">For Transform-relative movement (dynamic objects).</param>
         /// <param name="arc">The arc for which the colliders will be generated.</param>
         /// <returns>A set of three Spheres that define an arc collision.</returns>
         public static Sphere[] arc_collider(Transform transformation, Arc arc) // FIXME: delegation, remove redundancy
@@ -132,7 +132,7 @@ namespace Planetaria
         {
             Sphere result;
             Vector3 corner = arc.begin();
-            Vector3 center = arc.position(arc.angle()/2);
+            Vector3 center = arc.position(0); // Center of arc is at zero
             SphericalCap cap = SphericalCap.cap(center, corner); // create a SphericalCap centered at "center" that captures both corners (2nd implicitly)
 
             float real_angle = Vector3.Angle(center, corner) * Mathf.Deg2Rad;

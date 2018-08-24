@@ -73,6 +73,8 @@ namespace Planetaria
             float angle = position_to_angle(position, extrusion);
             bool correct_angle = Mathf.Abs(angle) <= half_angle;
 
+            Debug.Log(correct_latitude + " vs " + correct_angle);
+
             return (correct_latitude || underground) && correct_angle;
         }
 
@@ -142,11 +144,11 @@ namespace Planetaria
             float x = Vector3.Dot(position, forward_axis);
             float y = Vector3.Dot(position, right_axis);
             float angle = Mathf.Atan2(y,x);
-            if (float.IsNaN(angle) || float.IsInfinity(angle) || Mathf.Abs(angle) > half_angle)
+            if (float.IsNaN(angle) || float.IsInfinity(angle))
             {
-                angle = this.angle(); // This angle is 2*half_angle, which is far outside the range of the arc
+                angle = Mathf.PI;
             }
-            Debug.Assert(Mathf.Abs(angle) <= half_angle || angle == this.angle(), angle);
+            Debug.Assert(Mathf.Abs(angle) <= Mathf.PI, angle);
             return angle;
         }
 

@@ -84,8 +84,8 @@ namespace Planetaria
         /// <returns>An object that can sort any set of points along the given raycast_arc.</returns>
         private RaycastSorter(Arc raycast_arc, float distance)
         {
-            Vector3 raycast_right = raycast_arc.position(0);
-            Vector3 raycast_up = raycast_arc.position(Mathf.PI/2);
+            Vector3 raycast_right = raycast_arc.begin();
+            Vector3 raycast_up = raycast_arc.position(-raycast_arc.angle()/2 + Mathf.PI/2);
             raycast_up *= distance >= 0 ? +1 : -1; // if distance is negative, the results are sorted in the opposite direction
             Vector3 raycast_forward = Vector3.Cross(raycast_right, raycast_up); // Left-hand rule to find z-axis.
             Quaternion local_to_world = Quaternion.LookRotation(raycast_forward, raycast_up); // Find the orientation of the arc

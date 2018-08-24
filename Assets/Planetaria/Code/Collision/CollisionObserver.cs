@@ -75,15 +75,20 @@ namespace Planetaria
  
         public void potential_block_collision(Arc arc, Block block, PlanetariaCollider collider)
         {
+            Debug.Log("Yay-2");
             if (planetaria_rigidbody.exists)
             {
+                Debug.Log("Yay-1");
                 if (current_collisions.Count == 0 || current_collisions[0].block != block)
                 {
+                    Debug.Log("Yay0");
                     if (block.active)
                     {
+                        Debug.Log("Yay1");
                         optional<BlockCollision> collision = BlockCollision.block_collision(this, arc, block, collider, planetaria_transformation, planetaria_rigidbody.data);
                         if (collision.exists)
                         {
+                            Debug.Log("Yay2");
                             if (planetaria_rigidbody.exists)
                             {
                                 if (planetaria_rigidbody.data.collide(collision.data, this))

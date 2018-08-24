@@ -72,20 +72,23 @@ namespace Planetaria
             Transform child;
             foreach (Arc arc in block.shape.arcs) // TODO: verify that concave corners work as expected
             {
-                child = block.GetOrAddChild("Collider" + arc_index, false).transform; // TODO: Zero out transform.position for GitHub Issue #37
-                PlanetariaCollider collider = Miscellaneous.GetOrAddComponent<PlanetariaCollider>(child.gameObject);
-                SphereCollider sphere_collider = collider.get_sphere_collider();
-                
-                Sphere[] colliders = Sphere.arc_collider(block.internal_transform, arc);
-                collider.set_colliders(colliders);
-                collider.is_field = false;
-                collider.material = block.material;
-                sphere_collider.isTrigger = true;
+                if (arc.type != GeometryType.ConcaveCorner)
+                {
+                    child = block.GetOrAddChild("Collider" + arc_index, false).transform; // TODO: Zero out transform.position for GitHub Issue #37
+                    PlanetariaCollider collider = Miscellaneous.GetOrAddComponent<PlanetariaCollider>(child.gameObject);
+                    SphereCollider sphere_collider = collider.get_sphere_collider();
 
-                PlanetariaCache.self.index_cache.Add(sphere_collider, arc_index);
-                PlanetariaCache.self.block_cache.Add(sphere_collider, block);
-                PlanetariaCache.self.collider_cache.Add(sphere_collider, collider);
-                ++arc_index;
+                    Sphere[] colliders = Sphere.arc_collider(block.internal_transform, arc);
+                    collider.set_colliders(colliders);
+                    collider.is_field = false;
+                    collider.material = block.material;
+                    sphere_collider.isTrigger = true;
+
+                    PlanetariaCache.self.index_cache.Add(sphere_collider, arc_index);
+                    PlanetariaCache.self.block_cache.Add(sphere_collider, block);
+                    PlanetariaCache.self.collider_cache.Add(sphere_collider, collider);
+                    ++arc_index;
+                }
             }
             while (child = block.internal_transform.Find("Collider" + arc_index)) // clear out extra (old) colliders with while loop
             {

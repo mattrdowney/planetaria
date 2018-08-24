@@ -80,9 +80,9 @@ namespace Planetaria
             desired_angle = Mathf.Min(desired_angle, 2*Mathf.PI);
 
             // primative arc points
-            Vector3 arc_left = arc.position(0);
-            Vector3 arc_center = arc.position(desired_angle/2);
-            Vector3 arc_right = arc.position(desired_angle);
+            Vector3 arc_left = arc.position(-desired_angle/2);
+            Vector3 arc_center = arc.position(0);
+            Vector3 arc_right = arc.position(+desired_angle/2);
 
             // composites
             Vector3 arc_boundary_midpoint = (arc_left + arc_right) / 2; // if the arc is like a wooden bow, this is the midpoint of the string
@@ -103,8 +103,7 @@ namespace Planetaria
                 if (geometry_arc.exists)
                 {
                     optional<Block> block = PlanetariaCache.self.block_fetch(sphere_collider);
-                    optional<Transform> geometry_transform = block.exists && block.data.is_dynamic ? block.data.internal_transform : new optional<Transform>();
-                    Vector3[] intersections = PlanetariaIntersection.raycast_intersection(arc, geometry_arc.data, distance, geometry_transform); // TODO: verify distance is indeed the angle in this scenario
+                    Vector3[] intersections = PlanetariaIntersection.raycast_intersection(arc, geometry_arc.data, distance, block.data.internal_transform.rotation); // TODO: verify distance is indeed the angle in this scenario
                     foreach (Vector3 intersection in intersections)
                     {
                         PlanetariaRaycastHit single_collision = PlanetariaRaycastHit.hit(arc, sphere_collider, intersection, distance);

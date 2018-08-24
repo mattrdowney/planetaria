@@ -25,7 +25,7 @@ namespace Planetaria
             {
                 // these functions are general inverses of one another, but also serve to constrain/normalize the position to the arc path.
                 float intersection_angle = arc.position_to_angle(current_position);
-                if (intersection_angle < arc.angle()) // if the intersection is valid
+                if (Mathf.Abs(intersection_angle) <= arc.angle()/2) // if the intersection is valid
                 {
                     intersection_point = arc.position(intersection_angle); // set the collision to the extruded collision point
                 }

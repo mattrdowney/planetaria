@@ -26,12 +26,11 @@ namespace Planetaria
             line_renderer.SetPositions(new Vector3[0]);
             foreach (Arc arc in shape.arcs)
             {
-                float angle = arc.angle();
-                int line_segment_count = Mathf.CeilToInt(360 * angle / (Mathf.PI * 2));
+                int line_segment_count = Mathf.CeilToInt((360*arc.angle()) / (Mathf.PI*2));
                 for (int vertex = 0; vertex <= line_segment_count; ++vertex)
                 {
                     float fraction = vertex / (float)line_segment_count;
-                    float local_angle = Mathf.Lerp(-angle/2, +angle/2, fraction);
+                    float local_angle = Mathf.Lerp(-arc.angle()/2, +arc.angle()/2, fraction);
                     Vector3 position = arc.position(local_angle);
                     vertices.Add(position);
                 }

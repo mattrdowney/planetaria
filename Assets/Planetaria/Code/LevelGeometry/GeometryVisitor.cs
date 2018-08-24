@@ -12,7 +12,7 @@ namespace Planetaria
         /// <param name="extrusion"></param>
         /// <param name="transformation"></param>
         /// <returns></returns>
-        public static GeometryVisitor geometry_visitor(ArcVisitor arc_visitor, float angular_position, float extrusion, optional<Transform> transformation)
+        public static GeometryVisitor geometry_visitor(ArcVisitor arc_visitor, float angular_position, float extrusion, Transform transformation)
         {
             GeometryVisitor result = new GeometryVisitor(arc_visitor, extrusion, transformation);
             return result.set_position(angular_position, extrusion);
@@ -24,7 +24,7 @@ namespace Planetaria
         /// <param name="arc_visitor"></param>
         /// <param name="extrusion"></param>
         /// <param name="transformation"></param>
-        private GeometryVisitor(ArcVisitor arc_visitor, float extrusion, optional<Transform> transformation)
+        private GeometryVisitor(ArcVisitor arc_visitor, float extrusion, Transform transformation)
         {
             this.arc_visitor = arc_visitor;
             block_transform = transformation;
@@ -54,18 +54,18 @@ namespace Planetaria
 
         public Vector3 normal()
         {
-            if (block_transform.exists) // Cannot be cached since platform may move
+            if (block_transform.rotation != Quaternion.identity) // Cannot be cached since platform may move
             {
-                return block_transform.data.rotation * cached_normal;
+                return block_transform.rotation * cached_normal;
             }
             return cached_normal;
         }
 
         public Vector3 position()
         {
-            if (block_transform.exists) // Cannot be cached since platform may move
+            if (block_transform.rotation != Quaternion.identity) // Cannot be cached since platform may move
             {
-                return block_transform.data.rotation * cached_position;
+                return block_transform.rotation * cached_position;
             }
             return cached_position;
         }
@@ -74,9 +74,9 @@ namespace Planetaria
         {
             position.Normalize(); // FIXME ? : this is an approximation
 
-            if (block_transform.exists)
+            if (block_transform.rotation != Quaternion.identity)
             {
-                position = Quaternion.Inverse(block_transform.data.rotation)*position;
+                position = Quaternion.Inverse(block_transform.rotation)*position;
             }
 
             bool left_contains = arc_visitor[-1].contains(position, offset);
@@ -103,13 +103,13 @@ namespace Planetaria
             }
         }
 
-        private static GeometryVisitor right_visitor(ArcVisitor arc_visitor, float rightward_length_from_boundary, float extrusion, optional<Transform> transformation)
+        private static GeometryVisitor right_visitor(ArcVisitor arc_visitor, float rightward_length_from_boundary, float extrusion, Transform transformation)
         {
             GeometryVisitor visitor = new GeometryVisitor(arc_visitor.right(), extrusion, transformation);
             return visitor.set_position(visitor.left_angle_boundary + rightward_length_from_boundary*(visitor.arc_angle/visitor.arc_length), extrusion);
         }
 
-        private static GeometryVisitor left_visitor(ArcVisitor arc_visitor, float leftward_length_from_boundary, float extrusion, optional<Transform> transformation)
+        private static GeometryVisitor left_visitor(ArcVisitor arc_visitor, float leftward_length_from_boundary, float extrusion, Transform transformation)
         {
             GeometryVisitor visitor = new GeometryVisitor(arc_visitor.left(), extrusion, transformation);
             return visitor.set_position(visitor.right_angle_boundary - leftward_length_from_boundary*(visitor.arc_angle/visitor.arc_length), extrusion);
@@ -166,8 +166,7 @@ namespace Planetaria
             Debug.DrawRay(cached_position, cached_normal, Color.green);
         }
     
-        private optional<Transform> block_transform;
-
+        private Transform block_transform;
         private ArcVisitor arc_visitor;
 
         private Vector3 cached_position;

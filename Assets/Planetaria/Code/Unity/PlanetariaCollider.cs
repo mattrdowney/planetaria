@@ -133,26 +133,34 @@ namespace Planetaria
             {
                 if (PlanetariaIntersection.collider_collider_intersection(this.colliders, other_collider.data.colliders))
                 {
+                    Debug.Log("Yay-6: " + this.name + " " + other_collider.data.name);
                     if (this.is_field || other_collider.data.is_field) // field collision
                     {
                         observer.potential_field_collision(other_collider.data); // TODO: augment field (like Unity triggers) works on both the sender and receiver.
                     }
                     else // block collision
                     {
+                        Debug.Log("Yay-5");
                         if (rigidbody.exists)
                         {
+                            Debug.Log("Yay-4");
                             optional<Block> block = PlanetariaCache.self.block_fetch(sphere_collider.data);
                             if (block.exists &&
                                     (!observer.colliding() || !observer.collisions()[0].block.ignore.Contains(block.data))) // Should we ignore the new block? // FIXME: private API exposure (optimizes at a cost of readability)
                             {
+                                Debug.Log("Yay-3");
                                 optional<Arc> arc = PlanetariaCache.self.arc_fetch(sphere_collider.data);
                                 Vector3 position = planetaria_transform.position.data;
-                                if (block.data.is_dynamic)
+                                if (block.data.internal_transform.rotation != Quaternion.identity) // Only shift orientation when necessary
                                 {
                                     position = Quaternion.Inverse(block.data.gameObject.internal_game_object.transform.rotation) * position;
                                 }
+                                Debug.Log("Yay-2.5");
+                                Debug.Log("So... " + arc.exists);
+                                Debug.Log("And ? " + arc.data.contains(position, planetaria_transform.scale/2));
                                 if (arc.exists && arc.data.contains(position, planetaria_transform.scale/2))
                                 {
+                                    Debug.Log("Yay-2.25");
                                     observer.potential_block_collision(arc.data, block.data, other_collider.data); // block collisions are handled in OnCollisionStay(): notification stage
                                 }
                             }

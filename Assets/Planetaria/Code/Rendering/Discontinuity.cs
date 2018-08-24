@@ -13,7 +13,7 @@ namespace Planetaria
             this.arc = arc;
             this.position = position.data;
             this.angle = arc.position_to_angle(this.position);
-            Debug.Assert(0 <= angle && angle <= arc.angle());
+            Debug.Assert(Mathf.Abs(angle) <= arc.angle()/2);
         }
     }
 }

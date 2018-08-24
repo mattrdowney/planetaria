@@ -39,7 +39,7 @@ namespace Planetaria
             foreach (Arc arc in shape_variable.arcs)
             {
                 float weight = arc.length(); // multiply be the weight of the arc (length is an integration of sorts)
-                Vector3 arc_center = arc.position(arc.angle()/2); // get the center of mass of each arc
+                Vector3 arc_center = arc.position(0); // get the center of mass of each arc // zero intentional
                 result += arc_center * weight;
             }
             result.Normalize();

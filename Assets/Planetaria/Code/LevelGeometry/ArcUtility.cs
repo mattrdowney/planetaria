@@ -53,7 +53,7 @@ namespace Planetaria
         public static Vector3 snap_to_edge(Arc arc, Vector3 point)
         {
             float angle = arc.position_to_angle(point);
-            if (angle < arc.angle()) // valid - within boundaries
+            if (Mathf.Abs(angle) <= arc.angle()/2) // valid - within boundaries
             {
                 return arc.position(angle);
             }

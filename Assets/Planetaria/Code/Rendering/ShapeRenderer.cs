@@ -8,11 +8,6 @@ namespace Planetaria
     [ExecuteInEditMode]
     public static class ShapeRenderer
     {
-        public static void draw_arc(Arc arc, float interpolator_begin, float interpolator_end)
-        {
-            partition_arc(arc, interpolator_begin*arc.angle(), interpolator_end*arc.angle());
-        }
-
         public static void partition_arc(Arc arc, float begin, float end)
         {
             float absolute_begin = begin;

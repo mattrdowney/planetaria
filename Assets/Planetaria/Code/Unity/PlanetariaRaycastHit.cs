@@ -34,9 +34,10 @@ namespace Planetaria
             collider = PlanetariaCache.self.collider_fetch(sphere_collider).data;
 
             distance = raycast_arc.position_to_angle(intersection_point) * (raycast_arc.length()/raycast_arc.angle()); // TODO: verify
+            distance += raycast_arc.length()/2;
             if (raycast_distance < 0)
             {
-                distance = 2*Mathf.PI - distance;
+                distance = raycast_arc.length() - distance;
             }
             positive_face_collision = true; // FIXME: HACK: LAZY: // also dynamic changes
 
