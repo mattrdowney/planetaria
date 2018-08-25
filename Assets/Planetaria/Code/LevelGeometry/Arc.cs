@@ -59,18 +59,12 @@ namespace Planetaria
                 extrusion *= -1;
             }
 
-            Debug.DrawRay(position, floor().normal, Color.cyan);
-
             bool above_floor = Mathf.Asin(Vector3.Dot(position, center_axis)) >= arc_latitude + Mathf.Min(extrusion, 0); // TODO: verify - potential bug?
             bool below_ceiling = Mathf.Asin(Vector3.Dot(position, center_axis)) <= arc_latitude + Mathf.Max(extrusion, 0);
             bool correct_latitude = above_floor && below_ceiling;
 
             float angle = position_to_angle(position, extrusion);
             bool correct_angle = Mathf.Abs(angle) <= half_angle;
-
-            Debug.Log((arc_latitude + Mathf.Min(extrusion, 0)) + " <= " + Mathf.Asin(Vector3.Dot(position, center_axis)) + " <= " + (arc_latitude + Mathf.Max(extrusion, 0)));
-            Debug.Log(above_floor + " " + below_ceiling + " " + correct_latitude + " " + angle + " " + correct_angle);
-            Debug.Log(correct_latitude + " vs " + correct_angle + " after " + extrusion);
 
             return correct_latitude && correct_angle;
         }

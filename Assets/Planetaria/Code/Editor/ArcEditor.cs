@@ -9,7 +9,7 @@ namespace Planetaria
         /// Inspector - Draw an arc (basic)
         /// </summary>
         /// <param name="arc">The arc that will be rendered.</param>
-        /// <param name="orientation">The Transform's rotation (for moving platforms).</param>
+        /// <param name="orientation">The Transform's rotation (for moving platforms). For static objects, use Quaternion.identity.</param>
         public static void draw_arc(Arc arc, Quaternion orientation)
         {
             Color violet = new Color(127, 0, 255);
@@ -20,8 +20,8 @@ namespace Planetaria
             draw_arc(arc, diameter/2, Color.gray, orientation);
             draw_arc(arc, diameter, Color.white, orientation);
 
-            draw_radial(arc, -arc.angle()/2, diameter, Color.red, orientation);
-            draw_radial(arc, +arc.angle()/2, diameter, violet, orientation);
+            draw_ray(arc, -arc.angle()/2, Mathf.PI/2, diameter, Color.red, orientation);
+            draw_ray(arc, +arc.angle()/2, Mathf.PI/2, diameter, violet, orientation);
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace Planetaria
         /// <param name="arc">The arc that will be rendered.</param>
         /// <param name="extrusion">The distance to extrude the arc.</param>
         /// <param name="color">The color of the drawn arc.</param>
-        /// <param name="orientation">The Transform's rotation (for moving platforms).</param>
+        /// <param name="orientation">The Transform's rotation (for moving platforms). For static objects, use Quaternion.identity.</param>
         private static void draw_arc(Arc arc, float extrusion, Color color, Quaternion orientation)
         {
             if (arc.is_edge() || extrusion != 0) // for arcs larger than a single pixel
@@ -50,8 +50,8 @@ namespace Planetaria
                 float angle = arc.angle()*Mathf.Rad2Deg;
                 float radius = (from - center).magnitude;
 
-                UnityEditor.Handles.color = color;
-                UnityEditor.Handles.DrawWireArc(center, normal, from - center, angle, radius);
+                Handles.color = color;
+                Handles.DrawWireArc(center, normal, from - center, angle, radius);
             }
         }
 
@@ -59,21 +59,20 @@ namespace Planetaria
         /// Inspector - Draw an extruded radial arc at a particular angle of the specified arc (i.e. the extrusion is its own arc).
         /// </summary>
         /// <param name="arc">The arc that will be rendered.</param>
-        /// <param name="angle">The angle at which the extruded radius is drawn.</param>
-        /// <param name="extrusion">The distance to extrude the radial arc.</param>
+        /// <param name="angle">The angle along the original Arc at which the extruded radius is drawn.</param>
+        /// <param name="local_angle">The angle at which the ray is "refracting" from the surface. 0=>right; PI/2=>up.</param>
+        /// <param name="extrusion">The distance (radius) to extrude the radial arc.</param>
         /// <param name="color">The color of the drawn radial arc.</param>
-        /// <param name="orientation">The Transform's rotation (for moving platforms).</param>
-        public static void draw_radial(Arc arc, float angle, float extrusion, Color color, Quaternion orientation)
+        /// <param name="orientation">The Transform's rotation (for moving platforms). For static objects, use Quaternion.identity.</param>
+        public static void draw_ray(Arc arc, float angle, float local_angle, float extrusion, Color color, Quaternion orientation)
         {
-            Vector3 from = arc.position(angle, 0);
-            Vector3 to = arc.position(angle, extrusion);
-            Arc radial = Arc.line(from, to);
-            draw_arc(radial, 0.0f, color, orientation);
+            Vector3 from = arc.position(angle);
+            Vector3 local_direction = Bearing.bearing(arc.position(angle), arc.normal(angle), local_angle);
+            Vector3 to = PlanetariaMath.slerp(from, local_direction, extrusion);
+
+            Arc composite = Arc.line(from, to);
+            draw_arc(composite, 0.0f, color, orientation);
         }
-
-        // public static void draw_radial(Arc arc, float angle, float local_angle, float radius, Color color) // TODO: implement
-
-        // public static void draw_tangent(Arc arc, float angle, float radius, Color color) // TODO: implement and add to draw_arc(Arc)
     }
 }
 

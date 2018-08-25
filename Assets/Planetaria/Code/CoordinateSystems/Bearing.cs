@@ -11,6 +11,13 @@ namespace Planetaria
             return Mathf.Atan2(y, x) - Mathf.PI/2;
         }
 
+        public static Vector3 bearing(Vector3 position, Vector3 normal, float angle)
+        {
+            Vector3 x_axis = Mathf.Cos(angle)*right(position, normal);
+            Vector3 y_axis = Mathf.Sin(angle)*up(position, normal);
+            return x_axis + y_axis;
+        }
+
         public static Vector3 normal(Vector3 position, float angle)
         {
             Vector3 x = east(position)*Mathf.Cos(angle);
