@@ -7,6 +7,15 @@
 /// </summary>
 public struct SphericalCap
 {
+    public SphericalCap collider()
+    {
+        if (distance >= 0)
+        {
+            return this;
+        }
+        return complement();
+    }
+
     public SphericalCap complement()
     {
         return cap(-pole, -distance);

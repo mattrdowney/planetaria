@@ -91,8 +91,8 @@ namespace Planetaria
             this.observer = observer;
             this.collision = collision;
             
-            horizontal_velocity = Vector3.Dot(velocity, Bearing.right(get_position(), collision.normal().data));
-            vertical_velocity = Vector3.Dot(velocity, collision.normal().data);
+            horizontal_velocity = Vector3.Dot(velocity, Bearing.right(get_position(), collision.geometry_visitor.normal()));
+            vertical_velocity = Vector3.Dot(velocity, collision.geometry_visitor.normal());
             if (vertical_velocity < 0)
             {
                 vertical_velocity *= -collision.elasticity;
@@ -117,8 +117,8 @@ namespace Planetaria
 
         private void grounded_position()
         {
-            collision.move(horizontal_velocity * Time.deltaTime);
-            transform.position = collision.position(); // NOTE: required so get_acceleration() functions
+            collision.geometry_visitor.move_position(horizontal_velocity * Time.deltaTime);
+            transform.position = (NormalizedCartesianCoordinates) collision.geometry_visitor.position(); // NOTE: required so get_acceleration() functions
             // project velocity
         }
 
@@ -133,8 +133,8 @@ namespace Planetaria
 
         private void grounded_accelerate(float delta)
         {
-            Vector3 normal = collision.normal().data;
-            Vector3 right = Bearing.right(collision.position().data, normal);
+            Vector3 normal = collision.geometry_visitor.normal();
+            Vector3 right = Bearing.right(collision.geometry_visitor.position(), normal);
 
             acceleration = get_acceleration();
             horizontal_acceleration = Vector3.Dot(acceleration, right);
@@ -152,11 +152,11 @@ namespace Planetaria
             {
                 BlockCollision collision = observer.data.collisions()[0];
 
-                collision.move(0, transform.scale/2 * (1 + 1e-3f)); // extrude the player so they do not accidentally re-collide (immediately) // FIXME: magic number, move to Precision.*
+                collision.geometry_visitor.move_position(0, transform.scale/2 * (1 + 1e-3f)); // extrude the player so they do not accidentally re-collide (immediately) // FIXME: magic number, move to Precision.*
                 x_velocity += horizontal_velocity;
                 //y_velocity += vertical_velocity;
-                transform.position = collision.position();
-                Vector3 normal = collision.normal().data;
+                transform.position = (NormalizedCartesianCoordinates) collision.geometry_visitor.position();
+                Vector3 normal = collision.geometry_visitor.normal();
                 Vector3 right = Bearing.right(get_position(), normal);
                 velocity = right*x_velocity + normal*y_velocity;
                 Debug.DrawRay(get_position(), velocity, Color.yellow, 1f);
@@ -172,8 +172,8 @@ namespace Planetaria
         {
             if (observer.exists)
             {
-                Vector3 x = horizontal_velocity * Bearing.right(get_position(), collision.normal().data);
-                Vector3 y = vertical_acceleration * Time.deltaTime * collision.normal().data;
+                Vector3 x = horizontal_velocity * Bearing.right(get_position(), collision.geometry_visitor.normal());
+                Vector3 y = vertical_acceleration * Time.deltaTime * collision.geometry_visitor.normal();
                 velocity = x + y;
             }
         }
@@ -182,8 +182,8 @@ namespace Planetaria
         {
             if (observer.exists)
             {
-                horizontal_velocity = Vector3.Dot(velocity, Bearing.right(get_position(), collision.normal().data));
-                vertical_velocity = Vector3.Dot(velocity, collision.normal().data);
+                horizontal_velocity = Vector3.Dot(velocity, Bearing.right(get_position(), collision.geometry_visitor.normal()));
+                vertical_velocity = Vector3.Dot(velocity, collision.geometry_visitor.normal());
             }
         }
        

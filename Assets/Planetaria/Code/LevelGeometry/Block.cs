@@ -94,7 +94,6 @@ namespace Planetaria
 
         public static PlanetariaPhysicMaterial fallback;
         [SerializeField] public bool active_variable;
-        [SerializeField] public bool is_dynamic; // FIXME: move to PlanetariaRigidbody
         [SerializeField] public bool is_platform;
         [SerializeField] public PlanetariaPhysicMaterial material = fallback;
         [SerializeField] [HideInInspector] public new PlanetariaTransform transform;

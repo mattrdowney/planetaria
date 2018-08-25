@@ -15,7 +15,7 @@ namespace Planetaria
         /// <returns></returns>
         public static optional<Vector3> arc_arc_intersection(Arc a, Arc b, float extrusion)
         {
-            Vector3[] intersections = circle_circle_intersections(a.circle(extrusion), b.circle(extrusion));
+            Vector3[] intersections = circle_circle_intersections(a.floor(extrusion).collider(), b.floor(extrusion).collider());
             intersections = nontrivial_arc_intersections(a, b, intersections);
             intersections = valid_arc_intersections(a, intersections, Quaternion.identity);
             intersections = valid_arc_intersections(b, intersections, Quaternion.identity);
@@ -28,8 +28,8 @@ namespace Planetaria
 
         public static Vector3[] arc_path_intersections(Arc arc, Vector3 begin, Vector3 end, float extrusion)
         {
-            GeospatialCircle arc_circle = arc.circle(extrusion);
-            GeospatialCircle path_circle = GeospatialCircle.circle(Vector3.Cross(begin, end).normalized, Mathf.PI/2);
+            SphericalCap arc_circle = arc.floor(extrusion).collider();
+            SphericalCap path_circle = SphericalCap.cap(Vector3.Cross(begin, end).normalized, 0);
 
             Vector3[] intersections = circle_circle_intersections(arc_circle, path_circle);
             return valid_arc_intersections(arc, intersections, Quaternion.identity);
@@ -62,17 +62,17 @@ namespace Planetaria
         /// If there are zero or infinite solutions, returns an empty array;
         /// If there are one or two solutions, returns an array with two Cartesian coordinates.
         /// </returns>
-        public static Vector3[] circle_circle_intersections(GeospatialCircle a, GeospatialCircle b) // https://gis.stackexchange.com/questions/48937/calculating-intersection-of-two-circles
+        public static Vector3[] circle_circle_intersections(SphericalCap a, SphericalCap b) // https://gis.stackexchange.com/questions/48937/calculating-intersection-of-two-circles
         {
-            float similarity = Vector3.Dot(a.center, b.center);
+            float similarity = Vector3.Dot(a.normal, b.normal);
 
             if (Mathf.Abs(similarity) > 1f - Precision.tolerance) // ignore points that are 1) equal or 2) opposite (within an error margin) because they will have infinite solutions
             {
                 return new Vector3[0];
             }
 
-            float a_radius = Mathf.Abs(a.radius);
-            float b_radius = Mathf.Abs(b.radius);
+            float a_radius = Mathf.Abs(Mathf.Acos(a.offset)); // TODO: simplify, elegance, efficiency (this will be one of many bottlenecks)
+            float b_radius = Mathf.Abs(Mathf.Acos(b.offset));
 
             float arc_distance = Mathf.Acos(similarity);
             float radii_sum = a_radius + b_radius;
@@ -95,9 +95,9 @@ namespace Planetaria
             float center_fraction_a = (distance_from_origin_a - distance_from_origin_b * similarity) / (1 - similarity * similarity);
             float center_fraction_b = (distance_from_origin_b - distance_from_origin_a * similarity) / (1 - similarity * similarity);
 
-            Vector3 intersection_center = center_fraction_a*a.center + center_fraction_b*b.center;
+            Vector3 intersection_center = center_fraction_a*a.normal + center_fraction_b*b.normal;
 
-            Vector3 binormal = Vector3.Cross(a.center, b.center);
+            Vector3 binormal = Vector3.Cross(a.normal, b.normal);
 
             float midpoint_distance = Mathf.Sqrt((1 - intersection_center.sqrMagnitude) / binormal.sqrMagnitude); //CONSIDER: rename?
 
@@ -125,15 +125,15 @@ namespace Planetaria
 
         public static Vector3[] raycast_intersection(Arc raycast_arc, Arc geometry_arc, float raycast_angle, Quaternion orientation)
         {
-            GeospatialCircle relative_geometry_circle = geometry_arc.circle();
+            SphericalCap relative_geometry_circle = geometry_arc.floor().collider();
             if (orientation != Quaternion.identity)
             {
                 Quaternion arc_to_world = orientation;
-                Debug.DrawRay(Vector3.zero, relative_geometry_circle.center, Color.green, 1f);
-                relative_geometry_circle = GeospatialCircle.circle(arc_to_world * relative_geometry_circle.center, relative_geometry_circle.radius);
-                Debug.DrawRay(Vector3.zero, relative_geometry_circle.center, Color.cyan, 1f);
+                Debug.DrawRay(Vector3.zero, relative_geometry_circle.normal, Color.green, 1f);
+                relative_geometry_circle = SphericalCap.cap(arc_to_world * relative_geometry_circle.normal, relative_geometry_circle.offset);
+                Debug.DrawRay(Vector3.zero, relative_geometry_circle.normal, Color.cyan, 1f);
             }
-            Vector3[] intersections = circle_circle_intersections(raycast_arc.circle(), relative_geometry_circle);
+            Vector3[] intersections = circle_circle_intersections(raycast_arc.floor().collider(), relative_geometry_circle);
             intersections = valid_arc_intersections(raycast_arc, intersections, Quaternion.identity, raycast_angle);
             intersections = valid_arc_intersections(geometry_arc, intersections, orientation);
             return intersections;

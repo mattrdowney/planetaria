@@ -63,7 +63,6 @@ namespace Planetaria
 
         public bool active { get; set; }
         
-        public bool is_dynamic;
         [NonSerialized] public new PlanetariaTransform transform;
         [SerializeField] [HideInInspector] public Transform internal_transform;
         [SerializeField] private Shape shape_variable;

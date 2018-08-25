@@ -10,7 +10,7 @@ namespace Planetaria
         {
             get
             {
-                if (transform_variable.rotation == Quaternion.identity)
+                if (transform_variable.rotation != Quaternion.identity)
                 {
                     return transform_variable.rotation * center_variable;
                 }
@@ -22,7 +22,7 @@ namespace Planetaria
         {
             get
             {
-                if (transform_variable.rotation == Quaternion.identity)
+                if (transform_variable.rotation != Quaternion.identity)
                 {
                     return transform_variable.position + transform_variable.rotation * center_variable;
                 }

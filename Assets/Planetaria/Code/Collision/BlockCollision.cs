@@ -68,21 +68,6 @@ namespace Planetaria
 
             return result;
         }
-
-        public void move(float delta_length, optional<float> extrusion = new optional<float>())
-        {
-            geometry_visitor = geometry_visitor.move_position(delta_length, extrusion);
-        }
-
-        public NormalizedCartesianCoordinates position()
-        {
-            return new NormalizedCartesianCoordinates(geometry_visitor.position());
-        }
-
-        public NormalizedCartesianCoordinates normal()
-        {
-            return new NormalizedCartesianCoordinates(geometry_visitor.normal());
-        }
     
         public bool active
         {
@@ -110,7 +95,7 @@ namespace Planetaria
 
         public bool grounded(Vector3 velocity)
         {
-            return geometry_visitor.contains(position().data + velocity*Time.deltaTime - normal().data*Precision.threshold);
+            return geometry_visitor.contains(geometry_visitor.position() + velocity*Time.deltaTime - geometry_visitor.normal()*Precision.threshold);
         }
 
         private static bool platform_collision(Arc arc, Block block, PlanetariaCollider collider, PlanetariaTransform transformation, PlanetariaRigidbody rigidbody, optional<Vector3> intersection_point)

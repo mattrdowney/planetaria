@@ -61,7 +61,6 @@
   <ItemGroup>
     <Compile Include="Assets\Planetaria\Code\Collision\BlockCollision.cs" />
     <Compile Include="Assets\Planetaria\Code\Collision\CollisionObserver.cs" />
-    <Compile Include="Assets\Planetaria\Code\Collision\GeospatialCircle.cs" />
     <Compile Include="Assets\Planetaria\Code\Collision\PlanetariaIntersection.cs" />
     <Compile Include="Assets\Planetaria\Code\Collision\RaycastSorter.cs" />
     <Compile Include="Assets\Planetaria\Code\Collision\Sphere.cs" />

@@ -43,14 +43,6 @@ namespace Planetaria
         {
             return normal(-half_angle, extrusion);
         }
-
-        [Obsolete("Arc.circle() is deprecated, please use Arc.floor() instead.")]
-        public GeospatialCircle circle(float extrusion = 0) // TODO: combine with floor()
-        {
-            Vector3 center = pole(extrusion);
-            float radius = elevation(extrusion);
-            return GeospatialCircle.circle(center, radius);
-        }
         
         /// Inspector - Determine if a circle is inside the arc / Determine if a point is inside the arc extruded by radius.
         /// </summary>
@@ -62,20 +54,25 @@ namespace Planetaria
         /// </returns>
         public bool contains(Vector3 position, float extrusion = 0f) // FIXME: TODO: ensure this works with 1) negative extrusions and 2) concave corners
         {
-            bool above_floor = Mathf.Asin(Vector3.Dot(position, center_axis)) >= arc_latitude; // TODO: verify - potential bug?
-            bool below_ceiling = Mathf.Asin(Vector3.Dot(position, center_axis)) <= arc_latitude + extrusion;
-            bool correct_latitude = above_floor && below_ceiling;
+            if (curvature == GeometryType.ConcaveCorner) // Concave corners are "inside-out"
+            {
+                extrusion *= -1;
+            }
 
-            bool concave_underground = curvature == GeometryType.ConcaveCorner && extrusion > 0;
-            bool convex_underground = curvature != GeometryType.ConcaveCorner && extrusion < 0;
-            bool underground = concave_underground || convex_underground;
+            Debug.DrawRay(position, floor().normal, Color.cyan);
+
+            bool above_floor = Mathf.Asin(Vector3.Dot(position, center_axis)) >= arc_latitude + Mathf.Min(extrusion, 0); // TODO: verify - potential bug?
+            bool below_ceiling = Mathf.Asin(Vector3.Dot(position, center_axis)) <= arc_latitude + Mathf.Max(extrusion, 0);
+            bool correct_latitude = above_floor && below_ceiling;
 
             float angle = position_to_angle(position, extrusion);
             bool correct_angle = Mathf.Abs(angle) <= half_angle;
 
-            Debug.Log(correct_latitude + " vs " + correct_angle);
+            Debug.Log((arc_latitude + Mathf.Min(extrusion, 0)) + " <= " + Mathf.Asin(Vector3.Dot(position, center_axis)) + " <= " + (arc_latitude + Mathf.Max(extrusion, 0)));
+            Debug.Log(above_floor + " " + below_ceiling + " " + correct_latitude + " " + angle + " " + correct_angle);
+            Debug.Log(correct_latitude + " vs " + correct_angle + " after " + extrusion);
 
-            return (correct_latitude || underground) && correct_angle;
+            return correct_latitude && correct_angle;
         }
 
         public Vector3 end(float extrusion = 0f)
@@ -213,8 +210,8 @@ namespace Planetaria
         /// <summary>A binormal to center_axis and forward_axis. Determines points after the beginning of the arc.</summary>
         [NonSerialized] private Vector3 right_axis;
     
-        /// <summary>The angle of the arc in radians (must be positive). Range: [-PI, +PI]</summary>
-        [NonSerialized] private float half_angle; // CONSIDER: use half angle: speed improvements on 1) negative extrusions (e.g. concave corners (sort of)) 2) better angle checking because of arctangent2 (atan2)
+        /// <summary>The angle of the arc in radians divided by two (must be positive). Range: [-PI, +PI]</summary>
+        [NonSerialized] private float half_angle;
         /// <summary>The angle of the arc from its parallel "equator". Range: [-PI/2, +PI/2]</summary>
         [NonSerialized] private float arc_latitude;
         /// <summary>The curvature of the arc (e.g. Corner/Edge, Straight/Convex/Concave).</summary>

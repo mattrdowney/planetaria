@@ -6,7 +6,7 @@ namespace Planetaria
     public partial struct Arc
     {
         /// <summary>
-        /// Constructor(Named) - Determines whether a corner is concave or convex and delegates accordingly.
+        /// Constructor (Named) - Determines whether a corner is concave or convex and delegates accordingly.
         /// </summary>
         /// <param name="left">The arc that attaches to the beginning of the corner.</param>
         /// <param name="right">The arc that attaches to the end of the corner.</param>
@@ -83,7 +83,7 @@ namespace Planetaria
         /// <returns>An arc along the surface of a unit sphere.</returns>
         private Arc(Vector3 from, Vector3 slope, Vector3 to, bool clockwise)
         {
-            center_axis = Vector3.Cross(from, slope);
+            center_axis = Vector3.Cross(from, slope).normalized;
             if (!clockwise) // Invert (e.g. for GeometryType.ConcaveCorner)
             {
                 center_axis *= -1;
@@ -94,22 +94,22 @@ namespace Planetaria
 
             Vector3 begin_axis = (from - center).normalized;
             Vector3 end_axis = (to - center).normalized;
-            bool long_path = Vector3.Dot(begin_axis, end_axis) < 0 || from == to; // INCORRECT
-            long_path ^= !clockwise; // Long path is inverted if going counterclockwise
-            float arc_angle = Vector3.Angle(begin_axis, end_axis) * Mathf.Deg2Rad;
-            arc_latitude = Mathf.Asin(elevation);
 
+            bool long_path = Vector3.Dot(slope, to) < 0 || from == to;
+            long_path ^= !clockwise; // Long path is inverted if going counterclockwise
+
+            float arc_angle = Vector3.Angle(begin_axis, end_axis) * Mathf.Deg2Rad;
             if (long_path)
             {
                 arc_angle = 2*Mathf.PI - arc_angle;
             }
-
             half_angle = arc_angle/2;
-
-            curvature = edge_type(arc_latitude);
 
             forward_axis = PlanetariaMath.slerp(begin_axis, slope, half_angle); // for great circles only
             right_axis = PlanetariaMath.slerp(begin_axis, slope, half_angle + Mathf.PI/2);
+
+            arc_latitude = Mathf.Asin(elevation);
+            curvature = edge_type(arc_latitude);
         }
 
         /// <summary>
@@ -188,29 +188,6 @@ namespace Planetaria
         }
 
         /// <summary>
-        /// Inspector - Determine the elevation of the extruded radius compared to its pole.
-        /// </summary>
-        /// <param name="extrusion">The radius to extrude the arc.</param>
-        /// <returns>
-        /// For poles towards the normal, returns a negative number [-PI/2, 0]
-        /// representing the angle of decline of the extruded point from the pole.
-        /// For poles away from the normal, returns a positive number [0, PI/2]
-        /// representing the angle of incline of the extruded point from the pole.
-        /// </returns>
-        private float elevation(float extrusion = 0f)
-        {
-            float latitude = arc_latitude + extrusion;
-
-            if (latitude >= 0f) // pole towards normal
-            {
-                return latitude - Mathf.PI/2; // elevation is zero or negative 
-            }
-
-            // pole away from normal
-            return latitude + Mathf.PI/2; // elevation is positive
-        }
-
-        /// <summary>
         /// Inspector - Is the Arc an edge?
         /// </summary>
         /// <returns>
@@ -225,25 +202,6 @@ namespace Planetaria
                     return true;
             }
             return false;
-        }
-        
-
-        /// <summary>
-        /// Inspector - Returns the axis perpendicular to all movement along the arc.
-        /// Returns the closer pole, so the pole can be above or below the arc (with respect to the normal).
-        /// </summary>
-        /// <returns>The closest pole, which is perpendicular to the axes of motion.</returns>
-        [Obsolete("Arc.pole() is deprecated, please use Arc.floor().normal instead.")]
-        private Vector3 pole(float extrusion = 0f)
-        {
-            float latitude = arc_latitude + extrusion;
-
-            if (latitude >= 0)
-            {
-                return center_axis;
-            }
-
-            return -center_axis;
         }
 
         private static Arc validify(Vector3 from, Vector3 slope, Vector3 to, bool clockwise)

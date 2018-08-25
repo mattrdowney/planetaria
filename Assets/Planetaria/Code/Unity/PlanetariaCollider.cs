@@ -117,6 +117,7 @@ namespace Planetaria
 
         private void OnTriggerStay(Collider collider)
         {
+            Debug.Log("Yay-9: ");
             optional<SphereCollider> sphere_collider = collider as SphereCollider;
             if (!sphere_collider.exists)
             {
@@ -129,8 +130,10 @@ namespace Planetaria
                 Debug.LogError("This should never happen");
                 return;
             }
+            Debug.Log("Yay-8: ");
             if (!(this.is_field && other_collider.data.is_field)) // fields pass through each other (same as triggers)
             {
+                Debug.Log("Yay-7: ");
                 if (PlanetariaIntersection.collider_collider_intersection(this.colliders, other_collider.data.colliders))
                 {
                     Debug.Log("Yay-6: " + this.name + " " + other_collider.data.name);
