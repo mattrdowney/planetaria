@@ -120,15 +120,8 @@ namespace Planetaria
         /// <returns>An arc that represents the path of a burrowed object.</returns>
         private static Arc concave_corner(Arc left, Arc right) // CONSIDER: combine with convex_corner?
         {
-            Arc result;
-            result.center_axis = -left.end(); // same as -right.begin()
-
-            Vector3 left_normal = left.end_normal();
-            Vector3 right_normal = right.begin_normal();
-            result.forward_axis = -(left_normal + right_normal).normalized; // forward axis is halfway between (but negated because it is concave)
-            result.right_axis = Vector3.Cross(result.forward_axis, result.center_axis);
-            result.half_angle = (Vector3.Angle(left_normal, right_normal)*Mathf.Deg2Rad)/2;
-            result.arc_latitude = -Mathf.PI/2;
+            Arc result = convex_corner(left, right);
+            result.forward_axis *= -1; // forward axis negated because it's concave
             result.curvature = GeometryType.ConcaveCorner;
             return result;
         }
@@ -141,21 +134,16 @@ namespace Planetaria
         /// <returns>A convex corner arc.</returns>
         private static Arc convex_corner(Arc left, Arc right) // TODO: does this work when latitude is >0?
         {
-            // find the arc along the equator and set the latitude to -PI/2 (implicitly, that means the arc radius is ~0)
+            Arc result;
+            result.center_axis = -left.end(); // same as -right.begin()
 
-            // The equatorial positions can be found by extruding the edges by PI/2
-            Vector3 start = left.end(Mathf.PI/2);
-            Vector3 end = right.begin(Mathf.PI/2);
+            Vector3 left_normal = left.end_normal();
+            Vector3 right_normal = right.begin_normal();
+            result.forward_axis = (left_normal + right_normal).normalized; // forward axis is halfway between
 
-            // The left tangent slope vector should point away from the position "start"
-            Vector3 slope = Bearing.right(start, right.begin_normal(Mathf.PI/2));
-
-            // Create arc along equator
-            Arc result = new Arc(start, slope, end, true);
-
-            // And move the arc to the "South Pole" instead
+            result.right_axis = Vector3.Cross(result.center_axis, result.forward_axis);
+            result.half_angle = (Vector3.Angle(left_normal, right_normal)*Mathf.Deg2Rad)/2;
             result.arc_latitude = -Mathf.PI/2;
-
             result.curvature = GeometryType.ConvexCorner;
             return result;
         }
@@ -168,14 +156,8 @@ namespace Planetaria
         /// <returns>A straight corner arc.</returns>
         private static Arc straight_corner(Arc left, Arc right)
         {
-            Vector3 start = left.end();
-            Vector3 direction = Bearing.right(start, left.end_normal());
-
-            Arc result = Arc.line(start, direction);
-
-            // Straight arcs have no length / angle
+            Arc result = convex_corner(left, right);
             result.half_angle = Precision.just_above_zero;
-
             result.curvature = GeometryType.StraightCorner;
             return result;
         }

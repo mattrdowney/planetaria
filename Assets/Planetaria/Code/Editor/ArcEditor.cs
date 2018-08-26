@@ -33,6 +33,8 @@ namespace Planetaria
         /// <param name="orientation">The Transform's rotation (for moving platforms). For static objects, use Quaternion.identity.</param>
         private static void draw_arc(Arc arc, float extrusion, Color color, Quaternion orientation)
         {
+            // FIXME: GeometryType.ConcaveCorner not working (or StraightCorner for that matter)
+
             Vector3 from = arc.begin(extrusion);
             Vector3 normal = -arc.floor().normal;
             Vector3 to = arc.end(extrusion);

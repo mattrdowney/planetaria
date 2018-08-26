@@ -9,18 +9,9 @@ namespace Planetaria
         {
             if (!EditorGlobal.self.hide_graphics)
             {
-                int index = 0;
                 foreach (Arc arc in self.arcs)
                 {
-                    if (arc.type == GeometryType.StraightCorner)
-                    {
-                        continue; // FIXME: this should not be necessary, but it covers up a graphics glitch
-                    }
-                    if (index == 7 || index == 6 || index == 0)
-                    {
-                        ArcEditor.draw_arc(arc, orientation);
-                    }
-                    ++index;
+                    ArcEditor.draw_arc(arc, orientation);
                 }
             }
         }
