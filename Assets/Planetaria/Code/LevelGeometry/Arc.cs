@@ -83,7 +83,7 @@ namespace Planetaria
         /// Inspector - Creates a SphericalCap that represents the floor (at given elevation).
         /// </summary>
         /// <param name="extrusion">The radius of the collider touching the floor.</param>
-        /// <returns>A SphericalCap representing the floor. Normal goes "down" - towards floor.</returns>
+        /// <returns>A SphericalCap representing the floor. Normal goes "down" - towards floor.</returns> // FIXME: (?) unintuitive normal
         public SphericalCap floor(float extrusion = 0) // TODO: combine with circle()
         {
             return SphericalCap.cap(center_axis, Mathf.Sin(arc_latitude + extrusion)).complement();
@@ -105,7 +105,7 @@ namespace Planetaria
         /// <param name="angle">The angle in radians along the arc.</param>
         /// <param name="extrusion">The radius to extrude.</param>
         /// <returns>A normal on the arc.</returns>
-        public Vector3 normal(float angle, float extrusion = 0f)
+        public Vector3 normal(float angle, float extrusion = 0f) // TODO: delegate to position() [bug-prone when adding PI/2]
         {
             if (curvature == GeometryType.ConcaveCorner) // Concave corners are "inside-out"
             {
