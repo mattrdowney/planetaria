@@ -54,10 +54,12 @@ namespace Planetaria
         /// </returns>
         public bool contains(Vector3 position, float extrusion = 0f) // FIXME: TODO: ensure this works with 1) negative extrusions and 2) concave corners
         {
-            if (curvature == GeometryType.ConcaveCorner) // Concave corners are "inside-out"
+            if (curvature == GeometryType.ConcaveCorner) // Concave corners are "inside-out" // TODO: keep DRY (Do not Repeat Yourself)
             {
                 extrusion *= -1;
             }
+
+            // TODO: CONSIDER: contains should always returns false when (arc_latitude + extrusion) < -Mathf.PI/2 // (?) && GeometryType.ConcaveCorner (i.e. above ground)
 
             bool above_floor = Mathf.Asin(Vector3.Dot(position, center_axis)) >= arc_latitude + Mathf.Min(extrusion, 0); // TODO: verify - potential bug?
             bool below_ceiling = Mathf.Asin(Vector3.Dot(position, center_axis)) <= arc_latitude + Mathf.Max(extrusion, 0);

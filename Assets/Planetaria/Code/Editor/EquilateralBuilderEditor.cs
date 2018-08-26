@@ -11,6 +11,7 @@ namespace Planetaria
         [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
         static void draw_arc_builder_gizmos(EquilateralBuilder self, GizmoType gizmo_type)
         {
+            //ShapeEditor.draw_shape(self.shape); // FIXME: use Shape
             foreach (Arc arc in self.arcs)
             {
                 ArcEditor.draw_arc(arc, Quaternion.identity);

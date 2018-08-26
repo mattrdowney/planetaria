@@ -33,26 +33,23 @@ namespace Planetaria
         /// <param name="orientation">The Transform's rotation (for moving platforms). For static objects, use Quaternion.identity.</param>
         private static void draw_arc(Arc arc, float extrusion, Color color, Quaternion orientation)
         {
-            if (arc.is_edge() || extrusion != 0) // for arcs larger than a single pixel
+            Vector3 from = arc.begin(extrusion);
+            Vector3 normal = -arc.floor().normal;
+            Vector3 to = arc.end(extrusion);
+
+            if (orientation != Quaternion.identity)
             {
-                Vector3 from = arc.begin(extrusion);
-                Vector3 normal = -arc.floor().normal;
-                Vector3 to = arc.end(extrusion);
-
-                if (orientation != Quaternion.identity)
-                {
-                    from = orientation * from;
-                    normal = orientation * normal;
-                    to = orientation * to;
-                }
-
-                Vector3 center = Vector3.Project(from, normal);
-                float angle = arc.angle()*Mathf.Rad2Deg;
-                float radius = (from - center).magnitude;
-
-                Handles.color = color;
-                Handles.DrawWireArc(center, normal, from - center, angle, radius);
+                from = orientation * from;
+                normal = orientation * normal;
+                to = orientation * to;
             }
+
+            Vector3 center = Vector3.Project(from, normal);
+            float angle = arc.angle()*Mathf.Rad2Deg;
+            float radius = (from - center).magnitude;
+
+            Handles.color = color;
+            Handles.DrawWireArc(center, normal, from - center, angle, radius);
         }
 
         /// <summary>
