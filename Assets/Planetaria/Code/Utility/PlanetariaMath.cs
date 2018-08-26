@@ -106,7 +106,7 @@ namespace Planetaria
         /// <param name="y_axis">The y-axis.</param>
         /// <param name="radians">The angle in radians.</param>
         /// <returns>The position on a circle defined by interpolating between x_axis and y_axis.</returns>
-        public static Vector3 slerp(Vector3 x_axis, Vector3 y_axis, float radians)
+        public static Vector3 spherical_linear_interpolation(Vector3 x_axis, Vector3 y_axis, float radians)
         {
             return x_axis * Mathf.Cos(radians) + y_axis * Mathf.Sin(radians);
         }

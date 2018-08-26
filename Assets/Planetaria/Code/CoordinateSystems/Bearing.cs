@@ -11,7 +11,7 @@ namespace Planetaria
             return Mathf.Atan2(y, x) - Mathf.PI/2;
         }
 
-        public static Vector3 bearing(Vector3 position, Vector3 normal, float angle)
+        public static Vector3 bearing(Vector3 position, Vector3 normal, float angle) // TODO: use this for jumping / derailing / PlanetariaRigidbody, etc!
         {
             Vector3 x_axis = Mathf.Cos(angle)*right(position, normal);
             Vector3 y_axis = Mathf.Sin(angle)*up(position, normal);

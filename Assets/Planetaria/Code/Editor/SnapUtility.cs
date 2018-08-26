@@ -20,7 +20,7 @@ namespace Planetaria
             for (float column = 0; column < EditorGlobal.self.columns; ++column) // time zone lines
             {
                 float angle = Mathf.PI * column / EditorGlobal.self.columns;
-                Vector3 normal = PlanetariaMath.slerp(Vector3.forward, Vector3.right, angle);
+                Vector3 normal = PlanetariaMath.spherical_linear_interpolation(Vector3.forward, Vector3.right, angle);
                 UnityEditor.Handles.DrawWireDisc(Vector3.zero, normal, 1);
             }
         }

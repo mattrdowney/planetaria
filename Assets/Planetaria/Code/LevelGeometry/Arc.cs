@@ -107,8 +107,26 @@ namespace Planetaria
         /// <returns>A normal on the arc.</returns>
         public Vector3 normal(float angle, float extrusion = 0f)
         {
-            // TODO: proper negative extrusions (adding to a negative extrusion will provide an answer for a different position).
-            return position(angle, extrusion + Mathf.PI/2);
+            if (curvature == GeometryType.ConcaveCorner) // Concave corners are "inside-out"
+            {
+                extrusion *= -1;
+            }
+
+            float actual_elevation = arc_latitude + extrusion;
+            if (actual_elevation >= -Mathf.PI/2)
+            {
+                Vector3 equator_position = PlanetariaMath.spherical_linear_interpolation(forward_axis, right_axis, angle);
+                return PlanetariaMath.spherical_linear_interpolation(equator_position, center_axis, actual_elevation + Mathf.PI/2);
+            }
+            else // if (actual_elevation < -Mathf.PI/2) // Primarily used for concave corners
+            {
+                actual_elevation += Mathf.PI/2;
+                actual_elevation /= Mathf.Cos(half_angle);
+                actual_elevation -= Mathf.PI/2;
+
+                Vector3 normal_position = PlanetariaMath.spherical_linear_interpolation(forward_axis, center_axis, actual_elevation);
+                return PlanetariaMath.spherical_linear_interpolation(normal_position, right_axis, angle); // TODO: verify - likely to be wrong
+            }
         }
 
         /// <summary>
@@ -119,9 +137,24 @@ namespace Planetaria
         /// <returns>A position on the arc.</returns>
         public Vector3 position(float angle, float extrusion = 0f)
         {
-            //for concave corners: extrusion / Mathf.Cos(arc_angle / 2) distance at angle/2
-            Vector3 equator_position = PlanetariaMath.slerp(forward_axis, right_axis, angle);
-            return PlanetariaMath.slerp(equator_position, center_axis, arc_latitude + extrusion);
+            if (curvature == GeometryType.ConcaveCorner) // Concave corners are "inside-out"
+            {
+                extrusion *= -1;
+            }
+
+            float actual_elevation = arc_latitude + extrusion;
+            if (actual_elevation >= -Mathf.PI/2)
+            {
+                Vector3 equator_position = PlanetariaMath.spherical_linear_interpolation(forward_axis, right_axis, angle);
+                return PlanetariaMath.spherical_linear_interpolation(equator_position, center_axis, actual_elevation);
+            }
+            else // if (actual_elevation < -Mathf.PI/2) // Primarily used for concave corners
+            {
+                actual_elevation += Mathf.PI/2;
+                actual_elevation /= Mathf.Cos(half_angle);
+                actual_elevation -= Mathf.PI/2;
+                return PlanetariaMath.spherical_linear_interpolation(forward_axis, center_axis, actual_elevation);
+            }
         }
 
         /// <summary>

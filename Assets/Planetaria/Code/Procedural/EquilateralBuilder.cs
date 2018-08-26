@@ -52,8 +52,8 @@ namespace Planetaria
                     List<Vector3> vertices = new List<Vector3>();
                     for (float edge_index = 0; edge_index < edges; ++edge_index)
                     {
-                        Vector3 equatorial_position = PlanetariaMath.slerp(right, up, -(edge_index/edges)*(Mathf.PI*2));
-                        Vector3 final_position = PlanetariaMath.slerp(forward, equatorial_position, phi);
+                        Vector3 equatorial_position = PlanetariaMath.spherical_linear_interpolation(right, up, -(edge_index/edges)*(Mathf.PI*2));
+                        Vector3 final_position = PlanetariaMath.spherical_linear_interpolation(forward, equatorial_position, phi);
                         vertices.Add(final_position);
                     }
 

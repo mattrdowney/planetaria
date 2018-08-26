@@ -106,8 +106,8 @@ namespace Planetaria
         private void aerial_move(float delta)
         {
             Debug.DrawRay(get_position(), velocity, Color.green);
-            Vector3 next_position = PlanetariaMath.slerp(get_position(), velocity.normalized, delta); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
-            Vector3 next_velocity = PlanetariaMath.slerp(get_position(), velocity.normalized, delta + Mathf.PI/2);
+            Vector3 next_position = PlanetariaMath.spherical_linear_interpolation(get_position(), velocity.normalized, delta); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
+            Vector3 next_velocity = PlanetariaMath.spherical_linear_interpolation(get_position(), velocity.normalized, delta + Mathf.PI/2);
             
             transform.position = new NormalizedCartesianCoordinates(next_position);
             velocity = next_velocity.normalized * velocity.magnitude;

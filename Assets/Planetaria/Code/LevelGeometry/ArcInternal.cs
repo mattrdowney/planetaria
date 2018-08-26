@@ -105,8 +105,8 @@ namespace Planetaria
             }
             half_angle = arc_angle/2;
 
-            forward_axis = PlanetariaMath.slerp(begin_axis, slope, half_angle); // for great circles only
-            right_axis = PlanetariaMath.slerp(begin_axis, slope, half_angle + Mathf.PI/2);
+            forward_axis = PlanetariaMath.spherical_linear_interpolation(begin_axis, slope, half_angle); // for great circles only
+            right_axis = PlanetariaMath.spherical_linear_interpolation(begin_axis, slope, half_angle + Mathf.PI/2);
 
             arc_latitude = Mathf.Asin(elevation);
             curvature = edge_type(arc_latitude);
