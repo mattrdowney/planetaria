@@ -25,7 +25,6 @@ namespace Planetaria
             block_transform = transformation;
             last_extrusion = extrusion;
             angular_position = 0;
-            Debug.Log(Time.time);
             initialize();
             calculate_location();
         }
@@ -143,6 +142,7 @@ namespace Planetaria
             cached_position = arc_visitor.arc.position(angular_position, offset);
             cached_normal = arc_visitor.arc.normal(angular_position, offset);
             Debug.DrawRay(cached_position, cached_normal, Color.green);
+            Debug.Log(angular_position);
         }
     
         private Transform block_transform;

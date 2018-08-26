@@ -126,8 +126,9 @@ namespace Planetaria
                 actual_elevation /= Mathf.Cos(half_angle);
                 actual_elevation -= Mathf.PI/2;
 
-                Vector3 normal_position = PlanetariaMath.spherical_linear_interpolation(forward_axis, center_axis, actual_elevation);
-                return PlanetariaMath.spherical_linear_interpolation(normal_position, right_axis, angle); // TODO: verify - likely to be wrong
+                // FIXME: this is wrong
+                Vector3 normal_position = PlanetariaMath.spherical_linear_interpolation(forward_axis, center_axis, actual_elevation - Mathf.PI/2);
+                return PlanetariaMath.spherical_linear_interpolation(normal_position, right_axis, -angle);
             }
         }
 
