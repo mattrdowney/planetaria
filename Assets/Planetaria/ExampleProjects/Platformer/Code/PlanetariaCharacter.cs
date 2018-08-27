@@ -63,10 +63,6 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
             {
                 velocity = Mathf.Sign(velocity)*3f*transform.scale;
             }
-            if (Time.time > 2f)
-            {
-                collision.geometry_visitor.offset = -0.05f;
-            }
             planetaria_rigidbody.relative_velocity = new Vector2(velocity, 0);
             transform.direction = (NormalizedCartesianCoordinates) collision.geometry_visitor.normal();
             if (Time.time - last_jump_attempt < .2f)
