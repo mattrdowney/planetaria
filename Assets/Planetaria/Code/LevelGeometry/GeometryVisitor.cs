@@ -92,6 +92,12 @@ namespace Planetaria
             {
                 return last_extrusion;
             }
+            set
+            {
+                last_extrusion = value;
+                initialize();
+                calculate_location();
+            }
         }
 
         private void set_position(float angular_position)
@@ -142,7 +148,6 @@ namespace Planetaria
             cached_position = arc_visitor.arc.position(angular_position, offset);
             cached_normal = arc_visitor.arc.normal(angular_position, offset);
             Debug.DrawRay(cached_position, cached_normal, Color.green);
-            Debug.Log(angular_position);
         }
     
         private Transform block_transform;

@@ -65,7 +65,7 @@ public class PlanetariaCharacter : PlanetariaMonoBehaviour
             }
             if (Time.time > 2f)
             {
-                //collision.geometry_visitor.offset = -0.05f;
+                collision.geometry_visitor.offset = -0.05f;
             }
             planetaria_rigidbody.relative_velocity = new Vector2(velocity, 0);
             transform.direction = (NormalizedCartesianCoordinates) collision.geometry_visitor.normal();

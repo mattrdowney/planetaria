@@ -118,7 +118,8 @@ namespace Planetaria
             if (actual_elevation >= -Mathf.PI/2)
             {
                 Vector3 equator_position = PlanetariaMath.spherical_linear_interpolation(forward_axis, right_axis, angle);
-                return PlanetariaMath.spherical_linear_interpolation(equator_position, center_axis, actual_elevation + Mathf.PI/2);
+                Vector3 result = PlanetariaMath.spherical_linear_interpolation(equator_position, center_axis, actual_elevation + Mathf.PI/2);
+                return curvature == GeometryType.ConcaveCorner ? -result : result;
             }
             else // if (actual_elevation < -Mathf.PI/2) // Primarily used for concave corners
             {
@@ -126,9 +127,14 @@ namespace Planetaria
                 actual_elevation /= Mathf.Cos(half_angle);
                 actual_elevation -= Mathf.PI/2;
 
-                // FIXME: this is wrong
+                if (curvature == GeometryType.ConcaveCorner || curvature == GeometryType.ConvexCorner) // Concave corners are "inside-out"
+                {
+                    angle *= -1;
+                }
+                
                 Vector3 normal_position = PlanetariaMath.spherical_linear_interpolation(forward_axis, center_axis, actual_elevation - Mathf.PI/2);
-                return PlanetariaMath.spherical_linear_interpolation(normal_position, right_axis, -angle);
+                Vector3 result = PlanetariaMath.spherical_linear_interpolation(normal_position, right_axis, angle);
+                return curvature == GeometryType.ConvexCorner ? -result : result;
             }
         }
 
