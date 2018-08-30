@@ -112,7 +112,7 @@
     <Compile Include="Assets\Planetaria\Code\Shutter\RegularPolygonCameraShutter.cs" />
     <Compile Include="Assets\Planetaria\Code\Tracker\BlinkTracker.cs" />
     <Compile Include="Assets\Planetaria\Code\Tracker\InstantHorizontalTracker.cs" />
-    <Compile Include="Assets\Planetaria\Code\Tracker\InstantTracker.cs" />
+    <Compile Include="Assets\Planetaria\Code\Tracker\InstantPositionTracker.cs" />
     <Compile Include="Assets\Planetaria\Code\Tracker\PlanetariaTracker.cs" />
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaActuator.cs" />
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaAudioSource.cs" />
@@ -143,12 +143,14 @@
     <Compile Include="Assets\Planetaria\Code\World\OctahedronPlanetarium.cs" />
     <Compile Include="Assets\Planetaria\Code\World\SphericalRectanglePlanetarium.cs" />
     <Compile Include="Assets\Planetaria\Code\World\WorldPlanetarium.cs" />
+    <Compile Include="Assets\Planetaria\ExampleProjects\DebrisNoirs\Code\Cannon.cs" />
+    <Compile Include="Assets\Planetaria\ExampleProjects\DebrisNoirs\Code\Missile.cs" />
+    <Compile Include="Assets\Planetaria\ExampleProjects\DebrisNoirs\Code\Ship.cs" />
+    <Compile Include="Assets\Planetaria\ExampleProjects\Platformer\Code\Character.cs" />
     <Compile Include="Assets\Planetaria\ExampleProjects\Platformer\Code\Door.cs" />
     <Compile Include="Assets\Planetaria\ExampleProjects\Platformer\Code\Elevator.cs" />
     <Compile Include="Assets\Planetaria\ExampleProjects\Platformer\Code\InstantRotationTracker.cs" />
     <Compile Include="Assets\Planetaria\ExampleProjects\Platformer\Code\Laser.cs" />
-    <Compile Include="Assets\Planetaria\ExampleProjects\Platformer\Code\PlanetariaCharacter.cs" />
-    <Compile Include="Assets\Planetaria\ExampleProjects\SpaceShooter\Code\Ship.cs" />
     <Compile Include="Assets\UnitySVG\Extensions.cs" />
     <Compile Include="Assets\UnitySVG\Implement.cs" />
     <Compile Include="Assets\UnitySVG\Implementation\RenderingEngine\BasicType\SVGGArcAbs.cs" />

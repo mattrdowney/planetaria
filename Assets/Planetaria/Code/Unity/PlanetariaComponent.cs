@@ -2,6 +2,7 @@
 
 namespace Planetaria
 {
+    [RequireComponent(typeof(PlanetariaTransform))] // TODO: CHECK: How does this work with PlanetariaTransform? Infinite loop?
     public abstract class PlanetariaComponent : MonoBehaviour
     {
         protected virtual void Awake()
@@ -12,14 +13,11 @@ namespace Planetaria
             }
         }
 
-        protected abstract void OnDestroy();
+        protected virtual void OnDestroy() { } // TODO: OnDestroy() no longer needs to be declared as empty in other files.
 
         protected virtual void Reset()
         {
-            if (!game_object_variable)
-            {
-                game_object_variable = (PlanetariaGameObject) this;
-            }
+            game_object_variable = (PlanetariaGameObject) this;
         }
 
         public new PlanetariaTransform transform
@@ -72,7 +70,7 @@ namespace Planetaria
             return gameObject.internal_game_object.GetComponentsInParent<Subtype>();
         }
 
-        [SerializeField] [HideInInspector] private PlanetariaGameObject game_object_variable;
+        [SerializeField] [HideInInspector] private PlanetariaGameObject game_object_variable; // FIXME: bug when switching Component from GameObject1 to GameObject2 (reference improperly held).
     }
 }
 

@@ -6,7 +6,7 @@ public class InstantRotationTracker : PlanetariaTracker
     public override void setup() // FIXME: this could (and should) be generalized
     {
         target = GameObject.Find("Character").GetComponent<PlanetariaTransform>();
-        character = GameObject.Find("Character").GetComponent<PlanetariaCharacter>();
+        character = GameObject.Find("Character").GetComponent<Character>();
     }
 
     public override void step()
@@ -24,7 +24,7 @@ public class InstantRotationTracker : PlanetariaTracker
     public override void cleanup() { }
     public override void teleport() { }
 
-    PlanetariaCharacter character;
+    Character character;
 }
 
 /*

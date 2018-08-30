@@ -2,7 +2,7 @@
 
 namespace Planetaria
 {
-    public abstract class PlanetariaTracker : MonoBehaviour // TODO: PlanetariaComponent
+    public abstract class PlanetariaTracker : PlanetariaComponent
     {
         public abstract void setup();
         public abstract void cleanup();
@@ -42,7 +42,7 @@ namespace Planetaria
             step();
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
             cleanup();
             shutter = new optional<PlanetariaCameraShutter>(); // deregisters from blink_event

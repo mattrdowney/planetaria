@@ -13,8 +13,6 @@ namespace Planetaria
             initialize();
         }
 
-        protected override void OnDestroy() { }
-
         protected override sealed void Reset()
         {
             base.Reset();
@@ -35,6 +33,8 @@ namespace Planetaria
             {
                 internal_renderer = internal_transform.GetComponent<PlanetariaRenderer>();
             }
+            direction_variable = internal_transform.up;
+            scale_variable = internal_transform.lossyScale.x;
         }
 
         // Properties
@@ -233,8 +233,8 @@ namespace Planetaria
         [SerializeField] [HideInInspector] private optional<PlanetariaRigidbody> internal_rigidbody; // FIXME: implement
 
         //private Planetarium planetarium_variable; // cartesian_transform's position
-        [SerializeField] private Vector3 direction_variable = Vector3.up; // CONSIDER: how do non-normalized vectors affect Quaternion.LookRotation()? Vector3.zero is the biggest issue.
-        [SerializeField] private float scale_variable = 1f; // I thought this could be combined with transform.localScale/lossyScale, but it can't apparently
+        [SerializeField] private Vector3 direction_variable; // CONSIDER: how do non-normalized vectors affect Quaternion.LookRotation()? Vector3.zero is the biggest issue.
+        [SerializeField] private float scale_variable; // I thought this could be combined with transform.localScale/lossyScale, but it can't apparently
     }
 }
 

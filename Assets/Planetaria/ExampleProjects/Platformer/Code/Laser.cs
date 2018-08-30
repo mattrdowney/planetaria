@@ -8,7 +8,7 @@ public class Laser : MonoBehaviour  // TODO: PlanetariaComponent
 
     private void Start()
     {
-        main_character = GameObject.FindObjectOfType<PlanetariaCharacter>().gameObject.internal_game_object.transform;
+        main_character = GameObject.FindObjectOfType<Character>().gameObject.internal_game_object.transform;
         main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
         arc_renderer = GameObject.FindObjectOfType<ArcRenderer>();
 #if UNITY_EDITOR
@@ -40,7 +40,7 @@ public class Laser : MonoBehaviour  // TODO: PlanetariaComponent
             arc_renderer.material.color = Color.blue;
         }
 #else
-        if (Input.GetAxis("OpenVR_IndexTrigger") > .9f)
+        if (Input.GetAxis("OSVR_IndexTrigger") > .9f)
         {
             arc_renderer.material.color = Color.red;
         }
