@@ -179,7 +179,7 @@ namespace Planetaria
         [SerializeField] [HideInInspector] public new optional<PlanetariaRigidbody> rigidbody;
         [SerializeField] [HideInInspector] public Sphere[] colliders = new Sphere[0]; // FIXME: private
         [SerializeField] private float scale_variable;
-        [SerializeField] private bool is_field_variable = false;
+        [SerializeField] public bool is_field_variable = false;
         public static PlanetariaPhysicMaterial fallback;
     }
 }

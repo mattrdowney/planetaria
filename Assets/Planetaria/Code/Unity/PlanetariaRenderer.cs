@@ -90,15 +90,29 @@ namespace Planetaria
             set
             {
                 scale_variable = value;
-                internal_transform.localScale = Vector3.one * scale_variable / 2;
+                internal_transform.localScale = Vector3.one * scale_variable/2;
             }
         }
 
+        public float angle
+        {
+            get
+            {
+                return angle_variable;
+            }
+            set
+            {
+                angle_variable = value;
+                internal_transform.localRotation = Quaternion.Euler(0, 0, angle * Mathf.Rad2Deg);
+            }
+        }
+
+        [SerializeField] private float angle_variable;
         [SerializeField] public Material material;
         [SerializeField] public SortingLayer sorting_layer;
         [SerializeField] protected optional<short> sorting_order;
         
-        private float scale_variable;
+        [SerializeField] private float scale_variable;
         
         [SerializeField] [HideInInspector] protected Transform internal_transform;
         [SerializeField] [HideInInspector] protected Renderer internal_renderer;

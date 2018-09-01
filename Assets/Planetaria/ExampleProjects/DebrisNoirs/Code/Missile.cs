@@ -5,13 +5,10 @@ public class Missile : PlanetariaMonoBehaviour
 {
     protected override void OnConstruction()
     {
-        //PlanetariaRigidbody ship_rigidbody = PlanetariaGameObject.Find("Ship").GetComponent<PlanetariaRigidbody>();
         rigidbody = GetComponent<PlanetariaRigidbody>();
         rigidbody.relative_velocity = Vector2.up*Mathf.PI;
-        //rigidbody.absolute_velocity += ship_rigidbody.absolute_velocity; // Preserving momentum and adding missile momentum would be 1) gamebreaking 2) unintuitive for aiming
         PlanetariaGameObject.Destroy(this.gameObject, 2f);
         transform.localScale = +0.01f;
-        this.GetComponent<PlanetariaCollider>().is_field = true;
     }
 
     protected override void OnDestruction()

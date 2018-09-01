@@ -40,6 +40,20 @@ namespace Planetaria
 
         private void FixedUpdate()
         {
+            if (velocity != Vector3.zero)
+            {
+                Vector2 begin_velocity = relative_velocity;
+                relative_velocity = relative_velocity + Vector2.one*Mathf.Epsilon;
+                Vector2 end_velocity = relative_velocity;
+
+                float angle_difference = Vector3.Angle(begin_velocity, end_velocity);
+                float magnitude_difference = Mathf.Abs(begin_velocity.magnitude - end_velocity.magnitude);
+                if (angle_difference > Precision.just_above_zero || magnitude_difference > Precision.just_above_zero)
+                {
+                    Debug.Log(angle_difference + " " + magnitude_difference);
+                }
+            }
+
             previous_position = get_position();
             if (observer.exists && observer.data.colliding()) // grounded
             {
@@ -71,12 +85,7 @@ namespace Planetaria
 
         public Vector3 get_acceleration()
         {
-            Vector3 result = Vector3.zero; // in theory this could mess things up
-            for (int force = 0; force < gravity_wells.Length; ++force)
-            {
-                result += Bearing.attractor(get_position(), gravity_wells[force])*gravity_wells[force].magnitude;
-            }
-            return result;
+            return Bearing.attractor(get_position(), gravity.normalized)*gravity.magnitude;
         }
 
         public bool collide(BlockCollision collision, CollisionObserver observer)
@@ -200,16 +209,14 @@ namespace Planetaria
             get
             {
                 synchronize_velocity_ground_to_air();
-                Vector3 right = Bearing.right(get_position(), gameObject.internal_game_object.transform.up);
-                Vector3 up = Bearing.up(get_position(), gameObject.internal_game_object.transform.up);
-                float x = Vector3.Dot(velocity, right);
-                float y = Vector3.Dot(velocity, up);
+                float x = Vector3.Dot(velocity, internal_transform.right);
+                float y = Vector3.Dot(velocity, internal_transform.up);
                 return new Vector2(x, y);
             }
             set
             {
-                Vector3 x = Bearing.right(get_position(), gameObject.internal_game_object.transform.up) * value.x;
-                Vector3 y = Bearing.up(get_position(), gameObject.internal_game_object.transform.up) * value.y;
+                Vector3 x = internal_transform.right*value.x;
+                Vector3 y = internal_transform.up*value.y;
                 velocity = x + y;
                 synchronize_velocity_air_to_ground();
             }
@@ -263,7 +270,7 @@ namespace Planetaria
         /// </summary>
 
         // gravity
-        [SerializeField] public Vector3[] gravity_wells;
+        [SerializeField] public Vector3 gravity;
         
         [SerializeField] [HideInInspector] private Transform internal_transform;
         [SerializeField] [HideInInspector] private Rigidbody internal_rigidbody;

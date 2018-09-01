@@ -14,6 +14,7 @@ public class Ship : PlanetariaMonoBehaviour
     private void Start()
     {
         planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
+        planetaria_renderer = this.GetComponent<AreaRenderer>();
         transform.direction = new NormalizedCartesianCoordinates(Vector3.up);
         transform.localScale = +0.1f;
     }
@@ -33,6 +34,15 @@ public class Ship : PlanetariaMonoBehaviour
         {
             input_direction.Normalize();
         }
+
+        if (input_direction.sqrMagnitude > 0)
+        {
+            float current_angle = planetaria_renderer.angle*Mathf.Rad2Deg;
+            float target_angle = Mathf.Atan2(input_direction.y, input_direction.x)*Mathf.Rad2Deg;
+            float interpolator = 360 / Mathf.Abs(Mathf.DeltaAngle(current_angle, target_angle)) * Time.deltaTime;
+            planetaria_renderer.angle = Mathf.LerpAngle(current_angle, target_angle, interpolator)*Mathf.Deg2Rad;
+        }
+
         if (input_direction.sqrMagnitude > 0)
         {
             planetaria_rigidbody.relative_velocity += input_direction * Time.deltaTime;
@@ -55,6 +65,7 @@ public class Ship : PlanetariaMonoBehaviour
     
     [SerializeField] private const float acceleration = 5f;
 
+    [NonSerialized] private AreaRenderer planetaria_renderer;
     [NonSerialized] private PlanetariaRigidbody planetaria_rigidbody;
     [NonSerialized] private float horizontal;
     [NonSerialized] private float vertical;
