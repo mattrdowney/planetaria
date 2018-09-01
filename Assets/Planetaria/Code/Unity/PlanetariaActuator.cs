@@ -19,6 +19,16 @@ namespace Planetaria
 
         private void Update()
         {
+            step();
+        }
+
+        private void LateUpdate() // This is for graphics that require correct positioning of controller (e.g. crosshair)
+        {
+            step();
+        }
+
+        private void step()
+        {
             switch (input_device_type)
             {
                 // Analog stick (e.g. for conventional console controllers)

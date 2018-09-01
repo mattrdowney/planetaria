@@ -4,14 +4,11 @@ namespace Planetaria
 {
     public class InstantPositionTracker : PlanetariaTracker
     {
-        public override void setup()
-        {
-            target = GameObject.Find("Character").GetComponent<PlanetariaTransform>();
-        }
+        public override void setup() { }
 
         public override void step()
         {
-            self.position = target.data.position;
+            self.position = target.position;
         }
 
         public override void cleanup() { }

@@ -4,13 +4,13 @@ namespace Planetaria
 {
     public abstract class PlanetariaTracker : PlanetariaComponent
     {
+        public PlanetariaTransform target;
         public abstract void setup();
         public abstract void cleanup();
         public abstract void step();
         public abstract void teleport();
 
         protected PlanetariaTransform self;
-        protected optional<PlanetariaTransform> target;
         protected optional<PlanetariaCameraShutter> shutter
         {
             get

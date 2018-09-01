@@ -13,7 +13,7 @@ namespace Planetaria
 
         public override void teleport()
         {
-            self.position = target.data.position;
+            self.position = target.position;
         }
 
         public override void cleanup() { }

@@ -1,30 +1,19 @@
 ﻿using UnityEngine;
-using Planetaria;
 
-public class InstantRotationTracker : PlanetariaTracker
+namespace Planetaria
 {
-    public override void setup() // FIXME: this could (and should) be generalized
+    public class InstantRotationTracker : PlanetariaTracker
     {
-        target = GameObject.Find("Character").GetComponent<PlanetariaTransform>();
-        character = GameObject.Find("Character").GetComponent<Character>();
-    }
+        public override void setup() { }
 
-    public override void step()
-    {
-        if (character.magnet_floor)
+        public override void step()
         {
-            self.direction = target.data.direction;
+            self.direction = target.direction;
         }
-        else
-        {
-            self.direction = new NormalizedCartesianCoordinates(Vector3.up);
-        }
+
+        public override void cleanup() { }
+        public override void teleport() { }
     }
-
-    public override void cleanup() { }
-    public override void teleport() { }
-
-    Character character;
 }
 
 /*

@@ -19,7 +19,7 @@ public class Character : PlanetariaMonoBehaviour
         planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
         this.GetComponent<PlanetariaCollider>().material = material;
         transform.direction = new NormalizedCartesianCoordinates(Vector3.up);
-        transform.localScale = +0.1f;
+        transform.localScale = +0.01f;
     }
 
     private void Update()

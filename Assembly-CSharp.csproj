@@ -113,6 +113,7 @@
     <Compile Include="Assets\Planetaria\Code\Tracker\BlinkTracker.cs" />
     <Compile Include="Assets\Planetaria\Code\Tracker\InstantHorizontalTracker.cs" />
     <Compile Include="Assets\Planetaria\Code\Tracker\InstantPositionTracker.cs" />
+    <Compile Include="Assets\Planetaria\Code\Tracker\InstantRotationTracker.cs" />
     <Compile Include="Assets\Planetaria\Code\Tracker\PlanetariaTracker.cs" />
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaActuator.cs" />
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaAudioSource.cs" />
@@ -149,7 +150,6 @@
     <Compile Include="Assets\Planetaria\ExampleProjects\Platformer\Code\Character.cs" />
     <Compile Include="Assets\Planetaria\ExampleProjects\Platformer\Code\Door.cs" />
     <Compile Include="Assets\Planetaria\ExampleProjects\Platformer\Code\Elevator.cs" />
-    <Compile Include="Assets\Planetaria\ExampleProjects\Platformer\Code\InstantRotationTracker.cs" />
     <Compile Include="Assets\Planetaria\ExampleProjects\Platformer\Code\Laser.cs" />
     <Compile Include="Assets\UnitySVG\Extensions.cs" />
     <Compile Include="Assets\UnitySVG\Implement.cs" />

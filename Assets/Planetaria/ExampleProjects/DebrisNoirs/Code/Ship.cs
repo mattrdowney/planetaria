@@ -27,6 +27,20 @@ public class Ship : PlanetariaMonoBehaviour
         horizontal = Input.GetAxis("OpenVR_ThumbAxisX");
         vertical = Input.GetAxis("OpenVR_ThumbAxisY");
 #endif
+        transform.direction = (NormalizedCartesianCoordinates) gameObject.internal_game_object.transform.up;
+        Vector2 input_direction = new Vector2(horizontal, vertical);
+        if (input_direction.sqrMagnitude > 1) // FIXME: doesn't work for unbounded input types
+        {
+            input_direction.Normalize();
+        }
+        if (input_direction.sqrMagnitude > 0)
+        {
+            planetaria_rigidbody.relative_velocity += input_direction * Time.deltaTime;
+        }
+        else
+        {
+            planetaria_rigidbody.relative_velocity *= Mathf.Pow(0.5f, Time.deltaTime); // FIXME: magic number
+        }
     }
 
     private void FixedUpdate()

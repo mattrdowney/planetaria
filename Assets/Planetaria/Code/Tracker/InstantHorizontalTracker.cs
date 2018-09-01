@@ -12,7 +12,7 @@ namespace Planetaria
         public override void step()
         {
             NormalizedSphericalCoordinates self_position = self.position;
-            NormalizedSphericalCoordinates target_position = target.data.position;
+            NormalizedSphericalCoordinates target_position = target.position;
             self.position = new NormalizedSphericalCoordinates(self_position.data.x, target_position.data.y);
         }
 

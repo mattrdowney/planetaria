@@ -200,16 +200,16 @@ namespace Planetaria
             get
             {
                 synchronize_velocity_ground_to_air();
-                Vector3 right = Bearing.right(get_position(), transform.direction.data);
-                Vector3 up = Bearing.up(get_position(), transform.direction.data);
+                Vector3 right = Bearing.right(get_position(), gameObject.internal_game_object.transform.up);
+                Vector3 up = Bearing.up(get_position(), gameObject.internal_game_object.transform.up);
                 float x = Vector3.Dot(velocity, right);
                 float y = Vector3.Dot(velocity, up);
                 return new Vector2(x, y);
             }
             set
             {
-                Vector3 x = Bearing.right(get_position(), transform.direction.data) * value.x;
-                Vector3 y = Bearing.up(get_position(), transform.direction.data) * value.y;
+                Vector3 x = Bearing.right(get_position(), gameObject.internal_game_object.transform.up) * value.x;
+                Vector3 y = Bearing.up(get_position(), gameObject.internal_game_object.transform.up) * value.y;
                 velocity = x + y;
                 synchronize_velocity_air_to_ground();
             }
