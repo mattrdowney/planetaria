@@ -28,7 +28,7 @@ public class Ship : PlanetariaMonoBehaviour
         horizontal = Input.GetAxis("OpenVR_ThumbAxisX");
         vertical = Input.GetAxis("OpenVR_ThumbAxisY");
 #endif
-        transform.direction = (NormalizedCartesianCoordinates) gameObject.internal_game_object.transform.up;
+        //transform.direction = (NormalizedCartesianCoordinates) previous_up;
         Vector2 input_direction = new Vector2(horizontal, vertical);
         if (input_direction.sqrMagnitude > 1) // FIXME: doesn't work for unbounded input types
         {
@@ -49,13 +49,10 @@ public class Ship : PlanetariaMonoBehaviour
         }
         else
         {
-            planetaria_rigidbody.relative_velocity *= Mathf.Pow(0.5f, Time.deltaTime); // FIXME: magic number
+            planetaria_rigidbody.relative_velocity *= Mathf.Pow(0.8f, Time.deltaTime); // FIXME: magic number
         }
-    }
 
-    private void FixedUpdate()
-    {
-        // Move appropriately (thrusters)
+        previous_up = gameObject.internal_game_object.transform.up;
     }
 
     private void on_field_stay(PlanetariaCollider collider)
@@ -69,6 +66,7 @@ public class Ship : PlanetariaMonoBehaviour
     [NonSerialized] private PlanetariaRigidbody planetaria_rigidbody;
     [NonSerialized] private float horizontal;
     [NonSerialized] private float vertical;
+    [NonSerialized] private Vector3 previous_up;
 }
 
 /*

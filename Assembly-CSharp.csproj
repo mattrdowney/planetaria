@@ -115,6 +115,7 @@
     <Compile Include="Assets\Planetaria\Code\Tracker\InstantPositionTracker.cs" />
     <Compile Include="Assets\Planetaria\Code\Tracker\InstantRotationTracker.cs" />
     <Compile Include="Assets\Planetaria\Code\Tracker\PlanetariaTracker.cs" />
+    <Compile Include="Assets\Planetaria\Code\Tracker\SimpleTracker.cs" />
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaActuator.cs" />
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaAudioSource.cs" />
     <Compile Include="Assets\Planetaria\Code\Unity\PlanetariaCamera.cs" />

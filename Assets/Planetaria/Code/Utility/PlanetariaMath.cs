@@ -78,7 +78,7 @@ namespace Planetaria
 
             if (result < 0f)
             {
-                Debug.Log("ERROR: PlanetariaMath: EuclideanDivisionModulo(" + dividend + ", " + divisor + ") = " + result);
+                Debug.LogError("ERROR: PlanetariaMath: EuclideanDivisionModulo(" + dividend + ", " + divisor + ") = " + result);
             }
 
             return result;

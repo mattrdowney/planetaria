@@ -40,20 +40,6 @@ namespace Planetaria
 
         private void FixedUpdate()
         {
-            if (velocity != Vector3.zero)
-            {
-                Vector2 begin_velocity = relative_velocity;
-                relative_velocity = relative_velocity + Vector2.one*Mathf.Epsilon;
-                Vector2 end_velocity = relative_velocity;
-
-                float angle_difference = Vector3.Angle(begin_velocity, end_velocity);
-                float magnitude_difference = Mathf.Abs(begin_velocity.magnitude - end_velocity.magnitude);
-                if (angle_difference > Precision.just_above_zero || magnitude_difference > Precision.just_above_zero)
-                {
-                    Debug.Log(angle_difference + " " + magnitude_difference);
-                }
-            }
-
             previous_position = get_position();
             if (observer.exists && observer.data.colliding()) // grounded
             {
@@ -120,8 +106,7 @@ namespace Planetaria
             
             transform.position = new NormalizedCartesianCoordinates(next_position);
             velocity = next_velocity.normalized * velocity.magnitude;
-            
-            // TODO: occasionally ensure velocity and position are orthogonal
+            //velocity = Vector3.ProjectOnPlane(velocity, get_position()); // TODO: CONSIDER: ensure velocity and position are orthogonal - they seem to desynchronize
         }
 
         private void grounded_position()
@@ -149,7 +134,7 @@ namespace Planetaria
             horizontal_acceleration = Vector3.Dot(acceleration, right);
             vertical_acceleration = Vector3.Dot(acceleration, normal) - collision.magnetism;
             vertical_velocity += vertical_acceleration*Time.deltaTime;
-            if (!collision.grounded(internal_velocity)) // TODO: check centripedal force
+            if (!collision.grounded(velocity)) // TODO: check centripedal force
             {
                 derail(0, vertical_acceleration*delta); // Force OnCollisionExit, "un-collision" (and accelerate for a frame)
             }
@@ -209,9 +194,10 @@ namespace Planetaria
             get
             {
                 synchronize_velocity_ground_to_air();
+                Vector3 result = internal_transform.InverseTransformDirection(velocity);
                 float x = Vector3.Dot(velocity, internal_transform.right);
                 float y = Vector3.Dot(velocity, internal_transform.up);
-                return new Vector2(x, y);
+                return result;
             }
             set
             {
@@ -240,7 +226,7 @@ namespace Planetaria
             }
         }
 
-        private Vector3 internal_velocity
+        public Vector3 internal_velocity
         {
             get
             {
