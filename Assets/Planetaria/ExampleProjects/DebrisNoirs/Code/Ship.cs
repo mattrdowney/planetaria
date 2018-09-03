@@ -17,6 +17,7 @@ public class Ship : PlanetariaMonoBehaviour
         planetaria_renderer = this.GetComponent<AreaRenderer>();
         transform.direction = new NormalizedCartesianCoordinates(Vector3.up);
         transform.localScale = +0.1f;
+        last_position = transform.position.data;
     }
 
     private void Update()
@@ -28,7 +29,18 @@ public class Ship : PlanetariaMonoBehaviour
         horizontal = Input.GetAxis("OpenVR_ThumbAxisX");
         vertical = Input.GetAxis("OpenVR_ThumbAxisY");
 #endif
-        //transform.direction = (NormalizedCartesianCoordinates) previous_up;
+        if (last_position != transform.position.data)
+        {
+            Vector3 last_velocity = Bearing.attractor(last_position, transform.position.data);
+            Vector3 velocity = Bearing.repeller(transform.position.data, last_position);
+            Quaternion last_rotation = Quaternion.LookRotation(last_position, last_velocity);
+            Quaternion rotation = Quaternion.LookRotation(transform.position.data, velocity);
+            Vector3 old_direction = gameObject.internal_game_object.transform.up;
+            Vector3 relative_direction = Quaternion.Inverse(last_rotation) * old_direction;
+            Vector3 new_direction = rotation * relative_direction;
+            transform.direction = (NormalizedCartesianCoordinates) new_direction;
+        }
+                
         Vector2 input_direction = new Vector2(horizontal, vertical);
         if (input_direction.sqrMagnitude > 1) // FIXME: doesn't work for unbounded input types
         {
@@ -52,7 +64,7 @@ public class Ship : PlanetariaMonoBehaviour
             planetaria_rigidbody.relative_velocity *= Mathf.Pow(0.8f, Time.deltaTime); // FIXME: magic number
         }
 
-        previous_up = gameObject.internal_game_object.transform.up;
+        last_position = transform.position.data;
     }
 
     private void on_field_stay(PlanetariaCollider collider)
@@ -66,7 +78,7 @@ public class Ship : PlanetariaMonoBehaviour
     [NonSerialized] private PlanetariaRigidbody planetaria_rigidbody;
     [NonSerialized] private float horizontal;
     [NonSerialized] private float vertical;
-    [NonSerialized] private Vector3 previous_up;
+    [NonSerialized] private Vector3 last_position;
 }
 
 /*

@@ -33,8 +33,9 @@ namespace Planetaria
                 angle -= angle_shift;
                 Debug.Log(angle_shift + " " + angle);
                 self.position = (NormalizedCartesianCoordinates) target.position.data;
-                self.direction = (NormalizedCartesianCoordinates)
-                    (Quaternion.LookRotation(positions[2], Vector3.Cross(Vector3.Cross(positions[1], positions[2]), positions[2])) * new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0));
+                self.direction = (NormalizedCartesianCoordinates) Bearing.attractor(target.position.data, target.gameObject.internal_game_object.transform.up);
+                //self.direction = (NormalizedCartesianCoordinates)
+                //    (Quaternion.LookRotation(positions[2], Vector3.Cross(Vector3.Cross(positions[1], positions[2]), positions[2])) * new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0));
             }
         }
 
