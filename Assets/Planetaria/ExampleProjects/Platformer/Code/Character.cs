@@ -25,14 +25,15 @@ public class Character : PlanetariaMonoBehaviour
     private void Update()
     {
 #if UNITY_EDITOR
-        jump_pressed = Input.GetButtonDown("Jump"); // FIXME: these can be combined via Input instead (rename buttons/axes to match)
+        jump_pressed = Input.GetButtonDown("Jump");
         horizontal = Input.GetAxis("Horizontal");
         vertical = Input.GetAxis("Vertical");
 #else
-        jump_pressed = Input.GetButtonDown("OpenVR_ThumbPress"); // FIXME: OSVR not OpenVR (typo)
-        horizontal = Input.GetAxis("OpenVR_ThumbAxisX");
-        vertical = Input.GetAxis("OpenVR_ThumbAxisY");
+        jump_pressed = Input.GetButtonDown("OSVR_ThumbPress");
+        horizontal = Input.GetAxis("OSVR_ThumbAxisX");
+        vertical = Input.GetAxis("OSVR_ThumbAxisY");
 #endif
+
         if (jump_pressed)
         {
             last_jump_attempt = Time.time;

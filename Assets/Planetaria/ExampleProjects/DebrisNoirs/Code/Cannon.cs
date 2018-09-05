@@ -26,7 +26,7 @@ public class Cannon : PlanetariaComponent
 #if UNITY_EDITOR
         firing = Input.GetButtonDown("Fire1");
 #else
-        firing = Input.GetButtonDown("OSVR_IndexTrigger");
+        firing = Input.GetAxisRaw("OSVR_IndexTrigger") > .9f;
 #endif
         if (firing)
         {

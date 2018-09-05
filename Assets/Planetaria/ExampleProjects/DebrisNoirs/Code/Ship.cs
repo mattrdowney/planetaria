@@ -26,9 +26,10 @@ public class Ship : PlanetariaMonoBehaviour
         horizontal = Input.GetAxis("Horizontal");
         vertical = Input.GetAxis("Vertical");
 #else
-        horizontal = Input.GetAxis("OpenVR_ThumbAxisX");
-        vertical = Input.GetAxis("OpenVR_ThumbAxisY");
+        horizontal = Input.GetAxis("OSVR_ThumbAxisX");
+        vertical = Input.GetAxis("OSVR_ThumbAxisY");
 #endif
+
         if (last_position != transform.position.data)
         {
             Vector3 last_velocity = Bearing.attractor(last_position, transform.position.data);

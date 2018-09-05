@@ -194,16 +194,18 @@ namespace Planetaria
             get
             {
                 synchronize_velocity_ground_to_air();
-                Vector3 result = internal_transform.InverseTransformDirection(velocity);
-                float x = Vector3.Dot(velocity, internal_transform.right);
-                float y = Vector3.Dot(velocity, internal_transform.up);
+                //float x = Vector3.Dot(velocity, internal_transform.right);
+                //float y = Vector3.Dot(velocity, internal_transform.up);
+                // return new Vector2(x, y)
+                Vector2 result = internal_transform.InverseTransformDirection(velocity); // z-component unused (should be ~ zero)
                 return result;
             }
             set
             {
-                Vector3 x = internal_transform.right*value.x;
-                Vector3 y = internal_transform.up*value.y;
-                velocity = x + y;
+                //Vector3 x = internal_transform.right*value.x;
+                //Vector3 y = internal_transform.up*value.y;
+                //velocity = x + y;
+                velocity = internal_transform.TransformDirection(value);
                 synchronize_velocity_air_to_ground();
             }
         }
