@@ -29,19 +29,6 @@ public class Ship : PlanetariaMonoBehaviour
         horizontal = Input.GetAxis("OSVR_ThumbAxisX");
         vertical = Input.GetAxis("OSVR_ThumbAxisY");
 #endif
-
-        if (last_position != transform.position.data)
-        {
-            Vector3 last_velocity = Bearing.attractor(last_position, transform.position.data);
-            Vector3 velocity = Bearing.repeller(transform.position.data, last_position);
-            Quaternion last_rotation = Quaternion.LookRotation(last_position, last_velocity);
-            Quaternion rotation = Quaternion.LookRotation(transform.position.data, velocity);
-            Vector3 old_direction = gameObject.internal_game_object.transform.up;
-            Vector3 relative_direction = Quaternion.Inverse(last_rotation) * old_direction;
-            Vector3 new_direction = rotation * relative_direction;
-            transform.direction = (NormalizedCartesianCoordinates) new_direction;
-        }
-                
         Vector2 input_direction = new Vector2(horizontal, vertical);
         if (input_direction.sqrMagnitude > 1) // FIXME: doesn't work for unbounded input types
         {
@@ -52,18 +39,31 @@ public class Ship : PlanetariaMonoBehaviour
         {
             float current_angle = planetaria_renderer.angle*Mathf.Rad2Deg;
             float target_angle = Mathf.Atan2(input_direction.y, input_direction.x)*Mathf.Rad2Deg;
-            float interpolator = 360 / Mathf.Abs(Mathf.DeltaAngle(current_angle, target_angle)) * Time.deltaTime;
+            float interpolator = 360*5 / Mathf.Abs(Mathf.DeltaAngle(current_angle, target_angle)) * Time.deltaTime;
             planetaria_renderer.angle = Mathf.LerpAngle(current_angle, target_angle, interpolator)*Mathf.Deg2Rad;
         }
+        
+        // TODO: verify (pretty likely to have at least one error)
 
-        if (input_direction.sqrMagnitude > 0)
-        {
-            planetaria_rigidbody.relative_velocity += input_direction * Time.deltaTime;
-        }
-        else
-        {
-            planetaria_rigidbody.relative_velocity *= Mathf.Pow(0.8f, Time.deltaTime); // FIXME: magic number
-        }
+        // add velocity based on input
+        planetaria_rigidbody.relative_velocity += input_direction * Time.deltaTime;
+
+        // get supplementary information for drag calculations
+        Vector2 perpendicular_direction = new Vector2(-input_direction.y, input_direction.x);
+        Vector2 velocity = planetaria_rigidbody.relative_velocity;
+
+        // drag on velocity perpendicular to acceleration
+        Vector2 perpendicular_velocity = velocity * Vector2.Dot(perpendicular_direction, velocity.normalized);
+        perpendicular_velocity *= Mathf.Pow(0.8f, Time.deltaTime);
+
+        // drag in coincident direction varies from coefficient of 1->~0.8->~0.5
+        float similarity = Vector2.Dot(velocity.normalized, input_direction);
+        float drag_modifier = Mathf.Lerp(0.6f, 1.0f, (similarity + 1f) / 2);
+        Vector2 coincident_velocity = velocity * Vector2.Dot(input_direction, velocity.normalized);
+        coincident_velocity *= Mathf.Pow(drag_modifier, Time.deltaTime);
+
+        // apply uniform drag for any unused movement speed
+        planetaria_rigidbody.relative_velocity *= Mathf.Pow(0.8f, Time.deltaTime * (1f - input_direction.magnitude));
 
         last_position = transform.position.data;
     }

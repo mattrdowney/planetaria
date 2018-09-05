@@ -3,47 +3,37 @@ using UnityEngine;
 
 namespace Planetaria
 {
-    // There are many seemingly-contradictory design specifications needed for this file.
-    // The most prominent is the angle condition for unmoving objects vs very fast (>~ 5*PI radians per second)
-    // Once I wrote this out, I remembered that around this speed a full rotation can be done in 24- frames,
-    // so Quaternion.Slerp may be in order
-    public class SimpleTracker : PlanetariaTracker // Camera tracking isn't simple, but it looks simple
+    /// <summary>
+    /// If you don't know the type of Tracker you want, you probably want this one.
+    /// </summary>
+    public class SimpleTracker : PlanetariaTracker
     {
         public override void setup()
         {
-            positions[0] = Vector3.Slerp(-target.gameObject.internal_game_object.transform.up, target.gameObject.internal_game_object.transform.forward, 0.8f); // unused
-            positions[1] = Vector3.Slerp(-target.gameObject.internal_game_object.transform.up, target.gameObject.internal_game_object.transform.forward, 0.9f); // "previous position"
-            positions[2] = Vector3.Slerp(-target.gameObject.internal_game_object.transform.up, target.gameObject.internal_game_object.transform.forward, 1.0f); // current position
-
-            // Ditto with normals
+            last_position = target.position.data;
         }
 
         public override void step()
         {
-            if (target.position.data != positions[2])
+            if (last_position != target.position.data)
             {
-                positions[0] = positions[1];
-                positions[1] = positions[2];
-                positions[2] = target.position.data;
-                //float angle_shift_v1 = Vector3.SignedAngle(positions[0], positions[2], positions[1]); // would often give ~ -180 or ~ +180
-                Vector3 segment_a = Vector3.ProjectOnPlane(-positions[0], positions[1]).normalized;
-                Vector3 segment_b = Vector3.ProjectOnPlane(positions[2], positions[1]).normalized;
-                float angle_shift = Vector3.SignedAngle(segment_a, segment_b, positions[1]);
-                angle_shift *= Mathf.Deg2Rad;
-                angle -= angle_shift;
-                Debug.Log(angle_shift + " " + angle);
-                self.position = (NormalizedCartesianCoordinates) target.position.data;
-                self.direction = (NormalizedCartesianCoordinates) Bearing.attractor(target.position.data, target.gameObject.internal_game_object.transform.up);
-                //self.direction = (NormalizedCartesianCoordinates)
-                //    (Quaternion.LookRotation(positions[2], Vector3.Cross(Vector3.Cross(positions[1], positions[2]), positions[2])) * new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0));
+                Vector3 last_velocity = Bearing.attractor(last_position, transform.position.data);
+                Vector3 velocity = Bearing.repeller(transform.position.data, last_position);
+                Quaternion last_rotation = Quaternion.LookRotation(last_position, last_velocity);
+                Quaternion rotation = Quaternion.LookRotation(transform.position.data, velocity);
+                Vector3 old_direction = gameObject.internal_game_object.transform.up;
+                Vector3 relative_direction = Quaternion.Inverse(last_rotation) * old_direction;
+                Vector3 new_direction = rotation * relative_direction;
+                transform.direction = (NormalizedCartesianCoordinates) new_direction;
+                transform.position = target.position;
+                last_position = target.position.data;
             }
         }
 
         public override void cleanup() { }
         public override void teleport() { }
-
-        [SerializeField] [HideInInspector] private float angle = Mathf.PI/2;
-        [SerializeField] [HideInInspector] private Vector3[] positions = new Vector3[3];
+        
+        [SerializeField] [HideInInspector] private Vector3 last_position;
     }
 }
 
