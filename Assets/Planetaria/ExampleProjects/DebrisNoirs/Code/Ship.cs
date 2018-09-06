@@ -23,11 +23,11 @@ public class Ship : PlanetariaMonoBehaviour
     private void Update()
     {
 #if UNITY_EDITOR
-        horizontal = Input.GetAxis("Horizontal");
-        vertical = Input.GetAxis("Vertical");
+        horizontal = Input.GetAxisRaw("Horizontal");
+        vertical = Input.GetAxisRaw("Vertical");
 #else
-        horizontal = Input.GetAxis("OSVR_ThumbAxisX");
-        vertical = Input.GetAxis("OSVR_ThumbAxisY");
+        horizontal = Input.GetAxisRaw("OSVR_ThumbAxisX");
+        vertical = Input.GetAxisRaw("OSVR_ThumbAxisY");
 #endif
         Vector2 input_direction = new Vector2(horizontal, vertical);
         if (input_direction.sqrMagnitude > 1) // FIXME: doesn't work for unbounded input types
@@ -39,7 +39,7 @@ public class Ship : PlanetariaMonoBehaviour
         {
             float current_angle = planetaria_renderer.angle*Mathf.Rad2Deg;
             float target_angle = Mathf.Atan2(input_direction.y, input_direction.x)*Mathf.Rad2Deg;
-            float interpolator = 360*5 / Mathf.Abs(Mathf.DeltaAngle(current_angle, target_angle)) * Time.deltaTime;
+            float interpolator = 360*3 / Mathf.Abs(Mathf.DeltaAngle(current_angle, target_angle)) * Time.deltaTime;
             planetaria_renderer.angle = Mathf.LerpAngle(current_angle, target_angle, interpolator)*Mathf.Deg2Rad;
         }
         
@@ -48,7 +48,7 @@ public class Ship : PlanetariaMonoBehaviour
         // Aim forward along velocity: no drag (i.e. drag coefficient of 1) and accelerate.
         // Aim backwards against velocity: full drag (e.g. drag coefficient of .5) and "decelerate"
         // No input: partial drag (e.g. drag coefficient of .75) and "decelerate"
-        // Aim perpendicular to velocity (left/right): partial drag (e.g. coefficient of .75) but ignore a percentage of the velocity along the input_direction (finicky design specs so far) - this allows the ship to angle towards the direction of motion quickly (rather than at a snails pace)
+        // Aim perpendicular to velocity (left/right): partial drag (e.g. coefficient of .75) but take a percentage of the momentum that would be lost and apply it along input_direction
 
         // add velocity based on input
         planetaria_rigidbody.relative_velocity += input_direction * Time.deltaTime;
