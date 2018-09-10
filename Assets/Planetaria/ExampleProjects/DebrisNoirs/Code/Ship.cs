@@ -6,7 +6,6 @@ public class Ship : PlanetariaMonoBehaviour
 {
     protected override void OnConstruction()
     {
-        OnFieldStay.data = on_field_stay;
     }
 
     protected override void OnDestruction() { }
@@ -18,6 +17,7 @@ public class Ship : PlanetariaMonoBehaviour
         transform.direction = new NormalizedCartesianCoordinates(Vector3.up);
         transform.localScale = +0.1f;
         last_position = transform.position.data;
+        OnFieldStay.data = on_field_stay;
     }
 
     private void Update()
@@ -72,12 +72,12 @@ public class Ship : PlanetariaMonoBehaviour
         last_position = transform.position.data;
     }
 
-    private void on_field_stay(PlanetariaCollider collider)
+    public void on_field_stay(PlanetariaCollider collider)
     {
+        Debug.Log("Happening");
+        PlanetariaGameObject.Destroy(this.gameObject);
         // Destroy asteroid and self
     }
-    
-    [SerializeField] private const float acceleration = 5f;
 
     [NonSerialized] private AreaRenderer planetaria_renderer;
     [NonSerialized] private PlanetariaRigidbody planetaria_rigidbody;

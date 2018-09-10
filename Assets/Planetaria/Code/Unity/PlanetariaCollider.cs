@@ -18,8 +18,6 @@ namespace Planetaria
             observer.initialize(this, this.GetComponentsInParent<PlanetariaMonoBehaviour>());
         }
 
-        protected override void OnDestroy() { }
-
         protected override sealed void Reset()
         {
             base.Reset();
@@ -117,24 +115,30 @@ namespace Planetaria
 
         private void OnTriggerStay(Collider collider)
         {
+            Debug.Log("-1");
             optional<SphereCollider> sphere_collider = collider as SphereCollider;
             if (!sphere_collider.exists)
             {
                 Debug.LogError("This should never happen");
                 return;
             }
+            Debug.Log("0");
             optional<PlanetariaCollider> other_collider = PlanetariaCache.self.collider_fetch(sphere_collider.data);
             if (!other_collider.exists)
             {
                 Debug.LogError("This should never happen");
                 return;
             }
+            Debug.Log("1");
             if (!(this.is_field && other_collider.data.is_field)) // fields pass through each other (same as triggers)
             {
+                Debug.Log("2");
                 if (PlanetariaIntersection.collider_collider_intersection(this.colliders, other_collider.data.colliders))
                 {
+                    Debug.Log("3");
                     if (this.is_field || other_collider.data.is_field) // field collision
                     {
+                        Debug.Log("4");
                         observer.potential_field_collision(other_collider.data); // TODO: augment field (like Unity triggers) works on both the sender and receiver.
                     }
                     else // block collision

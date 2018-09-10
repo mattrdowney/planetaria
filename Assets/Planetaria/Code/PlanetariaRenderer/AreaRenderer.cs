@@ -16,7 +16,7 @@ namespace Planetaria
             renderer.sprite = sprite;
         }
         
-        [SerializeField] private Sprite sprite;
+        [SerializeField] public Sprite sprite;
     }
 }
 

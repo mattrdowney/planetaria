@@ -7,6 +7,8 @@ namespace Planetaria
     {
         public enum InputDevice { DualAxis, Gyroscope, Mouse, Touchpad, Touchscreen };
 
+        // TODO: relativity (e.g. for joysticks)
+
         protected override sealed void Awake()
         {
             base.Awake();

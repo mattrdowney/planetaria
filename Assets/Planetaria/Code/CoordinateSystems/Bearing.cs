@@ -76,7 +76,7 @@ namespace Planetaria
         /// <returns>Clockwise around the equator at position.</returns>
         public static Vector3 east(Vector3 position)
         {
-            if (position.x == 0 && position.z == 0)
+            if (Mathf.Abs(position.x) < Precision.threshold && Mathf.Abs(position.z) < Precision.threshold)
             {
                 return Vector3.right;
             }

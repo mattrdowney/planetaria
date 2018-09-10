@@ -70,6 +70,7 @@ namespace Planetaria
         
         public void potential_field_collision(PlanetariaCollider field) 
         {
+            Debug.Log("Hmmmm");
             field_candidates.Add(field);
         }
  

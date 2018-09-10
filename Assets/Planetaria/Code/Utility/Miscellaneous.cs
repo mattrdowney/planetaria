@@ -110,6 +110,7 @@ namespace Planetaria
                 child_object.transform.parent = self.transform;
                 child_object.transform.localPosition = Vector3.zero; // Ensure all children are on the same planetarium as their parent
                 child = child_object.transform;
+                child_object.layer = self.gameObject.layer;
             }
 #if UNITY_EDITOR
             if (hidden_internal && EditorGlobal.self.show_inspector)

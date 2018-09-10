@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+// Input remapping + PlayerPref(erences)s + ...
+
 namespace Planetaria
 {
     public static class PlanetariaInput
