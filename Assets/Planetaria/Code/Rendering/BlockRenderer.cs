@@ -7,12 +7,12 @@ namespace Planetaria
     [ExecuteInEditMode]
     public static class BlockRenderer
     {
-        public static optional<TextAsset> render(Block block, float width)
+        public static optional<TextAsset> render(PlanetariaCollider collider, float width)
         {
             VectorGraphicsWriter.begin_canvas();
             VectorGraphicsWriter.begin_shape();
 
-            BlockRendererIterator.prepare(block);
+            BlockRendererIterator.prepare(collider);
 
             foreach (ArcIterator arc_iterator in BlockRendererIterator.arc_iterator())
             {

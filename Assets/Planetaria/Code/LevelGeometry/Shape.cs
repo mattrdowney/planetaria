@@ -142,6 +142,19 @@ namespace Planetaria
             return false;
         }
 
+        public Vector3 center_of_mass() // TODO: verify this is a proper volume integration (for convex hulls)
+        {
+            Vector3 result = Vector3.zero; // CONSIDER: should the center of mass be the 2D center (current implementation) or 3D center?
+            foreach (Arc arc in arcs)
+            {
+                float weight = arc.length(); // multiply be the weight of the arc (length is an integration of sorts)
+                Vector3 arc_center = arc.position(0); // get the center of mass of each arc // zero intentional
+                result += arc_center * weight;
+            }
+            result.Normalize();
+            return result; // FIXME: Vector3.zero can be returned
+        }
+
         public bool convex_hull()
         {
             if (arc_list.Length > 1)

@@ -31,9 +31,9 @@ namespace Planetaria
         /// Mutator - find all intersections along x=0 or z=0 arcs in southern hemisphere.
         /// </summary>
         /// <param name="block">The block (set of arcs) to be inspected.</param>
-        private static void find_discontinuities(Block block)
+        private static void find_discontinuities(PlanetariaCollider collider)
         {
-            foreach (Arc arc in block.shape.arcs)
+            foreach (Arc arc in collider.shape.arcs)
             {
                 for (int dimension = 0; dimension < 2; ++dimension) // Intersect already gets quadrants 3-4 by proxy
                 {
@@ -46,12 +46,12 @@ namespace Planetaria
             }
         }
 
-        public static void prepare(Block block)
+        public static void prepare(PlanetariaCollider collider)
         {
             discontinuities = new Dictionary<Arc, List<Discontinuity>>();
-            find_discontinuities(block);
+            find_discontinuities(collider);
             sort_discontinuities();
-            block_variable = block;
+            collider_variable = collider;
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Planetaria
 
         public static IEnumerable<ArcIterator> arc_iterator()
         {
-            foreach (Arc arc in block_variable.shape.arcs)
+            foreach (Arc arc in collider_variable.shape.arcs)
             { 
                 float begin_angle = -arc.angle()/2; // Start at the beginning of the arc (i.e. -arc.angle()/2)
 
@@ -85,7 +85,7 @@ namespace Planetaria
             }
         }
 
-        private static Block block_variable;
+        private static PlanetariaCollider collider_variable;
         private static Dictionary<Arc, List<Discontinuity>> discontinuities;
     }
 }

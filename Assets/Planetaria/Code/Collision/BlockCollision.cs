@@ -4,16 +4,16 @@ namespace Planetaria
 {
     public class BlockCollision
     {
-        public static optional<BlockCollision> block_collision(CollisionObserver observer, Arc arc, Block block, PlanetariaCollider collider, PlanetariaTransform transformation, PlanetariaRigidbody rigidbody)
+        public static optional<BlockCollision> block_collision(CollisionObserver observer, Arc arc, PlanetariaCollider collider, PlanetariaTransform transformation, PlanetariaRigidbody rigidbody)
         {
-            optional<ArcVisitor> arc_visitor = block.shape.arc_visitor(arc);
+            optional<ArcVisitor> arc_visitor = collider.shape.arc_visitor(arc);
             if (!arc_visitor.exists)
             {
                 Debug.LogError("This should never happen");
                 return new optional<BlockCollision>();
             }
             
-            Quaternion block_to_world = block.gameObject.internal_game_object.transform.rotation;
+            Quaternion block_to_world = collider.gameObject.internal_game_object.transform.rotation;
             Quaternion world_to_block = Quaternion.Inverse(block_to_world);
 
             Vector3 last_position = world_to_block * rigidbody.get_previous_position();
@@ -35,17 +35,16 @@ namespace Planetaria
                 Debug.LogError("Research why this happened.");
                 return new optional<BlockCollision>();
             }
-            if (block.is_platform && !platform_collision(arc, block, collider, transformation, rigidbody, intersection_point))
+            if (collider.is_platform && !platform_collision(arc, collider, transformation, rigidbody, intersection_point))
             {
                 return new optional<BlockCollision>();
             }
             BlockCollision result = new BlockCollision();
             float angle = arc.position_to_angle(intersection_point.data);
-            result.geometry_visitor = GeometryVisitor.geometry_visitor(arc_visitor.data, angle, extrusion, block.gameObject.internal_game_object.transform);
+            result.geometry_visitor = GeometryVisitor.geometry_visitor(arc_visitor.data, angle, extrusion, collider.gameObject.internal_game_object.transform);
             intersection_point.data = block_to_world * intersection_point.data;
             result.distance = Vector3.Angle(intersection_point.data, rigidbody.get_previous_position())*Mathf.Deg2Rad;
             result.overshoot = Vector3.Angle(intersection_point.data, rigidbody.get_position())*Mathf.Deg2Rad;
-            result.block = block;
             result.active = true;
             result.observer = observer;
             result.self = observer.collider();
@@ -73,7 +72,7 @@ namespace Planetaria
         {
             get
             {
-                return block.active && active_variable;
+                return collider.active && active_variable;
             }
             private set
             {
@@ -84,7 +83,6 @@ namespace Planetaria
         public CollisionObserver observer { get; private set; }
         public PlanetariaCollider self { get; private set; }
         public PlanetariaCollider other { get; private set; }
-        public Block block { get; private set; }
         public float distance { get; private set; }
         public float overshoot { get; private set; }
         public GeometryVisitor geometry_visitor { get; private set; }
@@ -98,7 +96,7 @@ namespace Planetaria
             return geometry_visitor.contains(geometry_visitor.position() + velocity*Time.deltaTime - geometry_visitor.normal()*Precision.threshold);
         }
 
-        private static bool platform_collision(Arc arc, Block block, PlanetariaCollider collider, PlanetariaTransform transformation, PlanetariaRigidbody rigidbody, optional<Vector3> intersection_point)
+        private static bool platform_collision(Arc arc, PlanetariaCollider collider, PlanetariaTransform transformation, PlanetariaRigidbody rigidbody, optional<Vector3> intersection_point)
         {
             Vector3 velocity = Bearing.attractor(rigidbody.get_previous_position(), rigidbody.get_position());
 

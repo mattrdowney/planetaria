@@ -35,8 +35,7 @@ namespace Planetaria
      
             SceneView.RepaintAll();
         }
-
-        Field self;
+        
         private static bool[] mask = new bool[8*sizeof(int)];
     }
 }

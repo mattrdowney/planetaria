@@ -8,20 +8,7 @@ namespace Planetaria
         public static List<Arc> get_all_arcs()
         {
             List<Arc> result = new List<Arc>();
-            foreach (Block block in GameObject.FindObjectsOfType<Block>())
-            {
-                foreach (Arc arc in block.shape.arcs)
-                {
-                    result.Add(arc);
-                }
-            }
-            foreach (Field field in GameObject.FindObjectsOfType<Field>())
-            {
-                foreach (Arc arc in field.shape.arcs)
-                {
-                    result.Add(arc);
-                }
-            }
+            Debug.LogError("Broken: add Block + Field as PlanetariaCollider"); // FIXME:
             return result;
         }
 

@@ -30,7 +30,6 @@ namespace Planetaria
         private PlanetariaRaycastHit(Arc raycast_arc, SphereCollider sphere_collider, Vector3 intersection_point, float raycast_distance)
         {
             arc = PlanetariaCache.self.arc_fetch(sphere_collider).data;
-            block = PlanetariaCache.self.block_fetch(sphere_collider).data; // FIXME:
             collider = PlanetariaCache.self.collider_fetch(sphere_collider).data;
 
             distance = raycast_arc.position_to_angle(intersection_point) * (raycast_arc.length()/raycast_arc.angle()); // TODO: verify
@@ -41,7 +40,7 @@ namespace Planetaria
             }
             positive_face_collision = true; // FIXME: HACK: LAZY: // also dynamic changes
 
-            Transform internal_transform = block.gameObject.internal_game_object.GetComponent<Transform>();
+            Transform internal_transform = collider.gameObject.internal_game_object.GetComponent<Transform>();
             Quaternion arc_to_world = internal_transform.rotation;
             Quaternion world_to_arc = Quaternion.Inverse(arc_to_world);
 
@@ -51,14 +50,12 @@ namespace Planetaria
 
             normal = arc_to_world * local_normal;
             point = intersection_point;
-            rigidbody = block.GetComponent<PlanetariaRigidbody>();
-            transform = Miscellaneous.GetOrAddComponent<PlanetariaTransform>(block);
+            rigidbody = collider.GetComponent<PlanetariaRigidbody>();
+            transform = Miscellaneous.GetOrAddComponent<PlanetariaTransform>(collider);
         }
 
         /// <summary>The Arc with which the Raycast collided.</summary>
         public readonly Arc arc;
-        /// <summary>The Block with which the Raycast collided.</summary>
-        public readonly Block block;
         /// <summary>The PlanetariaCollider instance - a group of N sphere collisions.</summary>
         public readonly PlanetariaCollider collider;
         /// <summary>The distance along a circular path to the collision point.</summary>

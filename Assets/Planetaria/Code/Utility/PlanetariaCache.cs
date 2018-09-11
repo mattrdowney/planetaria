@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -39,15 +38,6 @@ namespace Planetaria
             return arc;
         }
 
-        public optional<Block> block_fetch(SphereCollider key)
-        {
-            if (!block_cache.ContainsKey(key))
-            {
-                return new optional<Block>();
-            }
-            return block_cache[key];
-        }
-
         public optional<PlanetariaCollider> collider_fetch(SphereCollider key)
         {
             if (!collider_cache.ContainsKey(key))
@@ -57,104 +47,16 @@ namespace Planetaria
             return collider_cache[key];
         }
 
-        public optional<int> index(SphereCollider key)
+        public void cache(PlanetariaCollider collider)
         {
-            if (!index_cache.ContainsKey(key))
-            {
-                return new optional<int>();
-            }
-            return index_cache[key];
-        }
-
-        public void cache(Block block)
-        {
-            int arc_index = 0;
-            Transform child;
-            foreach (Arc arc in block.shape.arcs) // TODO: verify that concave corners work as expected
-            {
-                if (arc.type != GeometryType.ConcaveCorner)
-                {
-                    child = block.GetOrAddChild("Collider" + arc_index, false).transform; // TODO: Zero out transform.position for GitHub Issue #37
-                    PlanetariaCollider collider = Miscellaneous.GetOrAddComponent<PlanetariaCollider>(child.gameObject);
-                    SphereCollider sphere_collider = collider.get_sphere_collider();
-
-                    Sphere[] colliders = Sphere.arc_collider(block.internal_transform, arc);
-                    collider.set_colliders(colliders);
-                    collider.is_field = false;
-                    collider.material = block.material;
-                    sphere_collider.isTrigger = true;
-
-                    PlanetariaCache.self.index_cache.Add(sphere_collider, arc_index);
-                    PlanetariaCache.self.block_cache.Add(sphere_collider, block);
-                    PlanetariaCache.self.collider_cache.Add(sphere_collider, collider);
-                    ++arc_index;
-                }
-            }
-            while (child = block.internal_transform.Find("Collider" + arc_index)) // clear out extra (old) colliders with while loop
-            {
-                Destroy(child.gameObject);
-            }
-        }
-
-        public void cache(Field field)
-        {
-            GameObject game_object = field.GetOrAddChild("Collider", false);
-            PlanetariaCollider collider = Miscellaneous.GetOrAddComponent<PlanetariaCollider>(game_object);
-            SphereCollider sphere_collider = collider.get_sphere_collider();
-
-            collider.is_field = true;
-            sphere_collider.isTrigger = true;
-
-            Sphere[] colliders = new Sphere[Enumerable.Count(field.shape.arcs)];
-            int current_index = 0;
-            foreach (Arc arc in field.shape.arcs)
-            {
-                colliders[current_index] = Sphere.uniform_collider(field.internal_transform, arc.floor());
-                ++current_index;
-            }
-            collider.set_colliders(colliders);
-
-            PlanetariaCache.self.collider_cache.Add(sphere_collider, collider);
-        }
-
-        public void uncache(MonoBehaviour script)
-        {
-            foreach (PlanetariaCollider collider in script.GetComponentsInChildren<PlanetariaCollider>())
-            {
-                Destroy(collider.gameObject.internal_game_object);
-            }
+            PlanetariaCache.self.collider_cache.Add(collider.get_sphere_collider(), collider);
         }
 
         public void uncache(PlanetariaCollider collider)
         {
-            PlanetariaCache.self.index_cache.Remove(collider.get_sphere_collider());
-            PlanetariaCache.self.block_cache.Remove(collider.get_sphere_collider());
             PlanetariaCache.self.collider_cache.Remove(collider.get_sphere_collider());
         }
-
-        public void cache_all()
-        {
-            // FIXME: only destroy/create GameObjects on arc_list change to prevent unneccessary level edits between user sessions.
-            uncache_all();
-            foreach (Block block in GameObject.FindObjectsOfType<Block>())
-            {
-                PlanetariaCache.self.cache(block);
-            }
-            foreach (Field field in GameObject.FindObjectsOfType<Field>())
-            {
-                PlanetariaCache.self.cache(field);
-            }
-        }
-
-        public void uncache_all()
-        {
-            index_cache.Clear();
-            block_cache.Clear();
-            collider_cache.Clear();
-        }
-
-        [NonSerialized] private Dictionary<SphereCollider, int> index_cache = new Dictionary<SphereCollider, int>();
-        [NonSerialized] private Dictionary<SphereCollider, Block> block_cache = new Dictionary<SphereCollider, Block>();
+        
         [NonSerialized] private Dictionary<SphereCollider, PlanetariaCollider> collider_cache = new Dictionary<SphereCollider, PlanetariaCollider>();
 
         private static optional<PlanetariaCache> self_variable = new optional<PlanetariaCache>();

@@ -74,15 +74,15 @@ namespace Planetaria
             field_candidates.Add(field);
         }
  
-        public void potential_block_collision(Arc arc, Block block, PlanetariaCollider collider)
+        public void potential_block_collision(Arc arc, PlanetariaCollider collider)
         {
             if (planetaria_rigidbody.exists)
             {
-                if (current_collisions.Count == 0 || current_collisions[0].block != block)
+                if (current_collisions.Count == 0 || current_collisions[0].collider != collider)
                 {
-                    if (block.active)
+                    if (collider.active)
                     {
-                        optional<BlockCollision> collision = BlockCollision.block_collision(this, arc, block, collider, planetaria_transformation, planetaria_rigidbody.data);
+                        optional<BlockCollision> collision = BlockCollision.block_collision(this, arc, collider, planetaria_transformation, planetaria_rigidbody.data);
                         if (collision.exists)
                         {
                             if (planetaria_rigidbody.exists)
