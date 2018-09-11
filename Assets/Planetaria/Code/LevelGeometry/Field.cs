@@ -7,6 +7,7 @@ namespace Planetaria
 {
     [DisallowMultipleComponent]
     [Serializable]
+    [Obsolete("Planetaria.Field is obsolete: Prefer Planetaria.PlanetariaCollider instead with is_field=true.")]
     public class Field : PlanetariaComponent
     {   
         public static GameObject field(List<GeospatialCurve> curves) // TODO: add convex check asserts.

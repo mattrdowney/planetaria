@@ -6,6 +6,7 @@ namespace Planetaria
 {
     [DisallowMultipleComponent]
     [Serializable]
+    [Obsolete("Planetaria.Block is obsolete: Prefer Planetaria.PlanetariaCollider instead with is_field=false.")]
     public class Block : PlanetariaComponent
     {
         /// <summary>
