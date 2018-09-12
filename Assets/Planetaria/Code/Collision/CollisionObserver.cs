@@ -78,19 +78,16 @@ namespace Planetaria
         {
             if (planetaria_rigidbody.exists)
             {
-                if (current_collisions.Count == 0 || current_collisions[0].collider != collider)
+                if (current_collisions.Count == 0 || current_collisions[0].other != collider)
                 {
-                    if (collider.active)
+                    optional<BlockCollision> collision = BlockCollision.block_collision(this, arc, collider, planetaria_transformation, planetaria_rigidbody.data);
+                    if (collision.exists)
                     {
-                        optional<BlockCollision> collision = BlockCollision.block_collision(this, arc, collider, planetaria_transformation, planetaria_rigidbody.data);
-                        if (collision.exists)
+                        if (planetaria_rigidbody.exists)
                         {
-                            if (planetaria_rigidbody.exists)
+                            if (planetaria_rigidbody.data.collide(collision.data, this))
                             {
-                                if (planetaria_rigidbody.data.collide(collision.data, this))
-                                {
-                                    collision_candidates.Add(collision.data);
-                                }
+                                collision_candidates.Add(collision.data);
                             }
                         }
                     }

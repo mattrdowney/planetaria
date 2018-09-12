@@ -35,17 +35,12 @@ namespace Planetaria
                 Debug.LogError("Research why this happened.");
                 return new optional<BlockCollision>();
             }
-            if (collider.is_platform && !platform_collision(arc, collider, transformation, rigidbody, intersection_point))
-            {
-                return new optional<BlockCollision>();
-            }
             BlockCollision result = new BlockCollision();
             float angle = arc.position_to_angle(intersection_point.data);
             result.geometry_visitor = GeometryVisitor.geometry_visitor(arc_visitor.data, angle, extrusion, collider.gameObject.internal_game_object.transform);
             intersection_point.data = block_to_world * intersection_point.data;
             result.distance = Vector3.Angle(intersection_point.data, rigidbody.get_previous_position())*Mathf.Deg2Rad;
             result.overshoot = Vector3.Angle(intersection_point.data, rigidbody.get_position())*Mathf.Deg2Rad;
-            result.active = true;
             result.observer = observer;
             result.self = observer.collider();
             result.other = collider;
@@ -66,18 +61,6 @@ namespace Planetaria
                     (other.magnetism - self.magnetism * other.induced_magnetism_multiplier);
 
             return result;
-        }
-    
-        public bool active
-        {
-            get
-            {
-                return collider.active && active_variable;
-            }
-            private set
-            {
-                active_variable = value;
-            }
         }
 
         public CollisionObserver observer { get; private set; }

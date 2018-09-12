@@ -54,32 +54,27 @@ namespace Planetaria
                 final_shape = final_shape.append(GeospatialCurve.curve(point, original_point));
             }
 
-            if (is_field)
-            {
-                GameObject field = Field.field(final_shape.to_curves());
-                Debug.Log(field);
-            }
-            else
-            {
-                GameObject shape = Block.block(final_shape.to_curves());
-                /*Block block = shape.GetComponent<Block>();
-                optional<TextAsset> svg_file = BlockRenderer.render(block, 0);
-
-                if (svg_file.exists)
-                {
-                    PlanetariaRenderer renderer = shape.AddComponent<PlanetRenderer>();
-                    renderer.material = RenderVectorGraphics.render(svg_file.data);
-                }*/
-            }
-            
+            GameObject shape = new GameObject("CustomGeometry");
+            PlanetariaCollider collider = shape.AddComponent<PlanetariaCollider>();
+            collider.shape = new Shape(final_shape.to_curves(), true, true);
+            collider.is_field = is_field;
             DestroyImmediate(this.gameObject);
+
+            /*
+            optional<TextAsset> svg_file = BlockRenderer.render(block, 0);
+            if (svg_file.exists)
+            {
+                PlanetariaRenderer renderer = shape.AddComponent<PlanetRenderer>();
+                renderer.material = RenderVectorGraphics.render(svg_file.data);
+            }
+            */
         }
 
         public bool valid()
         {
             if (must_be_convex)
             {
-                if (!debug_shape.convex_hull())
+                if (!debug_shape.is_convex_hull())
                 {
                     Debug.LogWarning("Not a convex shape! Turn off the LevelEditor setting if you want to ignore this.");
                     return false;
@@ -87,7 +82,7 @@ namespace Planetaria
             }
             if (!allow_self_intersections)
             {
-                if (debug_shape.self_intersecting())
+                if (debug_shape.is_self_intersecting())
                 {
                     Debug.LogWarning("Shape intersects self! Turn off the LevelEditor setting if you want to ignore this.");
                     return false;

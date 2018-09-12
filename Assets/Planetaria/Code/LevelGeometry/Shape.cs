@@ -125,7 +125,7 @@ namespace Planetaria
             return new List<GeospatialCurve>(curve_list);
         }
 
-        public bool self_intersecting()
+        public bool is_self_intersecting()
         {
             List<Arc> edges = generate_edges();
             for (int left = 0; left < edges.Count; ++left)
@@ -155,7 +155,13 @@ namespace Planetaria
             return result; // FIXME: Vector3.zero can be returned
         }
 
-        public bool convex_hull()
+        public Vector3[] convex_hull()
+        {
+            Debug.LogError("Implement this"); // FIXME:
+            return new Vector3[0];
+        }
+
+        public bool is_convex_hull()
         {
             if (arc_list.Length > 1)
             {

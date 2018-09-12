@@ -22,27 +22,14 @@ namespace Planetaria
             }
         }
 
-        public optional<Arc> arc_fetch(SphereCollider key)
-        {
-            optional<Block> block = PlanetariaCache.self.block_fetch(key);
-            if (!block.exists)
-            {
-                return new optional<Arc>();
-            }
-            optional<int> arc_index = PlanetariaCache.self.index(key);
-            if (!arc_index.exists)
-            {
-                return new optional<Arc>();
-            }
-            Arc arc = block.data.shape[arc_index.data];
-            return arc;
-        }
-
-        public optional<PlanetariaCollider> collider_fetch(SphereCollider key)
+        public PlanetariaCollider collider_fetch(SphereCollider key)
         {
             if (!collider_cache.ContainsKey(key))
             {
-                return new optional<PlanetariaCollider>();
+                PlanetariaCollider planetaria_collider = key.GetComponent<PlanetariaCollider>();
+                Debug.Assert(planetaria_collider, "SphereColliders must be matched with PlanetariaColliders");
+                collider_cache.Add(key, planetaria_collider);
+                //return new optional<PlanetariaCollider>();
             }
             return collider_cache[key];
         }

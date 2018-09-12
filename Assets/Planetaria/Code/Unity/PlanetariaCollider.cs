@@ -145,19 +145,17 @@ namespace Planetaria
                     {
                         if (rigidbody.exists)
                         {
-                            optional<Block> block = PlanetariaCache.self.block_fetch(sphere_collider.data);
-                            if (block.exists &&
-                                    (!observer.colliding() || !observer.collisions()[0].block.ignore.Contains(block.data))) // Should we ignore the new block? // FIXME: private API exposure (optimizes at a cost of readability)
+                            if (!observer.colliding()) // Should we ignore the new block? // FIXME: private API exposure (optimizes at a cost of readability)
                             {
                                 optional<Arc> arc = PlanetariaCache.self.arc_fetch(sphere_collider.data);
                                 Vector3 position = planetaria_transform.position.data;
-                                if (block.data.internal_transform.rotation != Quaternion.identity) // Only shift orientation when necessary
+                                if (other_collider.data.internal_transform.rotation != Quaternion.identity) // Only shift orientation when necessary
                                 {
-                                    position = Quaternion.Inverse(block.data.gameObject.internal_game_object.transform.rotation) * position;
+                                    position = Quaternion.Inverse(other_collider.data.gameObject.internal_game_object.transform.rotation) * position;
                                 }
                                 if (arc.exists && arc.data.contains(position, planetaria_transform.scale/2))
                                 {
-                                    observer.potential_block_collision(arc.data, block.data, other_collider.data); // block collisions are handled in OnCollisionStay(): notification stage
+                                    observer.potential_block_collision(arc.data, other_collider.data); // block collisions are handled in OnCollisionStay(): notification stage
                                 }
                             }
                         }
@@ -175,7 +173,8 @@ namespace Planetaria
             }
         }
         
-        [SerializeField] public PlanetariaPhysicMaterial material = fallback;
+        [SerializeField] public PlanetariaPhysicMaterial material;
+        [SerializeField] public Shape shape;
         [SerializeField] [HideInInspector] private CollisionObserver observer;
         [SerializeField] [HideInInspector] private Transform internal_transform;
         [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;
@@ -184,7 +183,6 @@ namespace Planetaria
         [SerializeField] [HideInInspector] public Sphere[] colliders = new Sphere[0]; // FIXME: private
         [SerializeField] private float scale_variable;
         [SerializeField] public bool is_field_variable = false;
-        public static PlanetariaPhysicMaterial fallback;
     }
 }
 

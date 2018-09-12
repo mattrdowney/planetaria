@@ -26,15 +26,17 @@ namespace Planetaria
 
         public void close_shape()
         {
-            GameObject shape = Block.block(curves);
-            Block block = shape.GetComponent<Block>();
-            optional<TextAsset> svg_file = BlockRenderer.render(block, edges == 2 ? 1 : 0); // lines can't have zero thickness
+            GameObject shape = new GameObject("CustomGeometry");
+            PlanetariaCollider collider = shape.AddComponent<PlanetariaCollider>();
+            collider.shape = new Shape(curves, true, true);
+            DestroyImmediate(this.gameObject);
+
+            /*optional<TextAsset> svg_file = BlockRenderer.render(block, edges == 2 ? 1 : 0); // lines can't have zero thickness
             if (svg_file.exists)
             {
-                //PlanetariaRenderer renderer = shape.AddComponent<PlanetRenderer>();
-                //renderer.material = RenderVectorGraphics.render(svg_file.data);
-            }
-            DestroyImmediate(this.gameObject);
+                PlanetariaRenderer renderer = shape.AddComponent<PlanetRenderer>();
+                renderer.material = RenderVectorGraphics.render(svg_file.data);
+            }*/
         }
 
         private void create_equilateral()
