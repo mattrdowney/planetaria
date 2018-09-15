@@ -27,7 +27,7 @@ public class Laser : MonoBehaviour  // TODO: PlanetariaComponent
             GeospatialCurve.curve(character_position, controller_position),
             GeospatialCurve.curve(controller_position, character_position),
         };
-        arc_renderer.shape = new Shape(laser, false, false);
+        arc_renderer.shape = new PlanetariaShape(laser, false, false);
         arc_renderer.recalculate();
 
         bool firing;

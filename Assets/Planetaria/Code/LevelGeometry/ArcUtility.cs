@@ -46,6 +46,28 @@ namespace Planetaria
             }
             return snap_to_vertex(arc, point);
         }
+
+        /// <summary>
+        /// Inspector - Finds the furthest vertex (arc boundary) from a input point.
+        /// </summary>
+        /// <param name="arc">The Arc whose boundaries will be checked.</param>
+        /// <param name="point">A normalized point in 3D space.</param>
+        /// <returns>Either arc.begin() or arc.end() depending on which is farther from the input point.</returns>
+        public static Vector3 furthest_vertex(Arc arc, Vector3 point) // TODO: verify
+        {
+            return snap_to_vertex(arc, -point);
+        }
+
+        /// <summary>
+        /// Inspector - Finds the furthest point (along the arc edge) from a input point.
+        /// </summary>
+        /// <param name="arc">The Arc whose edge will be checked.</param>
+        /// <param name="point">A normalized point in 3D space.</param>
+        /// <returns>The furthest point along the arc's edge from the input point.</returns>
+        public static Vector3 furthest_point(Arc arc, Vector3 point) // TODO: verify
+        {
+            return snap_to_edge(arc, -point);
+        }
     }
 }
 

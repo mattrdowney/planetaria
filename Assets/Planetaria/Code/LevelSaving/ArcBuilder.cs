@@ -16,7 +16,7 @@ namespace Planetaria
             result.point = result.original_point = first_point;
             GeospatialCurve curve = GeospatialCurve.curve(first_point, first_point);
             bool has_corners = !is_field;
-            result.final_shape = new Shape(false, has_corners);
+            result.final_shape = new PlanetariaShape(false, has_corners);
             result.debug_shape = result.final_shape.append(curve);
             result.is_field = is_field;
             result.must_be_convex = is_field; // Fields must be a "convex hull"
@@ -56,7 +56,7 @@ namespace Planetaria
 
             GameObject shape = new GameObject("CustomGeometry");
             PlanetariaCollider collider = shape.AddComponent<PlanetariaCollider>();
-            collider.shape = new Shape(final_shape.to_curves(), true, true);
+            collider.shape = new PlanetariaShape(final_shape.to_curves(), true, true);
             collider.is_field = is_field;
             DestroyImmediate(this.gameObject);
 
@@ -91,8 +91,8 @@ namespace Planetaria
             return true;
         }
 
-        private Shape final_shape;
-        public Shape debug_shape;
+        private PlanetariaShape final_shape;
+        public PlanetariaShape debug_shape;
         private CreationState state = CreationState.SetSlope;
         private Vector3 point { get; set; }
         private Vector3 slope { get; set; }

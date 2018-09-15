@@ -6,9 +6,9 @@ using UnityEngine;
 namespace Planetaria
 {
     [Serializable]
-    public struct Shape : ISerializationCallbackReceiver // TODO: clean-up this file~
+    public struct PlanetariaShape : ISerializationCallbackReceiver // TODO: clean-up this file~
     {
-        public List<Arc> block_collision(Shape other, Quaternion shift_from_self_to_other) // TODO: AABB-equivalent would be nice here
+        public List<Arc> block_collision(PlanetariaShape other, Quaternion shift_from_self_to_other) // TODO: AABB-equivalent would be nice here
         {
             List<Arc> result = new List<Arc>();
             for (int other_index = 0; other_index < other.block_list.Length; ++ other_index)
@@ -26,7 +26,7 @@ namespace Planetaria
             return result;
         }
 
-        public bool field_collision(Shape other, Quaternion shift_from_self_to_other) // TODO: AABB-equivalent would be nice here
+        public bool field_collision(PlanetariaShape other, Quaternion shift_from_self_to_other) // TODO: AABB-equivalent would be nice here
         {
             foreach (PlanetariaArcCollider arc in this.block_list)
             {
@@ -53,7 +53,7 @@ namespace Planetaria
         /// <param name="curves">The list of curves that uniquely defines a shape.</param>
         /// <param name="closed_shape">Is the shape closed? (i.e. does the shape draw the final arc from the last point to the first point?)</param>
         /// <param name="generate_corners">Does the shape have corners between line segments?</param>
-        public Shape(List<GeospatialCurve> curves, bool closed_shape, bool generate_corners) // CONSIDER: TODO: add convex option
+        public PlanetariaShape(List<GeospatialCurve> curves, bool closed_shape, bool generate_corners) // CONSIDER: TODO: add convex option
         {
             closed = closed_shape;
             has_corners = generate_corners;
@@ -69,7 +69,7 @@ namespace Planetaria
         /// </summary>
         /// <param name="closed_shape">Is the shape closed? (i.e. does the shape draw the final arc from the last point to the first point?)</param>
         /// <param name="generate_corners">Does the shape have corners between line segments?</param>
-        public Shape(bool closed_shape, bool generate_corners)
+        public PlanetariaShape(bool closed_shape, bool generate_corners)
         {
             closed = closed_shape;
             has_corners = generate_corners;
@@ -134,9 +134,9 @@ namespace Planetaria
         /// </summary>
         /// <param name="curve">The curve you are appending to the end of the shape.</param>
         /// <returns>A shape with a new curve appended.</returns>
-        public Shape append(GeospatialCurve curve)
+        public PlanetariaShape append(GeospatialCurve curve)
         {
-            Shape result = new Shape();
+            PlanetariaShape result = new PlanetariaShape();
             result.closed = this.closed;
             result.has_corners = this.has_corners;
             result.arc_list = new Arc[0];
@@ -152,20 +152,42 @@ namespace Planetaria
         /// Inspector/Constructor - Creates a copy of the shape then sets closed=true
         /// </summary>
         /// <returns>A closed shape mirroring all properties of original but with closed=true.</returns>
-        public Shape close()
+        public PlanetariaShape close()
         {
-            Shape shape = new Shape();
+            PlanetariaShape shape = new PlanetariaShape();
             shape.closed = true;
             shape.has_corners = this.has_corners;
             shape.arc_list = new Arc[0];
             shape.curve_list = this.curve_list;
             shape.generate_arcs();
+            // TODO: if field, make this a convex_hull() // TODO: add convex property
             return shape;
         }
 
         public List<GeospatialCurve> to_curves()
         {
             return new List<GeospatialCurve>(curve_list);
+        }
+
+        public PlanetariaSphereCollider bounding_sphere
+        {
+            get
+            {
+                Vector3 center = center_of_mass();
+                Vector3 furthest_point = center;
+                float furthest_distance_squared = 0;
+                foreach (Arc arc in arc_list)
+                {
+                    Vector3 current_point = ArcUtility.furthest_point(arc, center);
+                    float current_distance_squared = (current_point - center).sqrMagnitude;
+                    if (current_distance_squared > furthest_distance_squared)
+                    {
+                        furthest_point = current_point;
+                        furthest_distance_squared = current_distance_squared;
+                    }
+                }
+                return PlanetariaArcCollider.boundary(center, furthest_point);
+            }
         }
 
         public bool is_self_intersecting()
@@ -208,7 +230,7 @@ namespace Planetaria
         {
             if (arc_list.Length > 1)
             {
-                Shape closed_shape = this.close();
+                PlanetariaShape closed_shape = this.close();
                 Arc last_arc = closed_shape.generate_edges().Last();
                 foreach (Arc arc in closed_shape.generate_edges())
                 {
@@ -222,24 +244,24 @@ namespace Planetaria
             return true;
         }
 
-        public static bool operator ==(Shape left, Shape right)
+        public static bool operator ==(PlanetariaShape left, PlanetariaShape right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(Shape left, Shape right)
+        public static bool operator !=(PlanetariaShape left, PlanetariaShape right)
         {
             return !left.Equals(right);
         }
 
         public override bool Equals(System.Object other)
         {
-            bool same_type = other is Shape;
+            bool same_type = other is PlanetariaShape;
             if (!same_type)
             {
                 return false;
             }
-            Shape other_shape = (Shape)other;
+            PlanetariaShape other_shape = (PlanetariaShape)other;
             bool same_data = this.curve_list == other_shape.curve_list; // compare by reference is intentional
             return same_data;
         }

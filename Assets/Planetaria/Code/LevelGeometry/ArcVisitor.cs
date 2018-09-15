@@ -8,7 +8,7 @@
         /// <param name="shape">The shape representing the list of Arc segments</param>
         /// <param name="index">The index of the referenced arc segment.</param>
         /// <returns>An ArcVisitor struct (for iterating across the arcs in a block).</returns>
-        public static ArcVisitor arc_visitor(Shape shape, int index)
+        public static ArcVisitor arc_visitor(PlanetariaShape shape, int index)
         {
             return new ArcVisitor(shape, index);
         }
@@ -41,7 +41,7 @@
             }
         }
 
-        private ArcVisitor(Shape shape, int index)
+        private ArcVisitor(PlanetariaShape shape, int index)
         {
             shape_variable = shape;
             index_variable = index;
@@ -87,7 +87,7 @@
             return shape_variable.GetHashCode() ^ index_variable.GetHashCode();
         }
 
-        private Shape shape_variable;
+        private PlanetariaShape shape_variable;
         private int index_variable;
     }
 }

@@ -40,7 +40,7 @@ namespace Planetaria
         }
 
         [SerializeField] public float angular_width = 0.01f;
-        [SerializeField] public Shape shape;
+        [SerializeField] public PlanetariaShape shape;
     }
 }
 

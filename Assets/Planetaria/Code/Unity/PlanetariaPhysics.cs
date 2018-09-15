@@ -93,7 +93,7 @@ namespace Planetaria
             Vector3 arc_center = arc.position(0);
             Vector3 arc_right = arc.position(+desired_angle/2);
 
-            Shape shape = new Shape(new List<GeospatialCurve> { GeospatialCurve.curve(arc_left, arc_right), GeospatialCurve.curve(arc_right, arc_left) }, false, false);
+            PlanetariaShape shape = new PlanetariaShape(new List<GeospatialCurve> { GeospatialCurve.curve(arc_left, arc_right), GeospatialCurve.curve(arc_right, arc_left) }, false, false);
 
             // composites
             Vector3 arc_boundary_midpoint = (arc_left + arc_right) / 2; // if the arc is like a wooden bow, this is the midpoint of the string

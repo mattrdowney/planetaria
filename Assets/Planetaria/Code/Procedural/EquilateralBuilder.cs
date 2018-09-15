@@ -28,7 +28,7 @@ namespace Planetaria
         {
             GameObject shape = new GameObject("CustomGeometry");
             PlanetariaCollider collider = shape.AddComponent<PlanetariaCollider>();
-            collider.shape = new Shape(curves, true, true);
+            collider.shape = new PlanetariaShape(curves, true, true);
             DestroyImmediate(this.gameObject);
 
             /*optional<TextAsset> svg_file = BlockRenderer.render(block, edges == 2 ? 1 : 0); // lines can't have zero thickness

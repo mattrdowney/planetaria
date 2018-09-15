@@ -55,9 +55,25 @@ namespace Planetaria
             set
             {
                 scale_variable = value;
-                colliders = new PlanetariaSphereCollider[] { PlanetariaArcCollider.field(SphericalCap.cap(Vector3.forward, Mathf.Cos(value/2))) };
-                set_internal_collider(colliders[0]);
-                internal_collider.center = Vector3.forward * internal_collider.center.magnitude;
+                shape = new PlanetariaSphereCollider[] { PlanetariaArcCollider.field(SphericalCap.cap(Vector3.forward, Mathf.Cos(value/2))) };
+            }
+        }
+
+        public PlanetariaShape shape
+        {
+            get
+            {
+                return shape_variable;
+            }
+            set
+            {
+                shape_variable = value;
+
+                Quaternion local_to_world = internal_collider.transform.rotation;
+                PlanetariaSphereCollider sphere = shape.bounding_sphere;
+
+                internal_collider.center = local_to_world * sphere.center;
+                internal_collider.radius = sphere.radius;
             }
         }
 
@@ -79,26 +95,6 @@ namespace Planetaria
         public SphereCollider get_sphere_collider()
         {
             return internal_collider;
-        }
-
-        public void set_colliders(PlanetariaSphereCollider[] colliders)
-        {
-            this.colliders = colliders;
-            PlanetariaSphereCollider furthest_collider = colliders.Aggregate(
-                    (furthest, next_candidate) =>
-                    furthest.center.magnitude - furthest.radius >
-                    next_candidate.center.magnitude - next_candidate.radius
-                    ? furthest : next_candidate);
-
-            set_internal_collider(furthest_collider);
-        }
-
-        private void set_internal_collider(PlanetariaSphereCollider sphere)
-        {
-            Quaternion local_to_world = internal_collider.transform.rotation;
-
-            internal_collider.center = local_to_world * sphere.center;
-            internal_collider.radius = sphere.radius;
         }
 
         public bool is_field
@@ -173,13 +169,12 @@ namespace Planetaria
         }
         
         [SerializeField] public PlanetariaPhysicMaterial material;
-        [SerializeField] public Shape shape;
+        [SerializeField] private PlanetariaShape shape_variable;
         [SerializeField] [HideInInspector] private CollisionObserver observer;
         [SerializeField] [HideInInspector] private Transform internal_transform;
         [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;
         [SerializeField] [HideInInspector] private SphereCollider internal_collider;
         [SerializeField] [HideInInspector] public new optional<PlanetariaRigidbody> rigidbody;
-        [SerializeField] [HideInInspector] public PlanetariaSphereCollider[] colliders = new PlanetariaSphereCollider[0]; // FIXME: private
         [SerializeField] private float scale_variable;
         [SerializeField] public bool is_field_variable = false;
     }

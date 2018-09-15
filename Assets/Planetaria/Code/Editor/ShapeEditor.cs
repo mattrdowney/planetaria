@@ -5,7 +5,7 @@ namespace Planetaria
 {
     public class ShapeEditor : Editor
     {
-        public static void draw_shape(Shape self, Quaternion orientation)
+        public static void draw_shape(PlanetariaShape self, Quaternion orientation)
         {
             if (!EditorGlobal.self.hide_graphics)
             {

@@ -49,6 +49,17 @@ namespace Planetaria
         }
 
         /// <summary>
+        /// Constructor (Named) - Finds a Sphere that include "point" at the boundary and has a center along "center_axis"
+        /// </summary>
+        /// <param name="center_axis">The axis of the center point. The resulting center point (in return value) may vary.</param>
+        /// <param name="point">The furthest point to include.</param>
+        /// <returns>A sphere centered along "center_axis" and including "point" at its boundary.</returns>
+        public static PlanetariaSphereCollider boundary(Vector3 center_axis, Vector3 point)
+        {
+            return PlanetariaArcColliderUtility.boundary_collider(center_axis, point);
+        }
+
+        /// <summary>
         /// Constructor (Named) - The intersection of two spheres is a circle, and adding a third sphere generates a set of colliders that define an arc
         /// </summary>
         /// <param name="arc">The arc for which the field will be generated.</param>
@@ -168,24 +179,29 @@ namespace Planetaria
 
         internal static PlanetariaSphereCollider boundary_collider(Arc arc)
         {
-            PlanetariaSphereCollider result;
-            Vector3 corner = arc.begin();
+            Vector3 corner = arc.begin(); // end() could also be used
             Vector3 center = arc.position(0); // Center of arc is at zero
-            SphericalCap cap = SphericalCap.cap(center, corner); // create a SphericalCap centered at "center" that captures both corners (2nd implicitly)
+            return boundary_collider(center, corner);
+        }
 
-            float real_angle = Vector3.Angle(center, corner) * Mathf.Deg2Rad;
+        internal static PlanetariaSphereCollider boundary_collider(Vector3 center_axis, Vector3 point)
+        {
+            PlanetariaSphereCollider result;
+            SphericalCap cap = SphericalCap.cap(center_axis, point); // create a SphericalCap centered at "center" that captures both corners (2nd implicitly)
+
+            float real_angle = Vector3.Angle(center_axis, point) * Mathf.Deg2Rad;
             if (real_angle < Precision.max_sphere_radius) // use a r<=1 sphere
             {
-                result = ideal_collider(cap);
+                result = PlanetariaArcColliderUtility.ideal_collider(cap);
             }
             else // use r=2 sphere
             {
-                result = uniform_collider(cap);
+                result = PlanetariaArcColliderUtility.uniform_collider(cap);
             }
 
             if (result.radius < Precision.threshold)
             {
-                return PlanetariaSphereCollider.always;
+                return new PlanetariaSphereCollider(center_axis, 0);
             }
             return result;
         }
