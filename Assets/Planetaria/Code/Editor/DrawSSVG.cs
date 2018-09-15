@@ -7,7 +7,7 @@
         /// </summary>
         /// <param name="shape">The Block that will be serialized.</param>
         /// <returns>A textual representation of a Block as a "spherical" scalable vector graphic (.ssvg file format). Format "Mx.xx y.yy z.zz S (a.aa b.bb c.cc, x.xx y.yy z.zz, )+" where M indicates mouse cursor down; S indicates spherical mode; (x,y,z) is a physical point; (a,b,c) is a cutting normal. E.g. "M0 0 1 S 0 1 0, 1 0 0, 0 1 0, 0 0 1".</returns>
-        public static string ShapeToSSVG(Block shape)
+        public static string ShapeToSSVG(PlanetariaShape shape)
         {
             return "M0 0 0 S 0 0 0, 0 0 0";
         }
@@ -17,9 +17,9 @@
         /// </summary>
         /// <param name="spherical_scalable_vector_graphic">A textual representation of a Block as a "spherical" scalable vector graphic (.svg file format). Format "Mx.xx y.yy z.zz S (a.aa b.bb c.cc, x.xx y.yy z.zz, )+" where M indicates mouse cursor down; S indicates spherical mode; (x,y,z) is a physical point; (a,b,c) is a cutting normal. E.g. "M0 0 1 S 0 1 0, 1 0 0, 0 1 0, 0 0 1".</param>
         /// <returns>A Block that is equivalent to the textual ".ssvg".</returns>
-        public static Block SSVGToShape(string spherical_scalable_vector_graphic)
+        public static PlanetariaShape SSVGToShape(string spherical_scalable_vector_graphic)
         {
-            return new Block();
+            return new PlanetariaShape(true, true);
         }
 
         //<path d="M0.866 0.5 0 S 0 1 0, 0.5 0.866 0">

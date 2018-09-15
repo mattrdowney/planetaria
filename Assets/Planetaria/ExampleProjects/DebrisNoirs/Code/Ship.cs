@@ -16,7 +16,6 @@ public class Ship : PlanetariaMonoBehaviour
         planetaria_renderer = this.GetComponent<AreaRenderer>();
         transform.direction = new NormalizedCartesianCoordinates(Vector3.up);
         transform.localScale = +0.1f;
-        last_position = transform.position.data;
         OnFieldStay.data = on_field_stay;
     }
 
@@ -68,8 +67,6 @@ public class Ship : PlanetariaMonoBehaviour
 
         // apply unusued drag
         //planetaria_rigidbody.relative_velocity *= Mathf.Pow(0.8f, Time.deltaTime * (1f - input_direction.magnitude));
-
-        last_position = transform.position.data;
     }
 
     public void on_field_stay(PlanetariaCollider collider)
@@ -83,7 +80,6 @@ public class Ship : PlanetariaMonoBehaviour
     [NonSerialized] private PlanetariaRigidbody planetaria_rigidbody;
     [NonSerialized] private float horizontal;
     [NonSerialized] private float vertical;
-    [NonSerialized] private Vector3 last_position;
 }
 
 /*

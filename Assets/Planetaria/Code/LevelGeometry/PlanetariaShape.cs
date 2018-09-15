@@ -362,9 +362,9 @@ namespace Planetaria
         /// <summary>List of arcs on a unit sphere that define a shape.</summary>
         [NonSerialized] private Arc[] arc_list;
         /// <summary>List of arc colliders that will be used for intersection.</summary>
-        [NonSerialized] private PlanetariaArcCollider[] block_list;
+        [NonSerialized] public PlanetariaArcCollider[] block_list;
         /// <summary>List of arc colliders that will be used for intersection.</summary>
-        [NonSerialized] private PlanetariaSphereCollider[] field_list;
+        [NonSerialized] public PlanetariaSphereCollider[] field_list;
     }
 }
 

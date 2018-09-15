@@ -1,16 +1,22 @@
-﻿using System;
+﻿using UnityEngine;
 using UnityEditor;
 
 namespace Planetaria
 {
-    [CustomEditor(typeof(EquilateralBuilder))]
-    [Serializable]
-    public class EquilateralBuilderEditor : Editor
+    public class PlanetariaArcColliderEditor : Editor
     {
-        [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
-        static void draw_arc_builder_gizmos(EquilateralBuilder self, GizmoType gizmo_type)
+        public static void draw_arc(PlanetariaArcCollider self, Quaternion orientation, bool[] mask)
         {
-            ShapeEditor.draw_shape(self.shape, self.gameObject.transform.rotation);
+            if (!EditorGlobal.self.hide_graphics)
+            {
+                for (int index = 0; index < 3; ++index)
+                {
+                    if (!mask[index])
+                    {
+                        PlanetariaSphereColliderEditor.draw_sphere(self[index], orientation);
+                    }
+                }
+            }
         }
     }
 }

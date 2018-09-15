@@ -9,15 +9,21 @@ namespace Planetaria
         [DrawGizmo(GizmoType.Selected)]
         private static void draw_planetaria_collider_gizmos(PlanetariaCollider self, GizmoType gizmo_type)
         {
-            for (int sphere_index = 0; sphere_index < self.colliders.Length; ++sphere_index)
+            ShapeEditor.draw_shape(self.shape, self.gameObject.internal_game_object.transform.rotation);
+            if (!self.is_field)
             {
-                if (sphere_index < sizeof(int) && !mask[sphere_index])
+                PlanetariaArcColliderEditor.draw_arc(self.shape.block_list[arc_identifier],
+                        self.gameObject.internal_game_object.transform.rotation, mask);
+            }
+            else
+            {
+                for (int index = 0; index < self.shape.field_list.Length; ++index)
                 {
-                    PlanetariaSphereCollider sphere = self.colliders[sphere_index];
-                    Gizmos.color = new Color(0,1,0,0.5f); // translucent green
-                    Gizmos.DrawSphere(sphere.debug_center, sphere.radius); // consider drawing a higher precision mesh
-                    Gizmos.color = Color.green;
-                    Gizmos.DrawWireSphere(sphere.debug_center, sphere.radius);
+                    if (!mask[index])
+                    {
+                        PlanetariaSphereColliderEditor.draw_sphere(self.shape.field_list[index],
+                        self.gameObject.internal_game_object.transform.rotation);
+                    }
                 }
             }
         }
@@ -25,7 +31,8 @@ namespace Planetaria
         public override void OnInspectorGUI()
         {
             PlanetariaCollider self = (PlanetariaCollider) target;
-            for (int bit_position = 0; bit_position < mask.Length && bit_position < self.colliders.Length; ++bit_position)
+            int bit_length = self.is_field ? self.shape.field_list.Length : 3;
+            for (int bit_position = 0; bit_position < mask.Length && bit_position < bit_length; ++bit_position)
             {
                 GUILayout.BeginHorizontal();
                 GUILayout.Label(" Collider Mask " + bit_position);
@@ -37,6 +44,7 @@ namespace Planetaria
         }
         
         private static bool[] mask = new bool[8*sizeof(int)];
+        private static int arc_identifier = 0;
     }
 }
 

@@ -1,7 +1,7 @@
 ﻿#if UNITY_EDITOR 
 
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Planetaria
 {
@@ -10,25 +10,25 @@ namespace Planetaria
     {
         public static EquilateralBuilder equilateral_builder(Vector3 center, int sides)
         {
-            GameObject game_object = new GameObject("Equilateral Builder");
+            GameObject game_object = new GameObject("EquilateralBuilder");
             EquilateralBuilder result = game_object.AddComponent<EquilateralBuilder>();
             result.center = result.first_vertex = center;
             result.edges = sides;
-            result.create_equilateral();
+            result.shape = create_equilateral(center, center, sides);
             return result;
         }
 
         public void set_edge(Vector3 first_corner)
         {
             this.first_vertex = first_corner;
-            create_equilateral();
+            shape = create_equilateral(center, first_corner, edges);
         }
 
         public void close_shape()
         {
-            GameObject shape = new GameObject("CustomGeometry");
-            PlanetariaCollider collider = shape.AddComponent<PlanetariaCollider>();
-            collider.shape = new PlanetariaShape(curves, true, true);
+            GameObject geometry_object = new GameObject("CustomGeometry");
+            PlanetariaCollider collider = geometry_object.AddComponent<PlanetariaCollider>();
+            collider.shape = shape;
             DestroyImmediate(this.gameObject);
 
             /*optional<TextAsset> svg_file = BlockRenderer.render(block, edges == 2 ? 1 : 0); // lines can't have zero thickness
@@ -39,66 +39,56 @@ namespace Planetaria
             }*/
         }
 
-        private void create_equilateral()
+        public static PlanetariaShape create_equilateral(Vector3 center, Vector3 vertex, int faces)
         {
-            if (edges > 0 && center != first_vertex)
+            if (faces > 0 && center != vertex)
             {
-                if (edges >= 2)
+                if (faces >= 2)
                 {
                     Vector3 forward = center.normalized;
-                    Vector3 right = Vector3.ProjectOnPlane(first_vertex, forward).normalized;
+                    Vector3 right = Vector3.ProjectOnPlane(vertex, forward).normalized;
                     Vector3 up = Vector3.Cross(forward, right).normalized;
 
-                    float phi = Vector3.Angle(first_vertex, center)*Mathf.Deg2Rad;
+                    float phi = Vector3.Angle(vertex, center)*Mathf.Deg2Rad;
                     
                     List<Vector3> vertices = new List<Vector3>();
-                    for (float edge_index = 0; edge_index < edges; ++edge_index)
+                    for (float face_index = 0; face_index < faces; ++face_index)
                     {
-                        Vector3 equatorial_position = PlanetariaMath.spherical_linear_interpolation(right, up, -(edge_index/edges)*(Mathf.PI*2));
+                        Vector3 equatorial_position = PlanetariaMath.spherical_linear_interpolation(right, up, -(face_index/faces)*(Mathf.PI*2));
                         Vector3 final_position = PlanetariaMath.spherical_linear_interpolation(forward, equatorial_position, phi);
                         vertices.Add(final_position);
                     }
 
-                    arcs.Clear();
-                    curves.Clear();
-
-                    for (int edge_index = 0; edge_index < edges; ++edge_index)
+                    List<GeospatialCurve> polygon = new List<GeospatialCurve>();
+                    for (int face_index = 0; face_index < faces; ++face_index)
                     {
-                        Vector3 start_point = vertices[edge_index];
-                        Vector3 end_point = vertices[(edge_index+1)%edges];
-
-                        arcs.Add(Arc.line(start_point, end_point));
-                        curves.Add(GeospatialCurve.curve(start_point, end_point));
+                        Vector3 start_point = vertices[face_index];
+                        Vector3 end_point = vertices[(face_index+1)%faces];
+                        polygon.Add(GeospatialCurve.curve(start_point, end_point));
                     }
+                    return new PlanetariaShape(polygon, true, true);
                 }
                 else // create a circle with given radius
                 {
-                    arcs.Clear();
-                    curves.Clear();
-
                     // first_vertex is circle start
-                    Vector3 right = Vector3.Cross(center, first_vertex).normalized;
+                    Vector3 right = Vector3.Cross(center, vertex).normalized;
                     Vector3 mirror = Vector3.Cross(center, right).normalized;
-                    Vector3 hidden_vertex = Vector3.Reflect(first_vertex, mirror).normalized; // opposite end of circle start
+                    Vector3 hidden_vertex = Vector3.Reflect(vertex, mirror).normalized; // opposite end of circle start
 
-                    Vector3 first_up = Vector3.Cross(first_vertex, right).normalized;
-                    Vector3 first_tangent = -Vector3.Cross(first_up, first_vertex).normalized;
+                    Vector3 first_up = Vector3.Cross(vertex, right).normalized;
+                    Vector3 first_tangent = -Vector3.Cross(first_up, vertex).normalized;
                     
                     Vector3 second_up = -Vector3.Cross(hidden_vertex, right).normalized;
                     Vector3 second_tangent = -Vector3.Cross(second_up, hidden_vertex).normalized;
 
-                    arcs.Add(Arc.curve(first_vertex, first_tangent, hidden_vertex)); // draw first semi-circle
-                    curves.Add(GeospatialCurve.curve(first_vertex, first_tangent));
-
-                    arcs.Add(Arc.curve(hidden_vertex, second_tangent, first_vertex)); // draw second semi-circle
-                    curves.Add(GeospatialCurve.curve(hidden_vertex, second_tangent));
-
+                    return new PlanetariaShape(new List<GeospatialCurve>(){ GeospatialCurve.curve(vertex, first_tangent),
+                            GeospatialCurve.curve(hidden_vertex, second_tangent) }, true, true );
                 }
             }
+            return new PlanetariaShape(true, true);
         }
     
-        public List<Arc> arcs = new List<Arc>(); // TODO: use Shape
-        private List<GeospatialCurve> curves = new List<GeospatialCurve>();
+        public PlanetariaShape shape { get; set; }
         private Vector3 center { get; set; }
         private Vector3 first_vertex { get; set; }
         private int edges { get; set; }

@@ -73,7 +73,7 @@ namespace Planetaria
             return PlanetariaArcColliderUtility.uniform_collider(arc.floor());
         }
 
-        private PlanetariaSphereCollider this[int index] // Encapsulate, do not expose as application programming interface (API)
+        public PlanetariaSphereCollider this[int index] // Encapsulate, do not expose as application programming interface (API)
         {
             get
             {

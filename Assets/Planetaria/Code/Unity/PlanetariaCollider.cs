@@ -46,7 +46,7 @@ namespace Planetaria
             // add to collision_map and trigger_map for all objects currently intersecting (via Physics.OverlapBox()) // CONSIDER: I think Unity Fixed this, right?
         }
 
-        public float scale
+        public float scale // FIXME: remove (at least until I have a better (real) implementation)
         {
             get
             {
@@ -55,7 +55,7 @@ namespace Planetaria
             set
             {
                 scale_variable = value;
-                shape = new PlanetariaSphereCollider[] { PlanetariaArcCollider.field(SphericalCap.cap(Vector3.forward, Mathf.Cos(value/2))) };
+                shape = EquilateralBuilder.create_equilateral(Vector3.forward, new Vector3(Mathf.Sin(value/2), 0, Mathf.Cos(value/2)), 2);
             }
         }
 
