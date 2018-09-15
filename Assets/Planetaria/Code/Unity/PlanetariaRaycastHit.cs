@@ -8,11 +8,10 @@ namespace Planetaria
         /// Named Constructor - creates the Planetaria equivalent of UnityEngine.RaycastHit
         /// </summary>
         /// <returns>The result of a point sweep / raycast in spherical 2D space.</returns>
-        public static PlanetariaRaycastHit hit(Arc raycast_arc, SphereCollider sphere_collider, Vector3 intersection_point, float raycast_distance)
+        public static PlanetariaRaycastHit hit(Arc raycast_arc, PlanetariaCollider planetaria_collider, Arc geometry_arc, Vector3 intersection_point, float raycast_distance)
         {
-            return new PlanetariaRaycastHit(raycast_arc, sphere_collider, intersection_point, raycast_distance);
+            return new PlanetariaRaycastHit(raycast_arc, planetaria_collider, geometry_arc, intersection_point, raycast_distance);
         }
-
         
         //barycentricCoordinate	The barycentric coordinate of the triangle we hit. // RESEARCH: are there any equivalents to triangles I should be creating?
         //lightmapCoord	The uv lightmap coordinate at the impact point.
@@ -27,10 +26,10 @@ namespace Planetaria
         /// <param name="geometry_arc">The arc which intersects the raycast (i.e. the arc hit).</param>
         /// <param name="intersection_point">The intersection point of two circular arcs in 3D space.</param>
         /// <returns>The result of a point sweep / raycast in spherical 2D space.</returns>
-        private PlanetariaRaycastHit(Arc raycast_arc, SphereCollider sphere_collider, Vector3 intersection_point, float raycast_distance)
+        private PlanetariaRaycastHit(Arc raycast_arc, PlanetariaCollider planetaria_collider, Arc geometry_arc, Vector3 intersection_point, float raycast_distance)
         {
-            arc = PlanetariaCache.self.arc_fetch(sphere_collider).data;
-            collider = PlanetariaCache.self.collider_fetch(sphere_collider).data;
+            arc = geometry_arc;
+            collider = planetaria_collider;
 
             distance = raycast_arc.position_to_angle(intersection_point) * (raycast_arc.length()/raycast_arc.angle()); // TODO: verify
             distance += raycast_arc.length()/2;

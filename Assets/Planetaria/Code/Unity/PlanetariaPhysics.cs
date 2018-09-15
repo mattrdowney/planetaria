@@ -10,16 +10,15 @@ namespace Planetaria
                 float right, PlanetariaPhysicMaterialCombine right_type)
         {
             PlanetariaPhysicMaterialCombine type = (left_type >= right_type ? left_type : right_type);
-            switch(type) // Overengineering, sib
+            switch(type)
             {
-                // Note: all functions map from (0,0)->0 and (1,1)->1; (c,c)->c [for c >= 0, except Multiply]
+                // Note: all functions map from (0,0)->0 and (1,1)->1 [and (c,c)->c for c >= 0]
                 // values (positive and negative) outside this range can still be used
+                case PlanetariaPhysicMaterialCombine.Minimum: return Mathf.Min(left, right);
                 case PlanetariaPhysicMaterialCombine.Harmonic: return left+right != 0 ? 2*left*right/(left + right) : 0; // avoid division by zero
                 case PlanetariaPhysicMaterialCombine.Geometric: return Mathf.Sign(left*right) == +1 ? Mathf.Sqrt(left*right) : 0; // sqrt(negative) is undefined
                 case PlanetariaPhysicMaterialCombine.Average: return (left + right)/2;
                 case PlanetariaPhysicMaterialCombine.Quadratic: return Mathf.Sqrt((left*left + right*right)/2);
-                case PlanetariaPhysicMaterialCombine.Minumum: return Mathf.Min(left, right);
-                case PlanetariaPhysicMaterialCombine.Multiply: return left * right;
             }
             /*case PlanetariaPhysicMaterialCombine.Maximum:*/ return Mathf.Max(left, right);
         }
@@ -31,9 +30,9 @@ namespace Planetaria
         /// <param name="distance">The distance to raycast (may be greater than or less than the length of the arc - or negative).</param>
         /// <param name="layer_mask">The collision mask that defines which objects will be ignored.</param>
         /// <returns>All of the collision points of the Raycast (listed exactly once).</returns>
-        public static PlanetariaRaycastHit raycast(Arc arc, float distance, int layer_mask = Physics.DefaultRaycastLayers)
+        public static PlanetariaRaycastHit raycast(Arc arc, float distance, int layer_mask = Physics.DefaultRaycastLayers, QueryTriggerInteraction query_field_interaction = QueryTriggerInteraction.UseGlobal)
         {
-            return raycast_all(arc, distance, layer_mask)[0]; // HACK: TODO: optimize
+            return raycast_all(arc, distance, layer_mask, query_field_interaction)[0]; // HACK: TODO: optimize
         }
 
         /// <summary>
@@ -53,9 +52,19 @@ namespace Planetaria
         /// <param name="distance">The distance to raycast (may be greater than or less than the length of the arc - or negative).</param>
         /// <param name="layer_mask">The collision mask that defines which objects will be ignored.</param>
         /// <returns>All of the collision points of the Raycast (listed exactly once).</returns>
-        public static PlanetariaRaycastHit[] raycast_all(Arc arc, float distance, int layer_mask = Physics.DefaultRaycastLayers)
+        public static PlanetariaRaycastHit[] raycast_all(Arc arc, float distance, int layer_mask = Physics.DefaultRaycastLayers, QueryTriggerInteraction query_field_interaction = QueryTriggerInteraction.UseGlobal)
         {
-            List<PlanetariaRaycastHit> result = unordered_raycast_all(arc, distance, layer_mask).ToList();
+            bool collide_with_fields = Physics.queriesHitTriggers; // QueryTriggerInteraction.UseGlobal
+            if (query_field_interaction == QueryTriggerInteraction.Collide)
+            {
+                collide_with_fields = true;
+            }
+            else if (query_field_interaction == QueryTriggerInteraction.Ignore)
+            {
+                collide_with_fields = false;
+            }
+
+            List<PlanetariaRaycastHit> result = unordered_raycast_all(arc, distance, layer_mask, collide_with_fields).ToList();
 
             RaycastSorter sorter = RaycastSorter.sorter(arc, distance);
 
@@ -71,18 +80,20 @@ namespace Planetaria
         /// <param name="distance">The distance to raycast (may be greater than or less than the length of the arc - or negative).</param>
         /// <param name="layer_mask">The collision mask that defines which objects will be ignored.</param>
         /// <returns>All of the collision points of the Raycast (listed exactly once).</returns>
-        private static PlanetariaRaycastHit[] unordered_raycast_all(Arc arc, float distance, int layer_mask)
+        private static PlanetariaRaycastHit[] unordered_raycast_all(Arc arc, float distance, int layer_mask, bool collide_with_fields)
         {
             //float angle = arc.angle(); // this would determine the intersections for the un-modified arc (ignoring distance)
             
-            // desired_angle = desired_length * (partial_angle/partial_length) i.e.
+            // desired_angle = desired_length * (partial_angle/partial_length) i.e. length * length_to_angle ratio
             float desired_angle = distance * (arc.angle() / arc.length()); // TODO: verify negative distances go backwards
-            desired_angle = Mathf.Min(desired_angle, 2*Mathf.PI);
+            desired_angle = Mathf.Clamp(desired_angle, -2*Mathf.PI, 2*Mathf.PI);
 
             // primative arc points
             Vector3 arc_left = arc.position(-desired_angle/2);
             Vector3 arc_center = arc.position(0);
             Vector3 arc_right = arc.position(+desired_angle/2);
+
+            Shape shape = new Shape(new List<GeospatialCurve> { GeospatialCurve.curve(arc_left, arc_right), GeospatialCurve.curve(arc_right, arc_left) }, false, false);
 
             // composites
             Vector3 arc_boundary_midpoint = (arc_left + arc_right) / 2; // if the arc is like a wooden bow, this is the midpoint of the string
@@ -90,6 +101,7 @@ namespace Planetaria
             Vector3 arc_up = arc.floor().normal; // orthogonal/perpendicular to the imaginary "bow"
 
             // UnityEngine.Physics.OverlapBox() requirements
+            // FIXME: OPTIMIZE: half_extents currently provides unnecessary false positives because the "width" of plane (the depth into the distance and zero height are fine)
             Vector3 half_extents = new Vector3(1, 0, 1); // The largest collision "box" for a unit sphere is a radius of 1 in the x-z plane; height along y is 0.
             Vector3 center = arc_boundary_midpoint + arc_forward*1; // The center of the "box" must be offset 1 (the radius) along the forward axis from the two arc boundaries.
             Quaternion rotation = Quaternion.LookRotation(arc_forward, arc_up);
@@ -99,14 +111,18 @@ namespace Planetaria
             List<PlanetariaRaycastHit> raycast_hits = new List<PlanetariaRaycastHit>();
             foreach (SphereCollider sphere_collider in colliders)
             {
-                optional<Arc> geometry_arc = PlanetariaCache.self.arc_fetch(sphere_collider);
-                if (geometry_arc.exists)
+                PlanetariaCollider planetaria_collider = PlanetariaCache.self.collider_fetch(sphere_collider);
+                if (planetaria_collider.is_field && !collide_with_fields)
                 {
-                    optional<Block> block = PlanetariaCache.self.block_fetch(sphere_collider);
-                    Vector3[] intersections = PlanetariaIntersection.raycast_intersection(arc, geometry_arc.data, distance, block.data.internal_transform.rotation); // TODO: verify distance is indeed the angle in this scenario
+                    continue;
+                }
+                Quaternion geometry_rotation = planetaria_collider.gameObject.internal_game_object.transform.rotation;
+                foreach (Arc geometry_arc in shape.block_collision(planetaria_collider.shape, geometry_rotation))
+                {
+                    Vector3[] intersections = PlanetariaIntersection.raycast_intersection(arc, geometry_arc, distance, geometry_rotation); // TODO: verify distance is indeed the angle in this scenario
                     foreach (Vector3 intersection in intersections)
                     {
-                        PlanetariaRaycastHit single_collision = PlanetariaRaycastHit.hit(arc, sphere_collider, intersection, distance);
+                        PlanetariaRaycastHit single_collision = PlanetariaRaycastHit.hit(arc, planetaria_collider, geometry_arc, intersection, distance);
                         raycast_hits.Add(single_collision);
                     }
                 }

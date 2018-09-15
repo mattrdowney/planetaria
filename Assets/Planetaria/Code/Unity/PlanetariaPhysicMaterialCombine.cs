@@ -4,13 +4,12 @@ namespace Planetaria
 {
     public enum PlanetariaPhysicMaterialCombine
     {
-        Harmonic = 0, // Harmonic < Geometric < Average < Quadratic (definition)
-        Geometric = 1,
-        Average = 2,
-        Quadratic = 3,
-        Minumum = 4,
-        Multiply = 5,
-        Maximum = 6,
+        Minimum = 0,
+        Harmonic = 1, // Harmonic < Geometric < Average < Quadratic (definition)
+        Geometric = 2,
+        Average = 3,
+        Quadratic = 4,
+        Maximum = 5,
     }
 }
 

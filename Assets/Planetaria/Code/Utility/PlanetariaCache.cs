@@ -29,7 +29,6 @@ namespace Planetaria
                 PlanetariaCollider planetaria_collider = key.GetComponent<PlanetariaCollider>();
                 Debug.Assert(planetaria_collider, "SphereColliders must be matched with PlanetariaColliders");
                 collider_cache.Add(key, planetaria_collider);
-                //return new optional<PlanetariaCollider>();
             }
             return collider_cache[key];
         }

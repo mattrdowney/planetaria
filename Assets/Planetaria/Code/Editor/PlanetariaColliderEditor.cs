@@ -13,7 +13,7 @@ namespace Planetaria
             {
                 if (sphere_index < sizeof(int) && !mask[sphere_index])
                 {
-                    Sphere sphere = self.colliders[sphere_index];
+                    PlanetariaSphereCollider sphere = self.colliders[sphere_index];
                     Gizmos.color = new Color(0,1,0,0.5f); // translucent green
                     Gizmos.DrawSphere(sphere.debug_center, sphere.radius); // consider drawing a higher precision mesh
                     Gizmos.color = Color.green;

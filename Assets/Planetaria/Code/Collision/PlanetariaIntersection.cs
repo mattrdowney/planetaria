@@ -108,21 +108,6 @@ namespace Planetaria
             return intersections;
         }
 
-        public static bool collider_collider_intersection(Sphere[] left, Sphere[] right)
-        {
-            foreach (Sphere element in left)
-            {
-                foreach (Sphere sub_element in right)
-                {
-                    if (!sphere_sphere_intersection(element, sub_element))
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-
         public static Vector3[] raycast_intersection(Arc raycast_arc, Arc geometry_arc, float raycast_angle, Quaternion orientation)
         {
             SphericalCap relative_geometry_circle = geometry_arc.floor().collider();
@@ -137,13 +122,6 @@ namespace Planetaria
             intersections = valid_arc_intersections(raycast_arc, intersections, Quaternion.identity, raycast_angle);
             intersections = valid_arc_intersections(geometry_arc, intersections, orientation);
             return intersections;
-        }
-
-        public static bool sphere_sphere_intersection(Sphere left, Sphere right)
-        {
-            float magnitude_squared = (right.center - left.center).sqrMagnitude;
-            float sum_of_radii = left.radius + right.radius;
-            return magnitude_squared < sum_of_radii*sum_of_radii;
         }
 
         public static Vector3[] nontrivial_arc_intersections(Arc arc_a, Arc arc_b, Vector3[] intersections)

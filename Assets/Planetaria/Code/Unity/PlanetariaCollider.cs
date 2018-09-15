@@ -55,7 +55,7 @@ namespace Planetaria
             set
             {
                 scale_variable = value;
-                colliders = new Sphere[] { Sphere.ideal_collider(internal_transform, SphericalCap.cap(Vector3.forward, Mathf.Cos(value/2))) };
+                colliders = new PlanetariaSphereCollider[] { PlanetariaArcCollider.field(SphericalCap.cap(Vector3.forward, Mathf.Cos(value/2))) };
                 set_internal_collider(colliders[0]);
                 internal_collider.center = Vector3.forward * internal_collider.center.magnitude;
             }
@@ -81,10 +81,10 @@ namespace Planetaria
             return internal_collider;
         }
 
-        public void set_colliders(Sphere[] colliders)
+        public void set_colliders(PlanetariaSphereCollider[] colliders)
         {
             this.colliders = colliders;
-            Sphere furthest_collider = colliders.Aggregate(
+            PlanetariaSphereCollider furthest_collider = colliders.Aggregate(
                     (furthest, next_candidate) =>
                     furthest.center.magnitude - furthest.radius >
                     next_candidate.center.magnitude - next_candidate.radius
@@ -93,7 +93,7 @@ namespace Planetaria
             set_internal_collider(furthest_collider);
         }
 
-        private void set_internal_collider(Sphere sphere)
+        private void set_internal_collider(PlanetariaSphereCollider sphere)
         {
             Quaternion local_to_world = internal_collider.transform.rotation;
 
@@ -115,49 +115,48 @@ namespace Planetaria
 
         private void OnTriggerStay(Collider collider)
         {
-            Debug.Log("-1");
             optional<SphereCollider> sphere_collider = collider as SphereCollider;
             if (!sphere_collider.exists)
             {
                 Debug.LogError("This should never happen");
                 return;
             }
-            Debug.Log("0");
             optional<PlanetariaCollider> other_collider = PlanetariaCache.self.collider_fetch(sphere_collider.data);
             if (!other_collider.exists)
             {
                 Debug.LogError("This should never happen");
                 return;
             }
-            Debug.Log("1");
-            if (!(this.is_field && other_collider.data.is_field)) // fields pass through each other (same as triggers)
+            if (this.is_field == false) // fields pass through each other (same as triggers)
             {
-                Debug.Log("2");
-                if (PlanetariaIntersection.collider_collider_intersection(this.colliders, other_collider.data.colliders))
+                Quaternion shift_from_self_to_other = other_collider.data.internal_transform.rotation;
+                if (this.internal_transform.rotation != Quaternion.identity) // Only shift orientation when necessary
                 {
-                    Debug.Log("3");
-                    if (this.is_field || other_collider.data.is_field) // field collision
+                    // TODO: verify the order of operations is correct (and logic itself)
+                    shift_from_self_to_other = Quaternion.Inverse(other_collider.data.gameObject.internal_game_object.transform.rotation) * shift_from_self_to_other;
+                }
+
+                if (other_collider.data.is_field) // field collision
+                {
+                    if (this.shape.field_collision(other_collider.data.shape, shift_from_self_to_other))
                     {
-                        Debug.Log("4");
                         observer.potential_field_collision(other_collider.data); // TODO: augment field (like Unity triggers) works on both the sender and receiver.
                     }
-                    else // block collision
+                }
+                else // block collision
+                {
+                    // FIXME: TODO: make sure only the character collides for now
+
+                    foreach (Arc intersection in this.shape.block_collision(other_collider.data.shape, shift_from_self_to_other))
                     {
-                        if (rigidbody.exists)
+                        Vector3 position = planetaria_transform.position.data;
+                        if (shift_from_self_to_other != Quaternion.identity) // Only shift orientation when necessary
                         {
-                            if (!observer.colliding()) // Should we ignore the new block? // FIXME: private API exposure (optimizes at a cost of readability)
-                            {
-                                optional<Arc> arc = PlanetariaCache.self.arc_fetch(sphere_collider.data);
-                                Vector3 position = planetaria_transform.position.data;
-                                if (other_collider.data.internal_transform.rotation != Quaternion.identity) // Only shift orientation when necessary
-                                {
-                                    position = Quaternion.Inverse(other_collider.data.gameObject.internal_game_object.transform.rotation) * position;
-                                }
-                                if (arc.exists && arc.data.contains(position, planetaria_transform.scale/2))
-                                {
-                                    observer.potential_block_collision(arc.data, other_collider.data); // block collisions are handled in OnCollisionStay(): notification stage
-                                }
-                            }
+                            position = Quaternion.Inverse(other_collider.data.gameObject.internal_game_object.transform.rotation) * position;
+                        }
+                        if (intersection.contains(position, planetaria_transform.scale/2))
+                        {
+                            observer.potential_block_collision(intersection, other_collider.data); // block collisions are handled in OnCollisionStay(): notification stage
                         }
                     }
                 }
@@ -180,7 +179,7 @@ namespace Planetaria
         [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;
         [SerializeField] [HideInInspector] private SphereCollider internal_collider;
         [SerializeField] [HideInInspector] public new optional<PlanetariaRigidbody> rigidbody;
-        [SerializeField] [HideInInspector] public Sphere[] colliders = new Sphere[0]; // FIXME: private
+        [SerializeField] [HideInInspector] public PlanetariaSphereCollider[] colliders = new PlanetariaSphereCollider[0]; // FIXME: private
         [SerializeField] private float scale_variable;
         [SerializeField] public bool is_field_variable = false;
     }

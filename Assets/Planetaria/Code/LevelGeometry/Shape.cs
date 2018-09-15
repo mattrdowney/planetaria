@@ -8,6 +8,45 @@ namespace Planetaria
     [Serializable]
     public struct Shape : ISerializationCallbackReceiver // TODO: clean-up this file~
     {
+        public List<Arc> block_collision(Shape other, Quaternion shift_from_self_to_other) // TODO: AABB-equivalent would be nice here
+        {
+            List<Arc> result = new List<Arc>();
+            for (int other_index = 0; other_index < other.block_list.Length; ++ other_index)
+            {
+                PlanetariaArcCollider other_collider = other.block_list[other_index];
+                foreach (PlanetariaArcCollider this_collider in this.block_list)
+                {
+                    if (other_collider.collides_with(this_collider, shift_from_self_to_other))
+                    {
+                        result.Add(other.arc_list[other_index]);
+                        break; // try to see if the next arc collides (because we know this one does)
+                    }
+                }
+            }
+            return result;
+        }
+
+        public bool field_collision(Shape other, Quaternion shift_from_self_to_other) // TODO: AABB-equivalent would be nice here
+        {
+            foreach (PlanetariaArcCollider arc in this.block_list)
+            {
+                bool colliding = true;
+                foreach (PlanetariaSphereCollider sphere in other.field_list)
+                {
+                    if (!arc.collides_with(sphere, shift_from_self_to_other))
+                    {
+                        colliding = false;
+                        break; // try to see if the next arc collides (because we know this one does)
+                    }
+                }
+                if (colliding)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         /// <summary>
         /// Constructor - Creates a shape based on a list of curves (generates cached list of Arc)
         /// </summary>
@@ -18,8 +57,10 @@ namespace Planetaria
         {
             closed = closed_shape;
             has_corners = generate_corners;
-            arc_list = new Arc[0];
             curve_list = curves.ToArray();
+            arc_list = new Arc[0];
+            block_list = new PlanetariaArcCollider[0];
+            field_list = new PlanetariaSphereCollider[0];
             generate_arcs();
         }
 
@@ -32,8 +73,10 @@ namespace Planetaria
         {
             closed = closed_shape;
             has_corners = generate_corners;
-            arc_list = new Arc[0];
             curve_list = new GeospatialCurve[0];
+            arc_list = new Arc[0];
+            block_list = new PlanetariaArcCollider[0];
+            field_list = new PlanetariaSphereCollider[0];
         }
 
         /// <summary>Get the nth arc in the arc_list.</summary>
@@ -230,6 +273,8 @@ namespace Planetaria
             List<Arc> result = generate_edges();
             result = add_corners_between_edges(result);
             arc_list = result.ToArray();
+            generate_colliders();
+            generate_colliders();
         }
 
         /// <summary>
@@ -248,6 +293,20 @@ namespace Planetaria
                 result.Add(arc);
             }
             return result;
+        }
+
+        /// <summary>
+        /// Inspector (pseudo-mutator) - Caches each PlanetariaArcCollider associated with each Arc.
+        /// </summary>
+        private void generate_colliders()
+        {
+            block_list = new PlanetariaArcCollider[arc_list.Length];
+            field_list = new PlanetariaSphereCollider[arc_list.Length];
+            for (int collider = 0; collider < arc_list.Length; ++collider)
+            {
+                block_list[collider] = PlanetariaArcCollider.block(arc_list[collider]);
+                field_list[collider] = PlanetariaArcCollider.field(arc_list[collider]);
+            }
         }
 
         /// <summary>
@@ -280,6 +339,10 @@ namespace Planetaria
         [SerializeField] private GeospatialCurve[] curve_list;
         /// <summary>List of arcs on a unit sphere that define a shape.</summary>
         [NonSerialized] private Arc[] arc_list;
+        /// <summary>List of arc colliders that will be used for intersection.</summary>
+        [NonSerialized] private PlanetariaArcCollider[] block_list;
+        /// <summary>List of arc colliders that will be used for intersection.</summary>
+        [NonSerialized] private PlanetariaSphereCollider[] field_list;
     }
 }
 
