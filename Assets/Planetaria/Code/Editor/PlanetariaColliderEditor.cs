@@ -30,14 +30,33 @@ namespace Planetaria
 
         public override void OnInspectorGUI()
         {
-            PlanetariaCollider self = (PlanetariaCollider) target;
-            int bit_length = self.is_field ? self.shape.field_list.Length : 3;
-            for (int bit_position = 0; bit_position < mask.Length && bit_position < bit_length; ++bit_position)
+            PlanetariaCollider self = (PlanetariaCollider)target;
+            if (!self.is_field)
             {
                 GUILayout.BeginHorizontal();
-                GUILayout.Label(" Collider Mask " + bit_position);
-                mask[bit_position] = EditorGUILayout.Toggle(mask[bit_position], GUILayout.Width(50));
+                GUILayout.Label(" Arc Number ");
+                arc_identifier = EditorGUILayout.IntField(arc_identifier, GUILayout.Width(50));
                 GUILayout.EndHorizontal();
+
+                int bit_length = 3;
+                for (int bit_position = 0; bit_position < mask.Length && bit_position < bit_length; ++bit_position)
+                {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label(" Block Mask " + bit_position);
+                    mask[bit_position] = EditorGUILayout.Toggle(mask[bit_position], GUILayout.Width(50));
+                    GUILayout.EndHorizontal();
+                }
+            }
+            else
+            {
+                int bit_length = self.shape.field_list.Length;
+                for (int bit_position = 0; bit_position < mask.Length && bit_position < bit_length; ++bit_position)
+                {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label(" Field Mask " + bit_position);
+                    mask[bit_position] = EditorGUILayout.Toggle(mask[bit_position], GUILayout.Width(50));
+                    GUILayout.EndHorizontal();
+                }
             }
      
             SceneView.RepaintAll();

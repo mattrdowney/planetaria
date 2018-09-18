@@ -134,6 +134,10 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 1542729368255696}
   material: {fileID: 11400000, guid: a03d051b7bfe0d344abca6f59970c460, type: 2}
+  shape_variable:
+    has_corners: 0
+    closed: 0
+    curve_list: []
   observer:
     planetaria_transformation: {fileID: 0}
     planetaria_collider: {fileID: 0}
@@ -141,8 +145,7 @@ MonoBehaviour:
   internal_transform: {fileID: 4344748059919348}
   planetaria_transform: {fileID: 114398999645970210}
   internal_collider: {fileID: 135981664212092826}
-  colliders: []
-  scale_variable: 0
+  scale_variable: 0.01
   is_field_variable: 1
 --- !u!114 &114187003646443274
 MonoBehaviour:

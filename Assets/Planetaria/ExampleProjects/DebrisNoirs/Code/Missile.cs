@@ -3,17 +3,24 @@ using Planetaria;
 
 public class Missile : PlanetariaMonoBehaviour
 {
-    protected override void OnConstruction()
+    protected override void OnConstruction() { }
+
+    protected override void OnDestruction() { }
+
+    private void Start()
     {
         rigidbody = GetComponent<PlanetariaRigidbody>();
         rigidbody.relative_velocity = Vector2.up*Mathf.PI;
         PlanetariaGameObject.Destroy(this.gameObject, 2f);
         transform.localScale = +0.01f;
+        OnFieldStay.data = on_field_stay;
     }
 
-    protected override void OnDestruction()
+    public void on_field_stay(PlanetariaCollider collider)
     {
-
+        Debug.Log("Missile Colliding");
+        PlanetariaGameObject.Destroy(collider.gameObject);
+        PlanetariaGameObject.Destroy(this.gameObject);
     }
 
     [SerializeField] private new PlanetariaRigidbody rigidbody; // TODO: check how storing/caching rigidbodies works in MonoBehaviours (this needs the new keyword)

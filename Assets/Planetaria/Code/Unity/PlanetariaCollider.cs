@@ -24,6 +24,11 @@ namespace Planetaria
             initialize();
         }
 
+        protected override void OnDestroy()
+        {
+            PlanetariaCache.self.uncache(this);
+        }
+
         private void initialize()
         {
             GameObject game_object = this.GetOrAddChild("InternalCollider");
@@ -43,6 +48,11 @@ namespace Planetaria
             {
                 rigidbody = this.GetComponentInParent<PlanetariaRigidbody>();
             }
+            if (scale != 1) // FIXME: JANK
+            {
+                shape = EquilateralBuilder.create_equilateral(Vector3.forward, new Vector3(0, Mathf.Sin(scale/2), Mathf.Cos(scale/2)), 2);
+            }
+            PlanetariaCache.self.cache(this);
             // add to collision_map and trigger_map for all objects currently intersecting (via Physics.OverlapBox()) // CONSIDER: I think Unity Fixed this, right?
         }
 
@@ -55,7 +65,7 @@ namespace Planetaria
             set
             {
                 scale_variable = value;
-                shape = EquilateralBuilder.create_equilateral(Vector3.forward, new Vector3(Mathf.Sin(value/2), 0, Mathf.Cos(value/2)), 2);
+                shape = EquilateralBuilder.create_equilateral(Vector3.forward, new Vector3(0, Mathf.Sin(value/2), Mathf.Cos(value/2)), 2);
             }
         }
 
@@ -68,11 +78,10 @@ namespace Planetaria
             set
             {
                 shape_variable = value;
-
-                Quaternion local_to_world = internal_collider.transform.rotation;
+                
                 PlanetariaSphereCollider sphere = shape.bounding_sphere;
 
-                internal_collider.center = local_to_world * sphere.center;
+                internal_collider.center = sphere.center;
                 internal_collider.radius = sphere.radius;
             }
         }

@@ -323,11 +323,14 @@ namespace Planetaria
         private void generate_colliders()
         {
             block_list = new PlanetariaArcCollider[arc_list.Length];
-            field_list = new PlanetariaSphereCollider[arc_list.Length];
             for (int collider = 0; collider < arc_list.Length; ++collider)
             {
                 block_list[collider] = PlanetariaArcCollider.block(arc_list[collider]);
-                field_list[collider] = PlanetariaArcCollider.field(arc_list[collider]);
+            }
+            field_list = new PlanetariaSphereCollider[has_corners ? arc_list.Length/2 : arc_list.Length];
+            for (int collider = 0; collider < arc_list.Length; collider += (has_corners ? 2 : 1))
+            {
+                field_list[has_corners ? collider/2 : collider] = PlanetariaArcCollider.field(arc_list[collider]);
             }
         }
 

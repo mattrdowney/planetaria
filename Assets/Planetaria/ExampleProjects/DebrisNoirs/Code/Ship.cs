@@ -4,9 +4,7 @@ using Planetaria;
 
 public class Ship : PlanetariaMonoBehaviour
 {
-    protected override void OnConstruction()
-    {
-    }
+    protected override void OnConstruction() { }
 
     protected override void OnDestruction() { }
 
@@ -71,9 +69,9 @@ public class Ship : PlanetariaMonoBehaviour
 
     public void on_field_stay(PlanetariaCollider collider)
     {
-        Debug.Log("Happening");
+        Debug.Log("Ship Colliding");
+        PlanetariaGameObject.Destroy(collider.gameObject);
         PlanetariaGameObject.Destroy(this.gameObject);
-        // Destroy asteroid and self
     }
 
     [NonSerialized] private AreaRenderer planetaria_renderer;
