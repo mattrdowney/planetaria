@@ -174,15 +174,7 @@ namespace Planetaria
         // Static Methods
         public static void Destroy(PlanetariaGameObject game_object, float time_delay = 0)
         {
-            Debug.Log("Destroying " + game_object.internal_game_object.name);
-            if (game_object.internal_game_object.name.StartsWith("__")) // Internal game objects need to destroy their parents
-            {
-                GameObject.Destroy(game_object.internal_game_object.transform.parent.gameObject, time_delay);
-            }
-            else
-            {
-                GameObject.Destroy(game_object.internal_game_object, time_delay);
-            }
+            GameObject.Destroy(game_object.internal_game_object, time_delay);
         }
 
         public static void DestroyImmediate(PlanetariaGameObject game_object, bool allow_destroying_assets = false)

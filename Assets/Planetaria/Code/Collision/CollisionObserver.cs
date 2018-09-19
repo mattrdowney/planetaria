@@ -200,10 +200,8 @@ namespace Planetaria
 
         internal void notify_enter_field(PlanetariaCollider field)
         {
-            Debug.Log("Ping");
             foreach (PlanetariaMonoBehaviour observer in observers)
             {
-                Debug.Log("Pong");
                 observer.enter_field(field);
             }
         }
