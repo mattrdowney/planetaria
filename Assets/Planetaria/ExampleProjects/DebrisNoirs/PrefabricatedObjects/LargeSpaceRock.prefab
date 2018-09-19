@@ -133,7 +133,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   game_object_variable:
-    game_object_variable: {fileID: 1175150822237868}
+    game_object_variable: {fileID: 0}
   angle_variable: 1.5707964
   material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   scale_variable: 0
@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   game_object_variable:
-    game_object_variable: {fileID: 1175150822237868}
+    game_object_variable: {fileID: 0}
   target: {fileID: 114166522899314562}
   last_position: {x: 0, y: 0, z: 0}
 --- !u!114 &114166522899314562
@@ -168,7 +168,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   game_object_variable:
-    game_object_variable: {fileID: 1175150822237868}
+    game_object_variable: {fileID: 0}
   internal_transform: {fileID: 4717528800502344}
   direction_variable: {x: 0, y: 1, z: 0}
   scale_variable: 0.1
@@ -184,7 +184,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   game_object_variable:
-    game_object_variable: {fileID: 1175150822237868}
+    game_object_variable: {fileID: 0}
   gravity: {x: 0, y: 0, z: 0}
   internal_transform: {fileID: 4717528800502344}
   internal_rigidbody: {fileID: 54590998685544960}
@@ -200,7 +200,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   game_object_variable:
-    game_object_variable: {fileID: 1175150822237868}
+    game_object_variable: {fileID: 0}
   material: {fileID: 11400000, guid: a03d051b7bfe0d344abca6f59970c460, type: 2}
   shape_variable:
     has_corners: 0
@@ -227,11 +227,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   game_object_variable:
-    game_object_variable: {fileID: 1175150822237868}
+    game_object_variable: {fileID: 0}
   speed: 0.5
   stage: 0
-  prefabricated_space_rock: {fileID: 1175150822237868}
-  space_rock_sprites:
+  prefabricated_debris: {fileID: 1175150822237868}
+  debris_sprites:
   - {fileID: 21300000, guid: ab361c2518dd0fc48bca4dab3ccc69ab, type: 3}
   - {fileID: 21300000, guid: 2f125425c84ea724d866727fae8ebfdc, type: 3}
   - {fileID: 21300000, guid: 7b31f3fc21af3fc499089c3bfa559cfc, type: 3}

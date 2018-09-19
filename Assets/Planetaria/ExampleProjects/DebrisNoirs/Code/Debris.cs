@@ -2,11 +2,9 @@
 using UnityEngine;
 using Planetaria;
 
-public class SpaceRock : PlanetariaMonoBehaviour
+public class Debris : PlanetariaMonoBehaviour
 {
-    protected override void OnConstruction()
-    {
-    }
+    protected override void OnConstruction() { }
 
     private void Start()
     {
@@ -17,7 +15,7 @@ public class SpaceRock : PlanetariaMonoBehaviour
         planetaria_renderer.angle = UnityEngine.Random.Range(0, 2*Mathf.PI);
         
         // set sprite image
-        planetaria_renderer.sprite = space_rock_sprites[(int)stage];
+        planetaria_renderer.sprite = debris_sprites[(int)stage];
 
         // apply random rotation
         float deviation_angle = UnityEngine.Random.Range(-maximum_deviation_angles[(int)stage], +maximum_deviation_angles[(int)stage]);
@@ -35,21 +33,23 @@ public class SpaceRock : PlanetariaMonoBehaviour
         OnFieldEnter.data = on_field_enter;
     }
 
-    protected override void OnDestruction()
+    protected override void OnDestruction() { }
+    
+    public void on_field_enter(PlanetariaCollider collider)
     {
-    }
-
-    public void on_field_enter(PlanetariaCollider field)
-    {
-        Debug.Log("Happening");
+        Debug.Log("Destruction at " + Time.time);
+        Debug.Log("Debris Colliding");
+        PlanetariaGameObject.Destroy(collider.gameObject);
         if (this.stage != SpaceRockSize.Small)
         {
             for (int space_rock = 0; space_rock < 2; ++space_rock)
             {
-                PlanetariaGameObject game_object = PlanetariaGameObject.Instantiate(prefabricated_space_rock, planetaria_transform.position.data, planetaria_transform.direction.data);
-                SpaceRock rock = game_object.GetComponent<SpaceRock>();
-                rock.speed = this.speed;
-                rock.stage = this.stage + 1;
+                Debug.Log("Number of objects Before: " + UnityEngine.SceneManagement.SceneManager.GetSceneAt(0).GetRootGameObjects().Length);
+                PlanetariaGameObject game_object = PlanetariaGameObject.Instantiate(prefabricated_debris, planetaria_transform.position.data, planetaria_transform.direction.data);
+                Debug.Log("Number of objects After: " + UnityEngine.SceneManagement.SceneManager.GetSceneAt(0).GetRootGameObjects().Length);
+                Debris debris = game_object.GetComponent<Debris>();
+                debris.speed = this.speed;
+                debris.stage = this.stage + 1;
             }
         }
         PlanetariaGameObject.Destroy(this.gameObject);
@@ -64,8 +64,8 @@ public class SpaceRock : PlanetariaMonoBehaviour
     [NonSerialized] private PlanetariaRigidbody planetaria_rigidbody;
     [NonSerialized] private PlanetariaTransform planetaria_transform;
 
-    [SerializeField] public /*static*/ GameObject prefabricated_space_rock;
-    [SerializeField] public /*static*/ Sprite[] space_rock_sprites;
+    [SerializeField] public /*static*/ GameObject prefabricated_debris;
+    [SerializeField] public /*static*/ Sprite[] debris_sprites;
     [SerializeField] public /*static*/ float[] maximum_deviation_angles;
 }
 

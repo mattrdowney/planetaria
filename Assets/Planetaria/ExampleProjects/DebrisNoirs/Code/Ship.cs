@@ -14,7 +14,7 @@ public class Ship : PlanetariaMonoBehaviour
         planetaria_renderer = this.GetComponent<AreaRenderer>();
         transform.direction = new NormalizedCartesianCoordinates(Vector3.up);
         transform.localScale = +0.1f;
-        OnFieldStay.data = on_field_stay;
+        OnFieldEnter.data = on_field_enter;
     }
 
     private void Update()
@@ -67,7 +67,7 @@ public class Ship : PlanetariaMonoBehaviour
         //planetaria_rigidbody.relative_velocity *= Mathf.Pow(0.8f, Time.deltaTime * (1f - input_direction.magnitude));
     }
 
-    public void on_field_stay(PlanetariaCollider collider)
+    public void on_field_enter(PlanetariaCollider collider)
     {
         Debug.Log("Ship Colliding");
         PlanetariaGameObject.Destroy(collider.gameObject);

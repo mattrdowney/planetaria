@@ -17,33 +17,42 @@ namespace Planetaria
             this.planetaria_transformation = observed.GetComponent<PlanetariaTransform>();
             foreach (PlanetariaMonoBehaviour observer in observers)
             {
-                this.observers.Add(observer);
+                if (!this.observers.Contains(observer))
+                {
+                    this.observers.Add(observer);
+                }
             }
         }
 
         public void register(PlanetariaMonoBehaviour observer)
         {
-            observers.Add(observer);
-            foreach (PlanetariaCollider field in current_fields)
+            if (!this.observers.Contains(observer))
             {
-                observer.enter_field(field);
-            }
-            foreach (BlockCollision collision in current_collisions)
-            {
-                observer.enter_block(collision);
+                observers.Add(observer);
+                foreach (PlanetariaCollider field in current_fields)
+                {
+                    observer.enter_field(field);
+                }
+                foreach (BlockCollision collision in current_collisions)
+                {
+                    observer.enter_block(collision);
+                }
             }
         }
 
         public void unregister(PlanetariaMonoBehaviour observer)
         {
-            observers.Remove(observer);
-            foreach (PlanetariaCollider field in current_fields)
+            if (this.observers.Contains(observer))
             {
-                observer.exit_field(field);
-            }
-            foreach (BlockCollision collision in current_collisions)
-            {
-                observer.exit_block(collision);
+                observers.Remove(observer);
+                foreach (PlanetariaCollider field in current_fields)
+                {
+                    observer.exit_field(field);
+                }
+                foreach (BlockCollision collision in current_collisions)
+                {
+                    observer.exit_block(collision);
+                }
             }
         }
 
@@ -70,7 +79,6 @@ namespace Planetaria
         
         public void potential_field_collision(PlanetariaCollider field) 
         {
-            Debug.Log("Hmmmm");
             field_candidates.Add(field);
         }
  
@@ -192,9 +200,10 @@ namespace Planetaria
 
         internal void notify_enter_field(PlanetariaCollider field)
         {
-            //current_fields.Add(field); // Don't want invalidated iterators - swap at end of loop
+            Debug.Log("Ping");
             foreach (PlanetariaMonoBehaviour observer in observers)
             {
+                Debug.Log("Pong");
                 observer.enter_field(field);
             }
         }

@@ -16,7 +16,7 @@ TagManager:
   - 
   - Ship
   - Missile
-  - SpaceRock
+  - Debris
   - SpawnZone
   - Player
   - Geometry
