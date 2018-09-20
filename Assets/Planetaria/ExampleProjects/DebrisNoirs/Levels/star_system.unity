@@ -113,6 +113,67 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &139345966
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 139345969}
+  - component: {fileID: 139345968}
+  - component: {fileID: 139345967}
+  m_Layer: 0
+  m_Name: DebrisSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &139345967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 139345966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48d2cae72ee207743b9de842f4f0663d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  game_object_variable:
+    game_object_variable: {fileID: 139345966}
+  internal_transform: {fileID: 139345969}
+  direction_variable: {x: 0, y: -1, z: 0}
+  scale_variable: 1
+--- !u!114 &139345968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 139345966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6008ba79b0ca4545a6eef14aaabe0ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  game_object_variable:
+    game_object_variable: {fileID: 139345966}
+  prefabricated_debris: {fileID: 1175150822237868, guid: 8627fecc27453de42ac3e4bedb216c9a,
+    type: 2}
+--- !u!4 &139345969
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 139345966}
+  m_LocalRotation: {x: 1, y: -0, z: -0, w: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &381906735
 GameObject:
   m_ObjectHideFlags: 0
@@ -299,7 +360,7 @@ MonoBehaviour:
   internal_transform: {fileID: 422068635}
   internal_renderer: {fileID: 422068634}
   offset: 1
-  sprite: {fileID: 21300000, guid: 2e27f96582de99a469936a0e1936fd17, type: 3}
+  sprite_variable: {fileID: 0}
 --- !u!4 &555057020
 Transform:
   m_ObjectHideFlags: 0
@@ -423,7 +484,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f0f369ad56258549969d5633db9d37b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hide_graphics: 0
+  hide_graphics: 1
   show_inspector: 0
   rows: 63
   columns: 64
@@ -528,6 +589,12 @@ Prefab:
       propertyPath: m_RootOrder
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 114708231038118120, guid: aaa1349aadcd2114a9d661fa04abe0a0,
+        type: 2}
+      propertyPath: sprite_variable
+      value: 
+      objectReference: {fileID: 21300000, guid: 511467ccf35c93c4190efa7401484a63,
+        type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: aaa1349aadcd2114a9d661fa04abe0a0, type: 2}
   m_IsPrefabParent: 0

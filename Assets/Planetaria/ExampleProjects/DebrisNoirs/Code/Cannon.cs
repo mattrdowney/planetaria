@@ -30,7 +30,19 @@ public class Cannon : PlanetariaComponent
 #endif
         if (firing)
         {
-            PlanetariaGameObject.Instantiate(prefabricated_object, character_position, bullet_direction);
+            optional<PlanetariaRaycastHit> raycast_information =
+                    PlanetariaPhysics.raycast(Arc.line(character_position, bullet_direction),
+                    1.25f*Mathf.PI,
+                    1 << LayerMask.NameToLayer("Debris"));
+
+            if (raycast_information.exists)
+            {
+                Debug.Log(raycast_information.data.collider.name);
+            }
+            else
+            {
+                Debug.Log("Hit nothing");
+            }
         }
     }
 

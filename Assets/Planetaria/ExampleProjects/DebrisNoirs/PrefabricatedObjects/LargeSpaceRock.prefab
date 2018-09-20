@@ -140,7 +140,7 @@ MonoBehaviour:
   internal_transform: {fileID: 4989748780634440}
   internal_renderer: {fileID: 212182069715391018}
   offset: 1
-  sprite: {fileID: 21300000, guid: ab361c2518dd0fc48bca4dab3ccc69ab, type: 3}
+  sprite_variable: {fileID: 0}
 --- !u!114 &114065781004214406
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -239,6 +239,10 @@ MonoBehaviour:
   - 3.1415927
   - 0.7853982
   - 0.19634955
+  debris_sizes:
+  - 0.2
+  - 0.1
+  - 0.05
 --- !u!135 &135872761452704386
 SphereCollider:
   m_ObjectHideFlags: 1

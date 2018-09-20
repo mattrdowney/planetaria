@@ -8,6 +8,7 @@ public class Debris : PlanetariaMonoBehaviour
 
     private void Start()
     {
+        planetaria_collider = this.GetComponent<PlanetariaCollider>();
         planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
         planetaria_transform = this.GetComponent<PlanetariaTransform>();
         planetaria_renderer = this.GetComponent<AreaRenderer>();
@@ -16,6 +17,9 @@ public class Debris : PlanetariaMonoBehaviour
         
         // set sprite image
         planetaria_renderer.sprite = debris_sprites[(int)stage];
+
+        // set collider size
+        planetaria_collider.scale = debris_sizes[(int)stage];
 
         // apply random rotation
         float deviation_angle = UnityEngine.Random.Range(-maximum_deviation_angles[(int)stage], +maximum_deviation_angles[(int)stage]);
@@ -38,7 +42,7 @@ public class Debris : PlanetariaMonoBehaviour
     public void on_field_enter(PlanetariaCollider collider)
     {
         PlanetariaGameObject.Destroy(collider.gameObject);
-        if (this.stage != SpaceRockSize.Small)
+        if (this.stage != SpaceRockSize.Small && collider.gameObject)
         {
             for (int space_rock = 0; space_rock < 2; ++space_rock)
             {
@@ -57,12 +61,14 @@ public class Debris : PlanetariaMonoBehaviour
     [SerializeField] private SpaceRockSize stage = SpaceRockSize.Large;
 
     [NonSerialized] private AreaRenderer planetaria_renderer;
+    [NonSerialized] private PlanetariaCollider planetaria_collider;
     [NonSerialized] private PlanetariaRigidbody planetaria_rigidbody;
     [NonSerialized] private PlanetariaTransform planetaria_transform;
 
     [SerializeField] public /*static*/ GameObject prefabricated_debris;
     [SerializeField] public /*static*/ Sprite[] debris_sprites;
     [SerializeField] public /*static*/ float[] maximum_deviation_angles;
+    [SerializeField] public /*static*/ float[] debris_sizes;
 }
 
 /*

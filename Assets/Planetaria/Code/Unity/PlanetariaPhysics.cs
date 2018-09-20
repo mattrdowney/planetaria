@@ -30,9 +30,10 @@ namespace Planetaria
         /// <param name="distance">The distance to raycast (may be greater than or less than the length of the arc - or negative).</param>
         /// <param name="layer_mask">The collision mask that defines which objects will be ignored.</param>
         /// <returns>All of the collision points of the Raycast (listed exactly once).</returns>
-        public static PlanetariaRaycastHit raycast(Arc arc, float distance, int layer_mask = Physics.DefaultRaycastLayers, QueryTriggerInteraction query_field_interaction = QueryTriggerInteraction.UseGlobal)
+        public static optional<PlanetariaRaycastHit> raycast(Arc arc, float distance, int layer_mask = Physics.DefaultRaycastLayers, QueryTriggerInteraction query_field_interaction = QueryTriggerInteraction.UseGlobal)
         {
-            return raycast_all(arc, distance, layer_mask, query_field_interaction)[0]; // HACK: TODO: optimize
+            PlanetariaRaycastHit[] raycast_information = raycast_all(arc, distance, layer_mask, query_field_interaction); // HACK: TODO: optimize
+            return raycast_information.Length > 0 ? raycast_information[0] : new optional<PlanetariaRaycastHit>();
         }
 
         /// <summary>

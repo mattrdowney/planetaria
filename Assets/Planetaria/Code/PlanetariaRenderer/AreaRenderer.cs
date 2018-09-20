@@ -16,7 +16,21 @@ namespace Planetaria
             renderer.sprite = sprite;
         }
         
-        [SerializeField] public Sprite sprite;
+        public Sprite sprite
+        {
+            get
+            {
+                return sprite_variable;
+            }
+            set
+            {
+                sprite_variable = value;
+                SpriteRenderer renderer = Miscellaneous.GetOrAddComponent<SpriteRenderer>(internal_transform);
+                renderer.sprite = sprite_variable;
+            }
+        }
+
+        [SerializeField] private Sprite sprite_variable;
     }
 }
 
