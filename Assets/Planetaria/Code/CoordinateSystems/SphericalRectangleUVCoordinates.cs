@@ -46,8 +46,8 @@ namespace Planetaria
             float y = uv.uv.y - 0.5f;
             NormalizedCartesianCoordinates horizontal_point = new NormalizedSphericalCoordinates(Mathf.PI/2 - uv.size.x, Mathf.PI/2 + y*uv.size.y);
             NormalizedCartesianCoordinates vertical_point = new NormalizedSphericalCoordinates(Mathf.PI/2 - x*uv.size.x, Mathf.PI/2 + uv.size.y);
-            Arc horizontal = Arc.curve(Vector3.left, horizontal_point.data, Vector3.right);
-            Arc vertical = Arc.curve(Vector3.down, vertical_point.data, Vector3.up);
+            Arc horizontal = ArcFactory.curve(Vector3.left, horizontal_point.data, Vector3.right);
+            Arc vertical = ArcFactory.curve(Vector3.down, vertical_point.data, Vector3.up);
             optional<Vector3> intersection = PlanetariaIntersection.arc_arc_intersection(horizontal, vertical, 0); // FIXME: some paths won't intersect at a single point
             return new NormalizedCartesianCoordinates(intersection.data); // FIXME: this code is very slow compared to most conversion functions
         }

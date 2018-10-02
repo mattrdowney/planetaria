@@ -69,7 +69,7 @@ namespace Planetaria
             Vector3 local_direction = Bearing.bearing(arc.position(angle), arc.normal(angle), local_angle);
             Vector3 to = PlanetariaMath.spherical_linear_interpolation(from, local_direction, extrusion);
 
-            Arc composite = Arc.line(from, to);
+            Arc composite = ArcFactory.line(from, to);
             draw_arc(composite, 0.0f, color, orientation);
         }
     }

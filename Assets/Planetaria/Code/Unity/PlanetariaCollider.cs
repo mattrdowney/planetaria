@@ -132,7 +132,7 @@ namespace Planetaria
                 Debug.LogError("This should never happen");
                 return;
             }
-            if (this.is_field == false) // fields pass through each other (same as triggers)
+            if (!this.is_field) // fields pass through each other (same as triggers)
             {
                 Quaternion shift_from_self_to_other = other_collider.data.internal_transform.rotation;
                 if (this.internal_transform.rotation != Quaternion.identity) // Only shift orientation when necessary

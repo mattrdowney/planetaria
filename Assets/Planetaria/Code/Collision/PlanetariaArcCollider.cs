@@ -10,12 +10,14 @@ namespace Planetaria
             {
                 for (int other_index = 0; other_index < 3; ++other_index)
                 {
-                    if (this[self_index].collides_with(other[other_index], shift_from_self_to_other) == false)
+                    if (!this[self_index].collides_with(other[other_index], shift_from_self_to_other))
                     {
+                        Debug.Log("Failed ArcCollider collision on self:" + self_index + " other:" + other_index);
                         return false;
                     }
                 }
             }
+            Debug.Log("ArcCollider collision succeeded");
             return true;
         }
 
@@ -23,7 +25,7 @@ namespace Planetaria
         {
             for (int self_index = 0; self_index < 3; ++self_index)
             {
-                if (this[self_index].collides_with(other, shift_from_self_to_other) == false)
+                if (!this[self_index].collides_with(other, shift_from_self_to_other))
                 {
                     return false;
                 }

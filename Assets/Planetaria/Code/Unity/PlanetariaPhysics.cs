@@ -67,6 +67,8 @@ namespace Planetaria
 
             List<PlanetariaRaycastHit> result = unordered_raycast_all(arc, distance, layer_mask, collide_with_fields).ToList();
 
+            Debug.Log("Unordered raycast count: " + result.Count);
+
             RaycastSorter sorter = RaycastSorter.sorter(arc, distance);
 
             result.Sort(sorter);
@@ -94,7 +96,7 @@ namespace Planetaria
             Vector3 arc_center = arc.position(0);
             Vector3 arc_right = arc.position(+desired_angle/2);
 
-            PlanetariaShape shape = new PlanetariaShape(new List<GeospatialCurve> { GeospatialCurve.curve(arc_left, arc_right), GeospatialCurve.curve(arc_right, arc_left) }, false, false);
+            PlanetariaShape ray_shape = new PlanetariaShape(new List<GeospatialCurve> { GeospatialCurve.curve(arc_left, arc_right), GeospatialCurve.curve(arc_right, arc_left) }, false, false);
 
             // composites
             Vector3 arc_boundary_midpoint = (arc_left + arc_right) / 2; // if the arc is like a wooden bow, this is the midpoint of the string
@@ -108,19 +110,23 @@ namespace Planetaria
             Quaternion rotation = Quaternion.LookRotation(arc_forward, arc_up);
 
             // SphereColliders (only) that represent potential collisions (not guaranteed).
-            Collider[] colliders = Physics.OverlapBox(center, half_extents, rotation, layer_mask); // TODO: verify this casts properly
+            Collider[] colliders = Physics.OverlapBox(center, half_extents, rotation, layer_mask, QueryTriggerInteraction.Collide); // TODO: verify this casts properly
             List<PlanetariaRaycastHit> raycast_hits = new List<PlanetariaRaycastHit>();
+            Debug.Log(colliders.Length);
             foreach (SphereCollider sphere_collider in colliders)
             {
                 PlanetariaCollider planetaria_collider = PlanetariaCache.self.collider_fetch(sphere_collider);
                 if (planetaria_collider.is_field && !collide_with_fields)
                 {
+                    Debug.LogError("Why?");
                     continue;
                 }
                 Quaternion geometry_rotation = planetaria_collider.gameObject.internal_game_object.transform.rotation;
-                foreach (Arc geometry_arc in shape.block_collision(planetaria_collider.shape, geometry_rotation))
+                Debug.Log("Found a collider with " + planetaria_collider.shape.Length + " arcs.");
+                foreach (Arc geometry_arc in ray_shape.block_collision(planetaria_collider.shape, geometry_rotation))
                 {
                     Vector3[] intersections = PlanetariaIntersection.raycast_intersection(arc, geometry_arc, distance, geometry_rotation); // TODO: verify distance is indeed the angle in this scenario
+                    Debug.Log("Found an arc with " + intersections.Length + " intersections.");
                     foreach (Vector3 intersection in intersections)
                     {
                         PlanetariaRaycastHit single_collision = PlanetariaRaycastHit.hit(arc, planetaria_collider, geometry_arc, intersection, distance);

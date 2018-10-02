@@ -157,27 +157,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56ef69d2c55d7c248be1a317592742fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  game_object_variable:
-    game_object_variable: {fileID: 0}
-  active_variable: 1
-  is_platform: 0
-  material: {fileID: 11400000, guid: 7da12b0265f8d2c4892e38965af0020b, type: 2}
-  transform: {fileID: 100014816}
-  internal_transform: {fileID: 100014818}
-  shape_variable:
-    has_corners: 1
-    closed: 1
-    curve_list:
-    - point_variable: {x: 0.84124756, y: 0.51410276, z: -0.16733469}
-      slope_variable: {x: -0.24537356, y: 0.08725751, z: -0.9654937}
-    - point_variable: {x: 0.7131751, y: 0.51410276, z: -0.4765287}
-      slope_variable: {x: 0.42746082, y: -0.8577286, z: -0.2856203}
-    - point_variable: {x: 0.7681776, y: 0.3826834, z: -0.5132802}
-      slope_variable: {x: 0.529817, y: 0.07012326, z: 0.8452081}
-    - point_variable: {x: 0.90612745, y: 0.3826834, z: -0.18024011}
-      slope_variable: {x: -0.3753304, y: 0.92387944, z: 0.07465787}
-  ignore:
-  - {fileID: 100014817}
 --- !u!4 &100014818
 Transform:
   m_ObjectHideFlags: 0
@@ -307,27 +286,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56ef69d2c55d7c248be1a317592742fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  game_object_variable:
-    game_object_variable: {fileID: 0}
-  active_variable: 1
-  is_platform: 1
-  material: {fileID: 11400000, guid: a03d051b7bfe0d344abca6f59970c460, type: 2}
-  transform: {fileID: 315669682}
-  internal_transform: {fileID: 315669684}
-  shape_variable:
-    has_corners: 1
-    closed: 1
-    curve_list:
-    - point_variable: {x: 0.78777415, y: 0.1950902, z: 0.5842532}
-      slope_variable: {x: 0.587341, y: 0.047871456, z: -0.80792254}
-    - point_variable: {x: 0.9701698, y: 0.1950902, z: 0.14391118}
-      slope_variable: {x: 0.1929782, y: -0.98078537, z: 0.028625796}
-    - point_variable: {x: 0.97847015, y: 0.14673045, z: 0.14514244}
-      slope_variable: {x: -0.15196247, y: 0.036331724, z: 0.9877182}
-    - point_variable: {x: 0.794514, y: 0.14673045, z: 0.5892518}
-      slope_variable: {x: -0.11785467, y: 0.98917663, z: -0.08740706}
-  ignore:
-  - {fileID: 315669683}
 --- !u!4 &315669684
 Transform:
   m_ObjectHideFlags: 0
@@ -546,27 +504,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56ef69d2c55d7c248be1a317592742fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  game_object_variable:
-    game_object_variable: {fileID: 542524470}
-  active_variable: 1
-  is_platform: 0
-  material: {fileID: 11400000, guid: 7da12b0265f8d2c4892e38965af0020b, type: 2}
-  transform: {fileID: 542524471}
-  internal_transform: {fileID: 542524473}
-  shape_variable:
-    has_corners: 1
-    closed: 1
-    curve_list:
-    - point_variable: {x: 0.000000042401414, y: 0.2429801, z: 0.97003126}
-      slope_variable: {x: 0.8390568, y: 0.52773947, z: -0.1321918}
-    - point_variable: {x: 0.51094836, y: 0.51410276, z: 0.6889341}
-      slope_variable: {x: -0.5200629, y: -0.45325986, z: 0.7239407}
-    - point_variable: {x: 0.000000043658737, y: 0.04906762, z: 0.99879545}
-      slope_variable: {x: -0.7290634, y: 0.6836217, z: -0.033584096}
-    - point_variable: {x: -0.5109482, y: 0.5141028, z: 0.68893427}
-      slope_variable: {x: 0.6655436, y: -0.27064136, z: 0.69556093}
-  ignore:
-  - {fileID: 542524472}
 --- !u!4 &542524473
 Transform:
   m_ObjectHideFlags: 0
@@ -624,27 +561,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56ef69d2c55d7c248be1a317592742fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  game_object_variable:
-    game_object_variable: {fileID: 0}
-  active_variable: 1
-  is_platform: 0
-  material: {fileID: 11400000, guid: a03d051b7bfe0d344abca6f59970c460, type: 2}
-  transform: {fileID: 687044042}
-  internal_transform: {fileID: 687044044}
-  shape_variable:
-    has_corners: 1
-    closed: 1
-    curve_list:
-    - point_variable: {x: 0.7131753, y: 0.51410276, z: 0.47652844}
-      slope_variable: {x: 0.5092019, y: 0.08725745, z: -0.8562124}
-    - point_variable: {x: 0.8412476, y: 0.51410276, z: 0.16733454}
-      slope_variable: {x: 0.5042242, y: -0.8577287, z: 0.10029632}
-    - point_variable: {x: 0.9061275, y: 0.3826834, z: 0.18023995}
-      slope_variable: {x: -0.22301537, y: 0.07012329, z: 0.97228956}
-    - point_variable: {x: 0.7681778, y: 0.3826834, z: 0.5132799}
-      slope_variable: {x: -0.31818968, y: 0.92387944, z: -0.21260762}
-  ignore:
-  - {fileID: 687044043}
 --- !u!4 &687044044
 Transform:
   m_ObjectHideFlags: 0
@@ -724,21 +640,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56ef69d2c55d7c248be1a317592742fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  game_object_variable:
-    game_object_variable: {fileID: 714241938}
-  active_variable: 1
-  is_platform: 0
-  material: {fileID: 11400000, guid: 7da12b0265f8d2c4892e38965af0020b, type: 2}
-  transform: {fileID: 714241940}
-  internal_transform: {fileID: 714241942}
-  shape_variable:
-    has_corners: 1
-    closed: 1
-    curve_list:
-    - point_variable: {x: 0, y: 0, z: 1}
-      slope_variable: {x: 1, y: 0, z: 0}
-  ignore:
-  - {fileID: 714241941}
 --- !u!4 &714241942
 Transform:
   m_ObjectHideFlags: 0
@@ -802,6 +703,10 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 0}
   material: {fileID: 11400000, guid: a03d051b7bfe0d344abca6f59970c460, type: 2}
+  shape_variable:
+    has_corners: 0
+    closed: 0
+    curve_list: []
   observer:
     planetaria_transformation: {fileID: 0}
     planetaria_collider: {fileID: 0}
@@ -809,7 +714,6 @@ MonoBehaviour:
   internal_transform: {fileID: 730523144}
   planetaria_transform: {fileID: 730523145}
   internal_collider: {fileID: 1913872521}
-  colliders: []
   scale_variable: 0.2
   is_field_variable: 0
 --- !u!114 &730523142
@@ -895,6 +799,47 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!1 &794681683
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 794681685}
+  - component: {fileID: 794681684}
+  m_Layer: 0
+  m_Name: __InternalCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!135 &794681684
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 794681683}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 2
+  m_Center: {x: -0.7877741, y: -0.19509022, z: -0.5842532}
+--- !u!4 &794681685
+Transform:
+  m_ObjectHideFlags: 3
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 794681683}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1834938499}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &979253669
 GameObject:
   m_ObjectHideFlags: 0
@@ -1419,7 +1364,7 @@ MonoBehaviour:
   internal_transform: {fileID: 1025635063}
   internal_renderer: {fileID: 1025635062}
   offset: 1
-  sprite: {fileID: 21300000, guid: 1d6a23ed01400c3438965bd008747358, type: 3}
+  sprite_variable: {fileID: 0}
 --- !u!4 &1714885003
 Transform:
   m_ObjectHideFlags: 0
@@ -1448,6 +1393,82 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 0}
   input_device_type: 2
+--- !u!1 &1834938496
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1834938499}
+  - component: {fileID: 1834938498}
+  - component: {fileID: 1834938497}
+  m_Layer: 0
+  m_Name: CustomGeometry
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1834938497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1834938496}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a6c36a05a1232a4daf7cc94dd275fbd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  game_object_variable:
+    game_object_variable: {fileID: 1834938496}
+  material: {fileID: 11400000, guid: a03d051b7bfe0d344abca6f59970c460, type: 2}
+  shape_variable:
+    has_corners: 1
+    closed: 1
+    curve_list:
+    - point_variable: {x: 0.78777415, y: 0.1950902, z: 0.5842532}
+      slope_variable: {x: 0, y: 0, z: 0}
+  observer:
+    planetaria_transformation: {fileID: 0}
+    planetaria_collider: {fileID: 0}
+    observers: []
+  internal_transform: {fileID: 794681685}
+  planetaria_transform: {fileID: 1834938498}
+  internal_collider: {fileID: 794681684}
+  scale_variable: 0
+  is_field_variable: 0
+--- !u!114 &1834938498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1834938496}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48d2cae72ee207743b9de842f4f0663d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  game_object_variable:
+    game_object_variable: {fileID: 1834938496}
+  internal_transform: {fileID: 1834938499}
+  direction_variable: {x: 0, y: 1, z: 0}
+  scale_variable: 1
+--- !u!4 &1834938499
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1834938496}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 794681685}
+  m_Father: {fileID: 0}
+  m_RootOrder: 14
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1913872520
 GameObject:
   m_ObjectHideFlags: 0
@@ -1534,7 +1555,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1982228691}
-  - component: {fileID: 1982228690}
   - component: {fileID: 1982228689}
   m_Layer: 0
   m_Name: Block
@@ -1559,38 +1579,6 @@ MonoBehaviour:
   internal_transform: {fileID: 1982228691}
   direction_variable: {x: 0, y: 1, z: 0}
   scale_variable: 1
---- !u!114 &1982228690
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1982228688}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 56ef69d2c55d7c248be1a317592742fd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  game_object_variable:
-    game_object_variable: {fileID: 0}
-  active_variable: 1
-  is_platform: 1
-  material: {fileID: 11400000, guid: 7da12b0265f8d2c4892e38965af0020b, type: 2}
-  transform: {fileID: 1982228689}
-  internal_transform: {fileID: 1982228691}
-  shape_variable:
-    has_corners: 1
-    closed: 1
-    curve_list:
-    - point_variable: {x: 0.9701698, y: 0.19509022, z: -0.14391136}
-      slope_variable: {x: -0.15597482, y: 0.047871422, z: -0.98660034}
-    - point_variable: {x: 0.787774, y: 0.1950902, z: -0.5842533}
-      slope_variable: {x: 0.15669739, y: -0.9807854, z: -0.11621477}
-    - point_variable: {x: 0.7945139, y: 0.14673045, z: -0.58925194}
-      slope_variable: {x: 0.59096885, y: 0.036331758, z: 0.8058758}
-    - point_variable: {x: 0.97847015, y: 0.14673047, z: -0.14514261}
-      slope_variable: {x: -0.14514275, y: 0.98917645, z: 0.021530164}
-  ignore:
-  - {fileID: 1982228690}
 --- !u!4 &1982228691
 Transform:
   m_ObjectHideFlags: 0
@@ -1631,13 +1619,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08c36a3b27747df45a59ae6d3504ed47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  game_object_variable:
-    game_object_variable: {fileID: 0}
-  internal_transform: {fileID: 0}
-  shape_variable:
-    has_corners: 0
-    closed: 0
-    curve_list: []
 --- !u!4 &2007324574
 Transform:
   m_ObjectHideFlags: 0

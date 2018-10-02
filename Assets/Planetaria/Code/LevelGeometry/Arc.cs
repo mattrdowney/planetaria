@@ -7,21 +7,11 @@ namespace Planetaria
     /// An immutable class that stores an arc along the surface of a unit sphere.
     /// Includes convex corners, great edges, convex edges, and concave edges. Cannot store concave corners!
     /// </summary>
-    public partial struct Arc
+    public struct Arc
     {
-        /// <summary>
-        /// Constructor (Named) - Creates convex, concave, or great arcs.
-        /// </summary>
-        /// <param name="curve">The GeospatialCurve that defines an arc on a unit sphere.</param>
-        /// <returns>An arc along the surface of a unit sphere.</returns>
-        public static Arc curve(Vector3 from, Vector3 slope, Vector3 to, bool clockwise = true)
+        public static implicit operator Arc(SerializedArc serialized_arc)
         {
-            return validify(from, slope, to, clockwise);
-        }
-
-        public static Arc line(Vector3 from, Vector3 to, bool clockwise = true)
-        {
-            return curve(from, to, to, clockwise);
+            return new Arc(serialized_arc);
         }
 
         /// <summary>
@@ -197,6 +187,11 @@ namespace Planetaria
             }
         }
 
+        public SerializedArc serialize()
+        {
+            return new SerializedArc(Quaternion.LookRotation(forward_axis, center_axis), half_angle, arc_latitude, curvature);
+        }
+
         public static bool operator==(Arc left, Arc right)
         {
             return left.Equals(right);
@@ -239,8 +234,26 @@ namespace Planetaria
                     " : " + arc_latitude + "/+-1.570, " + half_angle + "/+-3.141";
         }
 
+        private Arc(SerializedArc serialized_arc)
+        {
+            half_angle = serialized_arc.half_angle;
+            arc_latitude = serialized_arc.arc_latitude;
+            curvature = serialized_arc.curvature;
+
+            forward_axis = Vector3.forward;
+            right_axis = (curvature == GeometryType.ConcaveCorner ? Vector3.left : Vector3.right);
+            center_axis = Vector3.up;
+
+            if (serialized_arc.compact_basis_vectors != Quaternion.identity)
+            {
+                forward_axis = serialized_arc.compact_basis_vectors * forward_axis;
+                right_axis = serialized_arc.compact_basis_vectors * right_axis;
+                center_axis = serialized_arc.compact_basis_vectors * center_axis;
+            }
+        }
+
         /// <summary>An axis that includes the center of the circle that defines the arc.</summary>
-        [NonSerialized] private Vector3 center_axis;
+        [NonSerialized] private Vector3 center_axis; // FIXME: readonly
         /// <summary>An axis that helps define the beginning of the arc.</summary>
         [NonSerialized] private Vector3 forward_axis;
         /// <summary>A binormal to center_axis and forward_axis. Determines points after the beginning of the arc.</summary>

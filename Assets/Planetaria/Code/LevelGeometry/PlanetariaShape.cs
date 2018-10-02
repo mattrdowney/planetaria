@@ -10,20 +10,24 @@ namespace Planetaria
     {
         public List<Arc> block_collision(PlanetariaShape other, Quaternion shift_from_self_to_other) // TODO: AABB-equivalent would be nice here
         {
-            List<Arc> result = new List<Arc>();
-            for (int other_index = 0; other_index < other.block_list.Length; ++ other_index)
+            Debug.Log("Inside Block Collision Detection");
+            List<Arc> union = new List<Arc>();
+            for (int other_index = 0; other_index < other.block_list.Length; ++other_index)
             {
+                Debug.Log("Other ArcCollider detected");
                 PlanetariaArcCollider other_collider = other.block_list[other_index];
                 foreach (PlanetariaArcCollider this_collider in this.block_list)
                 {
+                    Debug.Log("Comparing with one of our ArcColliders");
                     if (other_collider.collides_with(this_collider, shift_from_self_to_other))
                     {
-                        result.Add(other.arc_list[other_index]);
+                        Debug.Log("!!! Something should have happened !!!");
+                        union.Add(other.arc_list[other_index]);
                         break; // try to see if the next arc collides (because we know this one does)
                     }
                 }
             }
-            return result;
+            return union;
         }
 
         public bool field_collision(PlanetariaShape other, Quaternion shift_from_self_to_other) // TODO: AABB-equivalent would be nice here
@@ -234,7 +238,7 @@ namespace Planetaria
                 Arc last_arc = closed_shape.generate_edges().Last();
                 foreach (Arc arc in closed_shape.generate_edges())
                 {
-                    if (Arc.corner_type(last_arc, arc) == GeometryType.ConcaveCorner)
+                    if (ArcFactory.corner_type(last_arc, arc) == GeometryType.ConcaveCorner)
                     {
                         return false;
                     }
@@ -311,7 +315,7 @@ namespace Planetaria
             {
                 GeospatialCurve left_curve = curve_list[(edge + 0) % curve_list.Length];
                 GeospatialCurve right_curve = curve_list[(edge + 1) % curve_list.Length];
-                Arc arc = Arc.curve(left_curve.point, left_curve.slope, right_curve.point);
+                Arc arc = ArcFactory.curve(left_curve.point, left_curve.slope, right_curve.point);
                 result.Add(arc);
             }
             return result;
@@ -350,7 +354,7 @@ namespace Planetaria
                 bool ignore = !closed && edge == edges.Count-1; //ignore the last corner for unclosed shapes
                 if (has_corners && !ignore)
                 {
-                    result.Add(Arc.corner(left_edge, right_edge));
+                    result.Add(ArcFactory.corner(left_edge, right_edge));
                 }
             }
             return result;
