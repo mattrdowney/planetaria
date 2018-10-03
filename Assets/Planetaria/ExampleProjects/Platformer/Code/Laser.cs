@@ -23,7 +23,7 @@ public class Laser : MonoBehaviour  // TODO: PlanetariaComponent
         Vector3 character_position = main_character.forward;
         Vector3 controller_position = main_controller.forward;
         List<SerializedArc> laser = new List<SerializedArc> { ArcFactory.line(character_position, controller_position) };
-        arc_renderer.shape = PlanetariaShape.Create(laser, false, false);
+        arc_renderer.shape = PlanetariaShape.Create(laser, false);
         arc_renderer.recalculate();
 
         bool firing;

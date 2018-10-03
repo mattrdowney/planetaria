@@ -21,7 +21,7 @@ namespace Planetaria
         public void set_edge(Vector3 first_corner)
         {
             this.first_vertex = first_corner;
-            shape = create_equilateral(center, first_corner, edges);
+            shape = create_equilateral(shape, center, first_corner, edges, PlanetariaShape.AppendMode.OverwriteWithEphemeral);
         }
 
         public void close_shape()
@@ -41,6 +41,15 @@ namespace Planetaria
 
         // Preview rendering of this function is non-trivial, since ephemeral edges only work for the most recent edge.
         public static PlanetariaShape create_equilateral(Vector3 center, Vector3 vertex, int faces)
+        {
+            PlanetariaShape shape = PlanetariaShape.Create(new List<SerializedArc>(), true);
+            create_equilateral(shape, center, vertex, faces);
+            return shape;
+        }
+
+        // Preview rendering of this function is non-trivial, since ephemeral edges only work for the most recent edge.
+        public static PlanetariaShape create_equilateral(PlanetariaShape shape, Vector3 center, Vector3 vertex, int faces,
+                PlanetariaShape.AppendMode permanence = PlanetariaShape.AppendMode.OverwriteWithPermanent)
         {
             if (faces > 0 && center != vertex)
             {
@@ -67,12 +76,11 @@ namespace Planetaria
                         Vector3 end_point = vertices[(face_index+1)%faces];
                         polygon.Add(ArcFactory.line(start_point, end_point));
                     }
-                    return PlanetariaShape.Create(polygon, true, true);
+                    shape.append(polygon, permanence);
+                    return shape;
                 }
                 else // create a circle with given radius
                 {
-                    // TODO: this entire function can be replaced now (with the circle generator)
-
                     // first_vertex is circle start
                     Vector3 right = Vector3.Cross(center, vertex).normalized;
                     Vector3 mirror = Vector3.Cross(center, right).normalized;
@@ -87,10 +95,14 @@ namespace Planetaria
                     SerializedArc upper_circle = ArcFactory.curve(vertex, first_tangent, hidden_vertex);
                     SerializedArc lower_circle = ArcFactory.curve(hidden_vertex, second_tangent, vertex);
 
-                    return PlanetariaShape.Create(new List<SerializedArc>(){ upper_circle, lower_circle }, true, true);
+                    
+                    // TODO: this entire function can be replaced now (with the circle generator)
+                    shape.append(new List<SerializedArc>(){ upper_circle, lower_circle }, permanence);
+                    return shape;
                 }
             }
-            return PlanetariaShape.Create(new List<SerializedArc>(){ }, true, true);
+            shape.append(new List<SerializedArc>(), permanence);
+            return shape;
         }
     
         public PlanetariaShape shape { get; set; }

@@ -16,7 +16,7 @@ namespace Planetaria
             result.point = result.previous_point = result.original_point = first_point;
             bool has_corners = !is_field;
             result.shape = PlanetariaShape.Create();
-            result.shape.append(ArcFactory.curve(first_point, Vector3.up, first_point), PlanetariaShape.AppendMode.EphemeralAppend);
+            result.shape.append(ArcFactory.curve(first_point, Vector3.up, first_point), PlanetariaShape.AppendMode.OverwriteWithEphemeral);
             result.is_field = is_field;
             result.must_be_convex = is_field; // Fields must be a "convex hull"
             result.allow_self_intersections = allow_self_intersections && !is_field;
@@ -28,12 +28,12 @@ namespace Planetaria
             if (state == CreationState.SetSlope)
             {
                 slope = vector;
-                shape.append(ArcFactory.curve(point, slope, original_point), PlanetariaShape.AppendMode.EphemeralAppend);
+                shape.append(ArcFactory.curve(point, slope, original_point), PlanetariaShape.AppendMode.OverwriteWithEphemeral);
             }
             else // CreationState.SetPoint
             {
                 point = vector;
-                shape.append(ArcFactory.line(point, original_point), PlanetariaShape.AppendMode.EphemeralAppend);
+                shape.append(ArcFactory.line(point, original_point), PlanetariaShape.AppendMode.OverwriteWithEphemeral);
             }
         }
 

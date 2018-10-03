@@ -98,7 +98,7 @@ namespace Planetaria
 
             SerializedArc ray_arc = ArcFactory.curve(arc_left, arc_center, arc_right);
 
-            PlanetariaShape ray_shape = PlanetariaShape.Create(new List<SerializedArc> { ray_arc }, false, false);
+            PlanetariaShape ray_shape = PlanetariaShape.Create(new List<SerializedArc> { ray_arc }, false);
 
             // composites
             Vector3 arc_boundary_midpoint = (arc_left + arc_right) / 2; // if the arc is like a wooden bow, this is the midpoint of the string

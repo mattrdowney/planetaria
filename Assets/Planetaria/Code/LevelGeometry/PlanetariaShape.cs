@@ -10,14 +10,13 @@ namespace Planetaria
     [Serializable]
     public class PlanetariaShape : ScriptableObject // TODO: clean-up this file~
     {
-        public enum AppendMode { PermanentAppend, EphemeralAppend };
+        public enum AppendMode { OverwriteWithEphemeral, OverwriteWithPermanent, AppendEphemeral };
 
         [MenuItem("Assets/Create/PlanetariaShape")]
         public static PlanetariaShape Create()
         {
             PlanetariaShape asset = ScriptableObject.CreateInstance<PlanetariaShape>();
 
-            asset.closed = false;
             asset.has_corners = true;
             asset.serialized_arc_list = new SerializedArc[0];
             asset.arc_list = new Arc[0];
@@ -35,11 +34,10 @@ namespace Planetaria
         /// <param name="curves">The list of curves that uniquely defines a shape.</param>
         /// <param name="closed_shape">Is the shape closed? (i.e. does the shape draw the final arc from the last point to the first point?)</param>
         /// <param name="generate_corners">Does the shape have corners between line segments?</param>
-        public static PlanetariaShape Create(List<SerializedArc> serialized_arcs, bool closed_shape, bool generate_corners) // CONSIDER: TODO: add convex option
+        public static PlanetariaShape Create(List<SerializedArc> serialized_arcs, bool generate_corners) // CONSIDER: TODO: add convex option
         {
             PlanetariaShape asset = Create();
 
-            asset.closed = closed_shape;
             asset.has_corners = generate_corners;
             asset.serialized_arc_list = serialized_arcs.ToArray();
             asset.generate_arcs();
@@ -135,36 +133,71 @@ namespace Planetaria
         /// Inspector/Constructor - Appends a new arc to a current shape.
         /// </summary>
         /// <param name="arc">The arc you are appending to the end of the shape.</param>
+        /// <param name="permanence">Are the changes permanent?</param>
         /// <returns>A shape with a new arc appended.</returns>
-        public void append(SerializedArc arc, AppendMode permanence = AppendMode.PermanentAppend)
+        public void append(SerializedArc arc, AppendMode permanence = AppendMode.OverwriteWithPermanent)
         {
-            if (!overwrite_last_entry) // avoid overwriting data by extending the array 
+            append(new List<SerializedArc> { arc }, permanence);
+        }
+
+        /// <summary>
+        /// Inspector/Constructor - Appends a set of arcs to a current shape.
+        /// </summary>
+        /// <param name="arcs">The set of arcs you are appending to the end of the shape.</param>
+        /// <param name="permanence">Are the changes permanent?</param>
+        /// <returns>A shape with a new set of arcs appended.</returns>
+        public void append(List<SerializedArc> arcs, AppendMode permanence = AppendMode.OverwriteWithPermanent)
+        {
+            // FIXME: all broken now that I added three append types
+            int permanent_edges_stored = serialized_arc_list.Length - ephemeral_arcs; // overwrites ephemeral edges (in essense)
+            int edges_to_be_stored = permanent_edges_stored + arcs.Count; // "arcs" can contain ephemeral or permanent edges
+            if (serialized_arc_list.Length != edges_to_be_stored) // shrink-to-fit or expand array as necessary 
             {
-                Array.Resize(ref serialized_arc_list, serialized_arc_list.Length + 1);
+                Array.Resize(ref serialized_arc_list, edges_to_be_stored);
             }
-            
-            serialized_arc_list[serialized_arc_list.Length - 1] = arc; // set the new element
+
+            Array.Copy(arcs.ToArray(), 0, serialized_arc_list, permanent_edges_stored, arcs.Count); // Copy over new elements
             generate_arcs();
 
-            bool overwrite_next = (permanence == AppendMode.EphemeralAppend);
-            overwrite_last_entry = overwrite_next;
+            ephemeral_arcs = (permanence == AppendMode.Permanent ? 0 : arcs.Count);
         }
 
         /// <summary>
         /// Inspector/Constructor - Creates a copy of the shape then sets closed=true
         /// </summary>
         /// <returns>A closed shape mirroring all properties of original but with closed=true.</returns>
-        public PlanetariaShape close()
+        public void close(optional<Vector3> slope = new optional<Vector3>(), AppendMode permanence = AppendMode.OverwriteWithPermanent)
         {
-            PlanetariaShape asset = Create();
-            asset.closed = true;
-            asset.has_corners = this.has_corners;
-            asset.arc_list = new Arc[0];
-            asset.serialized_arc_list = this.serialized_arc_list;
-            // FIXME: add last edge! (if not already closed and Dot of last/first point is != 1)
-            asset.generate_arcs();
+            if (permanence == AppendMode.OverwriteWithPermanent) // FIXME: HACK: this is all JANK
+            {
+                Array.Resize(ref serialized_arc_list, serialized_arc_list.Length - ephemeral_arcs + 1);
+            }
+            else if (permanence == AppendMode.OverwriteWithEphemeral)
+            {
+                Array.Resize(ref serialized_arc_list, serialized_arc_list.Length - ephemeral_arcs + 1);
+            }
+            // Add last edge! (if not already closed and Dot of last/first point is != 1)
+            if (!closed())
+            {
+                Arc first_arc = serialized_arc_list[0];
+                Arc last_arc = serialized_arc_list[serialized_arc_list.Length-1];
+                if (!slope.exists)
+                {
+                    slope = first_arc.begin();
+                }
+                append(ArcFactory.curve(last_arc.end(), slope.data, first_arc.begin()), permanence);
+            }
+            generate_arcs();
+
             // TODO: if field, make this a convex_hull() // TODO: add convex property
-            return asset;
+        }
+
+        /// <summary>Is the shape closed? (i.e. does the shape draw the final arc from the last point to the first point?)</summary>
+        public bool closed()
+        {
+            Arc first_arc = serialized_arc_list[0];
+            Arc last_arc = serialized_arc_list[serialized_arc_list.Length-1];
+            return Vector3.Dot(first_arc.begin(), last_arc.end()) > 1 - Precision.threshold;
         }
 
         public PlanetariaSphereCollider bounding_sphere
@@ -228,9 +261,9 @@ namespace Planetaria
         {
             if (arc_list.Length > 1)
             {
-                PlanetariaShape closed_shape = this.close();
-                Arc last_arc = closed_shape.generate_edges().Last();
-                foreach (Arc arc in closed_shape.generate_edges())
+                close(new optional<Vector3>(), AppendMode.AppendEphemeral);
+                Arc last_arc = serialized_arc_list.Last();
+                foreach (Arc arc in serialized_arc_list)
                 {
                     if (ArcFactory.corner_type(last_arc, arc) == GeometryType.ConcaveCorner)
                     {
@@ -272,15 +305,7 @@ namespace Planetaria
         /// <summary>
         /// Inspector (pseudo-mutator) - initialize arc_list (when the user changes the list of curves)
         /// </summary>
-        public void OnBeforeSerialize()
-        {
-            generate_arcs();
-        }
-
-        /// <summary>
-        /// Inspector (pseudo-mutator) - initialize arc_list (which is NonSerialized (i.e. not saved))
-        /// </summary>
-        public void OnAfterDeserialize() // TODO: check if this can be private
+        private void OnEnable()
         {
             generate_arcs();
         }
@@ -304,10 +329,8 @@ namespace Planetaria
         private List<Arc> generate_edges()
         {
             List<Arc> result = new List<Arc>();
-            int edges = closed ? serialized_arc_list.Length : serialized_arc_list.Length - 1;
-            for (int edge = 0; edge < edges; ++edge)
+            foreach (Arc arc in serialized_arc_list)
             {
-                Arc arc = serialized_arc_list[edge];
                 result.Add(arc);
             }
             return result;
@@ -337,14 +360,18 @@ namespace Planetaria
         /// <returns>Returns a list of edges interspliced with corners.</returns>
         private List<Arc> add_corners_between_edges(List<Arc> edges)
         {
+            if (!has_corners)
+            {
+                return edges;
+            }
             List<Arc> result = new List<Arc>();
             for (int edge = 0; edge < edges.Count; ++edge)
             {
                 Arc left_edge = edges[(edge + 0) % edges.Count];
                 Arc right_edge = edges[(edge + 1) % edges.Count];
                 result.Add(left_edge);
-                bool ignore = !closed && edge == edges.Count-1; //ignore the last corner for unclosed shapes
-                if (has_corners && !ignore)
+                bool ignore = !closed() && edge == edges.Count-1; //ignore the last corner for unclosed shapes
+                if (!ignore)
                 {
                     result.Add(ArcFactory.corner(left_edge, right_edge));
                 }
@@ -354,8 +381,6 @@ namespace Planetaria
 
         /// <summary>Does the shape have corners between line segments?</summary>
         [SerializeField] private bool has_corners;
-        /// <summary>Is the shape closed? (i.e. does the shape draw the final arc from the last point to the first point?)</summary>
-        [SerializeField] private bool closed;
         /// <summary>List of arcs that define a shape (excluding corner connections).</summary>
         [SerializeField] private SerializedArc[] serialized_arc_list;
         /// <summary>List of arcs on a unit sphere that define a shape (including corner connections).</summary>
@@ -364,8 +389,8 @@ namespace Planetaria
         [NonSerialized] public PlanetariaArcCollider[] block_list;
         /// <summary>List of arc colliders that will be used for intersection.</summary>
         [NonSerialized] public PlanetariaSphereCollider[] field_list;
-        /// <summary>An internal flag for whether or not the last entry was ephemeral (non-permanent) e.g. for Arc creation visualization in the editor.</summary>
-        [NonSerialized] private bool overwrite_last_entry = false;
+        /// <summary>An internal counter representing the number of ephemeral (non-permanent) edge e.g. for Arc creation visualization in the editor.</summary>
+        [NonSerialized] private int ephemeral_arcs = 0;
     }
 }
 
