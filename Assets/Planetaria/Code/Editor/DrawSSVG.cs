@@ -1,4 +1,6 @@
-﻿namespace Planetaria
+﻿using System.Collections.Generic;
+
+namespace Planetaria
 {
     public class DrawSSVG // TODO: rename SSVG because they are not "scalable"
     {
@@ -19,7 +21,7 @@
         /// <returns>A Block that is equivalent to the textual ".ssvg".</returns>
         public static PlanetariaShape SSVGToShape(string spherical_scalable_vector_graphic)
         {
-            return new PlanetariaShape(true, true);
+            return PlanetariaShape.Create(new List<SerializedArc> { }, true, true);
         }
 
         //<path d="M0.866 0.5 0 S 0 1 0, 0.5 0.866 0">

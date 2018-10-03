@@ -13,11 +13,10 @@ namespace Planetaria
         {
             GameObject game_object = new GameObject("Arc Builder");
             ArcBuilder result = game_object.AddComponent<ArcBuilder>();
-            result.point = result.original_point = first_point;
-            GeospatialCurve curve = GeospatialCurve.curve(first_point, first_point);
+            result.point = result.previous_point = result.original_point = first_point;
             bool has_corners = !is_field;
-            result.final_shape = new PlanetariaShape(false, has_corners);
-            result.debug_shape = result.final_shape.append(curve);
+            result.shape = PlanetariaShape.Create();
+            result.shape.append(ArcFactory.curve(first_point, Vector3.up, first_point), PlanetariaShape.AppendMode.EphemeralAppend);
             result.is_field = is_field;
             result.must_be_convex = is_field; // Fields must be a "convex hull"
             result.allow_self_intersections = allow_self_intersections && !is_field;
@@ -29,20 +28,20 @@ namespace Planetaria
             if (state == CreationState.SetSlope)
             {
                 slope = vector;
-                debug_shape = final_shape.append(GeospatialCurve.curve(point, slope)).append(GeospatialCurve.curve(slope, original_point));
+                shape.append(ArcFactory.curve(point, slope, original_point), PlanetariaShape.AppendMode.EphemeralAppend);
             }
             else // CreationState.SetPoint
             {
                 point = vector;
-                debug_shape = final_shape.append(GeospatialCurve.curve(point, original_point));
+                shape.append(ArcFactory.line(point, original_point), PlanetariaShape.AppendMode.EphemeralAppend);
             }
         }
 
         public void next()
         {
-            if (state == CreationState.SetSlope)
+            if (state == CreationState.SetPoint)
             {
-                final_shape = final_shape.append(GeospatialCurve.curve(point, slope));
+                shape.append(ArcFactory.curve(previous_point, slope, point));
             }
             state = (state == CreationState.SetSlope ? CreationState.SetPoint : CreationState.SetSlope); // state = !state;
         }
@@ -51,30 +50,21 @@ namespace Planetaria
         {
             if (state == CreationState.SetSlope)
             {
-                final_shape = final_shape.append(GeospatialCurve.curve(point, original_point));
+                shape.append(ArcFactory.line(point, original_point));
             }
-
-            GameObject shape = new GameObject("CustomGeometry");
-            PlanetariaCollider collider = shape.AddComponent<PlanetariaCollider>();
-            collider.shape = new PlanetariaShape(final_shape.to_curves(), true, true);
-            collider.is_field = is_field;
-            DestroyImmediate(this.gameObject);
-
-            /*
-            optional<TextAsset> svg_file = BlockRenderer.render(block, 0);
-            if (svg_file.exists)
+            else
             {
-                PlanetariaRenderer renderer = shape.AddComponent<PlanetRenderer>();
-                renderer.material = RenderVectorGraphics.render(svg_file.data);
+                shape.append(ArcFactory.curve(point, slope, original_point));
             }
-            */
+            
+            DestroyImmediate(this.gameObject);
         }
 
         public bool valid()
         {
             if (must_be_convex)
             {
-                if (!debug_shape.is_convex_hull())
+                if (!shape.is_convex_hull())
                 {
                     Debug.LogWarning("Not a convex shape! Turn off the LevelEditor setting if you want to ignore this.");
                     return false;
@@ -82,7 +72,7 @@ namespace Planetaria
             }
             if (!allow_self_intersections)
             {
-                if (debug_shape.is_self_intersecting())
+                if (shape.is_self_intersecting())
                 {
                     Debug.LogWarning("Shape intersects self! Turn off the LevelEditor setting if you want to ignore this.");
                     return false;
@@ -91,12 +81,12 @@ namespace Planetaria
             return true;
         }
 
-        private PlanetariaShape final_shape;
-        public PlanetariaShape debug_shape;
+        public PlanetariaShape shape;
         private CreationState state = CreationState.SetSlope;
+        private Vector3 original_point { get; set; }
+        private Vector3 previous_point { get; set; }
         private Vector3 point { get; set; }
         private Vector3 slope { get; set; }
-        private Vector3 original_point { get; set; }
         private bool is_field;
         private bool must_be_convex;
         private bool allow_self_intersections;

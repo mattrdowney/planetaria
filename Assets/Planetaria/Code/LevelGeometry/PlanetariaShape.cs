@@ -2,12 +2,51 @@
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
+using UnityEditor.SceneManagement;
 
 namespace Planetaria
 {
     [Serializable]
-    public struct PlanetariaShape : ISerializationCallbackReceiver // TODO: clean-up this file~
+    public class PlanetariaShape : ScriptableObject // TODO: clean-up this file~
     {
+        public enum AppendMode { PermanentAppend, EphemeralAppend };
+
+        [MenuItem("Assets/Create/PlanetariaShape")]
+        public static PlanetariaShape Create()
+        {
+            PlanetariaShape asset = ScriptableObject.CreateInstance<PlanetariaShape>();
+
+            asset.closed = false;
+            asset.has_corners = true;
+            asset.serialized_arc_list = new SerializedArc[0];
+            asset.arc_list = new Arc[0];
+            asset.block_list = new PlanetariaArcCollider[0];
+            asset.field_list = new PlanetariaSphereCollider[0];
+
+            AssetDatabase.CreateAsset(asset, "Assets/" + EditorSceneManager.GetActiveScene().name + "_PlanetariaShape.asset");
+            AssetDatabase.SaveAssets();
+            return asset;
+        }
+        
+        /// <summary>
+        /// Constructor - Creates a shape based on a list of curves (generates cached list of Arc)
+        /// </summary>
+        /// <param name="curves">The list of curves that uniquely defines a shape.</param>
+        /// <param name="closed_shape">Is the shape closed? (i.e. does the shape draw the final arc from the last point to the first point?)</param>
+        /// <param name="generate_corners">Does the shape have corners between line segments?</param>
+        public static PlanetariaShape Create(List<SerializedArc> serialized_arcs, bool closed_shape, bool generate_corners) // CONSIDER: TODO: add convex option
+        {
+            PlanetariaShape asset = Create();
+
+            asset.closed = closed_shape;
+            asset.has_corners = generate_corners;
+            asset.serialized_arc_list = serialized_arcs.ToArray();
+            asset.generate_arcs();
+
+            return asset;
+        }
+
         public List<Arc> block_collision(PlanetariaShape other, Quaternion shift_from_self_to_other) // TODO: AABB-equivalent would be nice here
         {
             Debug.Log("Inside Block Collision Detection");
@@ -51,38 +90,6 @@ namespace Planetaria
             return false;
         }
 
-        /// <summary>
-        /// Constructor - Creates a shape based on a list of curves (generates cached list of Arc)
-        /// </summary>
-        /// <param name="curves">The list of curves that uniquely defines a shape.</param>
-        /// <param name="closed_shape">Is the shape closed? (i.e. does the shape draw the final arc from the last point to the first point?)</param>
-        /// <param name="generate_corners">Does the shape have corners between line segments?</param>
-        public PlanetariaShape(List<GeospatialCurve> curves, bool closed_shape, bool generate_corners) // CONSIDER: TODO: add convex option
-        {
-            closed = closed_shape;
-            has_corners = generate_corners;
-            curve_list = curves.ToArray();
-            arc_list = new Arc[0];
-            block_list = new PlanetariaArcCollider[0];
-            field_list = new PlanetariaSphereCollider[0];
-            generate_arcs();
-        }
-
-        /// <summary>
-        /// Constructor - Creates an empty shape.
-        /// </summary>
-        /// <param name="closed_shape">Is the shape closed? (i.e. does the shape draw the final arc from the last point to the first point?)</param>
-        /// <param name="generate_corners">Does the shape have corners between line segments?</param>
-        public PlanetariaShape(bool closed_shape, bool generate_corners)
-        {
-            closed = closed_shape;
-            has_corners = generate_corners;
-            curve_list = new GeospatialCurve[0];
-            arc_list = new Arc[0];
-            block_list = new PlanetariaArcCollider[0];
-            field_list = new PlanetariaSphereCollider[0];
-        }
-
         /// <summary>Get the nth arc in the arc_list.</summary>
         public Arc this[int index]
         {
@@ -124,32 +131,23 @@ namespace Planetaria
             return ArcVisitor.arc_visitor(this, arc_list_index);
         }
 
-        /// <summary>The list of curves that define a shape.</summary>
-        public IEnumerable<GeospatialCurve> curves
-        {
-            get
-            {
-                return curve_list;
-            }
-        }
-
         /// <summary>
-        /// Inspector/Constructor - Appends a new curve to a current shape.
+        /// Inspector/Constructor - Appends a new arc to a current shape.
         /// </summary>
-        /// <param name="curve">The curve you are appending to the end of the shape.</param>
-        /// <returns>A shape with a new curve appended.</returns>
-        public PlanetariaShape append(GeospatialCurve curve)
+        /// <param name="arc">The arc you are appending to the end of the shape.</param>
+        /// <returns>A shape with a new arc appended.</returns>
+        public void append(SerializedArc arc, AppendMode permanence = AppendMode.PermanentAppend)
         {
-            PlanetariaShape result = new PlanetariaShape();
-            result.closed = this.closed;
-            result.has_corners = this.has_corners;
-            result.arc_list = new Arc[0];
+            if (!overwrite_last_entry) // avoid overwriting data by extending the array 
+            {
+                Array.Resize(ref serialized_arc_list, serialized_arc_list.Length + 1);
+            }
+            
+            serialized_arc_list[serialized_arc_list.Length - 1] = arc; // set the new element
+            generate_arcs();
 
-            result.curve_list = new GeospatialCurve[this.curve_list.Length + 1]; // appending array so length += 1
-            Array.Copy(this.curve_list, result.curve_list, this.curve_list.Length); // copy the original array
-            result.curve_list[result.curve_list.Length - 1] = curve; // set the new element
-            result.generate_arcs();
-            return result;
+            bool overwrite_next = (permanence == AppendMode.EphemeralAppend);
+            overwrite_last_entry = overwrite_next;
         }
 
         /// <summary>
@@ -158,19 +156,15 @@ namespace Planetaria
         /// <returns>A closed shape mirroring all properties of original but with closed=true.</returns>
         public PlanetariaShape close()
         {
-            PlanetariaShape shape = new PlanetariaShape();
-            shape.closed = true;
-            shape.has_corners = this.has_corners;
-            shape.arc_list = new Arc[0];
-            shape.curve_list = this.curve_list;
-            shape.generate_arcs();
+            PlanetariaShape asset = Create();
+            asset.closed = true;
+            asset.has_corners = this.has_corners;
+            asset.arc_list = new Arc[0];
+            asset.serialized_arc_list = this.serialized_arc_list;
+            // FIXME: add last edge! (if not already closed and Dot of last/first point is != 1)
+            asset.generate_arcs();
             // TODO: if field, make this a convex_hull() // TODO: add convex property
-            return shape;
-        }
-
-        public List<GeospatialCurve> to_curves()
-        {
-            return new List<GeospatialCurve>(curve_list);
+            return asset;
         }
 
         public PlanetariaSphereCollider bounding_sphere
@@ -266,13 +260,13 @@ namespace Planetaria
                 return false;
             }
             PlanetariaShape other_shape = (PlanetariaShape)other;
-            bool same_data = this.curve_list == other_shape.curve_list; // compare by reference is intentional
+            bool same_data = this.serialized_arc_list == other_shape.serialized_arc_list; // compare by reference is intentional
             return same_data;
         }
 
         public override int GetHashCode()
         {
-            return this.curve_list.GetHashCode();
+            return this.serialized_arc_list.GetHashCode();
         }
 
         /// <summary>
@@ -310,12 +304,10 @@ namespace Planetaria
         private List<Arc> generate_edges()
         {
             List<Arc> result = new List<Arc>();
-            int edges = closed ? curve_list.Length : curve_list.Length - 1;
+            int edges = closed ? serialized_arc_list.Length : serialized_arc_list.Length - 1;
             for (int edge = 0; edge < edges; ++edge)
             {
-                GeospatialCurve left_curve = curve_list[(edge + 0) % curve_list.Length];
-                GeospatialCurve right_curve = curve_list[(edge + 1) % curve_list.Length];
-                Arc arc = ArcFactory.curve(left_curve.point, left_curve.slope, right_curve.point);
+                Arc arc = serialized_arc_list[edge];
                 result.Add(arc);
             }
             return result;
@@ -364,14 +356,16 @@ namespace Planetaria
         [SerializeField] private bool has_corners;
         /// <summary>Is the shape closed? (i.e. does the shape draw the final arc from the last point to the first point?)</summary>
         [SerializeField] private bool closed;
-        /// <summary>List of point-slope pairs in spherical space that define a shape.</summary>
-        [SerializeField] private GeospatialCurve[] curve_list;
-        /// <summary>List of arcs on a unit sphere that define a shape.</summary>
-        [NonSerialized] private Arc[] arc_list;
+        /// <summary>List of arcs that define a shape (excluding corner connections).</summary>
+        [SerializeField] private SerializedArc[] serialized_arc_list;
+        /// <summary>List of arcs on a unit sphere that define a shape (including corner connections).</summary>
+        [NonSerialized] private Arc[] arc_list; // TODO: would readonly prevent overwriting data entries? - I think so since this isn't a List<>
         /// <summary>List of arc colliders that will be used for intersection.</summary>
         [NonSerialized] public PlanetariaArcCollider[] block_list;
         /// <summary>List of arc colliders that will be used for intersection.</summary>
         [NonSerialized] public PlanetariaSphereCollider[] field_list;
+        /// <summary>An internal flag for whether or not the last entry was ephemeral (non-permanent) e.g. for Arc creation visualization in the editor.</summary>
+        [NonSerialized] private bool overwrite_last_entry = false;
     }
 }
 

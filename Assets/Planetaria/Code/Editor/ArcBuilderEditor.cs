@@ -11,7 +11,7 @@ namespace Planetaria
         [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
         static void draw_arc_builder_gizmos(ArcBuilder self, GizmoType gizmo_type)
         {
-            ShapeEditor.draw_shape(self.debug_shape, Quaternion.identity);
+            ShapeEditor.draw_shape(self.shape, Quaternion.identity);
         }
     }
 }

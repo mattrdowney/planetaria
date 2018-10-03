@@ -39,6 +39,7 @@ namespace Planetaria
             }*/
         }
 
+        // Preview rendering of this function is non-trivial, since ephemeral edges only work for the most recent edge.
         public static PlanetariaShape create_equilateral(Vector3 center, Vector3 vertex, int faces)
         {
             if (faces > 0 && center != vertex)
@@ -59,17 +60,19 @@ namespace Planetaria
                         vertices.Add(final_position);
                     }
 
-                    List<GeospatialCurve> polygon = new List<GeospatialCurve>();
+                    List<SerializedArc> polygon = new List<SerializedArc>();
                     for (int face_index = 0; face_index < faces; ++face_index)
                     {
                         Vector3 start_point = vertices[face_index];
                         Vector3 end_point = vertices[(face_index+1)%faces];
-                        polygon.Add(GeospatialCurve.curve(start_point, end_point));
+                        polygon.Add(ArcFactory.line(start_point, end_point));
                     }
-                    return new PlanetariaShape(polygon, true, true);
+                    return PlanetariaShape.Create(polygon, true, true);
                 }
                 else // create a circle with given radius
                 {
+                    // TODO: this entire function can be replaced now (with the circle generator)
+
                     // first_vertex is circle start
                     Vector3 right = Vector3.Cross(center, vertex).normalized;
                     Vector3 mirror = Vector3.Cross(center, right).normalized;
@@ -81,11 +84,13 @@ namespace Planetaria
                     Vector3 second_up = -Vector3.Cross(hidden_vertex, right).normalized;
                     Vector3 second_tangent = -Vector3.Cross(second_up, hidden_vertex).normalized;
 
-                    return new PlanetariaShape(new List<GeospatialCurve>(){ GeospatialCurve.curve(vertex, first_tangent),
-                            GeospatialCurve.curve(hidden_vertex, second_tangent) }, true, true );
+                    SerializedArc upper_circle = ArcFactory.curve(vertex, first_tangent, hidden_vertex);
+                    SerializedArc lower_circle = ArcFactory.curve(hidden_vertex, second_tangent, vertex);
+
+                    return PlanetariaShape.Create(new List<SerializedArc>(){ upper_circle, lower_circle }, true, true);
                 }
             }
-            return new PlanetariaShape(true, true);
+            return PlanetariaShape.Create(new List<SerializedArc>(){ }, true, true);
         }
     
         public PlanetariaShape shape { get; set; }

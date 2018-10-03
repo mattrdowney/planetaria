@@ -92,11 +92,13 @@ namespace Planetaria
             desired_angle = Mathf.Clamp(desired_angle, -2*Mathf.PI, 2*Mathf.PI);
 
             // primative arc points
-            Vector3 arc_left = arc.position(-desired_angle/2);
-            Vector3 arc_center = arc.position(0);
-            Vector3 arc_right = arc.position(+desired_angle/2);
+            Vector3 arc_left = arc.position(-desired_angle/2 - arc.angle()/2);
+            Vector3 arc_center = arc.position(0 - arc.angle()/2);
+            Vector3 arc_right = arc.position(+desired_angle/2 - arc.angle()/2);
 
-            PlanetariaShape ray_shape = new PlanetariaShape(new List<GeospatialCurve> { GeospatialCurve.curve(arc_left, arc_right), GeospatialCurve.curve(arc_right, arc_left) }, false, false);
+            SerializedArc ray_arc = ArcFactory.curve(arc_left, arc_center, arc_right);
+
+            PlanetariaShape ray_shape = PlanetariaShape.Create(new List<SerializedArc> { ray_arc }, false, false);
 
             // composites
             Vector3 arc_boundary_midpoint = (arc_left + arc_right) / 2; // if the arc is like a wooden bow, this is the midpoint of the string
