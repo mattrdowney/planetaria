@@ -10,15 +10,16 @@ namespace Planetaria
     [Serializable]
     public class PlanetariaShape : ScriptableObject // TODO: clean-up this file~
     {
-        public enum AppendMode { OverwriteWithEphemeral, OverwriteWithPermanent, AppendEphemeral };
+        public enum AppendMode { OverwriteWithEphemeral, OverwriteWithPermanent, AppendWithEphemeral };
 
         [MenuItem("Assets/Create/PlanetariaShape")]
         public static PlanetariaShape Create()
         {
             PlanetariaShape asset = ScriptableObject.CreateInstance<PlanetariaShape>();
 
+            asset.ephemeral_arcs = 0;
             asset.has_corners = true;
-            asset.serialized_arc_list = new SerializedArc[0];
+            asset.serialized_arc_list = new List<SerializedArc>();
             asset.arc_list = new Arc[0];
             asset.block_list = new PlanetariaArcCollider[0];
             asset.field_list = new PlanetariaSphereCollider[0];
@@ -39,7 +40,7 @@ namespace Planetaria
             PlanetariaShape asset = Create();
 
             asset.has_corners = generate_corners;
-            asset.serialized_arc_list = serialized_arcs.ToArray();
+            asset.serialized_arc_list = serialized_arcs;
             asset.generate_arcs();
 
             return asset;
@@ -148,18 +149,18 @@ namespace Planetaria
         /// <returns>A shape with a new set of arcs appended.</returns>
         public void append(List<SerializedArc> arcs, AppendMode permanence = AppendMode.OverwriteWithPermanent)
         {
-            // FIXME: all broken now that I added three append types
-            int permanent_edges_stored = serialized_arc_list.Length - ephemeral_arcs; // overwrites ephemeral edges (in essense)
-            int edges_to_be_stored = permanent_edges_stored + arcs.Count; // "arcs" can contain ephemeral or permanent edges
-            if (serialized_arc_list.Length != edges_to_be_stored) // shrink-to-fit or expand array as necessary 
+            // "arcs" can contain ephemeral or permanent edges
+            if (permanence == AppendMode.OverwriteWithEphemeral ||
+                    permanence == AppendMode.OverwriteWithPermanent)
             {
-                Array.Resize(ref serialized_arc_list, edges_to_be_stored);
+                serialized_arc_list.RemoveRange(serialized_arc_list.Count - ephemeral_arcs, ephemeral_arcs);
+                ephemeral_arcs = 0;
             }
-
-            Array.Copy(arcs.ToArray(), 0, serialized_arc_list, permanent_edges_stored, arcs.Count); // Copy over new elements
+            
+            serialized_arc_list.AddRange(arcs);
             generate_arcs();
 
-            ephemeral_arcs = (permanence == AppendMode.Permanent ? 0 : arcs.Count);
+            ephemeral_arcs += (permanence == AppendMode.OverwriteWithPermanent ? 0 : arcs.Count);
         }
 
         /// <summary>
@@ -168,19 +169,18 @@ namespace Planetaria
         /// <returns>A closed shape mirroring all properties of original but with closed=true.</returns>
         public void close(optional<Vector3> slope = new optional<Vector3>(), AppendMode permanence = AppendMode.OverwriteWithPermanent)
         {
-            if (permanence == AppendMode.OverwriteWithPermanent) // FIXME: HACK: this is all JANK
+            if (permanence == AppendMode.OverwriteWithEphemeral ||
+                    permanence == AppendMode.OverwriteWithPermanent)
             {
-                Array.Resize(ref serialized_arc_list, serialized_arc_list.Length - ephemeral_arcs + 1);
+                serialized_arc_list.RemoveRange(serialized_arc_list.Count - ephemeral_arcs, ephemeral_arcs);
+                ephemeral_arcs = 0;
             }
-            else if (permanence == AppendMode.OverwriteWithEphemeral)
-            {
-                Array.Resize(ref serialized_arc_list, serialized_arc_list.Length - ephemeral_arcs + 1);
-            }
+
             // Add last edge! (if not already closed and Dot of last/first point is != 1)
             if (!closed())
             {
                 Arc first_arc = serialized_arc_list[0];
-                Arc last_arc = serialized_arc_list[serialized_arc_list.Length-1];
+                Arc last_arc = serialized_arc_list[serialized_arc_list.Count-1];
                 if (!slope.exists)
                 {
                     slope = first_arc.begin();
@@ -196,7 +196,7 @@ namespace Planetaria
         public bool closed()
         {
             Arc first_arc = serialized_arc_list[0];
-            Arc last_arc = serialized_arc_list[serialized_arc_list.Length-1];
+            Arc last_arc = serialized_arc_list[serialized_arc_list.Count-1];
             return Vector3.Dot(first_arc.begin(), last_arc.end()) > 1 - Precision.threshold;
         }
 
@@ -261,7 +261,7 @@ namespace Planetaria
         {
             if (arc_list.Length > 1)
             {
-                close(new optional<Vector3>(), AppendMode.AppendEphemeral);
+                close(new optional<Vector3>(), AppendMode.AppendWithEphemeral);
                 Arc last_arc = serialized_arc_list.Last();
                 foreach (Arc arc in serialized_arc_list)
                 {
@@ -329,7 +329,7 @@ namespace Planetaria
         private List<Arc> generate_edges()
         {
             List<Arc> result = new List<Arc>();
-            foreach (Arc arc in serialized_arc_list)
+            foreach (Arc arc in serialized_arc_list.ToList())
             {
                 result.Add(arc);
             }
@@ -382,7 +382,7 @@ namespace Planetaria
         /// <summary>Does the shape have corners between line segments?</summary>
         [SerializeField] private bool has_corners;
         /// <summary>List of arcs that define a shape (excluding corner connections).</summary>
-        [SerializeField] private SerializedArc[] serialized_arc_list;
+        [SerializeField] private List<SerializedArc> serialized_arc_list;
         /// <summary>List of arcs on a unit sphere that define a shape (including corner connections).</summary>
         [NonSerialized] private Arc[] arc_list; // TODO: would readonly prevent overwriting data entries? - I think so since this isn't a List<>
         /// <summary>List of arc colliders that will be used for intersection.</summary>

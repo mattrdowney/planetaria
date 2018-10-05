@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 namespace Planetaria
 {
@@ -26,17 +27,9 @@ namespace Planetaria
 
         public void close_shape()
         {
-            GameObject geometry_object = new GameObject("CustomGeometry");
-            PlanetariaCollider collider = geometry_object.AddComponent<PlanetariaCollider>();
-            collider.shape = shape;
+            create_equilateral(shape, center, first_vertex, edges, PlanetariaShape.AppendMode.OverwriteWithPermanent);
+            AssetDatabase.SaveAssets();
             DestroyImmediate(this.gameObject);
-
-            /*optional<TextAsset> svg_file = BlockRenderer.render(block, edges == 2 ? 1 : 0); // lines can't have zero thickness
-            if (svg_file.exists)
-            {
-                PlanetariaRenderer renderer = shape.AddComponent<PlanetRenderer>();
-                renderer.material = RenderVectorGraphics.render(svg_file.data);
-            }*/
         }
 
         // Preview rendering of this function is non-trivial, since ephemeral edges only work for the most recent edge.

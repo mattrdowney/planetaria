@@ -1,8 +1,7 @@
 ﻿#if UNITY_EDITOR 
 
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
+using UnityEditor;
 
 namespace Planetaria
 {
@@ -28,12 +27,12 @@ namespace Planetaria
             if (state == CreationState.SetSlope)
             {
                 slope = vector;
-                shape.append(ArcFactory.curve(point, slope, original_point), PlanetariaShape.AppendMode.OverwriteWithEphemeral);
+                shape.append(ArcFactory.line(point, slope), PlanetariaShape.AppendMode.OverwriteWithEphemeral);
             }
             else // CreationState.SetPoint
             {
                 point = vector;
-                shape.append(ArcFactory.line(point, original_point), PlanetariaShape.AppendMode.OverwriteWithEphemeral);
+                shape.append(ArcFactory.curve(previous_point, slope, point), PlanetariaShape.AppendMode.OverwriteWithEphemeral);
             }
         }
 
@@ -50,13 +49,13 @@ namespace Planetaria
         {
             if (state == CreationState.SetSlope)
             {
-                shape.append(ArcFactory.line(point, original_point));
+                shape.close(new optional<Vector3>(), PlanetariaShape.AppendMode.OverwriteWithPermanent);
             }
             else
             {
-                shape.append(ArcFactory.curve(point, slope, original_point));
+                shape.close(slope, PlanetariaShape.AppendMode.OverwriteWithPermanent);
             }
-            
+            AssetDatabase.SaveAssets();
             DestroyImmediate(this.gameObject);
         }
 
