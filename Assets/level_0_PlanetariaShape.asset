@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Name: level_0_PlanetariaShape
   m_EditorClassIdentifier: 
   has_corners: 1
+  ephemeral_arcs: 0
   serialized_arc_list: []

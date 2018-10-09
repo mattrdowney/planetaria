@@ -3,7 +3,7 @@ using UnityEditor;
 
 namespace Planetaria
 {
-    public class ShapeEditor : Editor
+    public class PlanetariaShapeEditor : Editor
     {
         public static void draw_shape(PlanetariaShape self, Quaternion orientation)
         {

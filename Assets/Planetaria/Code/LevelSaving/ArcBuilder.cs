@@ -8,17 +8,14 @@ namespace Planetaria
     [ExecuteInEditMode]
     public class ArcBuilder : MonoBehaviour  // TODO: PlanetariaComponent
     {
-        public static ArcBuilder arc_builder(Vector3 first_point, bool is_field, bool allow_self_intersections)
+        public static ArcBuilder arc_builder(Vector3 first_point, bool convex, bool allow_self_intersections)
         {
-            GameObject game_object = new GameObject("Arc Builder");
+            GameObject game_object = new GameObject("ArcBuilder");
             ArcBuilder result = game_object.AddComponent<ArcBuilder>();
             result.point = result.previous_point = result.original_point = first_point;
-            bool has_corners = !is_field;
             result.shape = PlanetariaShape.Create();
-            result.shape.append(ArcFactory.curve(first_point, Vector3.up, first_point), PlanetariaShape.AppendMode.OverwriteWithEphemeral);
-            result.is_field = is_field;
-            result.must_be_convex = is_field; // Fields must be a "convex hull"
-            result.allow_self_intersections = allow_self_intersections && !is_field;
+            result.must_be_convex = convex; // must be a "convex hull"
+            result.allow_self_intersections = allow_self_intersections;
             return result;
         }
 
@@ -41,6 +38,7 @@ namespace Planetaria
             if (state == CreationState.SetPoint)
             {
                 shape.append(ArcFactory.curve(previous_point, slope, point));
+                previous_point = point;
             }
             state = (state == CreationState.SetSlope ? CreationState.SetPoint : CreationState.SetSlope); // state = !state;
         }
@@ -49,11 +47,11 @@ namespace Planetaria
         {
             if (state == CreationState.SetSlope)
             {
-                shape.close(new optional<Vector3>(), PlanetariaShape.AppendMode.OverwriteWithPermanent);
+                shape.close(new optional<Vector3>());
             }
             else
             {
-                shape.close(slope, PlanetariaShape.AppendMode.OverwriteWithPermanent);
+                shape.close(slope);
             }
             AssetDatabase.SaveAssets();
             DestroyImmediate(this.gameObject);

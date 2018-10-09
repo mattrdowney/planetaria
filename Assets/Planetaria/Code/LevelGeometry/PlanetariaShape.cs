@@ -16,13 +16,7 @@ namespace Planetaria
         public static PlanetariaShape Create()
         {
             PlanetariaShape asset = ScriptableObject.CreateInstance<PlanetariaShape>();
-
-            asset.ephemeral_arcs = 0;
-            asset.has_corners = true;
-            asset.serialized_arc_list = new List<SerializedArc>();
-            asset.arc_list = new Arc[0];
-            asset.block_list = new PlanetariaArcCollider[0];
-            asset.field_list = new PlanetariaSphereCollider[0];
+            asset.generate_arcs();
 
             AssetDatabase.CreateAsset(asset, "Assets/" + EditorSceneManager.GetActiveScene().name + "_PlanetariaShape.asset");
             AssetDatabase.SaveAssets();
@@ -39,11 +33,25 @@ namespace Planetaria
         {
             PlanetariaShape asset = Create();
 
-            asset.has_corners = generate_corners;
             asset.serialized_arc_list = serialized_arcs;
+            asset.has_corners = generate_corners;
             asset.generate_arcs();
 
             return asset;
+        }
+
+        public void initialize()
+        {
+            if (serialized_arc_list == null)
+            {
+                serialized_arc_list = new List<SerializedArc>();
+                has_corners = true;
+                ephemeral_arcs = 0;
+            }
+
+            arc_list = new Arc[0];
+            block_list = new PlanetariaArcCollider[0];
+            field_list = new PlanetariaSphereCollider[0];
         }
 
         public List<Arc> block_collision(PlanetariaShape other, Quaternion shift_from_self_to_other) // TODO: AABB-equivalent would be nice here
@@ -158,9 +166,9 @@ namespace Planetaria
             }
             
             serialized_arc_list.AddRange(arcs);
+            int ephemeral_arcs_added = (permanence == AppendMode.OverwriteWithPermanent ? 0 : arcs.Count);
+            ephemeral_arcs += ephemeral_arcs_added;
             generate_arcs();
-
-            ephemeral_arcs += (permanence == AppendMode.OverwriteWithPermanent ? 0 : arcs.Count);
         }
 
         /// <summary>
@@ -195,6 +203,10 @@ namespace Planetaria
         /// <summary>Is the shape closed? (i.e. does the shape draw the final arc from the last point to the first point?)</summary>
         public bool closed()
         {
+            if (serialized_arc_list.Count == 0)
+            {
+                return true;
+            }
             Arc first_arc = serialized_arc_list[0];
             Arc last_arc = serialized_arc_list[serialized_arc_list.Count-1];
             return Vector3.Dot(first_arc.begin(), last_arc.end()) > 1 - Precision.threshold;
@@ -244,7 +256,7 @@ namespace Planetaria
             foreach (Arc arc in arcs)
             {
                 float weight = arc.length(); // multiply be the weight of the arc (length is an integration of sorts)
-                Vector3 arc_center = arc.position(0); // get the center of mass of each arc // zero intentional
+                Vector3 arc_center = arc.position(-arc.angle()/4) + arc.position(+arc.angle()/4); // get the integration of the arc center.
                 result += arc_center * weight;
             }
             result.Normalize();
@@ -315,10 +327,10 @@ namespace Planetaria
         /// </summary>
         private void generate_arcs()
         {
+            initialize();
             List<Arc> result = generate_edges();
             result = add_corners_between_edges(result);
             arc_list = result.ToArray();
-            generate_colliders();
             generate_colliders();
         }
 
@@ -329,7 +341,7 @@ namespace Planetaria
         private List<Arc> generate_edges()
         {
             List<Arc> result = new List<Arc>();
-            foreach (Arc arc in serialized_arc_list.ToList())
+            foreach (SerializedArc arc in serialized_arc_list)
             {
                 result.Add(arc);
             }
@@ -346,11 +358,12 @@ namespace Planetaria
             {
                 block_list[collider] = PlanetariaArcCollider.block(arc_list[collider]);
             }
+            /*
             field_list = new PlanetariaSphereCollider[has_corners ? arc_list.Length/2 : arc_list.Length];
             for (int collider = 0; collider < arc_list.Length; collider += (has_corners ? 2 : 1))
             {
                 field_list[has_corners ? collider/2 : collider] = PlanetariaArcCollider.field(arc_list[collider]);
-            }
+            }*/
         }
 
         /// <summary>
@@ -381,6 +394,8 @@ namespace Planetaria
 
         /// <summary>Does the shape have corners between line segments?</summary>
         [SerializeField] private bool has_corners;
+        /// <summary>An internal counter representing the number of ephemeral (non-permanent) edge e.g. for Arc creation visualization in the editor.</summary>
+        [SerializeField] private int ephemeral_arcs = 0;
         /// <summary>List of arcs that define a shape (excluding corner connections).</summary>
         [SerializeField] private List<SerializedArc> serialized_arc_list;
         /// <summary>List of arcs on a unit sphere that define a shape (including corner connections).</summary>
@@ -389,8 +404,6 @@ namespace Planetaria
         [NonSerialized] public PlanetariaArcCollider[] block_list;
         /// <summary>List of arc colliders that will be used for intersection.</summary>
         [NonSerialized] public PlanetariaSphereCollider[] field_list;
-        /// <summary>An internal counter representing the number of ephemeral (non-permanent) edge e.g. for Arc creation visualization in the editor.</summary>
-        [NonSerialized] private int ephemeral_arcs = 0;
     }
 }
 

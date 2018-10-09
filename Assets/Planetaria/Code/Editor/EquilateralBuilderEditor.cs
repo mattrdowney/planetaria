@@ -10,7 +10,7 @@ namespace Planetaria
         [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
         static void draw_arc_builder_gizmos(EquilateralBuilder self, GizmoType gizmo_type)
         {
-            ShapeEditor.draw_shape(self.shape, self.gameObject.transform.rotation);
+            PlanetariaShapeEditor.draw_shape(self.shape, self.gameObject.transform.rotation);
         }
     }
 }

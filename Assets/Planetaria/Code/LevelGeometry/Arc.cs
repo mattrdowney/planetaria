@@ -202,7 +202,7 @@ namespace Planetaria
             return !left.Equals(right);
         }
 
-        public override bool Equals(System.Object other_object)
+        public override bool Equals(System.Object other_object) // this shouldn't be necessary because of struct equality semantics
         {
             bool equal_type = other_object is Arc;
             if (!equal_type)
@@ -253,18 +253,18 @@ namespace Planetaria
         }
 
         /// <summary>An axis that includes the center of the circle that defines the arc.</summary>
-        [NonSerialized] private Vector3 center_axis; // FIXME: readonly
+        [NonSerialized] private readonly Vector3 center_axis; // FIXME: readonly
         /// <summary>An axis that helps define the beginning of the arc.</summary>
-        [NonSerialized] private Vector3 forward_axis;
+        [NonSerialized] private readonly Vector3 forward_axis;
         /// <summary>A binormal to center_axis and forward_axis. Determines points after the beginning of the arc.</summary>
-        [NonSerialized] private Vector3 right_axis;
+        [NonSerialized] private readonly Vector3 right_axis;
     
         /// <summary>The angle of the arc in radians divided by two (must be positive). Range: [-PI, +PI]</summary>
-        [NonSerialized] private float half_angle;
+        [NonSerialized] private readonly float half_angle;
         /// <summary>The angle of the arc from its parallel "equator". Range: [-PI/2, +PI/2]</summary>
-        [NonSerialized] private float arc_latitude;
+        [NonSerialized] private readonly float arc_latitude;
         /// <summary>The curvature of the arc (e.g. Corner/Edge, Straight/Convex/Concave).</summary>
-        [NonSerialized] private GeometryType curvature;
+        [NonSerialized] private readonly GeometryType curvature;
     }
 }
 

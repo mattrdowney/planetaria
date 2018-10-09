@@ -59,35 +59,36 @@ namespace Planetaria
         /// <returns>An arc along the surface of a unit sphere.</returns>
         private static SerializedArc arc(Vector3 from, Vector3 slope, Vector3 to, bool clockwise)
         {
-            Vector3 center_axis = Vector3.Cross(from, slope).normalized;
+            Vector3 right_axis = slope;
+            Vector3 forward_axis = from; // for great circles only
+            if (from != to) // typical case (for all arcs)
+            {
+                forward_axis = Vector3.ProjectOnPlane(from - to, slope).normalized; // [from - to] is within the arc's plane
+            }
+            Vector3 center_axis = Vector3.Cross(forward_axis, right_axis).normalized; // get binormal using left-hand rule
             if (!clockwise) // Invert (e.g. for GeometryType.ConcaveCorner)
             {
                 center_axis *= -1;
             }
+            Quaternion orientation = Quaternion.LookRotation(forward_axis, center_axis);
 
-            float elevation = Vector3.Dot(from, center_axis);
-            Vector3 center = elevation * center_axis;
-
-            Vector3 begin_axis = (from - center).normalized;
-            Vector3 end_axis = (to - center).normalized;
-
-            bool long_path = Vector3.Dot(slope, to) < 0 || from == to;
-            long_path ^= !clockwise; // Long path is inverted if going counterclockwise
+            Vector3 begin_axis = Vector3.ProjectOnPlane(from, center_axis).normalized;
+            Vector3 end_axis = Vector3.ProjectOnPlane(to, center_axis).normalized;
 
             float arc_angle = Vector3.Angle(begin_axis, end_axis) * Mathf.Deg2Rad;
+            bool long_path = Vector3.Dot(slope, to) < 0 || from == to;
+            long_path ^= !clockwise; // Long path is inverted if going counterclockwise
             if (long_path)
             {
                 arc_angle = 2*Mathf.PI - arc_angle;
             }
-            float half_angle = arc_angle/2;
+            orientation *= Quaternion.Euler(0, arc_angle/2*Mathf.Rad2Deg, 0);
 
-            Vector3 forward_axis = PlanetariaMath.spherical_linear_interpolation(begin_axis, slope, half_angle); // for great circles only
-            //Vector3 right_axis = PlanetariaMath.spherical_linear_interpolation(begin_axis, slope, half_angle + Mathf.PI/2);
-
+            float elevation = Vector3.Dot(from, center_axis);
             float arc_latitude = Mathf.Asin(elevation);
             GeometryType curvature = edge_type(arc_latitude);
 
-            return new SerializedArc(Quaternion.LookRotation(forward_axis, center_axis), half_angle, arc_latitude, curvature);
+            return new SerializedArc(orientation, arc_angle/2, arc_latitude, curvature);
         }
 
         /// <summary>

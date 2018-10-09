@@ -9,7 +9,7 @@ namespace Planetaria
         [DrawGizmo(GizmoType.Selected)]
         private static void draw_planetaria_collider_gizmos(PlanetariaCollider self, GizmoType gizmo_type)
         {
-            ShapeEditor.draw_shape(self.shape, self.gameObject.internal_game_object.transform.rotation);
+            PlanetariaShapeEditor.draw_shape(self.shape, self.gameObject.internal_game_object.transform.rotation);
             if (!self.is_field)
             {
                 PlanetariaArcColliderEditor.draw_arc(self.shape.block_list[arc_identifier],

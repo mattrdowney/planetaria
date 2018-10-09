@@ -1,17 +1,15 @@
-﻿using System;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace Planetaria
 {
     [CustomEditor(typeof(ArcBuilder))]
-    [Serializable]
     public class ArcBuilderEditor : Editor
     {
         [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
-        static void draw_arc_builder_gizmos(ArcBuilder self, GizmoType gizmo_type)
+        private static void draw_arc_builder_gizmos(ArcBuilder self, GizmoType gizmo_type)
         {
-            ShapeEditor.draw_shape(self.shape, Quaternion.identity);
+            PlanetariaShapeEditor.draw_shape(self.shape, Quaternion.identity);
         }
     }
 }
