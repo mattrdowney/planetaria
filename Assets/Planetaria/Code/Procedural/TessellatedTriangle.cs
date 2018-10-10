@@ -3,12 +3,18 @@ using UnityEngine;
 
 public class TessellatedTriangle
 {
-    public static Mesh generate(Vector3 a, Vector3 b, Vector3 c, int level_of_detail, bool triangle_strip = false)
+    public static Mesh generate(Mesh mesh, int triangle, int level_of_detail, bool triangle_strip = false)
     {
+        triangle *= 3;
+        Vector3 a = mesh.vertices[mesh.triangles[triangle+0]].normalized;
+        Vector3 b = mesh.vertices[mesh.triangles[triangle+1]].normalized;
+        Vector3 c = mesh.vertices[mesh.triangles[triangle+2]].normalized;
+
         if (level_of_detail < 0)
         {
             Debug.LogError("TessellatedTriangle::generate() must have level_of_detail 0 or greater.");
         }
+        List<Vector3> vertices = new List<Vector3>();
         int rows = level_of_detail + 1;
         for (int row = 0; row < rows; row += 1)
         {
@@ -26,7 +32,6 @@ public class TessellatedTriangle
             int bottom_columns = (row+1);
             int top_column = 0;
             int bottom_column = 0;
-            List<Vector3> vertices = new List<Vector3>();
             while (bottom_column < bottom_columns || next_direction == TriangleStripDirection.BottomUp)
             {
                 if (next_direction == TriangleStripDirection.TopDown ||
@@ -61,9 +66,28 @@ public class TessellatedTriangle
                 }
                 next_direction = (TriangleStripDirection)(((int)next_direction + 1) % 4); // cycle through directions
             }
-            if (triangle_strip == false)
+        }
+        List<Vector3> flipped_vertices = new List<Vector3>();
+        if (triangle_strip == false)
+        {
+            for (int triangle_index = 0; triangle_index < vertices.Count; triangle_index += 3)
             {
-                // TODO: flip triangle vertices
+                // flip triangle vertices
+                Vector3 subvertex_a = vertices[triangle_index+0];
+                Vector3 subvertex_b = vertices[triangle_index+1];
+                Vector3 subvertex_c = vertices[triangle_index+2];
+                Vector3 ba_vector = subvertex_b - subvertex_a;
+                Vector3 cb_vector = subvertex_c - subvertex_b;
+                Vector3 triangle_direction = Vector3.Cross(ba_vector, cb_vector);
+                bool cull_triangle = Vector3.Dot(triangle_direction, subvertex_a) < 0;
+                if (cull_triangle)
+                {
+                    flipped_vertices.AddRange(new List<Vector3>{ subvertex_c, subvertex_b, subvertex_b }); // flip a and c
+                }
+                else
+                {
+                    flipped_vertices.AddRange(new List<Vector3>{ subvertex_a, subvertex_b, subvertex_c });
+                }
             }
         }
     }
