@@ -25,7 +25,7 @@ namespace Planetaria
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            resolution = EditorGUILayout.IntField("Pixel resolution", resolution);
+            triangle_budget = EditorGUILayout.IntField("Triangle Budget", triangle_budget);
             GUILayout.EndHorizontal();
 
             if (GUILayout.Button("Generate"))
@@ -35,9 +35,10 @@ namespace Planetaria
                     case Shape.Cube:
                         break;
                     case Shape.Octahedron:
-                        OctahedronSphere tesselated_octahedron = OctahedronSphere.generate(resolution);
-                        AssetDatabase.CreateAsset(tesselated_octahedron.get_shared_mesh(),
-                                "Assets/Planetaria/Procedural/Mesh/octahedron_" + resolution + ".asset");
+                        Mesh tesselated_octahedron = OctahedronSphere.generate(triangle_budget);
+                        int triangles = tesselated_octahedron.triangles.Length/3;
+                        AssetDatabase.CreateAsset(tesselated_octahedron,
+                                "Assets/Planetaria/Procedural/Mesh/octahedron_" + triangles + ".asset");
                         break;
                 }
                 AssetDatabase.SaveAssets();
@@ -45,7 +46,7 @@ namespace Planetaria
         }
 
         [SerializeField] [HideInInspector] private Shape shape = Shape.Octahedron;
-        [SerializeField] [HideInInspector] private int resolution = 1;
+        [SerializeField] [HideInInspector] private int triangle_budget = 1;
     }
 }
 
