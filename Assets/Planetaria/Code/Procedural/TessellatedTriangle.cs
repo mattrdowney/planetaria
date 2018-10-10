@@ -7,6 +7,7 @@ namespace Planetaria
     {
         public static Mesh generate(Mesh mesh, int triangle, int triangle_budget, bool triangle_strip = false)
         {
+            Debug.Log(triangle_budget);
             if (triangle_budget <= 0)
             {
                 Debug.LogWarning("TessellatedTriangle::generate() has no triangle_budget.");
@@ -14,9 +15,9 @@ namespace Planetaria
             }
 
             triangle *= 3;
-            uv_a = mesh.uv[mesh.triangles[triangle + 0]].normalized;
-            uv_b = mesh.uv[mesh.triangles[triangle + 1]].normalized;
-            uv_c = mesh.uv[mesh.triangles[triangle + 2]].normalized;
+            uv_a = mesh.uv[mesh.triangles[triangle + 0]];
+            uv_b = mesh.uv[mesh.triangles[triangle + 1]];
+            uv_c = mesh.uv[mesh.triangles[triangle + 2]];
             vertex_a = mesh.vertices[mesh.triangles[triangle + 0]].normalized;
             vertex_b = mesh.vertices[mesh.triangles[triangle + 1]].normalized;
             vertex_c = mesh.vertices[mesh.triangles[triangle + 2]].normalized;
@@ -26,12 +27,12 @@ namespace Planetaria
             parallelogram_area = triangle_plane.magnitude;
 
             List<Vector2> interpolators = new List<Vector2>();
-            // triangle_budget=1 --> rows=0, 4-->1, 9-->2, 16-->3
-            int rows = Mathf.FloorToInt(Mathf.Sqrt(triangle_budget) - 1); // TODO: verify 
-            for (int row = 0; row < rows; row += 1)
+            // triangle_budget=1 --> rows=1, 4-->2, 9-->3, 16-->4
+            int max_row = Mathf.FloorToInt(Mathf.Sqrt(triangle_budget)); // TODO: verify 
+            for (int row = 0; row < max_row; row += 1)
             {
-                float top_row_interpolator = (row + 0) / (float)rows;
-                float bottom_row_interpolator = (row + 1) / (float)rows;
+                float top_row_interpolator = (row + 0) / (float)max_row;
+                float bottom_row_interpolator = (row + 1) / (float)max_row;
                 //zig-zag through the triangles (back and forth as a single strip)
                 bool zig = true;
                 TriangleStripDirection next_direction = TriangleStripDirection.TopDown;
@@ -101,6 +102,10 @@ namespace Planetaria
                     }
                 }
             }
+            else
+            {
+                flipped_interpolators = interpolators;
+            }
             List<int> triangle_set = new List<int>();
             List<Vector2> uv_set = new List<Vector2>();
             List<Vector3> vertex_set = new List<Vector3>();
@@ -111,8 +116,8 @@ namespace Planetaria
                 vertex_set.Add(interpolated_vertex(flipped_interpolators[index]));
             }
             Mesh result = new Mesh();
-            result.uv = uv_set.ToArray();
             result.vertices = vertex_set.ToArray();
+            result.uv = uv_set.ToArray();
             result.normals = vertex_set.ToArray(); // TODO: verify (e.g. the normals should probably be negative)
             result.triangles = triangle_set.ToArray();
             result.RecalculateBounds();
