@@ -15,14 +15,9 @@ namespace Planetaria
             List<Mesh> result = new List<Mesh>();
             for (int triangle = 0; triangle < triangles; triangle += 1)
             {
-                Debug.Log("Check: " + triangle_budget/triangles);
                 // TODO create chunks: TessellatedTriangle call with triangle chunk size, then tessellate those triangles and add them to result
                 result.Add(TessellatedTriangle.generate(mesh, triangle, triangle_budget/triangles, triangle_strip));
             }
-            Debug.Log(result.Count);
-            Debug.Log(result[0].triangles.Length/3);
-            Debug.Log(result.Count * (result[0].triangles.Length/3));
-            Debug.Log(triangle_budget);
             CombineInstance[] mesh_combiner = new CombineInstance[result.Count];
             for (int submesh = 0; submesh < result.Count; submesh += 1)
             {

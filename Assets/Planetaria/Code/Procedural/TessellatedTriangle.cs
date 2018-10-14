@@ -21,10 +21,8 @@ namespace Planetaria
             vertex_a = mesh.vertices[mesh.triangles[triangle + 0]].normalized;
             vertex_b = mesh.vertices[mesh.triangles[triangle + 1]].normalized;
             vertex_c = mesh.vertices[mesh.triangles[triangle + 2]].normalized;
-            Vector3 ba_edge = vertex_b - vertex_a;
-            Vector3 cb_edge = vertex_c - vertex_b;
-            triangle_plane = Vector3.Cross(ba_edge, cb_edge);
-            parallelogram_area = triangle_plane.magnitude;
+            triangle_plane = new Plane(vertex_a, vertex_b, vertex_c);
+            parallelogram_area = Vector3.Cross(vertex_b - vertex_a, vertex_c - vertex_b).magnitude;
 
             List<Vector2> interpolators = new List<Vector2>();
             // triangle_budget=1 --> rows=1, 4-->2, 9-->3, 16-->4
@@ -126,6 +124,10 @@ namespace Planetaria
 
         private static Vector3 interpolated_vertex(Vector2 interpolator)
         {
+            if (interpolator.x == 0) // unless I screwed up interpolator.y, this *could* be a Unity bug
+            {
+                return vertex_a;
+            }
             Vector3 left_rail = Vector3.Slerp(vertex_a, vertex_b, interpolator.x);
             Vector3 right_rail = Vector3.Slerp(vertex_a, vertex_c, interpolator.x);
             return Vector3.Slerp(left_rail, right_rail, interpolator.y);
@@ -134,7 +136,10 @@ namespace Planetaria
         private static Vector2 interpolated_uv(Vector2 interpolator)
         {
             Vector3 sphere_position = interpolated_vertex(interpolator);
-            Vector3 triangle_position = Vector3.ProjectOnPlane(sphere_position, triangle_plane);
+            //Vector3 triangle_position = triangle_plane.ClosestPointOnPlane(sphere_position);
+            float triangle_offset;
+            triangle_plane.Raycast(new Ray(Vector3.zero, sphere_position), out triangle_offset);
+            Vector3 triangle_position = sphere_position*triangle_offset;
 
             // find Barycentric vectors
             var vector_a = vertex_a - triangle_position;
@@ -144,7 +149,7 @@ namespace Planetaria
             // find Barycentric weights
             float weight_a = Vector3.Cross(vector_b, vector_c).magnitude / parallelogram_area;
             float weight_b = Vector3.Cross(vector_c, vector_a).magnitude / parallelogram_area;
-            float weight_c = Vector3.Cross(vector_a, vector_b).magnitude / parallelogram_area;
+            float weight_c = 1 - weight_a - weight_b;
 
             // find uv coordinate
             return uv_a * weight_a + uv_b * weight_b + uv_c * weight_c;
@@ -158,7 +163,7 @@ namespace Planetaria
         private static Vector3 vertex_b;
         private static Vector3 vertex_c;
         private static float parallelogram_area;
-        private static Vector3 triangle_plane;
+        private static Plane triangle_plane;
     }
 }
 
