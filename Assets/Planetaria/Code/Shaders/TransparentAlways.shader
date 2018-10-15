@@ -3,14 +3,14 @@
 	Properties
 	{
 		_MainTex("Texture", 2D) = "white" {}
+		_Cutoff("Alpha cutoff", Range(0,1)) = 0.5
 	}
 
 	SubShader
 	{
-		Tags { "Queue" = "Transparent+999" "RenderType" = "Transparent" } // CONSIDER: transparent cutout should almost definitely be used // FIXME: optimize queue usage to avoid rendering since this is ZTest Always
+		Tags { "Queue" = "AlphaTest" "RenderType" = "TransparentCutout" } // CONSIDER: transparent cutout should almost definitely be used // FIXME: optimize queue usage to avoid rendering since this is ZTest Always
 		LOD 100
 		Cull Off
-		Blend SrcAlpha OneMinusSrcAlpha
 
 		CGPROGRAM
 		#pragma surface surface_shader TwoDimensional alpha
@@ -29,11 +29,22 @@
 		};
 
 		sampler2D _MainTex;
+		sampler2D _CutTex;
+		float _Cutoff;
 
 		void surface_shader(Input IN, inout SurfaceOutput o)
 		{
-			o.Albedo = tex2D(_MainTex, IN.uv_MainTex).rgb;
-			o.Alpha = tex2D(_MainTex, IN.uv_MainTex).a;
+			fixed4 pixel_color = tex2D(_MainTex, IN.uv_MainTex);
+			o.Albedo = pixel_color.rgb;
+
+			if (pixel_color.a > _Cutoff) // FIXME: I think by screwing up the normals in the mesh, I screw up sorting order
+			{
+				o.Alpha = 1;
+			}
+			else
+			{
+				o.Alpha = 0;
+			}
 		}
 		ENDCG
 	}

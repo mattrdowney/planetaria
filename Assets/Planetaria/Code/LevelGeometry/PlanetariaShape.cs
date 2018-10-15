@@ -17,9 +17,6 @@ namespace Planetaria
         {
             PlanetariaShape asset = ScriptableObject.CreateInstance<PlanetariaShape>();
             asset.generate_arcs();
-
-            AssetDatabase.CreateAsset(asset, "Assets/" + EditorSceneManager.GetActiveScene().name + "_PlanetariaShape.asset");
-            AssetDatabase.SaveAssets();
             return asset;
         }
         
@@ -52,6 +49,12 @@ namespace Planetaria
             arc_list = new Arc[0];
             block_list = new PlanetariaArcCollider[0];
             field_list = new PlanetariaSphereCollider[0];
+        }
+
+        public void save()
+        {
+            AssetDatabase.CreateAsset(this, "Assets/" + EditorSceneManager.GetActiveScene().name + "_PlanetariaShape.asset");
+            AssetDatabase.SaveAssets();
         }
 
         public List<Arc> block_collision(PlanetariaShape other, Quaternion shift_from_self_to_other) // TODO: AABB-equivalent would be nice here
@@ -319,7 +322,7 @@ namespace Planetaria
         /// </summary>
         private void OnEnable()
         {
-            generate_arcs();
+            initialize();
         }
 
         /// <summary>

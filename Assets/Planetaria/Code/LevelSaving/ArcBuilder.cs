@@ -53,7 +53,7 @@ namespace Planetaria
             {
                 shape.close(slope);
             }
-            AssetDatabase.SaveAssets();
+            shape.save();
             DestroyImmediate(this.gameObject);
         }
 

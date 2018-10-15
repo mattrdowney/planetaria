@@ -6,10 +6,11 @@ namespace Planetaria
     [CustomEditor(typeof(PlanetariaCollider))]
     public class PlanetariaColliderEditor : Editor
     {
-        [DrawGizmo(GizmoType.Selected)]
+        [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
         private static void draw_planetaria_collider_gizmos(PlanetariaCollider self, GizmoType gizmo_type)
         {
             PlanetariaShapeEditor.draw_shape(self.shape, self.gameObject.internal_game_object.transform.rotation);
+            /*
             if (!self.is_field)
             {
                 PlanetariaArcColliderEditor.draw_arc(self.shape.block_list[arc_identifier],
@@ -26,8 +27,9 @@ namespace Planetaria
                     }
                 }
             }
+            */
         }
-
+        /*
         public override void OnInspectorGUI()
         {
             PlanetariaCollider self = (PlanetariaCollider)target;
@@ -64,6 +66,7 @@ namespace Planetaria
         
         private static bool[] mask = new bool[8*sizeof(int)];
         private static int arc_identifier = 0;
+        */
     }
 }
 
