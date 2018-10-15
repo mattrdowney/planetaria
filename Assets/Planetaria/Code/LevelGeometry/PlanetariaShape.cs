@@ -42,6 +42,21 @@ namespace Planetaria
         }
 
         /// <summary>
+        /// Constructor - Creates a circle (shape) of the given radius.
+        /// </summary>
+        /// <param name="radius">The radius of the circle.</param>
+        public static PlanetariaShape Create(float radius)
+        {
+            PlanetariaShape asset = Create();
+
+            asset.serialized_arc_list = new List<SerializedArc> { new SerializedArc(Quaternion.LookRotation(Vector3.up, Vector3.back),
+                    Mathf.PI, -Mathf.Acos(radius), GeometryType.ConvexEdge) };
+            asset.has_corners = false;
+            asset.initialize();
+            return asset;
+        }
+
+        /// <summary>
         /// Inspector (pseudo-mutator) - Setup and caches all arcs based on curve_list at load-time
         /// </summary>
         private void initialize()

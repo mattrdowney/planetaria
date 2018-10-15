@@ -17,9 +17,11 @@ public class Character : PlanetariaMonoBehaviour
     private void Start()
     {
         planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
-        this.GetComponent<PlanetariaCollider>().material = material;
+        planetaria_collider = this.GetComponent<PlanetariaCollider>();
+        planetaria_collider.material = material;
         transform.direction = new NormalizedCartesianCoordinates(Vector3.up);
-        transform.localScale = +0.01f;
+        transform.localScale = +0.1f;
+        planetaria_collider.shape = PlanetariaShape.Create(+0.1f/2);
     }
 
     private void Update()
@@ -101,6 +103,7 @@ public class Character : PlanetariaMonoBehaviour
     [SerializeField] private const float acceleration = 5f;
 
     [NonSerialized] private PlanetariaRigidbody planetaria_rigidbody;
+    [NonSerialized] private PlanetariaCollider planetaria_collider;
     [NonSerialized] private float last_jump_attempt = -1;
     [NonSerialized] public bool magnet_floor = false;
     [NonSerialized] private bool jump_pressed;
