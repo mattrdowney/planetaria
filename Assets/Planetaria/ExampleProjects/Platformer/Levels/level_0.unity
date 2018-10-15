@@ -216,7 +216,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 202031877}
   material: {fileID: 11400000, guid: a03d051b7bfe0d344abca6f59970c460, type: 2}
-  shape_variable: {fileID: 11400000, guid: 82d2aeb6a556a5b4cb096522822edf8a, type: 2}
+  shape_variable: {fileID: 11400000, guid: 3472d24803bb64546bd8ee7fd58bdbcb, type: 2}
   observer:
     planetaria_transformation: {fileID: 0}
     planetaria_collider: {fileID: 0}
@@ -328,7 +328,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 265641990}
   material: {fileID: 11400000, guid: a03d051b7bfe0d344abca6f59970c460, type: 2}
-  shape_variable: {fileID: 11400000, guid: 28c7299e57572e8498be16c537d540b0, type: 2}
+  shape_variable: {fileID: 11400000, guid: f7c0fe4fe708a59488d1683993f351fc, type: 2}
   observer:
     planetaria_transformation: {fileID: 0}
     planetaria_collider: {fileID: 0}
@@ -808,7 +808,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 896036341}
   material: {fileID: 11400000, guid: a03d051b7bfe0d344abca6f59970c460, type: 2}
-  shape_variable: {fileID: 11400000, guid: b0240a7b3626b9d478f7d29b729432dc, type: 2}
+  shape_variable: {fileID: 11400000, guid: c8317c5541ba12e41ac5cb26b645c07c, type: 2}
   observer:
     planetaria_transformation: {fileID: 0}
     planetaria_collider: {fileID: 0}
@@ -1203,7 +1203,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 1378140839}
   material: {fileID: 11400000, guid: a03d051b7bfe0d344abca6f59970c460, type: 2}
-  shape_variable: {fileID: 11400000, guid: fc240e0ca8a64eb46b0b713c97093029, type: 2}
+  shape_variable: {fileID: 11400000, guid: acf3e75647353904e977b5454b3c93bc, type: 2}
   observer:
     planetaria_transformation: {fileID: 0}
     planetaria_collider: {fileID: 0}
@@ -1503,7 +1503,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 1811587005}
   material: {fileID: 11400000, guid: a03d051b7bfe0d344abca6f59970c460, type: 2}
-  shape_variable: {fileID: 11400000, guid: 08012004ae6288640b72ea080ae1aa7a, type: 2}
+  shape_variable: {fileID: 11400000, guid: 248fcbaefae44564f87e51f2f84d3386, type: 2}
   observer:
     planetaria_transformation: {fileID: 0}
     planetaria_collider: {fileID: 0}

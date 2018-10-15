@@ -16,7 +16,12 @@ namespace Planetaria
         public static PlanetariaShape Create()
         {
             PlanetariaShape asset = ScriptableObject.CreateInstance<PlanetariaShape>();
-            asset.generate_arcs();
+            if (asset.serialized_arc_list == null)
+            {
+                asset.serialized_arc_list = new List<SerializedArc>();
+                asset.has_corners = true;
+            }
+            asset.initialize();
             return asset;
         }
         
@@ -32,23 +37,23 @@ namespace Planetaria
 
             asset.serialized_arc_list = serialized_arcs;
             asset.has_corners = generate_corners;
-            asset.generate_arcs();
-
+            asset.initialize();
             return asset;
         }
 
-        public void initialize()
+        /// <summary>
+        /// Inspector (pseudo-mutator) - Setup and caches all arcs based on curve_list at load-time
+        /// </summary>
+        private void initialize()
         {
-            if (serialized_arc_list == null)
-            {
-                serialized_arc_list = new List<SerializedArc>();
-                has_corners = true;
-                ephemeral_arcs = 0;
-            }
-
             arc_list = new Arc[0];
             block_list = new PlanetariaArcCollider[0];
             field_list = new PlanetariaSphereCollider[0];
+
+            List<Arc> result = generate_edges();
+            result = add_corners_between_edges(result);
+            arc_list = result.ToArray();
+            generate_colliders();
         }
 
         public void save()
@@ -171,7 +176,7 @@ namespace Planetaria
             serialized_arc_list.AddRange(arcs);
             int ephemeral_arcs_added = (permanence == AppendMode.OverwriteWithPermanent ? 0 : arcs.Count);
             ephemeral_arcs += ephemeral_arcs_added;
-            generate_arcs();
+            initialize();
         }
 
         /// <summary>
@@ -198,7 +203,7 @@ namespace Planetaria
                 }
                 append(ArcFactory.curve(last_arc.end(), slope.data, first_arc.begin()), permanence);
             }
-            generate_arcs();
+            initialize();
 
             // TODO: if field, make this a convex_hull() // TODO: add convex property
         }
@@ -326,27 +331,18 @@ namespace Planetaria
         }
 
         /// <summary>
-        /// Inspector (pseudo-mutator) - Caches all arcs based on curve_list at load-time
-        /// </summary>
-        private void generate_arcs()
-        {
-            initialize();
-            List<Arc> result = generate_edges();
-            result = add_corners_between_edges(result);
-            arc_list = result.ToArray();
-            generate_colliders();
-        }
-
-        /// <summary>
         /// Inspector - Generates a shape (without corners) from a list of curves. Closing edge not generated if "closed" is not set.
         /// </summary>
         /// <returns>A list of edges that define a shape.</returns>
         private List<Arc> generate_edges()
         {
             List<Arc> result = new List<Arc>();
-            foreach (SerializedArc arc in serialized_arc_list)
+            if (serialized_arc_list != null)
             {
-                result.Add(arc);
+                foreach (SerializedArc arc in serialized_arc_list)
+                {
+                    result.Add(arc);
+                }
             }
             return result;
         }

@@ -13,4 +13,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   has_corners: 1
   ephemeral_arcs: 0
-  serialized_arc_list: []
+  serialized_arc_list:
+  - compact_basis_vectors_variable: {x: -0.22520515, y: 0.5348039, z: 0.15047716,
+      w: 0.8003899}
+    half_angle_variable: 0.16812542
+    arc_latitude_variable: -0.00000025519824
+    curvature_variable: 1
+  - compact_basis_vectors_variable: {x: -0.56274164, y: 0.31014895, z: -0.42816114,
+      w: 0.6354585}
+    half_angle_variable: 0.07363087
+    arc_latitude_variable: -0.0000005714702
+    curvature_variable: 1
+  - compact_basis_vectors_variable: {x: 0.54451746, y: 0.1650267, z: 0.81492823, w: -0.1102673}
+    half_angle_variable: 0.1812303
+    arc_latitude_variable: -0.00000029168152
+    curvature_variable: 1
+  - compact_basis_vectors_variable: {x: 0.18019551, y: 0.4683739, z: 0.6837713, w: 0.5297287}
+    half_angle_variable: 0.07363107
+    arc_latitude_variable: -0.00007507592
+    curvature_variable: 0

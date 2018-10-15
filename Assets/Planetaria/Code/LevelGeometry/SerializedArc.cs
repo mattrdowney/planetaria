@@ -11,20 +11,68 @@ namespace Planetaria
     {
         public SerializedArc(Quaternion compact_basis_vectors, float half_angle, float arc_latitude, GeometryType curvature)
         {
-            this.compact_basis_vectors = compact_basis_vectors;
-            this.half_angle = half_angle;
-            this.arc_latitude = arc_latitude;
-            this.curvature = curvature;
+            compact_basis_vectors_variable = compact_basis_vectors;
+            half_angle_variable = half_angle;
+            arc_latitude_variable = arc_latitude;
+            curvature_variable = curvature;
         }
 
         /// <summary>A compact representation of center_axis, forward_axis, and right_axis from Arc.</summary>
-        [SerializeField] public readonly Quaternion compact_basis_vectors;
+        [SerializeField] private Quaternion compact_basis_vectors_variable; // readonly would work better, but needs to be [Serializable]
         /// <summary>The angle of the arc in radians divided by two (must be positive). Range: [-PI, +PI]</summary>
-        [SerializeField] public readonly float half_angle;
+        [SerializeField] private float half_angle_variable;
         /// <summary>The angle of the arc from its parallel "equator". Range: [-PI/2, +PI/2]</summary>
-        [SerializeField] public readonly float arc_latitude;
+        [SerializeField] private float arc_latitude_variable;
         /// <summary>The curvature of the arc (e.g. Corner/Edge, Straight/Convex/Concave).</summary>
-        [SerializeField] public readonly GeometryType curvature;
+        [SerializeField] private GeometryType curvature_variable;
+
+        public Quaternion compact_basis_vectors
+        {
+            get
+            {
+                return compact_basis_vectors_variable;
+            }
+            private set
+            {
+                compact_basis_vectors_variable = value;
+            }
+        }
+
+        public float half_angle
+        {
+            get
+            {
+                return half_angle_variable;
+            }
+            private set
+            {
+                half_angle_variable = value;
+            }
+        }
+
+        public float arc_latitude
+        {
+            get
+            {
+                return arc_latitude_variable;
+            }
+            private set
+            {
+                arc_latitude_variable = value;
+            }
+        }
+
+        public GeometryType curvature
+        {
+            get
+            {
+                return curvature_variable;
+            }
+            private set
+            {
+                curvature_variable = value;
+            }
+        }
     }
 }
 
