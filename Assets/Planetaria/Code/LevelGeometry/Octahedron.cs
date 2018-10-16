@@ -2,6 +2,7 @@
 
 namespace Planetaria
 {
+    [System.Obsolete("Please import an octahedron mesh and use that instead.")]
     public static class Octahedron
     {
         /// <summary>

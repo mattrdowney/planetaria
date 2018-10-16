@@ -526,6 +526,20 @@ MonoBehaviour:
   internal_transform: {fileID: 478210920}
   direction_variable: {x: 0, y: 1, z: 0}
   scale_variable: 1
+--- !u!114 &519981973
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98796d1e58552064db49e5b46d99053c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  has_corners: 1
+  ephemeral_arcs: 0
+  serialized_arc_list: []
 --- !u!1 &714241938
 GameObject:
   m_ObjectHideFlags: 0
@@ -641,14 +655,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   game_object_variable:
-    game_object_variable: {fileID: 0}
-  material: {fileID: 11400000, guid: ce95d1a0266097144a9b320e3493898f, type: 2}
-  shape_variable: {fileID: 0}
+    game_object_variable: {fileID: 730523139}
+  material: {fileID: 11400000, guid: a03d051b7bfe0d344abca6f59970c460, type: 2}
+  shape_variable: {fileID: 519981973}
   observer:
     planetaria_transformation: {fileID: 0}
     planetaria_collider: {fileID: 0}
     observers: []
-  internal_transform: {fileID: 730523144}
+  internal_transform: {fileID: 1913872522}
   planetaria_transform: {fileID: 730523145}
   internal_collider: {fileID: 1913872521}
   scale_variable: 0.2
@@ -1569,11 +1583,11 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 2
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!4 &1913872522
 Transform:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 3
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1913872520}

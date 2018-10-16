@@ -15,7 +15,7 @@ namespace Planetaria
             Color violet = new Color(127, 0, 255);
 
             float diameter = .1f;
-            diameter = (arc.type == GeometryType.ConcaveCorner ? -diameter : diameter);
+            diameter = (arc.type == ArcType.ConcaveCorner ? -diameter : diameter);
 
             draw_arc(arc, 0.0f, Color.black, orientation);
             draw_arc(arc, diameter/2, Color.gray, orientation);
@@ -36,7 +36,7 @@ namespace Planetaria
         {
             Vector3 from = arc.begin(extrusion);
             Vector3 normal = -arc.floor().normal;
-            normal = arc.type == GeometryType.ConcaveCorner ? -normal : normal;
+            normal = arc.type == ArcType.ConcaveCorner ? -normal : normal;
             Vector3 to = arc.end(extrusion);
 
             if (orientation != Quaternion.identity)

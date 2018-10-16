@@ -44,7 +44,7 @@ namespace Planetaria
         /// </returns>
         public bool contains(Vector3 position, float extrusion = 0f) // FIXME: TODO: ensure this works with 1) negative extrusions and 2) concave corners
         {
-            if (curvature == GeometryType.ConcaveCorner) // Concave corners are "inside-out" // TODO: keep DRY (Do not Repeat Yourself)
+            if (curvature == ArcType.ConcaveCorner) // Concave corners are "inside-out" // TODO: keep DRY (Do not Repeat Yourself)
             {
                 extrusion *= -1;
             }
@@ -99,7 +99,7 @@ namespace Planetaria
         /// <returns>A normal on the arc.</returns>
         public Vector3 normal(float angle, float extrusion = 0f) // TODO: delegate to position() [bug-prone when adding PI/2]
         {
-            if (curvature == GeometryType.ConcaveCorner) // Concave corners are "inside-out"
+            if (curvature == ArcType.ConcaveCorner) // Concave corners are "inside-out"
             {
                 extrusion *= -1;
             }
@@ -109,7 +109,7 @@ namespace Planetaria
             {
                 Vector3 equator_position = PlanetariaMath.spherical_linear_interpolation(forward_axis, right_axis, angle);
                 Vector3 result = PlanetariaMath.spherical_linear_interpolation(equator_position, center_axis, actual_elevation + Mathf.PI/2);
-                return curvature == GeometryType.ConcaveCorner ? -result : result;
+                return curvature == ArcType.ConcaveCorner ? -result : result;
             }
             else // if (actual_elevation < -Mathf.PI/2) // Primarily used for concave corners
             {
@@ -117,14 +117,14 @@ namespace Planetaria
                 actual_elevation /= Mathf.Cos(half_angle);
                 actual_elevation -= Mathf.PI/2;
 
-                if (curvature == GeometryType.ConcaveCorner || curvature == GeometryType.ConvexCorner) // Concave corners are "inside-out"
+                if (curvature == ArcType.ConcaveCorner || curvature == ArcType.ConvexCorner) // Concave corners are "inside-out"
                 {
                     angle *= -1;
                 }
                 
                 Vector3 normal_position = PlanetariaMath.spherical_linear_interpolation(forward_axis, center_axis, actual_elevation - Mathf.PI/2);
                 Vector3 result = PlanetariaMath.spherical_linear_interpolation(normal_position, right_axis, angle);
-                return curvature == GeometryType.ConvexCorner ? -result : result;
+                return curvature == ArcType.ConvexCorner ? -result : result;
             }
         }
 
@@ -136,7 +136,7 @@ namespace Planetaria
         /// <returns>A position on the arc.</returns>
         public Vector3 position(float angle, float extrusion = 0f)
         {
-            if (curvature == GeometryType.ConcaveCorner) // Concave corners are "inside-out"
+            if (curvature == ArcType.ConcaveCorner) // Concave corners are "inside-out"
             {
                 extrusion *= -1;
             }
@@ -179,7 +179,7 @@ namespace Planetaria
         /// Inspector - gets the curvature of the arc (e.g. Corner/Edge, Straight/Convex/Concave).
         /// </summary>
         /// <returns>The curvature of the arc (e.g. Corner/Edge, Straight/Convex/Concave).</returns>
-        public GeometryType type
+        public ArcType type
         {
             get
             {
@@ -241,7 +241,7 @@ namespace Planetaria
             curvature = serialized_arc.curvature;
 
             forward_axis = Vector3.forward;
-            right_axis = (curvature == GeometryType.ConcaveCorner ? Vector3.left : Vector3.right);
+            right_axis = (curvature == ArcType.ConcaveCorner ? Vector3.left : Vector3.right);
             center_axis = Vector3.up;
 
             if (serialized_arc.compact_basis_vectors != Quaternion.identity)
@@ -253,7 +253,7 @@ namespace Planetaria
         }
 
         /// <summary>An axis that includes the center of the circle that defines the arc.</summary>
-        [NonSerialized] private readonly Vector3 center_axis; // FIXME: readonly
+        [NonSerialized] private readonly Vector3 center_axis;
         /// <summary>An axis that helps define the beginning of the arc.</summary>
         [NonSerialized] private readonly Vector3 forward_axis;
         /// <summary>A binormal to center_axis and forward_axis. Determines points after the beginning of the arc.</summary>
@@ -264,7 +264,7 @@ namespace Planetaria
         /// <summary>The angle of the arc from its parallel "equator". Range: [-PI/2, +PI/2]</summary>
         [NonSerialized] private readonly float arc_latitude;
         /// <summary>The curvature of the arc (e.g. Corner/Edge, Straight/Convex/Concave).</summary>
-        [NonSerialized] private readonly GeometryType curvature;
+        [NonSerialized] private readonly ArcType curvature;
     }
 }
 

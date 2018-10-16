@@ -2,7 +2,7 @@
 
 namespace Planetaria
 {
-    public /*sealed?*/ class GeometryVisitor
+    public /*sealed?*/ class ShapeVisitor
     {
         /// <summary>
         /// Constructor (Named) -
@@ -12,14 +12,14 @@ namespace Planetaria
         /// <param name="extrusion"></param>
         /// <param name="transformation"></param>
         /// <returns></returns>
-        public static GeometryVisitor geometry_visitor(ArcVisitor arc_visitor, float angular_position, float extrusion, Transform transformation)
+        public static ShapeVisitor geometry_visitor(ArcVisitor arc_visitor, float angular_position, float extrusion, Transform transformation)
         {
-            GeometryVisitor result = new GeometryVisitor(arc_visitor, extrusion, transformation);
+            ShapeVisitor result = new ShapeVisitor(arc_visitor, extrusion, transformation);
             result.set_position(angular_position);
             return result;
         }
 
-        private GeometryVisitor(ArcVisitor arc_visitor, float extrusion, Transform transformation)
+        private ShapeVisitor(ArcVisitor arc_visitor, float extrusion, Transform transformation)
         {
             this.arc_visitor = arc_visitor;
             block_transform = transformation;
@@ -31,8 +31,8 @@ namespace Planetaria
 
         public static bool concave(Arc arc, float extrusion)
         {
-            bool concave_surfaced = arc.type == GeometryType.ConcaveCorner && extrusion > 0;
-            bool concave_burrowed = arc.type == GeometryType.ConvexCorner && extrusion < 0;
+            bool concave_surfaced = arc.type == ArcType.ConcaveCorner && extrusion > 0;
+            bool concave_burrowed = arc.type == ArcType.ConvexCorner && extrusion < 0;
             bool concave = concave_surfaced || concave_burrowed;
             return concave;
         }

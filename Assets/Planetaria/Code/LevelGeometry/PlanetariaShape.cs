@@ -50,7 +50,7 @@ namespace Planetaria
             PlanetariaShape asset = Create();
 
             asset.serialized_arc_list = new List<SerializedArc> { new SerializedArc(Quaternion.LookRotation(Vector3.up, Vector3.back),
-                    Mathf.PI, -Mathf.Acos(radius), GeometryType.ConvexEdge) };
+                    Mathf.PI, -Mathf.Acos(radius), ArcType.ConvexEdge) };
             asset.has_corners = false;
             asset.initialize();
             return asset;
@@ -300,7 +300,7 @@ namespace Planetaria
                 Arc last_arc = serialized_arc_list.Last();
                 foreach (Arc arc in serialized_arc_list)
                 {
-                    if (ArcFactory.corner_type(last_arc, arc) == GeometryType.ConcaveCorner)
+                    if (ArcFactory.corner_type(last_arc, arc) == ArcType.ConcaveCorner)
                     {
                         return false;
                     }

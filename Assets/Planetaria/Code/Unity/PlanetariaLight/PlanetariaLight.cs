@@ -1,14 +1,29 @@
-﻿using System;
-
-[Serializable]
-public enum GeometryType
+﻿namespace Planetaria
 {
-    ConvexEdge,
-    StraightEdge,
-    ConcaveEdge,
-    ConvexCorner,
-    StraightCorner,
-    ConcaveCorner,
+    /// <summary>
+	///
+    /// </summary>
+	public class PlanetariaLight : PlanetariaComponent
+	{
+		// Properties (Public)
+		
+		// Methods (Public)
+		
+		// Static Methods (Public)
+		
+		// Properties (non-Public)
+		
+		// Methods (non-Public)
+		
+		// Static Methods (non-Public)
+		
+		// Messages (non-Public) ? // TODO: check whether this is the right label, also I sort of doubt I will be creating or using Messages within the API - unless it's a hack
+				
+		// Variables (Public)
+		
+		// Variables (non-Public)
+		
+	}
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

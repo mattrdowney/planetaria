@@ -14,14 +14,14 @@ namespace Planetaria
         /// <returns>A concave or convex corner arc.</returns>
         public static SerializedArc corner(Arc left, Arc right) // TODO: normal constructor
         {
-            GeometryType type = corner_type(left, right);
+            ArcType type = corner_type(left, right);
             switch(type)
             {
-                case GeometryType.StraightCorner:
+                case ArcType.StraightCorner:
                     return straight_corner(left, right);
-                case GeometryType.ConvexCorner:
+                case ArcType.ConvexCorner:
                     return convex_corner(left, right);
-                case GeometryType.ConcaveCorner: default:
+                case ArcType.ConcaveCorner: default:
                     return concave_corner(left, right);
             }
         }
@@ -86,7 +86,7 @@ namespace Planetaria
 
             float elevation = Vector3.Dot(from, center_axis);
             float arc_latitude = Mathf.Asin(elevation);
-            GeometryType curvature = edge_type(arc_latitude);
+            ArcType curvature = edge_type(arc_latitude);
 
             return new SerializedArc(orientation, arc_angle/2, arc_latitude, curvature);
         }
@@ -103,7 +103,7 @@ namespace Planetaria
             Vector3 forward_axis = convex.compact_basis_vectors * Vector3.back; // forward axis negated because it's concave
             Vector3 center_axis = convex.compact_basis_vectors * Vector3.up;
             Quaternion concave_rotation = Quaternion.LookRotation(forward_axis, center_axis);
-            return new SerializedArc(concave_rotation, convex.half_angle, convex.arc_latitude, GeometryType.ConcaveCorner);
+            return new SerializedArc(concave_rotation, convex.half_angle, convex.arc_latitude, ArcType.ConcaveCorner);
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace Planetaria
             float angle = (Vector3.Angle(left_normal, right_normal)*Mathf.Deg2Rad);
 
             Quaternion convex_rotation = Quaternion.LookRotation(forward_axis, center_axis);
-            return new SerializedArc(convex_rotation, angle/2, -Mathf.PI/2, GeometryType.ConvexCorner);
+            return new SerializedArc(convex_rotation, angle/2, -Mathf.PI/2, ArcType.ConvexCorner);
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace Planetaria
         private static SerializedArc straight_corner(Arc left, Arc right)
         {
             SerializedArc convex = convex_corner(left, right);
-            return new SerializedArc(convex.compact_basis_vectors, Precision.just_above_zero, convex.arc_latitude, GeometryType.StraightCorner);
+            return new SerializedArc(convex.compact_basis_vectors, Precision.just_above_zero, convex.arc_latitude, ArcType.StraightCorner);
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace Planetaria
         /// GeometryType.ConcaveCorner if the corner arc is concave.
         /// GeometryType.StraightCorner if the corner arc is a straight angle.
         /// </returns>
-        public static GeometryType corner_type(Arc left, Arc right)
+        public static ArcType corner_type(Arc left, Arc right)
         {
             // Both cases
             Vector3 normal_for_left = left.end_normal();
@@ -160,12 +160,12 @@ namespace Planetaria
 
             if (Vector3.Dot(normal_for_left, normal_for_right) > 1 - Precision.tolerance)
             {
-                return GeometryType.StraightCorner;
+                return ArcType.StraightCorner;
             }
             else
             {
                 return Vector3.Dot(normal_for_left, rightward_for_right) < Precision.tolerance ?
-                        GeometryType.ConvexCorner : GeometryType.ConcaveCorner;
+                        ArcType.ConvexCorner : ArcType.ConcaveCorner;
             }
         }
 
@@ -178,15 +178,15 @@ namespace Planetaria
         /// GeometryType.ConcaveEdge if the arc is small circle with concave focus.
         /// GeometryType.StraightEdge if the arc is a great circle.
         /// </returns>
-        private static GeometryType edge_type(float latitude)
+        private static ArcType edge_type(float latitude)
         {
             if (Mathf.Abs(latitude) < Precision.tolerance)
             {
-                return GeometryType.StraightEdge;
+                return ArcType.StraightEdge;
             }
             else
             {
-                return latitude < 0 ? GeometryType.ConvexEdge : GeometryType.ConcaveEdge;
+                return latitude < 0 ? ArcType.ConvexEdge : ArcType.ConcaveEdge;
             }
         }
 

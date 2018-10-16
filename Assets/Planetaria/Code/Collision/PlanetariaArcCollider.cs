@@ -40,7 +40,7 @@ namespace Planetaria
         /// <returns>A set of three Spheres that define an arc collision.</returns>
         public static PlanetariaArcCollider block(Arc arc)
         {
-            if (arc.type == GeometryType.ConcaveCorner)
+            if (arc.type == ArcType.ConcaveCorner)
             {
                 return new PlanetariaArcCollider(PlanetariaSphereCollider.never, PlanetariaSphereCollider.never,
                         PlanetariaSphereCollider.never);
@@ -68,7 +68,7 @@ namespace Planetaria
         /// <returns>A sphere representing a field collision at a single edge.</returns>
         public static PlanetariaSphereCollider field(Arc arc)
         {
-            if (arc.type >= GeometryType.ConvexCorner) // FIXME: (?) lazy
+            if (arc.type >= ArcType.ConvexCorner) // FIXME: (?) lazy
             {
                 return PlanetariaSphereCollider.always;
             }
