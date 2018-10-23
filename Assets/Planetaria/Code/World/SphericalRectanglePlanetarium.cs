@@ -1,18 +1,9 @@
-﻿#if UNITY_EDITOR
-
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Planetaria
 {
     public class SphericalRectanglePlanetarium : WorldPlanetarium
     {
-        public SphericalRectanglePlanetarium(string name, float angular_width, float angular_height)
-        {
-            initialize(name);
-            this.angular_width = angular_width;
-            this.angular_height = angular_height;
-        }
-
         public override Color sample_pixel(Vector3 planetarium_position)
         {
             NormalizedCartesianCoordinates cartesian = new NormalizedCartesianCoordinates(planetarium_position);
@@ -24,11 +15,37 @@ namespace Planetaria
             return texture.GetPixel(spherical_rectangle.uv.x.scale(texture.width), spherical_rectangle.uv.y.scale(texture.height));
         }
 
-        private void initialize(string name, optional<int> resolution = new optional<int>())
+#if UNITY_EDITOR
+        public override void save(string file_name)
         {
-            identifier = name;
-            material = LoadOrCreateMaterial(name, "Planetaria/Transparent Always");
-            texture = LoadOrCreateTexture2D(material, name, "_MainTex", resolution);
+            WorldPlanetarium.save_material(material, file_name); // TODO: save subasset
+            WorldPlanetarium.save_texture(texture, file_name, "_MainTex");
+        }
+        
+        public static optional<SphericalRectanglePlanetarium> load(string file_name, float width, float height)
+        {
+            optional<Material> material = WorldPlanetarium.load_material(file_name);
+            if (!material.exists)
+            {
+                return new optional<SphericalRectanglePlanetarium>();
+            }
+            SphericalRectanglePlanetarium result = new SphericalRectanglePlanetarium();
+            result.material = material.data;
+            result.texture = WorldPlanetarium.load_texture(file_name, "_MainTex");
+            result.material.SetTexture("_MainTex", result.texture);
+            result.angular_width = width;
+            result.angular_height = height;
+            return result;
+        }
+#endif
+
+        private void initialize(float width, float height, int resolution = 0)
+        {
+            angular_width = width;
+            angular_height = height;
+            material = new Material(Shader.Find("Planetaria/Transparent Always"));
+            texture = new Texture2D(resolution, resolution);
+            material.SetTexture("_MainTex", texture);
         }
 
         private Texture2D texture;
@@ -36,8 +53,6 @@ namespace Planetaria
         private float angular_height;
     }
 }
-
-#endif
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal

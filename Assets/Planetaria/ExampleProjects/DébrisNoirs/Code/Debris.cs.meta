@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 3e88cd813f234cc48bba216ac10989da
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - prefabricated_space_rock: {fileID: 1175150822237868, guid: 8627fecc27453de42ac3e4bedb216c9a,
+      type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

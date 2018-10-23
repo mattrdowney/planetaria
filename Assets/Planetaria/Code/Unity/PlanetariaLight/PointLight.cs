@@ -3,7 +3,7 @@
     /// <summary>
 	///
     /// </summary>
-	public class PointLight : PlanetariaLight
+	public sealed class PointLight : PlanetariaLight
 	{
 		// Properties (Public)
 		

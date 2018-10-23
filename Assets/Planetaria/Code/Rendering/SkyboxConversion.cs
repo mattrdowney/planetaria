@@ -67,23 +67,31 @@ namespace Planetaria
                 switch (from_shape)
                 {
                     case Shape.Cube:
-                        from = new CubePlanetarium(from_file_name);
+                        optional<CubePlanetarium> cubemap = CubePlanetarium.load(from_file_name);
+                        Debug.Assert(cubemap.exists);
+                        from = cubemap.data;
                         break;
                     case Shape.Octahedron:
-                        from = new OctahedronPlanetarium(from_file_name);
+                        optional<OctahedronPlanetarium> octahedron = OctahedronPlanetarium.load(from_file_name);
+                        Debug.Assert(octahedron.exists);
+                        from = octahedron.data;
                         break;
                     case Shape.SphericalRectangle:
                     default: // FIXME:
-                        from = new SphericalRectanglePlanetarium(from_file_name, width, height);
+                        optional<SphericalRectanglePlanetarium> rectangle = SphericalRectanglePlanetarium.load(from_file_name, width, height);
+                        Debug.Assert(rectangle.exists);
+                        from = rectangle.data;
                         break;
                 }
                 switch (to_shape)
                 {
                     case Shape.Cube:
-                        to = new CubePlanetarium(to_file_name, resolution, from, sample_rate);
+                        to = new CubePlanetarium(resolution, from, sample_rate);
+                        to.save(to_file_name);
                         break;
                     case Shape.Octahedron:
-                        to = new OctahedronPlanetarium(to_file_name, resolution, from, sample_rate);
+                        to = new OctahedronPlanetarium(resolution, from, sample_rate);
+                        to.save(to_file_name);
                         break;
                 }
             }

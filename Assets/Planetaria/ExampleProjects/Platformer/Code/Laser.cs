@@ -11,6 +11,7 @@ public class Laser : MonoBehaviour  // TODO: PlanetariaComponent
         main_character = GameObject.FindObjectOfType<Character>().gameObject.internal_game_object.transform;
         main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
         arc_renderer = GameObject.FindObjectOfType<ArcRenderer>();
+        arc_light = GameObject.FindObjectOfType<ArcLight>();
 #if UNITY_EDITOR
         GameObject.FindObjectOfType<PlanetariaActuator>().input_device_type = PlanetariaActuator.InputDevice.Mouse;
 #else
@@ -34,6 +35,10 @@ public class Laser : MonoBehaviour  // TODO: PlanetariaComponent
 #endif
         if (firing)
         {
+            if (arc_renderer.material.color == Color.blue)
+            {
+                arc_light.arc = laser[0];
+            }
             arc_renderer.material.color = Color.red;
         }
         else
@@ -66,6 +71,7 @@ public class Laser : MonoBehaviour  // TODO: PlanetariaComponent
     private Transform main_character;
     private Transform main_controller;
     private ArcRenderer arc_renderer;
+    private ArcLight arc_light;
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

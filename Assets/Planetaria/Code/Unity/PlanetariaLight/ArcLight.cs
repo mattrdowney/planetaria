@@ -1,28 +1,57 @@
-﻿namespace Planetaria
+﻿using System;
+using UnityEngine;
+
+namespace Planetaria
 {
     /// <summary>
 	///
     /// </summary>
-	public class ArcLight : PlanetariaLight
+    [Serializable]
+	public sealed class ArcLight : PlanetariaLight
 	{
-		// Properties (Public)
-		
-		// Methods (Public)
-		
-		// Static Methods (Public)
-		
-		// Properties (non-Public)
-		
+        // Properties (Public)
+
+        public Arc arc
+        {
+            get
+            {
+                return arc_variable;
+            }
+            set
+            {
+                arc_variable = value;
+                initialize();
+            }
+        }
+        
 		// Methods (non-Public)
-		
-		// Static Methods (non-Public)
-		
+
+        private void initialize()
+        {
+            ArcPlanetarium arc_light = new ArcPlanetarium(arc, color, intensity, range);
+            CubePlanetarium cube = new CubePlanetarium(256, arc_light, 1);
+            arc_light_cucoloris = cube.to_cubemap();
+            internal_light.cookie = arc_light_cucoloris;
+        }
+
 		// Messages (non-Public)
-				
-		// Variables (Public)
-		
+
+        protected override sealed void Awake()
+        {
+            base.Awake();
+            initialize();
+        }
+
+        protected override sealed void Reset()
+        {
+            base.Reset();
+            initialize();
+        }
+
 		// Variables (non-Public)
 		
+        [SerializeField] private Arc arc_variable;
+        [NonSerialized] [HideInInspector] private Cubemap arc_light_cucoloris;
 	}
 }
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Planetaria
@@ -116,7 +117,7 @@ namespace Planetaria
             Mesh result = new Mesh();
             result.vertices = vertex_set.ToArray();
             result.uv = uv_set.ToArray();
-            result.normals = vertex_set.ToArray(); // TODO: verify (e.g. the normals should probably be negative)
+            result.normals = vertex_set.Select(direction => -direction).ToArray(); // The normals are inside-out.
             result.triangles = triangle_set.ToArray();
             result.RecalculateBounds();
             return result;
@@ -136,7 +137,6 @@ namespace Planetaria
         private static Vector2 interpolated_uv(Vector2 interpolator)
         {
             Vector3 sphere_position = interpolated_vertex(interpolator);
-            //Vector3 triangle_position = triangle_plane.ClosestPointOnPlane(sphere_position);
             float triangle_offset;
             triangle_plane.Raycast(new Ray(Vector3.zero, sphere_position), out triangle_offset);
             Vector3 triangle_position = sphere_position*triangle_offset;

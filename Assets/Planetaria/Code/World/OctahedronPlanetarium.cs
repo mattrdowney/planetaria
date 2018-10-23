@@ -1,24 +1,21 @@
-﻿#if UNITY_EDITOR
-
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Planetaria
 {
     public class OctahedronPlanetarium : WorldPlanetarium
     {
-        public OctahedronPlanetarium(string name)
+        public OctahedronPlanetarium()
         {
-            initialize(name);
+            initialize();
         }
 
-        public OctahedronPlanetarium(string name, int resolution, WorldPlanetarium reference_planetarium, int sample_rate)
+        public OctahedronPlanetarium(int resolution, WorldPlanetarium reference_planetarium, int sample_rate)
         {
-            initialize(name, resolution);
+            initialize(resolution);
 
             // isolate the behavior that varies: use a function that takes in a Texture2D and delegate function
             reference_planetarium.render_texture(texture, sample_rate,
                     delegate (Vector2 uv) { return ((NormalizedCartesianCoordinates)new OctahedronUVCoordinates(uv.x, uv.y)).data; });
-            SaveTexture2D(texture, name);
         }
 
         public override Color sample_pixel(Vector3 planetarium_position)
@@ -28,18 +25,38 @@ namespace Planetaria
             return texture.GetPixel(uv.data.x.scale(texture.width), uv.data.y.scale(texture.height));
         }
 
-        private void initialize(string name, optional<int> resolution = new optional<int>())
+#if UNITY_EDITOR
+        public override void save(string file_name)
         {
-            identifier = name;
-            material = LoadOrCreateMaterial(name, "Planetaria/Transparent Always");
-            texture = LoadOrCreateTexture2D(material, name, "_MainTex", resolution);
+            WorldPlanetarium.save_material(material, file_name); // TODO: save subasset
+            WorldPlanetarium.save_texture(texture, file_name, "_MainTex");
+        }
+        
+        public static optional<OctahedronPlanetarium> load(string file_name)
+        {
+            optional<Material> material = WorldPlanetarium.load_material(file_name);
+            if (!material.exists)
+            {
+                return new optional<OctahedronPlanetarium>();
+            }
+            OctahedronPlanetarium result = new OctahedronPlanetarium();
+            result.material = material.data;
+            result.texture = WorldPlanetarium.load_texture(file_name, "_MainTex");
+            result.material.SetTexture("_MainTex", result.texture);
+            return result;
+        }
+#endif
+
+        private void initialize(int resolution = 0)
+        {
+            material = new Material(Shader.Find("Planetaria/Transparent Always"));
+            texture = new Texture2D(resolution, resolution);
+            material.SetTexture("_MainTex", texture);
         }
         
         private Texture2D texture;
     }
 }
-
-#endif
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal

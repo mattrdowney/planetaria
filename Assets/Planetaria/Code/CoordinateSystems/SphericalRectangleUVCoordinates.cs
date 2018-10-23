@@ -23,9 +23,9 @@ namespace Planetaria
         }
 
         /// <summary>
-        /// Constructor - Stores the spherical rectangle's UV coordinates in a wrapper class.
+        /// Constructor - Stores the spherical rectangle's UV coordinates in a wrapper class. // FIXME: this should be really easy now: use TessellateTriangle using closest two corners and Vector3.forward
         /// </summary>
-        /// <param name="u">The u coordinate in UV space for the spherical rectangle. Range: (-INF, +INF)</param>
+        /// <param name="u">The u coordinate in UV space for the spherical rectangle. Range: (-INF, +INF)</param> // FIXME: TessellateTriangle assumes the point is contained in the Barycentric coordinates
         /// <param name="v">The v coordinate in UV space for the spherical rectangle. Range: (-INF, +INF)</param>
         /// <param name="angular_width">The width of the spherical rectangle in radians. Range: (0, PI)</param>
         /// <param name="angular_height">The height of the spherical rectangle in radians. Range: (0, PI)</param>

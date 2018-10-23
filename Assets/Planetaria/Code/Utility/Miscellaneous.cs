@@ -97,7 +97,7 @@ namespace Planetaria
         /// <param name="name">The name of the object (without double leading underscores i.e. "__").</param>
         /// <param name="hidden_internal">Whether the GameObject should be hidden unless debugging.</param>
         /// <returns>The found or newly added child with given name.</returns>
-        public static GameObject GetOrAddChild(this Component self, string name, bool hidden_internal = true)
+        public static GameObject GetOrAddChild(this Component self, string name, bool hidden_internal = true) // TODO: should this return PlanetariaGameObject; this is an inadvertently exposed API, how should I fix this? Likely by making this a non-extension
         {
             if (hidden_internal)
             {
