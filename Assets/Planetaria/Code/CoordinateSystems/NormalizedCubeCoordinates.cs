@@ -39,11 +39,21 @@ namespace Planetaria
         public static implicit operator CubeUVCoordinates(NormalizedCubeCoordinates cube)
         {
             int face_index = CubeUVCoordinates.face(cube.data);
-            Quaternion to_local = Quaternion.identity;
-            Vector3 local_cube_position = to_local * cube.data;
-            float u = local_cube_position.x / 2 + 0.5f;
-            float v = local_cube_position.y / 2 + 0.5f;
-            return new CubeUVCoordinates(u, v, face_index);
+            switch (face_index)
+            {
+                case 0:
+                    return new CubeUVCoordinates(-cube.data.z/2 + 0.5f, -cube.data.y/2 + 0.5f, 0); // FIXME: VERIFY
+                case 1:
+                    return new CubeUVCoordinates(cube.data.z/2 + 0.5f, -cube.data.y/2 + 0.5f, 1); // FIXME:
+                case 2:
+                    return new CubeUVCoordinates(cube.data.x/2 + 0.5f, cube.data.z/2 + 0.5f, 2); // FIXME:
+                case 3:
+                    return new CubeUVCoordinates(cube.data.x/2 + 0.5f, cube.data.z/2 + 0.5f, 3); // FIXME:
+                case 4:
+                    return new CubeUVCoordinates(cube.data.x/2 + 0.5f, -cube.data.y/2 + 0.5f, 4); // FIXME:
+                case 5: default:
+                    return new CubeUVCoordinates(-cube.data.x/2 + 0.5f, -cube.data.y/2 + 0.5f, 5); // FIXME:
+            }
         }
 
         /// <summary>
