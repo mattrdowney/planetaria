@@ -28,7 +28,7 @@ namespace Planetaria
 
         private void initialize()
         {
-            ArcPlanetarium arc_light = new ArcPlanetarium(arc, color, intensity, range);
+            ArcPlanetarium arc_light = new ArcPlanetarium(arc, color, range);
             cubemap_generator.convert(arc_light);
             internal_light.cookie = cubemap_generator.get_cubemap();
             //Debug.LogError("Pausing");

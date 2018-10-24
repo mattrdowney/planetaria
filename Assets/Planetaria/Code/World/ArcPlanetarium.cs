@@ -7,11 +7,10 @@ namespace Planetaria
     /// </summary>
 	public class ArcPlanetarium : WorldPlanetarium // TODO: rename
 	{
-        public ArcPlanetarium(Arc arc, Color color, float intensity, float radius)
+        public ArcPlanetarium(Arc arc, Color color, float radius)
         {
             this.arc = arc;
             this.color = color;
-            this.intensity = intensity;
             this.radius = radius;
             // TODO: VERIFY: great caution should be taken with these optimizations, since mistakes are very likely
             // For early returns (avoiding unnecessary calculations)
@@ -24,6 +23,7 @@ namespace Planetaria
             center_axis = lower.normal;
             center_offset = lower.offset + upper.offset;
             center_range = Mathf.Abs(upper.offset - lower.offset)/2;
+            similarity_threshold = Vector3.Dot(Vector3.forward, Vector3.RotateTowards(Vector3.forward, Vector3.back, radius, 0f));
             pixel_centroids = new NormalizedCartesianCoordinates[0];
         }
         
@@ -46,16 +46,15 @@ namespace Planetaria
                 else // common early returns handled, do expensive work
                 {
                     Vector3 closest_point = ArcUtility.snap_to_edge(arc, position);
-                    float angle = Vector3.Angle(position, closest_point) * Mathf.Deg2Rad;
-                    if (angle > radius) // distance check (is test point closer than max radial distance?)
+                    if (Vector3.Dot(position, closest_point) < similarity_threshold) // distance check (is test point closer than max radial distance?)
                     {
                         colors[index] = Color.clear;
                     }
-                    else // compute lighting when arc is in range of point
+                    else
                     {
-                        float ratio = angle / radius;
-                        float falloff = 1f - ratio*ratio;
-                        colors[index] = color * intensity * falloff;
+                        float angle = Vector3.Angle(position, closest_point) * Mathf.Deg2Rad;
+                        float falloff = Mathf.Clamp01(1f - angle/radius);
+                        colors[index] = color * falloff;
                     }
                 }
             }
@@ -78,7 +77,8 @@ namespace Planetaria
         private Vector3 center_axis;
         private float center_offset;
         private float center_range;
-        // TODO: dot product cache for early return on unneccessary computation
+        
+        private float similarity_threshold;
     }
 }
 

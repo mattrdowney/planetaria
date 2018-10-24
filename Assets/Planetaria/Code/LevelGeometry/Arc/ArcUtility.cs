@@ -44,7 +44,7 @@ namespace Planetaria
             {
                 return arc.position(angle);
             }
-            return snap_to_vertex(arc, point);
+            return snap_to_vertex(arc, point); // TODO: really, I just need to Mathf.Clamp(angle, -arc.angle()/2, +arc.angle()/2), right?
         }
 
         /// <summary>

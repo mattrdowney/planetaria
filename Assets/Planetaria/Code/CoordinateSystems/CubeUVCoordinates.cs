@@ -11,7 +11,7 @@ namespace Planetaria
         /// </summary>
         /// <param name="u">The u coordinate in UV space for the cube. Range: [0,1]</param>
         /// <param name="v">The v coordinate in UV space for the cube. Range: [0,1]</param>
-        /// <param name="face_index">[0,6) array index; 0=left, 1=right, 2=down, 3=up, 4=front, 5=back</param>
+        /// <param name="face_index">[0,6) array index; 0=right, 1=left, 2=up, 3=down, 4=front, 5=back</param>
         public CubeUVCoordinates(float u, float v, int face_index)
         {
             uv_variable = new Vector2(u, v);
