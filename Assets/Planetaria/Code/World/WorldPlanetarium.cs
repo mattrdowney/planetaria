@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEditor;
@@ -7,41 +8,13 @@ namespace Planetaria
 {
     public abstract class WorldPlanetarium // TODO: rename
     {
-        public abstract Color sample_pixel(Vector3 planetarium_position);
+        public abstract void set_pixels(Color[] colors);
+        public abstract Color[] get_pixels(NormalizedCartesianCoordinates[] positions);
 
-        public Color sample_pixel(Vector3[] planetarium_positions)
+        public void convert(WorldPlanetarium other)
         {
-            if (planetarium_positions.Length == 1) // NOTE: optimization for common case (speeds up quick tests)
-            {
-                return sample_pixel(planetarium_positions[0]);
-            }
-            ColorBlender pixel = new ColorBlender();
-            foreach (Vector3 planetarium_position in planetarium_positions)
-            {
-                pixel.blend(sample_pixel(planetarium_position));
-            }
-            return pixel;
-        }
-
-        public void render_texture(Texture2D texture, int sample_rate, PointConverter uv_converter)
-        {
-            Color[] pixels = new Color[texture.width*texture.height];
-            float pixel_width = 1f / texture.width;
-            float pixel_height = 1f / texture.height;
-            for (int y = 0; y < texture.height; ++y) // set pixels from first row
-            {
-                float v_min = y * pixel_height;
-                for (int x = 0; x < texture.width; ++x)
-                {
-                    float u_min = x * pixel_width;
-                    Rect pixel_boundaries = new Rect(u_min, v_min, pixel_width, pixel_height);
-                    Vector2[] uv_points = Miscellaneous.uv_samples(pixel_boundaries, sample_rate);
-                    Vector3[] xyz_points = uv_points.Select(uv => uv_converter(uv)).ToArray();
-                    Color color = sample_pixel(xyz_points);
-                    pixels[x + y*texture.width] = color;
-                }
-            }
-            texture.SetPixels(pixels);
+            Color[] colors = other.get_pixels(this.pixel_centroids);
+            this.set_pixels(colors);
         }
 
 #if UNITY_EDITOR
@@ -58,6 +31,17 @@ namespace Planetaria
         }
 
         /// <summary>
+        /// Serializer - Saves a cubemap texture to a ".cubemap" file.
+        /// </summary>
+        /// <param name="cubemap">The Cubemap to be saved.</param>
+        /// <param name="file_name">The path where the texture will be saved (relative to project folder) without file extension.</param>
+        /// <param name="texture_identifier">The file suffix (e.g. "_LeftTex").</param>
+        protected static void save_cubemap(Cubemap cubemap, string file_name)
+        {
+            AssetDatabase.CreateAsset(cubemap, file_name + ".cubemap");
+        }
+
+        /// <summary>
         /// Serializer - Saves a texture to a ".png" file.
         /// </summary>
         /// <param name="texture">The Texture2D to be saved.</param>
@@ -66,7 +50,7 @@ namespace Planetaria
         protected static void save_texture(Texture2D texture, string file_name, string texture_identifier)
         {
             byte[] png_data = texture.EncodeToPNG();
-            File.WriteAllBytes(Application.dataPath + "/Planetaria/Art/Textures/" + file_name + texture_identifier + ".png", png_data);
+            File.WriteAllBytes(Application.dataPath + file_name + texture_identifier + ".png", png_data);
         }
 
         /// <summary>
@@ -93,9 +77,9 @@ namespace Planetaria
         /// <param name="file_name">The name of the file (without suffix (e.g. "_LeftTex") or file extension (e.g. ".png")).</param>
         /// <param name="texture_identifier">The file suffix (e.g. "_LeftTex").</param>
         /// <returns>The texture that was loaded.</returns>
-        protected static Texture2D load_texture(string file_name, string texture_identifier)
+        protected static Texture load_texture(string file_name)
         {
-            file_name = Application.dataPath + "/" + file_name + texture_identifier;
+            file_name = Application.dataPath + "/" + file_name;
             if (File.Exists(file_name + ".png")) // TODO: support other capitalizations and variants?
             {
                 file_name += ".png";
@@ -107,6 +91,11 @@ namespace Planetaria
             else if (File.Exists(file_name + ".exr"))
             {
                 file_name += ".exr";
+            }
+            else if (File.Exists(file_name + ".cubemap"))
+            {
+                file_name += ".cubemap";
+                return AssetDatabase.LoadAssetAtPath<Cubemap>(file_name);
             }
             else
             {
@@ -122,10 +111,27 @@ namespace Planetaria
         }
 #endif
 
-        protected Material material;
+        public static List<Vector2> get_texture_uvs(int resolution)
+        {
+            List<Vector2> uvs = new List<Vector2>();
+            float pixel_width = 1f / resolution;
+            float pixel_height = 1f / resolution;
+            float pixel_y = pixel_height/2;
+            for (int y = 0; y < resolution; ++y) // set pixels from first row
+            {
+                float pixel_x = pixel_width / 2;
+                for (int x = 0; x < resolution; ++x)
+                {
+                    uvs.Add(new Vector2(pixel_x, pixel_y));
+                    pixel_x += pixel_width;
+                }
+                pixel_y += pixel_height;
+            }
+            return uvs;
+        }
 
-        public delegate Vector3 PointConverter(Vector2 uv);
-        protected const int default_resolution = 1024;
+        protected Material material;
+        protected NormalizedCartesianCoordinates[] pixel_centroids;
     }
 }
 

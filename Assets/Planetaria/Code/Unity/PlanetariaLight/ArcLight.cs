@@ -29,9 +29,9 @@ namespace Planetaria
         private void initialize()
         {
             ArcPlanetarium arc_light = new ArcPlanetarium(arc, color, intensity, range);
-            CubePlanetarium cube = new CubePlanetarium(256, arc_light, 1);
-            arc_light_cucoloris = cube.to_cubemap();
-            internal_light.cookie = arc_light_cucoloris;
+            cubemap_generator.convert(arc_light);
+            internal_light.cookie = cubemap_generator.get_cubemap();
+            //Debug.LogError("Pausing");
         }
 
 		// Messages (non-Public)
@@ -39,19 +39,21 @@ namespace Planetaria
         protected override sealed void Awake()
         {
             base.Awake();
+            cubemap_generator = new CubePlanetarium(256);
             initialize();
         }
 
         protected override sealed void Reset()
         {
             base.Reset();
+            cubemap_generator = new CubePlanetarium(256);
             initialize();
         }
 
 		// Variables (non-Public)
 		
         [SerializeField] private Arc arc_variable;
-        [NonSerialized] [HideInInspector] private Cubemap arc_light_cucoloris;
+        [NonSerialized] [HideInInspector] private CubePlanetarium cubemap_generator;
 	}
 }
 

@@ -1,53 +1,61 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace Planetaria
 {
     public class CubePlanetarium : WorldPlanetarium
     {
-        public CubePlanetarium()
+        public CubePlanetarium(int resolution)
         {
-            initialize();
-        }
-
-        public CubePlanetarium(int resolution, WorldPlanetarium reference_planetarium, int sample_rate)
-        {
-            initialize(resolution);
-
-            for (int index = 0; index < textures.Length; ++index)
+            material = new Material(Shader.Find("Skybox/Cubemap"));
+            texture = new Cubemap(resolution, TextureFormat.RGBA32, false);
+            material.SetTexture("_Tex", texture);
+            List<NormalizedCartesianCoordinates> positions = new List<NormalizedCartesianCoordinates>();
+            for (int index = 0; index < directions.Length; ++index)
             {
-                Texture2D texture = textures[index];
-                reference_planetarium.render_texture(texture, sample_rate, // isolate the behavior that varies: use a function that takes in a Texture2D and delegate function
-                        delegate (Vector2 uv) { return ((NormalizedCartesianCoordinates)new CubeUVCoordinates(uv.x, uv.y, index)).data; });
+                List<Vector2> uvs = get_texture_uvs(texture.width);
+                positions.AddRange(uvs.Select(uv => (NormalizedCartesianCoordinates) new CubeUVCoordinates(uv.x, uv.y, index)));
             }
+            pixel_centroids = positions.ToArray();
         }
 
-        public override Color sample_pixel(Vector3 planetarium_position)
+        public override void set_pixels(Color[] colors)
         {
-            NormalizedCartesianCoordinates position = new NormalizedCartesianCoordinates(planetarium_position);
-            CubeUVCoordinates uv = position;
-            Texture2D texture = textures[uv.texture_index];
-            return texture.GetPixel(uv.uv.x.scale(texture.width), uv.uv.y.scale(texture.height));
-        }
-
-        public Cubemap to_cubemap()
-        {
-            Cubemap result = new Cubemap(textures[0].width, TextureFormat.RGBA32, false);
-            for (int face = 0; face < faces.Length; ++face)
+            int pixels = colors.Length/directions.Length;
+            int pixel_start = 0;
+            Color[] subarray = new Color[pixels];
+            for (int index = 0; index < directions.Length; ++index)
             {
-                result.SetPixels(textures[face].GetPixels(), faces[face]);
+                Array.Copy(colors, pixel_start, subarray, 0, pixels);
+                texture.SetPixels(subarray, faces[index]);
+                pixel_start += pixels;
             }
-            result.Apply();
-            return result;
+            texture.Apply();
+        }
+
+        public override Color[] get_pixels(NormalizedCartesianCoordinates[] positions)
+        {
+            Color[] colors = new Color[positions.Length];
+            for (int index = 0; index < positions.Length; ++index)
+            {
+                CubeUVCoordinates uv = positions[index];
+                colors[index] = texture.GetPixel(faces[index], uv.uv.x.scale(texture.width), uv.uv.y.scale(texture.height));
+            }
+            return colors;
+        }
+
+        public Cubemap get_cubemap()
+        {
+            return texture;
         }
 
 #if UNITY_EDITOR
         public override void save(string file_name)
         {
             WorldPlanetarium.save_material(material, file_name); // TODO: save subasset
-            for (int face = 0; face < directions.Length; ++face)
-            {
-                WorldPlanetarium.save_texture(textures[face], file_name, directions[face]);
-            }
+            WorldPlanetarium.save_cubemap(texture, file_name);
         }
         
         public static optional<CubePlanetarium> load(string file_name)
@@ -57,33 +65,20 @@ namespace Planetaria
             {
                 return new optional<CubePlanetarium>();
             }
-            CubePlanetarium result = new CubePlanetarium();
+            Cubemap texture = (Cubemap) WorldPlanetarium.load_texture(file_name);
+            CubePlanetarium result = new CubePlanetarium(texture.width);
             result.material = material.data;
-            for (int index = 0; index < directions.Length; ++index)
-            {
-                result.textures[index] = WorldPlanetarium.load_texture(file_name, directions[index]);
-                result.material.SetTexture(directions[index], result.textures[index]);
-            }
+            result.texture = texture;
+            result.material.SetTexture("_Tex", texture); // TODO: this step (including other files) should not be necessary in load, right?
             return result;
         }
 #endif
 
-        private void initialize(int resolution = 0)
-        {
-            material = new Material(Shader.Find("RenderFX/Skybox"));
-            textures = new Texture2D[6];
-            for (int index = 0; index < directions.Length; ++index)
-            {
-                textures[index] = new Texture2D(resolution, resolution);
-                material.SetTexture(directions[index], textures[index]);
-            }
-        }
-        
-        private Texture2D[] textures;
+        private Cubemap texture;
 
-        private static readonly string[] directions = { "_LeftTex", "_RightTex", "_DownTex", "_UpTex", "_BackTex", "_FrontTex" };
-        private static readonly CubemapFace[] faces = { CubemapFace.NegativeX, CubemapFace.PositiveX,
-                CubemapFace.NegativeY, CubemapFace.PositiveY, CubemapFace.NegativeZ, CubemapFace.PositiveZ };
+        private static readonly string[] directions = { "_RightTex", "_LeftTex", "_UpTex", "_DownTex", "_FrontTex", "_BackTex" };
+        private static readonly CubemapFace[] faces = { CubemapFace.PositiveX, CubemapFace.NegativeX,
+                CubemapFace.PositiveY, CubemapFace.NegativeY, CubemapFace.PositiveZ, CubemapFace.NegativeZ };
     }
 }
 

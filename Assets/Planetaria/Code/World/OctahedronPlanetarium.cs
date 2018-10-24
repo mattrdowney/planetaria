@@ -1,28 +1,34 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace Planetaria
 {
     public class OctahedronPlanetarium : WorldPlanetarium
     {
-        public OctahedronPlanetarium()
+        public OctahedronPlanetarium(int resolution)
         {
-            initialize();
+            material = new Material(Shader.Find("Planetaria/Transparent Always"));
+            texture = new Texture2D(resolution, resolution);
+            material.SetTexture("_MainTex", texture);
+            List<Vector2> uvs = get_texture_uvs(texture.width);
+            pixel_centroids = uvs.Select(uv => (NormalizedCartesianCoordinates)new OctahedronUVCoordinates(uv.x, uv.y)).ToArray();
         }
 
-        public OctahedronPlanetarium(int resolution, WorldPlanetarium reference_planetarium, int sample_rate)
+        public override void set_pixels(Color[] colors)
         {
-            initialize(resolution);
-
-            // isolate the behavior that varies: use a function that takes in a Texture2D and delegate function
-            reference_planetarium.render_texture(texture, sample_rate,
-                    delegate (Vector2 uv) { return ((NormalizedCartesianCoordinates)new OctahedronUVCoordinates(uv.x, uv.y)).data; });
+            texture.SetPixels(colors);
         }
 
-        public override Color sample_pixel(Vector3 planetarium_position)
+        public override Color[] get_pixels(NormalizedCartesianCoordinates[] positions)
         {
-            NormalizedCartesianCoordinates position = new NormalizedCartesianCoordinates(planetarium_position);
-            OctahedronUVCoordinates uv = position;
-            return texture.GetPixel(uv.data.x.scale(texture.width), uv.data.y.scale(texture.height));
+            Color[] colors = new Color[positions.Length];
+            for (int index = 0; index < positions.Length; ++index)
+            {
+                OctahedronUVCoordinates uv = positions[index];
+                colors[index] = texture.GetPixel(uv.data.x.scale(texture.width), uv.data.y.scale(texture.height));
+            }
+            return colors;
         }
 
 #if UNITY_EDITOR
@@ -39,21 +45,15 @@ namespace Planetaria
             {
                 return new optional<OctahedronPlanetarium>();
             }
-            OctahedronPlanetarium result = new OctahedronPlanetarium();
+            Texture2D texture = (Texture2D) WorldPlanetarium.load_texture(file_name);
+            OctahedronPlanetarium result = new OctahedronPlanetarium(texture.width);
             result.material = material.data;
-            result.texture = WorldPlanetarium.load_texture(file_name, "_MainTex");
+            result.texture = texture;
             result.material.SetTexture("_MainTex", result.texture);
             return result;
         }
 #endif
 
-        private void initialize(int resolution = 0)
-        {
-            material = new Material(Shader.Find("Planetaria/Transparent Always"));
-            texture = new Texture2D(resolution, resolution);
-            material.SetTexture("_MainTex", texture);
-        }
-        
         private Texture2D texture;
     }
 }

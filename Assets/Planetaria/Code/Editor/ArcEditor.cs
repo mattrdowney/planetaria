@@ -66,8 +66,7 @@ namespace Planetaria
         public static void draw_ray(Arc arc, float angle, float local_angle, float extrusion, Color color, Quaternion orientation)
         {
             Vector3 from = arc.position(angle);
-            Vector3 local_direction = Bearing.bearing(arc.position(angle), arc.normal(angle), local_angle);
-            Vector3 to = PlanetariaMath.spherical_linear_interpolation(from, local_direction, extrusion);
+            Vector3 to = ArcUtility.relative_point(arc, angle, local_angle, extrusion);
 
             Arc composite = ArcFactory.line(from, to);
             draw_arc(composite, 0.0f, color, orientation);

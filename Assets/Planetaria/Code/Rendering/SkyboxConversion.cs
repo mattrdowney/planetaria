@@ -86,11 +86,13 @@ namespace Planetaria
                 switch (to_shape)
                 {
                     case Shape.Cube:
-                        to = new CubePlanetarium(resolution, from, sample_rate);
+                        to = new CubePlanetarium(resolution);
+                        to.convert(from);
                         to.save(to_file_name);
                         break;
                     case Shape.Octahedron:
-                        to = new OctahedronPlanetarium(resolution, from, sample_rate);
+                        to = new OctahedronPlanetarium(resolution);
+                        to.convert(from);
                         to.save(to_file_name);
                         break;
                 }

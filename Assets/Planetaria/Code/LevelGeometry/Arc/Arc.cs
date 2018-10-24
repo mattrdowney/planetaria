@@ -76,7 +76,7 @@ namespace Planetaria
         /// </summary>
         /// <param name="extrusion">The radius of the collider touching the floor.</param>
         /// <returns>A SphericalCap representing the floor. Normal goes "down" - towards floor.</returns> // FIXME: (?) unintuitive normal
-        public SphericalCap floor(float extrusion = 0) // TODO: combine with circle()
+        public SphericalCap floor(float extrusion = 0)
         {
             return SphericalCap.cap(center_axis, Mathf.Sin(arc_latitude + extrusion)).complement();
         }

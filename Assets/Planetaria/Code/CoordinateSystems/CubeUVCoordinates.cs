@@ -62,13 +62,13 @@ namespace Planetaria
 
             if (x_magnitude >= Mathf.Max(y_magnitude, z_magnitude))
             {
-                return Mathf.Sign(cartesian.x) == -1 ? 0 : 1;
+                return Mathf.Sign(cartesian.x) == -1 ? 1 : 0;
             }
             else if (y_magnitude >= z_magnitude)
             {
-                return Mathf.Sign(cartesian.y) == -1 ? 2 : 3;
+                return Mathf.Sign(cartesian.y) == -1 ? 3 : 2;
             }
-            return Mathf.Sign(cartesian.z) == -1 ? 4 : 5;
+            return Mathf.Sign(cartesian.z) == -1 ? 5 : 4;
         }
 
         /// <summary>
@@ -89,12 +89,12 @@ namespace Planetaria
 
         public static readonly Quaternion[] local_to_world_rotation = // FIXME: optimize
         {
-            Quaternion.LookRotation(Vector3.left, Vector3.up), // relative rotation of _LeftTex of Skybox
-            Quaternion.LookRotation(Vector3.right, Vector3.up), // _RightTex
-            Quaternion.LookRotation(Vector3.down, Vector3.forward), // _DownTex
+            Quaternion.LookRotation(Vector3.right, Vector3.up), // relative rotation of _RightTex of Skybox
+            Quaternion.LookRotation(Vector3.left, Vector3.up), // _LeftTex
             Quaternion.LookRotation(Vector3.up, Vector3.back), // _UpTex
-            Quaternion.LookRotation(Vector3.back, Vector3.up), // _BackTex
+            Quaternion.LookRotation(Vector3.down, Vector3.forward), // _DownTex
             Quaternion.LookRotation(Vector3.forward, Vector3.up), // _FrontTex
+            Quaternion.LookRotation(Vector3.back, Vector3.down), // _BackTex
         };
 
         [SerializeField] private int face_index_variable;

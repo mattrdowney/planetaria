@@ -13,19 +13,53 @@ namespace Planetaria
             this.color = color;
             this.intensity = intensity;
             this.radius = radius;
+            // TODO: VERIFY: great caution should be taken with these optimizations, since mistakes are very likely
+            // For early returns (avoiding unnecessary calculations)
+            center = arc.position(0);
+            Vector3 vertex = arc.position(arc.angle()/2);
+            Vector3 furthest_point = Vector3.RotateTowards(vertex, -center, radius, 0.0f);
+            dot_product_threshold = Vector3.Dot(center, furthest_point);
+            SphericalCap lower = arc.floor(-radius);
+            SphericalCap upper = arc.floor(+radius);
+            center_axis = lower.normal;
+            center_offset = lower.offset + upper.offset;
+            center_range = Mathf.Abs(upper.offset - lower.offset)/2;
+            pixel_centroids = new NormalizedCartesianCoordinates[0];
         }
         
-        public override Color sample_pixel(Vector3 planetarium_position)
+        public override void set_pixels(Color[] positions) { }
+
+        public override Color[] get_pixels(NormalizedCartesianCoordinates[] positions)
         {
-            Vector3 closest_point = ArcUtility.snap_to_edge(arc, planetarium_position);
-            float angle = Vector3.Angle(planetarium_position, closest_point) * Mathf.Deg2Rad;
-            if (angle > radius)
+            Color[] colors = new Color[positions.Length];
+            for (int index = 0; index < positions.Length; ++index)
             {
-                return Color.clear;
+                Vector3 position = positions[index].data;
+                if (Vector3.Dot(center, position) < dot_product_threshold) // circle check (is test point within circle circumscribing extruded arc?)
+                {
+                    colors[index] = Color.clear;
+                }
+                else if (Mathf.Abs(Vector3.Dot(center_axis, position) - center_offset) > center_range) // elevation check (is test point in narrow band of the arc?)
+                {
+                    colors[index] = Color.clear;
+                }
+                else // common early returns handled, do expensive work
+                {
+                    Vector3 closest_point = ArcUtility.snap_to_edge(arc, position);
+                    float angle = Vector3.Angle(position, closest_point) * Mathf.Deg2Rad;
+                    if (angle > radius) // distance check (is test point closer than max radial distance?)
+                    {
+                        colors[index] = Color.clear;
+                    }
+                    else // compute lighting when arc is in range of point
+                    {
+                        float ratio = angle / radius;
+                        float falloff = 1f - ratio*ratio;
+                        colors[index] = color * intensity * falloff;
+                    }
+                }
             }
-            float ratio = angle/radius;
-            float falloff = 1f - ratio*ratio;
-            return color * intensity * falloff;
+            return colors;
         }
 
 #if UNITY_EDITOR
@@ -36,6 +70,14 @@ namespace Planetaria
         private Color color;
         private float intensity;
         private float radius;
+
+        // cached early return data
+        private Vector3 center;
+        private float dot_product_threshold;
+
+        private Vector3 center_axis;
+        private float center_offset;
+        private float center_range;
         // TODO: dot product cache for early return on unneccessary computation
     }
 }

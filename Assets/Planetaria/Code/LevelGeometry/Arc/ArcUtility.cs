@@ -22,9 +22,9 @@ namespace Planetaria
         {
             Vector3 begin = arc.begin();
             Vector3 end = arc.end();
-            float begin_distance_squared = (begin - point).sqrMagnitude;
-            float end_distance_squared = (end - point).sqrMagnitude;
-            if (begin_distance_squared < end_distance_squared)
+            float begin_similarity = Vector3.Dot(point, begin);
+            float end_similarity = Vector3.Dot(point, end);
+            if (begin_similarity > end_similarity)
             {
                 return begin;
             }
@@ -67,6 +67,22 @@ namespace Planetaria
         public static Vector3 furthest_point(Arc arc, Vector3 point) // TODO: verify
         {
             return snap_to_edge(arc, -point);
+        }
+
+        /// <summary>
+        /// Inspector - Finds the point at "angle" extruded "extrusion" along "local_angle" direction.
+        /// </summary>
+        /// <param name="arc">The arc (used to determine positions and relative angles).</param>
+        /// <param name="angle">The angle along the arc path. Range: [-arc.angle()/2, +arc.angle()/2]</param>
+        /// <param name="local_angle">The secant angle relative to the arc at position("angle"). Range: [0, 2PI]</param>
+        /// <param name="extrusion">The distance along "local_angle" to extrude.</param>
+        /// <returns>The relative position after extruding the point at "angle" by "extrusion" along "local_angle".</returns>
+        public static Vector3 relative_point(Arc arc, float angle, float local_angle, float extrusion)
+        {
+            Vector3 from = arc.position(angle);
+            Vector3 local_direction = Bearing.bearing(arc.position(angle), arc.normal(angle), local_angle);
+            Vector3 to = PlanetariaMath.spherical_linear_interpolation(from, local_direction, extrusion);
+            return to;
         }
     }
 }

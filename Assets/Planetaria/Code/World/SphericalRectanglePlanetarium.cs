@@ -4,15 +4,27 @@ namespace Planetaria
 {
     public class SphericalRectanglePlanetarium : WorldPlanetarium
     {
-        public override Color sample_pixel(Vector3 planetarium_position)
+        public override void set_pixels(Color[] colors)
         {
-            NormalizedCartesianCoordinates cartesian = new NormalizedCartesianCoordinates(planetarium_position);
-            SphericalRectangleUVCoordinates spherical_rectangle = cartesian.to_spherical_rectangle(angular_width, angular_height);
-            if (!spherical_rectangle.valid())
+            texture.SetPixels(colors);
+        }
+
+        public override Color[] get_pixels(NormalizedCartesianCoordinates[] positions)
+        {
+            Color[] colors = new Color[positions.Length];
+            for (int index = 0; index < positions.Length; ++index)
             {
-                return Color.clear;
+                SphericalRectangleUVCoordinates spherical_rectangle = positions[index].to_spherical_rectangle(angular_width, angular_height);
+                if (!spherical_rectangle.valid())
+                {
+                    colors[index] = Color.clear;
+                }
+                else
+                {
+                    colors[index] = texture.GetPixel(spherical_rectangle.uv.x.scale(texture.width), spherical_rectangle.uv.y.scale(texture.height));
+                }
             }
-            return texture.GetPixel(spherical_rectangle.uv.x.scale(texture.width), spherical_rectangle.uv.y.scale(texture.height));
+            return colors;
         }
 
 #if UNITY_EDITOR
@@ -31,7 +43,7 @@ namespace Planetaria
             }
             SphericalRectanglePlanetarium result = new SphericalRectanglePlanetarium();
             result.material = material.data;
-            result.texture = WorldPlanetarium.load_texture(file_name, "_MainTex");
+            result.texture = (Texture2D) WorldPlanetarium.load_texture(file_name);
             result.material.SetTexture("_MainTex", result.texture);
             result.angular_width = width;
             result.angular_height = height;
