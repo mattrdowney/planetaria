@@ -40,11 +40,8 @@ namespace Planetaria
         public static Vector3 snap_to_edge(Arc arc, Vector3 point)
         {
             float angle = arc.position_to_angle(point);
-            if (Mathf.Abs(angle) <= arc.angle()/2) // valid - within boundaries
-            {
-                return arc.position(angle);
-            }
-            return snap_to_vertex(arc, point); // TODO: really, I just need to Mathf.Clamp(angle, -arc.angle()/2, +arc.angle()/2), right?
+            angle = Mathf.Clamp(angle, -arc.half_angle, +arc.half_angle); // ensure position is valid - within boundaries
+            return arc.position(angle);
         }
 
         /// <summary>

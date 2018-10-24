@@ -44,14 +44,25 @@ namespace Planetaria
         /// </summary>
         /// <param name="skybox">The coordinates in skybox UV space that will be converted.</param>
         /// <returns>The normalized cube coordinates. (At least one of x,y,and z will be magnitude 1.)</returns>
-        public static implicit operator NormalizedCubeCoordinates(CubeUVCoordinates skybox)
+        public static implicit operator NormalizedCubeCoordinates(CubeUVCoordinates skybox) // FIXME: CONSIDER: I don't like the Unity internal format for Cubemap, or that this is heavily tied to that format.
         {
             float x = 2*skybox.uv_variable.x - 1;
             float y = 2*skybox.uv_variable.y - 1;
-            Quaternion to_world = local_to_world_rotation[skybox.face_index_variable];
-            Vector3 local_position = new Vector3(x, y, +1);
-            Vector3 cube_world_position = to_world * local_position;
-            return new NormalizedCubeCoordinates(cube_world_position);
+            switch (skybox.face_index_variable)
+            {
+                case 0:
+                    return new NormalizedCubeCoordinates(new Vector3(+1, -y, -x));
+                case 1:
+                    return new NormalizedCubeCoordinates(new Vector3(-1, -y, x));
+                case 2:
+                    return new NormalizedCubeCoordinates(new Vector3(x, +1, y));
+                case 3:
+                    return new NormalizedCubeCoordinates(new Vector3(x, -1, -y));
+                case 4:
+                    return new NormalizedCubeCoordinates(new Vector3(x, -y, +1));
+                case 5: default:
+                    return new NormalizedCubeCoordinates(new Vector3(-x, -y, -1));
+            }
         }
 
         public static int face(Vector3 cartesian)
@@ -76,26 +87,19 @@ namespace Planetaria
         /// </summary>
         private void normalize()
         {
-            if (uv_variable.x != 1) // modulo goes from [0,1) and we want [0,1]
+            if (1 < uv_variable.x || uv_variable.x < 0) // modulo goes from [0,1) and we want [0,1]
             {
                 uv_variable.x = PlanetariaMath.modolo_using_euclidean_division(uv_variable.x, 1);
             }
-            if (uv_variable.y != 1) // modulo goes from [0,1) and we want [0,1]
+            if (1 < uv_variable.y || uv_variable.y < 0) // modulo goes from [0,1) and we want [0,1]
             {
                 uv_variable.y = PlanetariaMath.modolo_using_euclidean_division(uv_variable.y, 1);
             }
-            face_index_variable = (int)PlanetariaMath.modolo_using_euclidean_division(face_index_variable, 6); // HACK: CONSIDER: would anyone ever enter something like 2^31 in here?
+            if (6 <= face_index_variable || face_index_variable < 0)
+            {
+                face_index_variable = (int)PlanetariaMath.modolo_using_euclidean_division(face_index_variable, 6); // HACK: CONSIDER: would anyone ever enter something like 2^31 in here?
+            }
         }
-
-        public static readonly Quaternion[] local_to_world_rotation = // FIXME: optimize
-        {
-            Quaternion.LookRotation(Vector3.right, Vector3.up), // relative rotation of _RightTex of Skybox
-            Quaternion.LookRotation(Vector3.left, Vector3.up), // _LeftTex
-            Quaternion.LookRotation(Vector3.up, Vector3.back), // _UpTex
-            Quaternion.LookRotation(Vector3.down, Vector3.forward), // _DownTex
-            Quaternion.LookRotation(Vector3.forward, Vector3.up), // _FrontTex
-            Quaternion.LookRotation(Vector3.back, Vector3.down), // _BackTex
-        };
 
         [SerializeField] private int face_index_variable;
         [SerializeField] private Vector2 uv_variable;

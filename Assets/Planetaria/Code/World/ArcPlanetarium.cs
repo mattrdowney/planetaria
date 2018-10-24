@@ -12,18 +12,18 @@ namespace Planetaria
             this.arc = arc;
             this.color = color;
             this.radius = radius;
-            // TODO: VERIFY: great caution should be taken with these optimizations, since mistakes are very likely
-            // For early returns (avoiding unnecessary calculations)
+
+            // cache for early return
             center = arc.position(0);
             Vector3 vertex = arc.position(arc.angle()/2);
             Vector3 furthest_point = Vector3.RotateTowards(vertex, -center, radius, 0.0f);
             dot_product_threshold = Vector3.Dot(center, furthest_point);
+
             SphericalCap lower = arc.floor(-radius);
             SphericalCap upper = arc.floor(+radius);
-            center_axis = lower.normal;
             center_offset = lower.offset + upper.offset;
             center_range = Mathf.Abs(upper.offset - lower.offset)/2;
-            similarity_threshold = Vector3.Dot(Vector3.forward, Vector3.RotateTowards(Vector3.forward, Vector3.back, radius, 0f));
+
             pixel_centroids = new NormalizedCartesianCoordinates[0];
         }
         
@@ -39,23 +39,16 @@ namespace Planetaria
                 {
                     colors[index] = Color.clear;
                 }
-                else if (Mathf.Abs(Vector3.Dot(center_axis, position) - center_offset) > center_range) // elevation check (is test point in narrow band of the arc?)
+                else if (Mathf.Abs(Vector3.Dot(arc.center_axis, position) - center_offset) > center_range) // elevation check (is test point in narrow band of the arc?)
                 {
                     colors[index] = Color.clear;
                 }
                 else // common early returns handled, do expensive work
                 {
                     Vector3 closest_point = ArcUtility.snap_to_edge(arc, position);
-                    if (Vector3.Dot(position, closest_point) < similarity_threshold) // distance check (is test point closer than max radial distance?)
-                    {
-                        colors[index] = Color.clear;
-                    }
-                    else
-                    {
-                        float angle = Vector3.Angle(position, closest_point) * Mathf.Deg2Rad;
-                        float falloff = Mathf.Clamp01(1f - angle/radius);
-                        colors[index] = color * falloff;
-                    }
+                    float angle = Vector3.Angle(position, closest_point) * Mathf.Deg2Rad;
+                    float falloff = Mathf.Clamp01(1f - angle/radius); // distance check (is test point closer than max radial distance?) - avoid negatives
+                    colors[index] = new Color(1, 1, 1, falloff);
                 }
             }
             return colors;
@@ -67,18 +60,14 @@ namespace Planetaria
 
         private Arc arc;
         private Color color;
-        private float intensity;
         private float radius;
 
-        // cached early return data
+        // cache
         private Vector3 center;
         private float dot_product_threshold;
 
-        private Vector3 center_axis;
         private float center_offset;
         private float center_range;
-        
-        private float similarity_threshold;
     }
 }
 

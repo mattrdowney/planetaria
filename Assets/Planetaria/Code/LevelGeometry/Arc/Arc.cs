@@ -253,18 +253,18 @@ namespace Planetaria
         }
 
         /// <summary>An axis that includes the center of the circle that defines the arc.</summary>
-        [NonSerialized] private readonly Vector3 center_axis;
+        [NonSerialized] public readonly Vector3 center_axis;
         /// <summary>An axis that helps define the beginning of the arc.</summary>
-        [NonSerialized] private readonly Vector3 forward_axis;
+        [NonSerialized] public readonly Vector3 forward_axis;
         /// <summary>A binormal to center_axis and forward_axis. Determines points after the beginning of the arc.</summary>
-        [NonSerialized] private readonly Vector3 right_axis;
+        [NonSerialized] public readonly Vector3 right_axis;
     
         /// <summary>The angle of the arc in radians divided by two (must be positive). Range: [-PI, +PI]</summary>
-        [NonSerialized] private readonly float half_angle;
+        [NonSerialized] public readonly float half_angle;
         /// <summary>The angle of the arc from its parallel "equator". Range: [-PI/2, +PI/2]</summary>
-        [NonSerialized] private readonly float arc_latitude;
+        [NonSerialized] public readonly float arc_latitude;
         /// <summary>The curvature of the arc (e.g. Corner/Edge, Straight/Convex/Concave).</summary>
-        [NonSerialized] private readonly ArcType curvature;
+        [NonSerialized] public readonly ArcType curvature;
     }
 }
 

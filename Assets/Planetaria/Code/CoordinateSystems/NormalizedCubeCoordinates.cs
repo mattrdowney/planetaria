@@ -39,7 +39,7 @@ namespace Planetaria
         public static implicit operator CubeUVCoordinates(NormalizedCubeCoordinates cube)
         {
             int face_index = CubeUVCoordinates.face(cube.data);
-            Quaternion to_local = CubeUVCoordinates.local_to_world_rotation[face_index];
+            Quaternion to_local = Quaternion.identity;
             Vector3 local_cube_position = to_local * cube.data;
             float u = local_cube_position.x / 2 + 0.5f;
             float v = local_cube_position.y / 2 + 0.5f;
