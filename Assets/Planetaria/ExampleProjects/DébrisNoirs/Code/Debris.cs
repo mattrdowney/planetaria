@@ -19,7 +19,7 @@ public class Debris : PlanetariaMonoBehaviour
         planetaria_renderer.sprite = debris_sprites[(int)stage];
 
         // set collider size
-        planetaria_collider.scale = debris_sizes[(int)stage];
+        planetaria_collider.shape = PlanetariaShape.Create(debris_sizes[(int)stage]/2);
 
         // apply random rotation
         float deviation_angle = UnityEngine.Random.Range(-maximum_deviation_angles[(int)stage], +maximum_deviation_angles[(int)stage]);

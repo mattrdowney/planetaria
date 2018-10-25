@@ -192,42 +192,6 @@ namespace Planetaria
             return new SerializedArc(Quaternion.LookRotation(forward_axis, center_axis), half_angle, arc_latitude, curvature);
         }
 
-        public static bool operator==(Arc left, Arc right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(Arc left, Arc right)
-        {
-            return !left.Equals(right);
-        }
-
-        public override bool Equals(System.Object other_object) // this shouldn't be necessary because of struct equality semantics
-        {
-            bool equal_type = other_object is Arc;
-            if (!equal_type)
-            {
-                return false;
-            }
-            Arc other = (Arc) other_object;
-            return this.forward_axis == other.forward_axis &&
-                    this.right_axis == other.right_axis &&
-                    this.center_axis == other.center_axis &&
-                    this.half_angle == other.half_angle &&
-                    this.arc_latitude == other.arc_latitude &&
-                    this.curvature == other.curvature;
-        }
-
-        public override int GetHashCode()
-        {
-            return forward_axis.GetHashCode() ^
-                    right_axis.GetHashCode() ^
-                    center_axis.GetHashCode() ^
-                    arc_latitude.GetHashCode() ^
-                    half_angle.GetHashCode() ^
-                    curvature.GetHashCode();
-        }
-
         public override string ToString()
         {
             return curvature.ToString() + ": { " + forward_axis.ToString("F4") + ", " + right_axis.ToString("F4") + ", " + center_axis.ToString("F4") + "}" +

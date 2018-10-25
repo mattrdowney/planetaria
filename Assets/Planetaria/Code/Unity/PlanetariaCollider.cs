@@ -48,25 +48,8 @@ namespace Planetaria
             {
                 rigidbody = this.GetComponentInParent<PlanetariaRigidbody>();
             }
-            if (scale != 1) // FIXME: JANK
-            {
-                shape = EquilateralBuilder.create_equilateral(Vector3.forward, new Vector3(0, Mathf.Sin(scale/2), Mathf.Cos(scale/2)), 2);
-            }
             PlanetariaCache.self.cache(this);
             // add to collision_map and trigger_map for all objects currently intersecting (via Physics.OverlapBox()) // CONSIDER: I think Unity Fixed this, right?
-        }
-
-        public float scale // FIXME: remove (at least until I have a better (real) implementation)
-        {
-            get
-            {
-                return scale_variable;
-            }
-            set
-            {
-                scale_variable = value;
-                shape = EquilateralBuilder.create_equilateral(Vector3.forward, new Vector3(0, Mathf.Sin(value/2), Mathf.Cos(value/2)), 2);
-            }
         }
 
         public PlanetariaShape shape
@@ -77,8 +60,9 @@ namespace Planetaria
             }
             set
             {
+                PlanetariaCache.self.uncache(this);
                 shape_variable = value;
-                
+                PlanetariaCache.self.cache(this);
                 PlanetariaSphereCollider sphere = shape.bounding_sphere;
 
                 internal_collider.center = sphere.center;
@@ -120,6 +104,7 @@ namespace Planetaria
 
         private void OnTriggerStay(Collider collider)
         {
+            Debug.Log("Happening");
             optional<SphereCollider> sphere_collider = collider as SphereCollider;
             if (!sphere_collider.exists)
             {
@@ -184,7 +169,6 @@ namespace Planetaria
         [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;
         [SerializeField] [HideInInspector] private SphereCollider internal_collider;
         [SerializeField] [HideInInspector] public new optional<PlanetariaRigidbody> rigidbody;
-        [SerializeField] private float scale_variable;
         [SerializeField] public bool is_field_variable = false;
     }
 }

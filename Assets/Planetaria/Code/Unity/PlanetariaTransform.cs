@@ -93,10 +93,6 @@ namespace Planetaria
             set
             {
                 scale_variable = value;
-                if (internal_collider.exists)
-                {
-                    internal_collider.data.scale = scale; // TODO: check
-                }
                 if (internal_renderer.exists)
                 {
                     internal_renderer.data.scale = scale; // TODO: check

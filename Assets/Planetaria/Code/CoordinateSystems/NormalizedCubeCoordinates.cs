@@ -26,7 +26,7 @@ namespace Planetaria
         /// </summary>
         /// <param name="cube">The unit cube coordinates (|x,y,z| up to +1) that will be converted.</param>
         /// <returns>The Cartesian coordinates.</returns> 
-        public static implicit operator NormalizedCartesianCoordinates(NormalizedCubeCoordinates cube) // LOCATION cube_to_sphere
+        public static implicit operator NormalizedCartesianCoordinates(NormalizedCubeCoordinates cube)
         {
             return new NormalizedCartesianCoordinates(cube.data);
         }

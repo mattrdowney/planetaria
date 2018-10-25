@@ -17,12 +17,17 @@ namespace Planetaria
             float diameter = .1f;
             diameter = (arc.type == ArcType.ConcaveCorner ? -diameter : diameter);
 
-            draw_arc(arc, 0.0f, Color.black, orientation);
-            draw_arc(arc, diameter/2, Color.gray, orientation);
-            draw_arc(arc, diameter, Color.white, orientation);
+            // draw vertical lines representing seams between arcs
+            draw_ray(arc, -arc.angle()/2, Mathf.PI/2, diameter, Color.gray, orientation);
 
-            draw_ray(arc, -arc.angle()/2, Mathf.PI/2, diameter, Color.red, orientation);
-            draw_ray(arc, +arc.angle()/2, Mathf.PI/2, diameter, violet, orientation);
+            // draw black floor with red and violet lines representing where the arc begins and ends (respectively)
+            draw_partial_arc(arc, -arc.angle()/2, -arc.angle()/3, 0, Color.red, orientation);
+            draw_partial_arc(arc, -arc.angle()/3, +arc.angle()/3, 0, Color.black, orientation);
+            draw_partial_arc(arc, +arc.angle()/2, +arc.angle()/3, 0, violet, orientation);
+            // draw gray midline
+            draw_arc(arc, diameter/2, Color.gray, orientation);
+            // draw white ceiling
+            draw_arc(arc, diameter, Color.white, orientation);
         }
 
         /// <summary>
@@ -67,6 +72,28 @@ namespace Planetaria
         {
             Vector3 from = arc.position(angle);
             Vector3 to = ArcUtility.relative_point(arc, angle, local_angle, extrusion);
+
+            Arc composite = ArcFactory.line(from, to);
+            draw_arc(composite, 0.0f, color, orientation);
+        }
+
+        /// <summary>
+        /// Inspector - Draw a fraction of the given arc segment.
+        /// </summary>
+        /// <param name="arc">The arc that will be rendered.</param>
+        /// <param name="begin_angle">The angle (along the arc) at which the partial arc begins.</param>
+        /// <param name="end_angle">The angle (along the arc) at which the partial arc ends.</param>
+        /// <param name="extrusion">The distance (radius) to extrude the radial arc.</param>
+        /// <param name="color">The color of the drawn radial arc.</param>
+        /// <param name="orientation">The Transform's rotation (for moving platforms). For static objects, use Quaternion.identity.</param>
+        public static void draw_partial_arc(Arc arc, float begin_angle, float end_angle, float extrusion, Color color, Quaternion orientation)
+        {
+            if (arc.curvature >= ArcType.ConvexCorner && extrusion == 0)
+            {
+                return;
+            }
+            Vector3 from = arc.position(begin_angle, extrusion);
+            Vector3 to = arc.position(end_angle, extrusion);
 
             Arc composite = ArcFactory.line(from, to);
             draw_arc(composite, 0.0f, color, orientation);
