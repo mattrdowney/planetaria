@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Planetaria
 {
@@ -99,12 +100,12 @@ namespace Planetaria
             circle_boundary_complement_variable = circle_boundary_complement;
         }
 
-        private readonly PlanetariaSphereCollider circle_boundary_variable;
-        private readonly PlanetariaSphereCollider arc_boundary_variable;
-        private readonly PlanetariaSphereCollider circle_boundary_complement_variable;
+        [NonSerialized] private PlanetariaSphereCollider circle_boundary_variable;
+        [NonSerialized] private PlanetariaSphereCollider arc_boundary_variable;
+        [NonSerialized] private PlanetariaSphereCollider circle_boundary_complement_variable;
     }
 
-    internal class PlanetariaArcColliderUtility
+    internal class PlanetariaArcColliderUtility // FIXME: move to new file?
     {
         /// <summary>
         /// Constructor - envelops a SphericalCap region using focal point of cone/SphericalCap (perfect fit)

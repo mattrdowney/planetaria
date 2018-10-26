@@ -7,10 +7,9 @@ namespace Planetaria
     /// </summary>
 	public class ArcPlanetarium : WorldPlanetarium // TODO: rename
 	{
-        public ArcPlanetarium(Arc arc, Color color, float radius)
+        public ArcPlanetarium(Arc arc, float radius)
         {
             this.arc = arc;
-            this.color = color;
             this.radius = radius;
 
             // cache for early return
@@ -59,7 +58,6 @@ namespace Planetaria
 #endif
 
         private Arc arc;
-        private Color color;
         private float radius;
 
         // cache

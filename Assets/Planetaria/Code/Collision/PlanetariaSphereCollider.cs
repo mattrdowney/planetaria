@@ -53,7 +53,7 @@ namespace Planetaria
         /// Constructor - always collides with any PlanetariaSphereCollider (when properly formed i.e. intersects a unit-sphere)
         /// </summary>
         /// <returns>A collider that always collides.</returns>
-        public static PlanetariaSphereCollider always { get { return always_collide; } } // TODO: verify
+        public static PlanetariaSphereCollider always { get { return always_collide; } } // TODO: verify // this is conceptually stupid in my opinion, refactor?
 
         /// <summary>
         /// Constructor - never collides with any PlanetariaSphereCollider (when properly formed)
@@ -61,8 +61,8 @@ namespace Planetaria
         /// <returns>A collider that never collides.</returns>
         public static PlanetariaSphereCollider never { get { return never_collide; } } // TODO: verify
 
-        [SerializeField] private readonly Vector3 center_variable;
-        [SerializeField] private readonly float radius_variable;
+        [NonSerialized] private Vector3 center_variable;
+        [NonSerialized] private float radius_variable;
 
         static readonly PlanetariaSphereCollider always_collide = new PlanetariaSphereCollider(Vector3.zero, Mathf.Infinity);
         static readonly PlanetariaSphereCollider never_collide = new PlanetariaSphereCollider(Vector3.zero, Mathf.NegativeInfinity);

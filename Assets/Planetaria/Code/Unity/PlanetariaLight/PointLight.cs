@@ -1,28 +1,58 @@
-﻿namespace Planetaria
+﻿using System;
+using UnityEngine;
+
+namespace Planetaria
 {
     /// <summary>
 	///
     /// </summary>
+    [Serializable]
 	public sealed class PointLight : PlanetariaLight
 	{
-		// Properties (Public)
-		
-		// Methods (Public)
-		
-		// Static Methods (Public)
-		
-		// Properties (non-Public)
-		
+        // Properties (Public)
+
+        public Vector3 point
+        {
+            get
+            {
+                return point_variable;
+            }
+            set
+            {
+                point_variable = value;
+                initialize();
+            }
+        }
+        
 		// Methods (non-Public)
-		
-		// Static Methods (non-Public)
-		
+
+        private void initialize()
+        {
+            PointPlanetarium point_light = new PointPlanetarium(point, range);
+            cubemap_generator.convert(point_light);
+            internal_light.cookie = cubemap_generator.get_cubemap();
+        }
+
 		// Messages (non-Public)
-				
-		// Variables (Public)
-		
+
+        protected override sealed void Awake()
+        {
+            base.Awake();
+            cubemap_generator = new CubePlanetarium(256);
+            initialize();
+        }
+
+        protected override sealed void Reset()
+        {
+            base.Reset();
+            cubemap_generator = new CubePlanetarium(256);
+            initialize();
+        }
+
 		// Variables (non-Public)
 		
+        [SerializeField] private Vector3 point_variable;
+        [NonSerialized] [HideInInspector] private CubePlanetarium cubemap_generator;
 	}
 }
 

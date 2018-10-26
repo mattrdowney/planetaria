@@ -12,22 +12,15 @@ namespace Planetaria
         /// <param name="orientation">The Transform's rotation (for moving platforms). For static objects, use Quaternion.identity.</param>
         public static void draw_arc(Arc arc, Quaternion orientation)
         {
-            Color violet = new Color(127, 0, 255);
-
-            float diameter = .1f;
+            float diameter = .1f; // FIXME: magic number
             diameter = (arc.type == ArcType.ConcaveCorner ? -diameter : diameter);
 
             // draw vertical lines representing seams between arcs
             draw_ray(arc, -arc.angle()/2, Mathf.PI/2, diameter, Color.gray, orientation);
 
-            // draw black floor with red and violet lines representing where the arc begins and ends (respectively)
-            draw_partial_arc(arc, -arc.angle()/2, -arc.angle()/3, 0, Color.red, orientation);
-            draw_partial_arc(arc, -arc.angle()/3, +arc.angle()/3, 0, Color.black, orientation);
-            draw_partial_arc(arc, +arc.angle()/2, +arc.angle()/3, 0, violet, orientation);
-            // draw gray midline
-            draw_arc(arc, diameter/2, Color.gray, orientation);
-            // draw white ceiling
-            draw_arc(arc, diameter, Color.white, orientation);
+            draw_arc(arc, 0, Color.white, orientation); // draw white floor
+            draw_arc(arc, diameter/2, Color.gray, orientation); // draw gray midline
+            draw_arc(arc, diameter, Color.black, orientation); // draw black ceiling
         }
 
         /// <summary>
