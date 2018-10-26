@@ -6,6 +6,7 @@ namespace Planetaria
     {
         public static Material render(TextAsset svg)
         {
+            /*
             Material result = new Material(Shader.Find("Unlit/Transparent"));
 
             ISVGDevice rendering_device = new SVGDeviceFast();
@@ -19,6 +20,8 @@ namespace Planetaria
             result.mainTexture = renderered_svg;
 
             return result;
+            */
+            return new Material(Shader.Find("Unlit/Transparent"));
         }
     }
 }

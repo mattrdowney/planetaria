@@ -11,6 +11,20 @@ namespace Planetaria
     public static class Miscellaneous
     {
         /// <summary>
+        /// Inspector - checks if two (normalized) directions are approximately equal. This should work for all positions in Planetaria.
+        /// </summary>
+        /// <param name="left">The first vector (order does not matter).</param>
+        /// <param name="right">The second vector (order does not matter).</param>
+        /// <returns>
+        /// True if the two vectors approximately equal;
+        /// False otherwise
+        /// </returns>
+        public static bool approximately(Vector3 left, Vector3 right)
+        {
+            return Vector3.Dot(left, right) > 1f - Precision.threshold;
+        }
+
+        /// <summary>
         /// Counts the true booleans in a sequence. E.g. count_true_booleans(true, false, true) returns 2.
         /// </summary>
         /// <param name="boolean_list">A comma separated list of (or array of) booleans.</param>
