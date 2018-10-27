@@ -56,7 +56,7 @@ namespace Planetaria
         /// </summary>
         private void normalize()
         {
-            float length = PlanetariaMath.manhattan_distance(data_variable);
+            float length = PlanetariaMath.manhattan_distance(Vector3.zero, data_variable);
             float absolute_error = Mathf.Abs(length-1);
             if (absolute_error > Precision.tolerance)
             {

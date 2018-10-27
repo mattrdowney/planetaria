@@ -70,7 +70,6 @@ namespace Planetaria
                 data_variable.x = Precision.just_below_one;
             }
 
-
             if (data_variable.y < 0 || data_variable.y > 1)
             {
                 data_variable.y = PlanetariaMath.modolo_using_euclidean_division(data_variable.y, 1);
@@ -85,7 +84,7 @@ namespace Planetaria
             }
         }
 
-        [SerializeField] private Vector2 data_variable;
+        [SerializeField] private Vector2 data_variable; // FIXME: composition using "UVCoordinates"
     }
 }
 

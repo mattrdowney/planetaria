@@ -15,14 +15,14 @@ namespace Planetaria
             pixel_centroids = uvs.Select(uv => (NormalizedCartesianCoordinates)new OctahedronUVCoordinates(uv.x, uv.y)).ToArray();
         }
 
-        public override void set_pixels(Color[] colors)
+        public override void set_pixels(Color32[] colors)
         {
-            texture.SetPixels(colors);
+            texture.SetPixels32(colors);
         }
 
-        public override Color[] get_pixels(NormalizedCartesianCoordinates[] positions)
+        public override Color32[] get_pixels(NormalizedCartesianCoordinates[] positions)
         {
-            Color[] colors = new Color[positions.Length];
+            Color32[] colors = new Color32[positions.Length];
             for (int index = 0; index < positions.Length; ++index)
             {
                 OctahedronUVCoordinates uv = positions[index];

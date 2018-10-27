@@ -55,11 +55,12 @@ namespace Planetaria
         /// <summary>
         /// Inspector - finds the Manhattan distance between two points
         /// </summary>
-        /// <param name="cartesian">The Cartesian coordinates.</param>
+        /// <param name="left">The first point. (Order does not matter.)</param>
+        /// <param name="right">The second point. (Order does not matter.)</param>
         /// <returns>The Manhattan distance (magnitude).</returns>
-        public static float manhattan_distance(Vector3 cartesian)
+        public static float manhattan_distance(Vector3 left, Vector3 right)
         {
-            return Mathf.Abs(cartesian.x) + Mathf.Abs(cartesian.y) + Mathf.Abs(cartesian.z);
+            return Mathf.Abs(right.x - left.x) + Mathf.Abs(right.y - left.y) + Mathf.Abs(right.z - left.z);
         }
 
         /// <summary>
@@ -74,12 +75,7 @@ namespace Planetaria
 
             float quotient = dividend / divisor;
 
-            float result = dividend - divisor*Mathf.Floor(quotient);
-
-            if (result < 0f)
-            {
-                Debug.LogError("ERROR: PlanetariaMath: EuclideanDivisionModulo(" + dividend + ", " + divisor + ") = " + result);
-            }
+            float result = dividend - divisor*Mathf.Floor(quotient); // underflow possible on divisor*Mathf.Floor(quotient)?
 
             return result;
         }

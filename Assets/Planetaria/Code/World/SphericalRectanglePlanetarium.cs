@@ -4,20 +4,20 @@ namespace Planetaria
 {
     public class SphericalRectanglePlanetarium : WorldPlanetarium
     {
-        public override void set_pixels(Color[] colors)
+        public override void set_pixels(Color32[] colors)
         {
-            texture.SetPixels(colors);
+            texture.SetPixels32(colors);
         }
 
-        public override Color[] get_pixels(NormalizedCartesianCoordinates[] positions)
+        public override Color32[] get_pixels(NormalizedCartesianCoordinates[] positions)
         {
-            Color[] colors = new Color[positions.Length];
+            Color32[] colors = new Color32[positions.Length];
             for (int index = 0; index < positions.Length; ++index)
             {
                 SphericalRectangleUVCoordinates spherical_rectangle = positions[index].to_spherical_rectangle(angular_width, angular_height);
                 if (!spherical_rectangle.valid())
                 {
-                    colors[index] = Color.clear;
+                    colors[index] = new Color32(0,0,0,0); // Color.clear
                 }
                 else
                 {

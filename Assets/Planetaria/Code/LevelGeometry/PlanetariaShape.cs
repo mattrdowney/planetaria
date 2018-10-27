@@ -142,6 +142,10 @@ namespace Planetaria
         {
             get
             {
+                if (arc_list.Length == 0)
+                {
+                    return Enumerable.Empty<Arc>();
+                }
                 return arc_list;
             }
         }
@@ -310,37 +314,18 @@ namespace Planetaria
             return true;
         }
 
-        public static bool operator ==(PlanetariaShape left, PlanetariaShape right)
+        /// <summary>
+        /// Inspector (pseudo-mutator) - initialize arc_list (when the user changes the list of curves)
+        /// </summary>
+        private void OnEnable()
         {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(PlanetariaShape left, PlanetariaShape right)
-        {
-            return !left.Equals(right);
-        }
-
-        public override bool Equals(System.Object other)
-        {
-            bool same_type = other is PlanetariaShape;
-            if (!same_type)
-            {
-                return false;
-            }
-            PlanetariaShape other_shape = (PlanetariaShape)other;
-            bool same_data = this.serialized_arc_list == other_shape.serialized_arc_list; // compare by reference is intentional
-            return same_data;
-        }
-
-        public override int GetHashCode()
-        {
-            return this.serialized_arc_list.GetHashCode();
+            initialize();
         }
 
         /// <summary>
         /// Inspector (pseudo-mutator) - initialize arc_list (when the user changes the list of curves)
         /// </summary>
-        private void OnEnable()
+        private void Awake()
         {
             initialize();
         }

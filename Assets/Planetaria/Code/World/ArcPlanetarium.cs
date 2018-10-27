@@ -26,21 +26,21 @@ namespace Planetaria
             pixel_centroids = new NormalizedCartesianCoordinates[0];
         }
         
-        public override void set_pixels(Color[] positions) { }
+        public override void set_pixels(Color32[] positions) { }
 
-        public override Color[] get_pixels(NormalizedCartesianCoordinates[] positions)
+        public override Color32[] get_pixels(NormalizedCartesianCoordinates[] positions)
         {
-            Color[] colors = new Color[positions.Length];
+            Color32[] colors = new Color32[positions.Length];
             for (int index = 0; index < positions.Length; ++index)
             {
                 Vector3 position = positions[index].data;
                 if (Vector3.Dot(center, position) < dot_product_threshold) // circle check (is test point within circle circumscribing extruded arc?)
                 {
-                    colors[index] = Color.clear;
+                    colors[index] = new Color32(0, 0, 0, 0); // Color.clear
                 }
                 else if (Mathf.Abs(Vector3.Dot(arc.center_axis, position) - center_offset) > center_range) // elevation check (is test point in narrow band of the arc?)
                 {
-                    colors[index] = Color.clear;
+                    colors[index] = new Color32(0, 0, 0, 0); // Color.clear
                 }
                 else // common early returns handled, do expensive work
                 {

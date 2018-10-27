@@ -9,9 +9,12 @@ namespace Planetaria
         {
             if (!EditorGlobal.self.hide_graphics)
             {
-                foreach (Arc arc in self.arcs)
+                if (self)
                 {
-                    ArcEditor.draw_arc(arc, orientation);
+                    foreach (Arc arc in self.arcs)
+                    {
+                        ArcEditor.draw_arc(arc, orientation);
+                    }
                 }
             }
         }

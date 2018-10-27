@@ -51,17 +51,17 @@ namespace Planetaria
             switch (skybox.face_index_variable)
             {
                 case 0:
-                    return new NormalizedCubeCoordinates(new Vector3(+1, -y, -x));
+                    return new NormalizedCubeCoordinates(new Vector3(1, y, -x));
                 case 1:
-                    return new NormalizedCubeCoordinates(new Vector3(-1, -y, x));
+                    return new NormalizedCubeCoordinates(new Vector3(-1, y, x));
                 case 2:
-                    return new NormalizedCubeCoordinates(new Vector3(x, +1, y));
+                    return new NormalizedCubeCoordinates(new Vector3(x, 1, -y));
                 case 3:
-                    return new NormalizedCubeCoordinates(new Vector3(x, -1, -y));
+                    return new NormalizedCubeCoordinates(new Vector3(x, -1, y));
                 case 4:
-                    return new NormalizedCubeCoordinates(new Vector3(x, -y, +1));
+                    return new NormalizedCubeCoordinates(new Vector3(x, y, 1));
                 case 5: default:
-                    return new NormalizedCubeCoordinates(new Vector3(-x, -y, -1));
+                    return new NormalizedCubeCoordinates(new Vector3(-x, y, -1));
             }
         }
 
@@ -102,7 +102,7 @@ namespace Planetaria
         }
 
         [SerializeField] private int face_index_variable;
-        [SerializeField] private Vector2 uv_variable;
+        [SerializeField] private Vector2 uv_variable; // FIXME: composition using "UVCoordinates"
     }
 }
 

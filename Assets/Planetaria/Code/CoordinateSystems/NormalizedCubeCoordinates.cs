@@ -42,17 +42,17 @@ namespace Planetaria
             switch (face_index)
             {
                 case 0:
-                    return new CubeUVCoordinates(-cube.data.z/2 + 0.5f, -cube.data.y/2 + 0.5f, 0);
+                    return new CubeUVCoordinates(-cube.data.z/2 + 0.5f, cube.data.y/2 + 0.5f, 0);
                 case 1:
-                    return new CubeUVCoordinates(cube.data.z/2 + 0.5f, -cube.data.y/2 + 0.5f, 1);
+                    return new CubeUVCoordinates(cube.data.z/2 + 0.5f, cube.data.y/2 + 0.5f, 1);
                 case 2:
-                    return new CubeUVCoordinates(cube.data.x/2 + 0.5f, cube.data.z/2 + 0.5f, 2);
+                    return new CubeUVCoordinates(cube.data.x/2 + 0.5f, -cube.data.z/2 + 0.5f, 2);
                 case 3:
-                    return new CubeUVCoordinates(cube.data.x/2 + 0.5f, -cube.data.z/2 + 0.5f, 3); // Fixed by Emily
+                    return new CubeUVCoordinates(cube.data.x/2 + 0.5f, cube.data.z/2 + 0.5f, 3); // Fixed by Emily
                 case 4:
-                    return new CubeUVCoordinates(cube.data.x/2 + 0.5f, -cube.data.y/2 + 0.5f, 4);
+                    return new CubeUVCoordinates(cube.data.x/2 + 0.5f, cube.data.y/2 + 0.5f, 4);
                 case 5: default:
-                    return new CubeUVCoordinates(-cube.data.x/2 + 0.5f, -cube.data.y/2 + 0.5f, 5);
+                    return new CubeUVCoordinates(-cube.data.x/2 + 0.5f, cube.data.y/2 + 0.5f, 5);
             }
         }
 

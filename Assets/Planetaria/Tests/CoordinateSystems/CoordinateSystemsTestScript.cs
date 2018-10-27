@@ -4,10 +4,10 @@ using NUnit.Framework;
 using System.Collections;
 using Planetaria;
 
-public class CoordinatesTests
+public class CoordinateSystemsTestScripts
 {
     [Test]
-    public void CoordinatesTestsSimplePasses()
+    public void CoordinateSystemsTestScriptsSimplePasses()
     {
         // Use the Assert class to test conditions.
         for (int test = 0; test < tests; ++test)
@@ -34,13 +34,27 @@ public class CoordinatesTests
             StereoscopicProjectionCoordinates stereoscopic = cartesian;
             reconverted_cartesian = stereoscopic;
             Assert.IsTrue(Miscellaneous.approximately(cartesian.data, reconverted_cartesian.data), cartesian.data + " versus " + reconverted_cartesian.data);
+
+            // Test normalized octahedron
+            NormalizedOctahedronCoordinates octahedron = cartesian;
+            bool same_signs = Mathf.Sign(octahedron.data.x) == Mathf.Sign(cartesian.data.x) &&
+                    Mathf.Sign(octahedron.data.y) == Mathf.Sign(cartesian.data.y) &&
+                    Mathf.Sign(octahedron.data.z) == Mathf.Sign(cartesian.data.z);
+            Assert.IsTrue(same_signs, cartesian.data + " versus " + reconverted_cartesian.data);
+
+            // Test normalized cube
+            NormalizedCubeCoordinates cube = cartesian;
+            same_signs = Mathf.Sign(cube.data.x) == Mathf.Sign(cartesian.data.x) &&
+                    Mathf.Sign(cube.data.y) == Mathf.Sign(cartesian.data.y) &&
+                    Mathf.Sign(cube.data.z) == Mathf.Sign(cartesian.data.z);
+            Assert.IsTrue(same_signs, cartesian.data + " versus " + reconverted_cartesian.data);
         }
     }
 
     // A UnityTest behaves like a coroutine in PlayMode
     // and allows you to yield null to skip a frame in EditMode
     [UnityTest]
-    public IEnumerator CoordinatesTestsWithEnumeratorPasses()
+    public IEnumerator CoordinateSystemsTestScriptsWithEnumeratorPasses()
     {
         // Use the Assert class to test conditions.
         // yield to skip a frame

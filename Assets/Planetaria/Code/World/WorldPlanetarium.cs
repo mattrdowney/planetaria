@@ -8,12 +8,12 @@ namespace Planetaria
 {
     public abstract class WorldPlanetarium // TODO: rename
     {
-        public abstract void set_pixels(Color[] colors);
-        public abstract Color[] get_pixels(NormalizedCartesianCoordinates[] positions);
+        public abstract void set_pixels(Color32[] colors);
+        public abstract Color32[] get_pixels(NormalizedCartesianCoordinates[] positions);
 
         public void convert(WorldPlanetarium other)
         {
-            Color[] colors = other.get_pixels(this.pixel_centroids);
+            Color32[] colors = other.get_pixels(this.pixel_centroids);
             this.set_pixels(colors);
         }
 
@@ -28,17 +28,6 @@ namespace Planetaria
         protected static void save_material(Material material, string file_name)
         {
             AssetDatabase.CreateAsset(material, file_name + ".mat");
-        }
-
-        /// <summary>
-        /// Serializer - Saves a cubemap texture to a ".cubemap" file.
-        /// </summary>
-        /// <param name="cubemap">The Cubemap to be saved.</param>
-        /// <param name="file_name">The path where the texture will be saved (relative to project folder) without file extension.</param>
-        /// <param name="texture_identifier">The file suffix (e.g. "_LeftTex").</param>
-        protected static void save_cubemap(Cubemap cubemap, string file_name)
-        {
-            AssetDatabase.CreateAsset(cubemap, file_name + ".cubemap");
         }
 
         /// <summary>
@@ -77,7 +66,7 @@ namespace Planetaria
         /// <param name="file_name">The name of the file (without suffix (e.g. "_LeftTex") or file extension (e.g. ".png")).</param>
         /// <param name="texture_identifier">The file suffix (e.g. "_LeftTex").</param>
         /// <returns>The texture that was loaded.</returns>
-        protected static Texture load_texture(string file_name)
+        protected static Texture2D load_texture(string file_name)
         {
             file_name = Application.dataPath + "/" + file_name;
             if (File.Exists(file_name + ".png")) // TODO: support other capitalizations and variants?
@@ -91,11 +80,6 @@ namespace Planetaria
             else if (File.Exists(file_name + ".exr"))
             {
                 file_name += ".exr";
-            }
-            else if (File.Exists(file_name + ".cubemap"))
-            {
-                file_name += ".cubemap";
-                return AssetDatabase.LoadAssetAtPath<Cubemap>(file_name);
             }
             else
             {

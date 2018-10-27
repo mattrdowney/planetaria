@@ -1,11 +1,29 @@
-﻿namespace Planetaria
+﻿using System;
+using UnityEngine;
+
+namespace Planetaria
 {
     /// <summary>
-	/// Similar to UnityEngine.Cookie, this is an overlay across a light region.
+	/// Similar to UnityEngine.Cookie, this is an overlay across a light region, but instead of being 2-dimensional, it is 1-dimensional.
     /// </summary>
+    [Serializable]
 	public class PlanetariaCucoloris
 	{
 		// Properties (Public)
+
+        /// <summary>A 1-dimensional Texture (only the full width of the first row used). The texture represents the 360 degrees or sector angle's pixel colors. The center pixel (i.e. width/2) represents forward relative to the light.</summary>
+        public Texture2D cucoloris
+        {
+            get
+            {
+                return user_cucoloris;
+            }
+            set
+            {
+                user_cucoloris = value;
+                recalculate();
+            }
+        }
 		
 		// Methods (Public)
 		
@@ -15,6 +33,19 @@
 		
 		// Methods (non-Public)
 		
+        private void recalculate()
+        {
+            // create ~ Texture2D(1024,1024) [user-specified resolution? or inferred from user_cucoloris?]
+            // go through width and height:
+            //     get pixel coordinates, convert to polar coordinates using UVCoordinate conversion
+            //     from polar coordinates, fetch closest user_cucoloris pixel (with special considerations for sector light)
+            //         point light: 90 degrees maps to width/2, 0 degrees maps to 3width/4, 271 degrees maps to ~width
+            //                 180 degrees maps to width/4, 269 degrees maps to ~0
+            //         sector light: 90 degrees maps to width/2, 90 - sector_angle/2 maps to 0, and 90 + sector_angle/2 maps to width
+            //     get pixel lighting at position (no lighting outside of radius - because of how intensity multiplication works)
+            //     multiply pixel lighting by user_cucoloris to get final color at pixel
+        }
+
 		// Static Methods (non-Public)
 		
 		// Messages (non-Public)
@@ -23,6 +54,9 @@
 		
 		// Variables (non-Public)
 		
+        [SerializeField] private Texture2D user_cucoloris; // this is a functionally-1D (width only of 1st row) 
+        [NonSerialized] [HideInInspector] private Texture2D internal_cucoloris; // This is the procedural Unity "Cookie" used for the Unity Spot Light.
+        // CONSIDER: static private Texture2D internal_particle_image? (or similar reference)
 	}
 }
 
