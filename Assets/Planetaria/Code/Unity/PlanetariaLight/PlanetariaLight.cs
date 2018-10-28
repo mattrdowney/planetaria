@@ -110,9 +110,9 @@ namespace Planetaria
             {
                 internal_light = Miscellaneous.GetOrAddComponent<Light>(game_object);
             }
-            internal_light.range = 1e10f;
+            internal_light.range = 10f; // FIXME: magic number: Setting light ranges to float.MaxValue does not work; the max range for SpotLights is a lot worse than PointLights.
             internal_light.shadows = LightShadows.None;
-            internal_light.type = LightType.Point;
+            internal_light.type = LightType.Spot;
         }
 
 		// Messages (non-Public)

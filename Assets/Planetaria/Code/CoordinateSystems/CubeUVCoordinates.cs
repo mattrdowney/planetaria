@@ -14,7 +14,7 @@ namespace Planetaria
         /// <param name="face_index">[0,6) array index; 0=right, 1=left, 2=up, 3=down, 4=front, 5=back</param>
         public CubeUVCoordinates(float u, float v, int face_index)
         {
-            uv_variable = new Vector2(u, v);
+            uv_variable = new UVCoordinates(u, v);
             face_index_variable = face_index;
             normalize();
         }
@@ -26,7 +26,7 @@ namespace Planetaria
 
         public Vector2 uv
         {
-            get { return uv_variable; }
+            get { return uv_variable.data; }
         }
 
         /// <summary>
@@ -46,8 +46,8 @@ namespace Planetaria
         /// <returns>The normalized cube coordinates. (At least one of x,y,and z will be magnitude 1.)</returns>
         public static implicit operator NormalizedCubeCoordinates(CubeUVCoordinates skybox) // FIXME: CONSIDER: I don't like the Unity internal format for Cubemap, or that this is heavily tied to that format.
         {
-            float x = 2*skybox.uv_variable.x - 1;
-            float y = 2*skybox.uv_variable.y - 1;
+            float x = 2*skybox.uv_variable.data.x - 1;
+            float y = 2*skybox.uv_variable.data.y - 1;
             switch (skybox.face_index_variable)
             {
                 case 0:
@@ -83,18 +83,10 @@ namespace Planetaria
         }
 
         /// <summary>
-        /// Mutator - Wrap UV coordinates so that neither uv coordinate value is outside of [0,1] and the face index is [0,6)
+        /// Mutator - Make sure the face index is in range [0,6); UV coordinate normalization handled in UVCoordinate
         /// </summary>
         private void normalize()
         {
-            if (1 < uv_variable.x || uv_variable.x < 0) // modulo goes from [0,1) and we want [0,1]
-            {
-                uv_variable.x = PlanetariaMath.modolo_using_euclidean_division(uv_variable.x, 1);
-            }
-            if (1 < uv_variable.y || uv_variable.y < 0) // modulo goes from [0,1) and we want [0,1]
-            {
-                uv_variable.y = PlanetariaMath.modolo_using_euclidean_division(uv_variable.y, 1);
-            }
             if (6 <= face_index_variable || face_index_variable < 0)
             {
                 face_index_variable = (int)PlanetariaMath.modolo_using_euclidean_division(face_index_variable, 6); // HACK: CONSIDER: would anyone ever enter something like 2^31 in here?
@@ -102,7 +94,7 @@ namespace Planetaria
         }
 
         [SerializeField] private int face_index_variable;
-        [SerializeField] private Vector2 uv_variable; // FIXME: composition using "UVCoordinates"
+        [SerializeField] private UVCoordinates uv_variable;
     }
 }
 

@@ -8,7 +8,7 @@ namespace Planetaria
     {
         public Vector2 data
         {
-            get { return data_variable; }
+            get { return data_variable.data; }
         }
 
         /// <summary>
@@ -18,8 +18,7 @@ namespace Planetaria
         /// <param name="v">The v coordinate in UV space for the octahedron. Range: [0,1]</param>
         public OctahedronUVCoordinates(float u, float v)
         {
-            data_variable = new Vector2(u, v);
-            normalize();
+            data_variable = new UVCoordinates(u, v);
         }
 
         /// <summary>
@@ -52,39 +51,7 @@ namespace Planetaria
             return new NormalizedOctahedronCoordinates(new Vector3(x, y, z));
         }
 
-        /// <summary>
-        /// Mutator - Wrap UV coordinates so that neither value is outside of [0,1].
-        /// </summary>
-        private void normalize()
-        {
-            if (data_variable.x < 0 || data_variable.x > 1)
-            {
-                data_variable.x = PlanetariaMath.modolo_using_euclidean_division(data_variable.x, 1); // TODO: does this work?
-            }
-            else if (data_variable.x == 0)
-            {
-                data_variable.x = Precision.just_above_zero;
-            }
-            else if (data_variable.x == 1)
-            {
-                data_variable.x = Precision.just_below_one;
-            }
-
-            if (data_variable.y < 0 || data_variable.y > 1)
-            {
-                data_variable.y = PlanetariaMath.modolo_using_euclidean_division(data_variable.y, 1);
-            }
-            else if (data_variable.y == 0)
-            {
-                data_variable.y = Precision.just_above_zero;
-            }
-            else if (data_variable.y == 1)
-            {
-                data_variable.y = Precision.just_below_one;
-            }
-        }
-
-        [SerializeField] private Vector2 data_variable; // FIXME: composition using "UVCoordinates"
+        [SerializeField] private UVCoordinates data_variable;
     }
 }
 

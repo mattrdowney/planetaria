@@ -35,10 +35,6 @@ public class Laser : MonoBehaviour  // TODO: PlanetariaComponent
 #endif
         if (firing)
         {
-            if (arc_renderer.material.color == Color.blue)
-            {
-                point_light.point = controller_position;
-            }
             arc_renderer.material.color = Color.red;
         }
         else
