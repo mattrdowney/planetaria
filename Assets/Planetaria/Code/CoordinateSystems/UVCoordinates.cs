@@ -7,7 +7,7 @@ namespace Planetaria
 	///
     /// </summary>
     [Serializable]
-	public class UVCoordinates
+	public struct UVCoordinates
 	{
 		// Properties (Public)
 

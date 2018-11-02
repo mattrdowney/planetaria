@@ -7,7 +7,7 @@ namespace Planetaria
 	///
     /// </summary>
     [Serializable]
-	public class PolarCoordinates
+	public struct PolarCoordinates
 	{
 		// Properties (Public)
 

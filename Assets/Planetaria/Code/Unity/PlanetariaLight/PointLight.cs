@@ -40,9 +40,9 @@ namespace Planetaria
 
                     // we are interested in points of radius [0, 0.5].
                     float angular_distance = Mathf.PI*polar.radius; // this range maps to [0, PI/2]
-                    float dot_product = Mathf.Clamp01(Mathf.Cos(angular_distance)); // Cosine range is [-1, +1]
-                    float inverse_square = dot_product*dot_product; // Inverse squared lighting (without the inverse!)
-                    byte intensity = (byte) Mathf.CeilToInt(inverse_square*byte.MaxValue);
+                    float dot_product = Mathf.Clamp(Mathf.Sin(angular_distance), Precision.just_above_zero, 1); // Sine range is [-1, +1]
+                    //float inverse_square = dot_product*dot_product; // Inverse squared lighting (without the inverse!)
+                    byte intensity = (byte) Mathf.CeilToInt(dot_product*byte.MaxValue);
                     pixels[pixel] = new Color32(intensity, intensity, intensity, intensity);
                     pixel += 1;
                 }

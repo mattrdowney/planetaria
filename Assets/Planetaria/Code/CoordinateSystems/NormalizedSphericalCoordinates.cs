@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Planetaria
 {
     [Serializable]
-    public struct NormalizedSphericalCoordinates
+    public struct NormalizedSphericalCoordinates // TODO: CONSIDER: LongitudeLatitudeCoordinates
     {
         public Vector2 data
         {

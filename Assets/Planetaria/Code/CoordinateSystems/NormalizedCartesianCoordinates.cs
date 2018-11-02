@@ -114,71 +114,14 @@ namespace Planetaria
             return new NormalizedCartesianCoordinates(cartesian);
         }
         
-        public SphericalRectangleUVCoordinates to_spherical_rectangle(float angular_width, float angular_height)
+        /// <summary>
+        /// Inspector - Creates a spherical rectangle UV coordinate from a point (implicit caller) and a rectangle (explicit).
+        /// </summary>
+        /// <param name="canvas">A Rect (measuring radians) representing the start and stop angles relative to Quaternion.identity. X/Y Range: (-2PI, +2PI).</param>
+        /// <returns>UV Coordinates for a spherical rectangle.</returns>
+        public SphericalRectangleUVCoordinates to_spherical_rectangle(Rect canvas)
         {
-            Vector3 axis = closest_axis(angular_width, angular_height);
-            Vector3 corner = closest_diagonal(angular_width, angular_height);
-            Arc horizontal;
-            Arc vertical;
-            float horizontal_angle;
-            float vertical_angle;
-            if (Mathf.Abs(axis.x) > Mathf.Abs(axis.y)) // tipped-over hourglass half of the texture
-            {
-                horizontal = ArcFactory.curve(Vector3.forward, axis, Vector3.forward);
-                vertical = ArcFactory.curve(axis, corner, axis);
-                horizontal_angle = Vector3.Angle(Vector3.forward, axis)*Mathf.Deg2Rad;
-                vertical_angle = Vector3.Angle(axis, corner)*Mathf.Deg2Rad;
-            }
-            else // right-side-up hourglass half of the texture
-            {
-                horizontal = ArcFactory.curve(axis, corner, axis);
-                vertical = ArcFactory.curve(Vector3.forward, axis, Vector3.forward);
-                horizontal_angle = Vector3.Angle(axis, corner)*Mathf.Deg2Rad;
-                vertical_angle = Vector3.Angle(Vector3.forward, axis)*Mathf.Deg2Rad;
-            }
-
-            float u = horizontal.position_to_angle(data);
-            float v = vertical.position_to_angle(data);
-
-            u = u*Mathf.Sign(data.x)/horizontal_angle;
-            v = v*Mathf.Sign(data.y)/vertical_angle;
-
-            if (Mathf.Abs(axis.x) > Mathf.Abs(axis.y)) // tipped-over hourglass half of the texture
-            {
-                v *= Mathf.Abs(u);
-            }
-            else // right-side-up hourglass half of the texture
-            {
-                u *= Mathf.Abs(v);
-            }
-
-            u = u/2 + 0.5f;
-            v = v/2 + 0.5f;
-
-            return new SphericalRectangleUVCoordinates(u, v, angular_width, angular_height);
-        }
-
-        private Vector3 closest_axis(float angular_width, float angular_height)
-        {
-            Arc equator = ArcFactory.curve(Vector3.forward, Vector3.right, Vector3.forward);
-            Arc meridian = ArcFactory.curve(Vector3.forward, Vector3.up, Vector3.forward);
-            float x_fraction = Mathf.Abs(data.x)/angular_width;
-            float y_fraction = Mathf.Abs(data.y)/angular_height;
-            if (x_fraction > y_fraction)
-            {
-                return equator.position(Mathf.Sign(data.x)*angular_width/2);
-            }
-            return meridian.position(Mathf.Sign(data.y)*angular_height/2);
-        }
-
-        private Vector3 closest_diagonal(float angular_width, float angular_height)
-        {
-            Arc equator = ArcFactory.curve(Vector3.forward, Vector3.right, Vector3.forward);
-            Arc meridian = ArcFactory.curve(Vector3.forward, Vector3.up, Vector3.forward);
-            Arc x_boundary = ArcFactory.curve(Vector3.down, equator.position(Mathf.Sign(data.x)*angular_width/2), Vector3.up);
-            Arc y_boundary = ArcFactory.curve(Vector3.left, meridian.position(Mathf.Sign(data.y)*angular_height/2), Vector3.right);
-            Vector3 corner = PlanetariaIntersection.arc_arc_intersection(x_boundary, y_boundary, 0).data;
-            return corner;
+            return SphericalRectangleUVCoordinates.cartesian_to_spherical_rectangle(data, canvas);
         }
 
         /// <summary>

@@ -7,7 +7,7 @@ namespace Planetaria
 	/// A PlanetariaLight is of type PointLight, ArcLight, SectorLight, or WorldLight.
     /// </summary>
     [Serializable]
-	public class PlanetariaLight : PlanetariaComponent
+	public abstract class PlanetariaLight : PlanetariaComponent
 	{
 		// Properties (Public)
 
@@ -63,7 +63,6 @@ namespace Planetaria
             }
         }
 
-        
         /// <summary>The radius (as an angle in radians) of the light. Range: [0, PI].</summary>
         public float range
         {

@@ -9,9 +9,7 @@ namespace Planetaria
 	public enum PlanetariaLightType
 	{
         PointLight,
-        ArcLight,
         SectorLight,
-        WorldLight,
 	}
 }
 
