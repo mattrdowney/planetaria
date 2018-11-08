@@ -27,6 +27,7 @@ namespace Planetaria
         /// <param name="file_name">The path where the material will be saved (relative to project folder) without file extension.</param>
         protected static void save_material(Material material, string file_name)
         {
+            Debug.Log(file_name);
             AssetDatabase.CreateAsset(material, file_name + ".mat");
         }
 
@@ -39,7 +40,7 @@ namespace Planetaria
         protected static void save_texture(Texture2D texture, string file_name, string texture_identifier)
         {
             byte[] png_data = texture.EncodeToPNG();
-            File.WriteAllBytes(Application.dataPath + file_name + texture_identifier + ".png", png_data);
+            File.WriteAllBytes(Application.dataPath + "/" + file_name.Substring("Assets/".Length) + texture_identifier + ".png", png_data);
         }
 
         /// <summary>
@@ -52,8 +53,9 @@ namespace Planetaria
         /// </returns>
         protected static optional<Material> load_material(string file_name)
         {
-            file_name = Application.dataPath + "/" + file_name + ".mat";
-            if (!File.Exists(file_name))
+            string absolute_file_name = Application.dataPath + "/" + file_name.Substring("Assets/".Length) + ".mat";
+            Debug.Log(absolute_file_name);
+            if (!File.Exists(absolute_file_name))
             {
                 return new optional<Material>();
             }
@@ -68,16 +70,16 @@ namespace Planetaria
         /// <returns>The texture that was loaded.</returns>
         protected static Texture2D load_texture(string file_name)
         {
-            file_name = Application.dataPath + "/" + file_name;
-            if (File.Exists(file_name + ".png")) // TODO: support other capitalizations and variants?
+            string absolute_file_name = Application.dataPath + "/" + file_name.Substring("Assets/".Length);
+            if (File.Exists(absolute_file_name + ".png")) // TODO: support other capitalizations and variants?
             {
                 file_name += ".png";
             }
-            else if (File.Exists(file_name + ".jpg"))
+            else if (File.Exists(absolute_file_name + ".jpg"))
             {
                 file_name += ".jpg";
             }
-            else if (File.Exists(file_name + ".exr"))
+            else if (File.Exists(absolute_file_name + ".exr"))
             {
                 file_name += ".exr";
             }
