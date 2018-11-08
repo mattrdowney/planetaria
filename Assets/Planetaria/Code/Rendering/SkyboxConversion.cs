@@ -51,11 +51,7 @@ namespace Planetaria
             {
                 case Shape.SphericalRectangle:
                     GUILayout.BeginHorizontal();
-                    width = EditorGUILayout.FloatField("Angular width", width);
-                    GUILayout.EndHorizontal();
-
-                    GUILayout.BeginHorizontal();
-                    height = EditorGUILayout.FloatField("Angular height", height);
+                    canvas = EditorGUILayout.RectField("Spherical Rectangle", canvas);
                     GUILayout.EndHorizontal();
                     break;
             }
@@ -78,7 +74,7 @@ namespace Planetaria
                         break;
                     case Shape.SphericalRectangle:
                     default: // FIXME:
-                        optional<SphericalRectanglePlanetarium> rectangle = SphericalRectanglePlanetarium.load(from_file_name, width, height);
+                        optional<SphericalRectanglePlanetarium> rectangle = SphericalRectanglePlanetarium.load(from_file_name, canvas);
                         Debug.Assert(rectangle.exists);
                         from = rectangle.data;
                         break;
@@ -103,8 +99,7 @@ namespace Planetaria
         [SerializeField] [HideInInspector] private string to_file_name;
         [SerializeField] [HideInInspector] private Shape from_shape = Shape.Octahedron;
         [SerializeField] [HideInInspector] private Shape to_shape = Shape.Cube;
-        [SerializeField] [HideInInspector] private float width = 1;
-        [SerializeField] [HideInInspector] private float height = 1;
+        [SerializeField] [HideInInspector] private Rect canvas = new Rect(-Mathf.PI/4, -Mathf.PI/4, Mathf.PI/2, Mathf.PI/2);
         [SerializeField] [HideInInspector] private int resolution = 256;
         [SerializeField] [HideInInspector] private int sample_rate = 1;
     }

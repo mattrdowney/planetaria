@@ -14,7 +14,7 @@ namespace Planetaria
             Color32[] colors = new Color32[positions.Length];
             for (int index = 0; index < positions.Length; ++index)
             {
-                SphericalRectangleUVCoordinates spherical_rectangle = positions[index].to_spherical_rectangle(angular_width, angular_height);
+                SphericalRectangleUVCoordinates spherical_rectangle = positions[index].to_spherical_rectangle(canvas_variable);
                 if (!spherical_rectangle.valid())
                 {
                     colors[index] = new Color32(0,0,0,0); // Color.clear
@@ -34,7 +34,7 @@ namespace Planetaria
             WorldPlanetarium.save_texture(texture, file_name, "_MainTex");
         }
         
-        public static optional<SphericalRectanglePlanetarium> load(string file_name, float width, float height)
+        public static optional<SphericalRectanglePlanetarium> load(string file_name, Rect canvas)
         {
             optional<Material> material = WorldPlanetarium.load_material(file_name);
             if (!material.exists)
@@ -45,24 +45,21 @@ namespace Planetaria
             result.material = material.data;
             result.texture = (Texture2D) WorldPlanetarium.load_texture(file_name);
             result.material.SetTexture("_MainTex", result.texture);
-            result.angular_width = width;
-            result.angular_height = height;
+            result.canvas_variable = canvas;
             return result;
         }
 #endif
 
-        private void initialize(float width, float height, int resolution = 0)
+        private void initialize(Rect canvas, int resolution = 0)
         {
-            angular_width = width;
-            angular_height = height;
+            canvas_variable = canvas;
             material = new Material(Shader.Find("Planetaria/Transparent Always"));
             texture = new Texture2D(resolution, resolution);
             material.SetTexture("_MainTex", texture);
         }
 
         private Texture2D texture;
-        private float angular_width;
-        private float angular_height;
+        private Rect canvas_variable;
     }
 }
 
