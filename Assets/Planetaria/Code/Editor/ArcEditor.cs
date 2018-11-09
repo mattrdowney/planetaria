@@ -71,6 +71,23 @@ namespace Planetaria
         }
 
         /// <summary>
+        /// Inspector - Draw an arc with lines only (basic)
+        /// </summary>
+        /// <param name="arc">The arc that will be rendered.</param>
+        public static void draw_simple_arc(Arc arc)
+        {
+            float start_angle = -arc.half_angle;
+
+            int segments = 50;
+            for (int segment = 1; segment <= segments; ++segment)
+            {
+                float end_angle = -arc.half_angle + segment/(float)segments*arc.angle();
+                Debug.DrawLine(arc.position(start_angle), arc.position(end_angle), Color.yellow, 5f);
+                start_angle = end_angle;
+            }
+        }
+
+        /// <summary>
         /// Inspector - Draw a fraction of the given arc segment.
         /// </summary>
         /// <param name="arc">The arc that will be rendered.</param>

@@ -53,6 +53,11 @@ namespace Planetaria
         {
             cache_spherical_rectangle(canvas); // ensure correct canvas is cached
             
+            foreach (Arc arc in cached_arcs) // visualize
+            {
+                ArcEditor.draw_simple_arc(arc);
+            }
+
             // Find center point attractor (i.e. the direction of the pixel relative to the canvas)
             Vector3 direction = Bearing.attractor(cached_center, cartesian); 
             Arc path = ArcFactory.curve(cached_center, direction, -cached_center);
@@ -86,7 +91,7 @@ namespace Planetaria
         }
 
         /// <summary>
-        /// Inspector - Creates a cartesian point on the surface of a sphere coordinate set from a uv coordinate and a rectangle.
+        /// Inspector (Cache mutator) - Creates a cartesian point on the surface of a sphere coordinate set from a uv coordinate and a rectangle.
         /// </summary>
         /// <param name="uv">UV Coordinates for a spherical rectangle. Valid X/Y Range: [0, 1], although one axis may be in the (-INF, +INF) range.</param>
         /// <param name="canvas">A Rect (measuring radians) representing the start and stop angles relative to Quaternion.identity. X/Y Range: (-2PI, +2PI).</param>
@@ -171,7 +176,7 @@ namespace Planetaria
                     {
                         cached_closest_arc = cached_arcs[arc];
                         cached_closest_intersection = current_intersection.data;
-                        cached_boundary = boundaries[arc];
+                        cached_boundary = (SquareEdge) arc; // Find SquareEdge.UpperBoundary/LeftBoundary/etc
                         closest_distance = current_distance;
                     }
                 }
@@ -186,14 +191,14 @@ namespace Planetaria
 
         private static Vector3 prime_meridian_latitude(float latitude)
         {
-            Arc prime_meridian = ArcFactory.curve(Vector3.forward, Vector3.right, Vector3.forward);
+            Arc prime_meridian = ArcFactory.curve(Vector3.forward, Vector3.up, Vector3.forward);
             return prime_meridian.position(latitude);
         }
 
         private static Vector3 intersection(float longitude, float latitude) // FIXME: Rect canvas
         {
-            Arc x_boundary = ArcFactory.curve(Vector3.down, equator_longitude(longitude), Vector3.up);
-            Arc y_boundary = ArcFactory.curve(Vector3.left, prime_meridian_latitude(latitude), Vector3.right);
+            Arc x_boundary = ArcFactory.curve(Vector3.down, equator_longitude(longitude), Vector3.down); // full-circle
+            Arc y_boundary = ArcFactory.curve(Vector3.left, prime_meridian_latitude(latitude), Vector3.right); // semi-circle
             Vector3 corner = PlanetariaIntersection.arc_arc_intersection(x_boundary, y_boundary, 0).data;
             return corner;
         }
@@ -207,7 +212,7 @@ namespace Planetaria
             return ArcFactory.curve(first_corner, axis, end_corner);
         }
 
-        // CONSIDER: re-add normalize() for scaling width/height?
+        // CONSIDER: re-add normalize() for scaling width/height? Clamp vs Wrap
 
         [SerializeField] private Vector2 uv_variable; // FIXME: UVCoordinates would be normalized - TODO: should probably refactor UVCoordinates
         [SerializeField] private Rect canvas_variable;
@@ -218,7 +223,6 @@ namespace Planetaria
         private static Rect cached_canvas; // FIXME: first iteration will have uninitialized cache - to be fair this is undefined behaviour anyway
         private static Vector3 cached_center = Vector3.forward;
         private static Arc[] cached_arcs;
-        private static SquareEdge[] boundaries = new SquareEdge[4] { SquareEdge.UpperBoundary, SquareEdge.LowerBoundary, SquareEdge.LeftBoundary, SquareEdge.RightBoundary };
 
         // point cache
         private static Arc cached_closest_arc;

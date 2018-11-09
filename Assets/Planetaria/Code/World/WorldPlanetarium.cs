@@ -27,7 +27,6 @@ namespace Planetaria
         /// <param name="file_name">The path where the material will be saved (relative to project folder) without file extension.</param>
         protected static void save_material(Material material, string file_name)
         {
-            Debug.Log(file_name);
             AssetDatabase.CreateAsset(material, file_name + ".mat");
         }
 
@@ -54,7 +53,6 @@ namespace Planetaria
         protected static optional<Material> load_material(string file_name)
         {
             string absolute_file_name = Application.dataPath + "/" + file_name.Substring("Assets/".Length) + ".mat";
-            Debug.Log(absolute_file_name);
             if (!File.Exists(absolute_file_name))
             {
                 return new optional<Material>();
