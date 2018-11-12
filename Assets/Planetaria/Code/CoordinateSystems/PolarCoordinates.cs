@@ -7,7 +7,7 @@ namespace Planetaria
 	///
     /// </summary>
     [Serializable]
-	public struct PolarCoordinates
+	public struct PolarCoordinates // TODO: combine PolarCoordinates with NormalizedSphericalCoordinates (as LongitudeLatitudeCoordinates)?
 	{
 		// Properties (Public)
 
@@ -28,6 +28,28 @@ namespace Planetaria
         }
 		
 		// Methods (Public)
+
+        /// <summary>
+        /// Inspector - Converts polar coordinates to normalized cartesian coordinates.
+        /// </summary>
+        /// <param name="polar">The polar coordinates (radians) to be converted relative to Quaternion.identity's forward.</param>
+        /// <returns>The normalized cartesian coordinates (point on a unit-sphere).</returns>
+        public static implicit operator NormalizedCartesianCoordinates(PolarCoordinates polar)
+        {
+            Vector3 direction = Bearing.bearing(Vector3.forward, Vector3.up, polar.angle);
+            Vector3 cartesian = PlanetariaMath.spherical_linear_interpolation(Vector3.forward, direction, polar.radius);
+            return new NormalizedCartesianCoordinates(cartesian);
+        }
+
+        /// <summary>
+        /// Inspector - Creates a spherical circle QV (Quadrant-ValenceShell) coordinate from a point (implicit caller) and a radius (explicit).
+        /// </summary>
+        /// <param name="radius">A radius (measuring radians) representing the angle of the circle from Vector3.forward. Range: [0, +PI].</param>
+        /// <returns>QV (Quadrant-ValenceShell) Coordinates for a spherical circle.</returns>
+        public SphericalCircleQVCoordinates to_spherical_circle(float radius)
+        {
+            return SphericalCircleQVCoordinates.polar_to_spherical_circle(this, radius);
+        }
 
         /// <summary>
         /// Constructor (Named) - A wrapper class for polar coordinates made from a cartesian point (x,y).

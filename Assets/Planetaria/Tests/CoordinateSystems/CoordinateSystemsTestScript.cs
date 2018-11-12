@@ -35,6 +35,11 @@ public class CoordinateSystemsTestScripts
             reconverted_cartesian = stereoscopic;
             Assert.IsTrue(Miscellaneous.approximately(cartesian.data, reconverted_cartesian.data), cartesian.data + " versus " + reconverted_cartesian.data);
 
+            // Test polar coordinates
+            PolarCoordinates polar = cartesian;
+            reconverted_cartesian = polar;
+            Assert.IsTrue(Miscellaneous.approximately(cartesian.data, reconverted_cartesian.data), cartesian.data + " versus " + reconverted_cartesian.data);
+
             // Test spherical rectangle
             float x1 = Random.Range(-Mathf.PI/10, +Mathf.PI/10); // FIXME: [-PI, +PI]
             float x2 = Random.Range(-Mathf.PI/10, +Mathf.PI/10);

@@ -87,6 +87,19 @@ namespace Planetaria
         }
 
         /// <summary>
+        /// Inspector - Converts normalized cartesian coordinates into polar coordinates.
+        /// </summary>
+        /// <param name="cartesian">The normalized cartesian coordinates (point on a unit-sphere).</param>
+        /// <returns>The polar coordinates (radians) to be converted relative to Quaternion.identity's forward.</returns>
+        public static implicit operator PolarCoordinates(NormalizedCartesianCoordinates cartesian)
+        {
+            float angle = Mathf.Atan2(cartesian.data.y, cartesian.data.x);
+            angle = angle >= 0 ? angle : angle + Mathf.PI*2;
+            float radius = Vector3.Angle(Vector3.forward, cartesian.data) * Mathf.Deg2Rad;
+            return PolarCoordinates.polar(radius, angle);
+        }
+
+        /// <summary>
         /// Inspector - Projects Cartesian coordinates onto plane z=0 in stereoscopic projection coordinates.
         /// </summary>
         /// <param name="cartesian">The coordinates in Cartesian space that will be converted</param>

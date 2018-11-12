@@ -7,6 +7,17 @@ namespace Planetaria
     public static class ArcFactory
     {
         /// <summary>
+        /// Constructor (Named) - Creates a circle of the given radius (relative to Vector3.forward).
+        /// </summary>
+        /// <param name="radius">The radius of the circle along a unit-sphere in radians. Range: [0, PI].</param>
+        /// <returns>An Arc representing a circle on a unit-sphere.</returns>
+        public static SerializedArc circle(float radius)
+        {
+            return new SerializedArc(Quaternion.LookRotation(Vector3.up, Vector3.back), Mathf.PI, -Mathf.Acos(radius),
+                    radius <= Mathf.PI/2 ? ArcType.ConvexEdge : ArcType.ConcaveEdge);
+        }
+
+        /// <summary>
         /// Constructor (Named) - Determines whether a corner is concave or convex and delegates accordingly.
         /// </summary>
         /// <param name="left">The arc that attaches to the beginning of the corner.</param>

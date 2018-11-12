@@ -220,7 +220,7 @@ namespace Planetaria
         private enum SquareEdge { UpperBoundary = 0, LowerBoundary = 1, LeftBoundary = 2, RightBoundary = 3 }
 
         // Rect cache
-        private static Rect cached_canvas; // FIXME: first iteration will have uninitialized cache - to be fair this is undefined behaviour anyway
+        private static Rect cached_canvas = new Rect(float.NaN, float.NaN, float.NaN, float.NaN); // will never equal any Rect (so it will be re-cached)
         private static Vector3 cached_center = Vector3.forward;
         private static Arc[] cached_arcs;
 

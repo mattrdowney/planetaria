@@ -49,8 +49,7 @@ namespace Planetaria
         {
             PlanetariaShape asset = Create();
 
-            asset.serialized_arc_list = new List<SerializedArc> { new SerializedArc(Quaternion.LookRotation(Vector3.up, Vector3.back),
-                    Mathf.PI, -Mathf.Acos(radius), ArcType.ConvexEdge) };
+            asset.serialized_arc_list = new List<SerializedArc> { ArcFactory.circle(radius) };
             asset.has_corners = false;
             asset.initialize();
             return asset;
