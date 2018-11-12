@@ -43,22 +43,26 @@ namespace Planetaria
             else if (pixel_order <= 3*pixels_per_quadrant/2) // angle = [~PI/4, ~3PI/4]
             {
                 u = (2*full_radius - 1) - (pixel_order - pixels_per_quadrant/2); // min = (resolution - 1) - (3*perimeter/2 - 1*perimeter/2 or ~resolution)
+                u = valence_radius % 2 == 0 ? u + 1 : u; // even and odd valence shells have different corner pixels
                 v = full_radius + valence_radius;
             }
             else if (pixel_order <= 5*pixels_per_quadrant/2) // angle = [~3PI/4, ~5PI/4]
             {
                 u = (full_radius - 1) - valence_radius; // min = (resolution/2-1) - (resolution/2-1)
                 v = (2*full_radius - 1) - (pixel_order - 3*pixels_per_quadrant/2);
+                v = valence_radius % 2 == 0 ? v + 1 : v; // even and odd valence shells have different corner pixels
             }
             else if (pixel_order <= 7*pixels_per_quadrant/2) // angle = [~5PI/4, ~7PI/4]
             {
                 u = (pixel_order - 5*pixels_per_quadrant/2); // max = (7*perimeter/2 - 5*perimeter/2)
+                u = valence_radius % 2 == 0 ? u + 1 : u; // even and odd valence shells have different corner pixels
                 v = (full_radius - 1) - valence_radius;
             }
             else // angle = [~7PI/4, 2PI)
             {
                 u = full_radius + valence_radius;
                 v = (pixel_order - 7*pixels_per_quadrant/2);
+                v = valence_radius % 2 == 0 ? v + 1 : v; // even and odd valence shells have different corner pixels
             }
             return new Vector2(u, v); 
         }
