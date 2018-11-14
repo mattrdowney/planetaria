@@ -34,6 +34,10 @@ namespace Planetaria
             {
                 for (float u = pixel_width/2; u < 1f; u += pixel_width)
                 {
+                    // TODO: implement https://en.wikibooks.org/wiki/Cg_Programming/Unity/Cookies
+                    // with particular notice of "cookieAttenuation = tex2D(_LightTexture0, input.posLight.xy / input.posLight.w + float2(0.5, 0.5)).a"
+                    // FIXME: this needs knowledge of the spotlight's field of view
+
                     UVCoordinates uv = new UVCoordinates(u, v);
                     PolarCoordinates polar = PolarCoordinates.rectangular(uv.data - new Vector2(0.5f, 0.5f)); // Get polar coordinates relative to UV center
                     //polar = PolarCoordinates.polar(polar.radius, polar.angle + Mathf.PI/2); // Rotate 90 degrees counterclockwise.

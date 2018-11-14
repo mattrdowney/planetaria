@@ -96,6 +96,26 @@ namespace Planetaria
         }
 
         /// <summary>
+        /// Inspector - project a point onto the given equator axis (the direction a raindrop would fall along a globe).
+        /// </summary>
+        /// <param name="point">The point that shall be projected.</param>
+        /// <param name="equator_axis">The axis of the equator line (onto which the point shall be projected).</param>
+        /// <returns>A projected point along the equator axis.</returns>
+        public static Vector3 project_onto_equator(Vector3 point, Vector3 equator_axis)
+        {
+            if (Vector3.Dot(point, equator_axis) < 0) // make sure you are repelling from the pole closer to the point (so the point moves towards the equator).
+            {
+                equator_axis *= -1;
+            }
+            Vector3 gradient = Bearing.repeller(point, equator_axis); // push the point away from the axis towards the equator
+            float angle = Mathf.PI/2 - Vector3.Angle(point, equator_axis) * Mathf.Deg2Rad; // find the angle to the equator
+
+            Vector3 projected_point = spherical_linear_interpolation(point, gradient, angle);
+            Debug.Assert(Vector3.Dot(projected_point, equator_axis) < Precision.threshold);
+            return projected_point;
+        }
+
+        /// <summary>
         /// Get the position on a circle defined by x_axis and y_axis.
         /// </summary>
         /// <param name="x_axis">The x-axis.</param>

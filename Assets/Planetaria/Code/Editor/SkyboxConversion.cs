@@ -116,11 +116,11 @@ namespace Planetaria
 
         [SerializeField] [HideInInspector] private string from_file_name;
         [SerializeField] [HideInInspector] private string to_file_name = "Assets/Planetaria/ExampleProjects/DébrisNoirs/Art/Textures/output_file";
-        [SerializeField] [HideInInspector] private Shape from_shape = Shape.SphericalCircle;
+        [SerializeField] [HideInInspector] private Shape from_shape = Shape.SphericalRectangle;
         [SerializeField] [HideInInspector] private Shape to_shape = Shape.Octahedron;
         [SerializeField] [HideInInspector] private Rect canvas = new Rect(-Mathf.PI/4, -Mathf.PI/4, Mathf.PI/2, Mathf.PI/2);
         [SerializeField] [HideInInspector] private float radius = Mathf.PI/2;
-        [SerializeField] [HideInInspector] private int resolution = 256;
+        [SerializeField] [HideInInspector] private int resolution = 128;
         [SerializeField] [HideInInspector] private int sample_rate = 1;
     }
 }

@@ -4,12 +4,12 @@ using UnityEngine;
 namespace Planetaria
 {
     /// <summary>
-	///
+	/// BarycentricCoordinates system for spherical triangles. Primarily intended for UV interpolation in spherical coordinates.
     /// </summary>
     [Serializable]
 	public struct SphericalBarycentricCoordinates // http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.61.3792 // some positive aspects, and negative aspects
 	{
-        // Probably won't need this
+        // TODO: implement and see if this works for exact UV coordinates for tesselated octahedrons (between 8 and ~500 triangles when the math works out imprecisely)
 	}
 }
 
