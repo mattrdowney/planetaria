@@ -129,6 +129,24 @@ namespace Planetaria
         }
 
         /// <summary>
+        /// Inspector - Get the normal at a particular angle.
+        /// </summary>
+        /// <param name="angle">The angle in radians along the arc.</param>
+        /// <param name="extrusion">The radius to extrude.</param>
+        /// <param name="interpolation">How to interpolate the position (radians, degrees, ratio, etc). Signed formats start from the center of the arc; unsigned starts from the left of the arc.</param>
+        /// <returns>A normal on the arc.</returns>
+        public Vector3 normal(float interpolator, float extrusion, ArcInterpolationType interpolation)
+        {
+            switch(interpolation)
+            {
+                case ArcInterpolationType.SignedRadians:
+                    return normal(interpolator, extrusion);
+                case ArcInterpolationType.UnsignedRatio: default:
+                    return normal(-half_angle + angle()*interpolator, extrusion);
+            }
+        }
+
+        /// <summary>
         /// Inspector - Get the position at a particular angle.
         /// </summary>
         /// <param name="angle">The angle in radians along the arc.</param>
@@ -153,6 +171,24 @@ namespace Planetaria
                 actual_elevation /= Mathf.Cos(half_angle);
                 actual_elevation -= Mathf.PI/2;
                 return PlanetariaMath.spherical_linear_interpolation(forward_axis, center_axis, actual_elevation);
+            }
+        }
+
+        /// <summary>
+        /// Inspector - Get the position at a particular angle.
+        /// </summary>
+        /// <param name="angle">The angle in radians along the arc.</param>
+        /// <param name="extrusion">The radius to extrude.</param>
+        /// <param name="interpolation">How to interpolate the position (radians, degrees, ratio, etc). Signed formats start from the center of the arc; unsigned starts from the left of the arc.</param>
+        /// <returns>A position on the arc.</returns>
+        public Vector3 position(float interpolator, float extrusion, ArcInterpolationType interpolation)
+        {
+            switch(interpolation)
+            {
+                case ArcInterpolationType.SignedRadians:
+                    return position(interpolator, extrusion);
+                case ArcInterpolationType.UnsignedRatio: default:
+                    return position(-half_angle + angle()*interpolator, extrusion);
             }
         }
 

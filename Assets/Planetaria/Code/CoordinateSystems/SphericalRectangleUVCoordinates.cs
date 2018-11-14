@@ -51,45 +51,72 @@ namespace Planetaria
         /// <returns>UV Coordinates for a spherical rectangle. Valid X/Y Range: [0, 1], although one axis may be in the (-INF, +INF) range.</returns>
         public static SphericalRectangleUVCoordinates cartesian_to_spherical_rectangle(Vector3 cartesian, Rect canvas)
         {
-            // cache the canvas center point, and the direction of "right" and "up" relative to this center point (for UV calculations)
+            // cache the canvas and derivative arcs (so they are not recomputed every time the function is called)
             cache_spherical_rectangle(canvas);
             
-            // project cartesian point onto a local "equator" and meridian
-            Vector3 horizontal_projection = PlanetariaMath.project_onto_equator(cartesian, cached_up); // it makes sense this doesn't work, yet I can't figure out what it should be instead.
-            Vector3 vertical_projection = PlanetariaMath.project_onto_equator(cartesian, cached_right);
+            //float lower_angle = cached_lower_rail.position_to_angle(cartesian);
+            //float upper_angle = cached_upper_rail.position_to_angle(cartesian);
+            //Debug.Log(lower_angle + " versus " + upper_angle + " yields difference of " + Mathf.Abs(upper_angle - lower_angle));
 
-            float relative_longitude = Vector3.SignedAngle(cached_center, horizontal_projection, cached_up) * Mathf.Deg2Rad; // angle along a "equator" (might not be the real equator)
-            float relative_latitude = -Vector3.SignedAngle(cached_center, vertical_projection, cached_right) * Mathf.Deg2Rad; // angle along a meridian (might not be the great meridian)
+            float horizontal_angle = Vector3.Dot(cartesian, cached_northern_hemisphere) >= 0 ?
+                    cached_upper_rail.position_to_angle(cartesian) :
+                    cached_lower_rail.position_to_angle(cartesian);
 
-            Vector2 absolute_longitude_latitude = new Vector2(canvas.center.x + relative_longitude, canvas.center.y + relative_latitude);
-            Vector2 uv = (absolute_longitude_latitude - canvas.min)/canvas.size;
-            return new SphericalRectangleUVCoordinates(uv, canvas);
+            Vector3 lower_point = cached_lower_rail.position(horizontal_angle);
+            Vector3 lower_normal = cached_lower_rail.normal(horizontal_angle);
+            Vector3 upper_point = cached_upper_rail.position(horizontal_angle);
+            Arc vertical_rail = ArcFactory.curve(lower_point, lower_normal, upper_point);
+
+            float vertical_angle = vertical_rail.position_to_angle(cartesian);
+            
+            float u = (horizontal_angle + cached_lower_rail.half_angle)/cached_lower_rail.angle();
+            float v = (vertical_angle + vertical_rail.half_angle)/vertical_rail.angle();
+
+            return new SphericalRectangleUVCoordinates(new Vector2(u, v), canvas);
         }
 
         /// <summary>
-        /// Inspector - Creates a cartesian point on the surface of a sphere coordinate set from a uv coordinate and a rectangle.
+        /// Inspector (Cache Mutator) - Creates a cartesian point on the surface of a sphere coordinate set from a uv coordinate and a rectangle.
         /// </summary>
         /// <param name="uv">UV Coordinates for a spherical rectangle. Valid X/Y Range: [0, 1], although one axis may be in the (-INF, +INF) range.</param>
         /// <param name="canvas">A Rect (measuring radians) representing the start and stop angles relative to Quaternion.identity. X/Y Range: (-2PI, +2PI).</param>
         /// <returns>The cartesian point on the surface of a unit sphere the uv represents.</returns>
-        public static NormalizedCartesianCoordinates spherical_rectangle_to_cartesian(Vector2 uv, Rect canvas) // I have been pretty certain since the beginning that this is the ideal function, but I cannot figure out its inverse for the life of me
+        public static NormalizedCartesianCoordinates spherical_rectangle_to_cartesian(Vector2 uv, Rect canvas) // I really can't figure this out
         {
-            Vector2 longitude_latitude = canvas.min + Vector2.Scale(canvas.size, uv);
-            return new NormalizedCartesianCoordinates(intersection(longitude_latitude.x, longitude_latitude.y));
+            // cache the canvas and derivative arcs (so they are not recomputed every time the function is called)
+            cache_spherical_rectangle(canvas);
+
+            Vector3 lower_point = cached_lower_rail.position(uv.x, 0, ArcInterpolationType.UnsignedRatio);
+            Vector3 lower_normal = cached_lower_rail.normal(uv.x, 0, ArcInterpolationType.UnsignedRatio);
+            Vector3 upper_point = cached_upper_rail.position(uv.x, 0, ArcInterpolationType.UnsignedRatio);
+            Arc vertical_rail = ArcFactory.curve(lower_point, lower_normal, upper_point);
+
+            return new NormalizedCartesianCoordinates(vertical_rail.position(uv.y, 0, ArcInterpolationType.UnsignedRatio));
         }
 
         
         /// <summary>
-        /// Inspector (Cache mutator) - Updates the cache so that spherical rectangle calculations avoid recomputing old values.
+        /// Inspector (Cache Mutator) - Updates the cache so that spherical rectangle calculations avoid recomputing old values.
         /// </summary>
         /// <param name="canvas">A Rect (measuring radians) representing the start and stop angles relative to Quaternion.identity. X/Y Range: (-2PI, +2PI).</param>
         public static void cache_spherical_rectangle(Rect canvas)
         {
             if (cached_canvas != canvas)
             {
-                cached_center = intersection(canvas.center.x, canvas.center.y);
-                cached_right = Bearing.attractor(cached_center, intersection(canvas.xMax, canvas.center.y));
-                cached_up = Bearing.attractor(cached_center, intersection(canvas.center.x, canvas.yMax));
+                Vector3 lower_left = intersection(canvas.xMin, canvas.yMin);
+                Vector3 lower_center = intersection(canvas.center.x, canvas.yMin);
+                Vector3 lower_right = intersection(canvas.xMax, canvas.yMin);
+
+                Vector3 upper_left = intersection(canvas.xMin, canvas.yMax);
+                Vector3 upper_center = intersection(canvas.center.x, canvas.yMax);
+                Vector3 upper_right = intersection(canvas.xMax, canvas.yMax);
+
+                cached_lower_rail = ArcFactory.curve(lower_left, lower_center, lower_right);
+                cached_upper_rail = ArcFactory.curve(upper_left, upper_center, upper_right);
+
+                Vector3 canvas_center = intersection(canvas.center.x, canvas.center.y);
+                cached_northern_hemisphere = Bearing.attractor(canvas_center, cached_upper_rail.position(0));
+
                 cached_canvas = canvas;
             }
         }
@@ -130,9 +157,10 @@ namespace Planetaria
 
         // cache (to avoid recomputation every frame)
         private static Rect cached_canvas = new Rect(float.NaN, float.NaN, float.NaN, float.NaN); // will never equal any Rect (so data will always be re-cached)
-        private static Vector3 cached_center = Vector3.forward;
-        private static Vector3 cached_right = Vector3.right;
-        private static Vector3 cached_up = Vector3.up;
+        private static Vector3 cached_northern_hemisphere;
+        private static Arc cached_lower_rail;
+        private static Arc cached_middle_rail;
+        private static Arc cached_upper_rail;
     }
 }
 
