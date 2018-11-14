@@ -1,3 +1,6 @@
+*.jpg
+*.png
+
 /Assets/UnitySVG
 /Assets/UnitySVG.meta
 /Assets/Plugins

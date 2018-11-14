@@ -58,21 +58,39 @@ namespace Planetaria
             //float upper_angle = cached_upper_rail.position_to_angle(cartesian);
             //Debug.Log(lower_angle + " versus " + upper_angle + " yields difference of " + Mathf.Abs(upper_angle - lower_angle));
 
-            float horizontal_angle = Vector3.Dot(cartesian, cached_northern_hemisphere) >= 0 ?
-                    cached_upper_rail.position_to_angle(cartesian) :
-                    cached_lower_rail.position_to_angle(cartesian);
+            Vector3 horizontal_position = PlanetariaMath.project_onto_equator(cartesian, cached_northern_hemisphere);
+            float horizontal_angle = cached_middle_rail.position_to_angle(horizontal_position);
 
-            Vector3 lower_point = cached_lower_rail.position(horizontal_angle);
-            Vector3 lower_normal = cached_lower_rail.normal(horizontal_angle);
-            Vector3 upper_point = cached_upper_rail.position(horizontal_angle);
-            Arc vertical_rail = ArcFactory.curve(lower_point, lower_normal, upper_point);
+            if (Vector3.Dot(cartesian, cached_northern_hemisphere) >= 0) // v >= 0.5
+            {
+                Vector3 lower_point = cached_middle_rail.position(horizontal_angle);
+                Vector3 lower_normal = cached_middle_rail.normal(horizontal_angle);
+                Vector3 upper_point = cached_upper_rail.position(horizontal_angle);
+                Arc vertical_rail = ArcFactory.curve(lower_point, lower_normal, upper_point);
 
-            float vertical_angle = vertical_rail.position_to_angle(cartesian);
+                float vertical_angle = vertical_rail.position_to_angle(cartesian);
             
-            float u = (horizontal_angle + cached_lower_rail.half_angle)/cached_lower_rail.angle();
-            float v = (vertical_angle + vertical_rail.half_angle)/vertical_rail.angle();
+                float u = (horizontal_angle + cached_lower_rail.half_angle)/cached_lower_rail.angle();
+                float v = (vertical_angle + vertical_rail.half_angle)/vertical_rail.angle();
+                v = v/2 + 0.5f; // v >= 0.5
 
-            return new SphericalRectangleUVCoordinates(new Vector2(u, v), canvas);
+                return new SphericalRectangleUVCoordinates(new Vector2(u, v), canvas);
+            }
+            else // v < 0.5
+            {
+                Vector3 lower_point = cached_lower_rail.position(horizontal_angle);
+                Vector3 lower_normal = cached_lower_rail.normal(horizontal_angle);
+                Vector3 upper_point = cached_middle_rail.position(horizontal_angle);
+                Arc vertical_rail = ArcFactory.curve(lower_point, lower_normal, upper_point);
+
+                float vertical_angle = vertical_rail.position_to_angle(cartesian);
+
+                float u = (horizontal_angle + cached_lower_rail.half_angle)/cached_lower_rail.angle();
+                float v = (vertical_angle + vertical_rail.half_angle)/vertical_rail.angle();
+                v = v/2 + 0.0f; // v < 0.5
+
+                return new SphericalRectangleUVCoordinates(new Vector2(u, v), canvas);
+            }
         }
 
         /// <summary>
@@ -86,6 +104,7 @@ namespace Planetaria
             // cache the canvas and derivative arcs (so they are not recomputed every time the function is called)
             cache_spherical_rectangle(canvas);
 
+            // FIXME: convert to middle rail format
             Vector3 lower_point = cached_lower_rail.position(uv.x, 0, ArcInterpolationType.UnsignedRatio);
             Vector3 lower_normal = cached_lower_rail.normal(uv.x, 0, ArcInterpolationType.UnsignedRatio);
             Vector3 upper_point = cached_upper_rail.position(uv.x, 0, ArcInterpolationType.UnsignedRatio);
@@ -107,11 +126,16 @@ namespace Planetaria
                 Vector3 lower_center = intersection(canvas.center.x, canvas.yMin);
                 Vector3 lower_right = intersection(canvas.xMax, canvas.yMin);
 
+                Vector3 middle_left = intersection(canvas.xMin, canvas.center.y);
+                Vector3 middle_center = intersection(canvas.center.x, canvas.center.y);
+                Vector3 middle_right = intersection(canvas.xMax, canvas.center.y);
+
                 Vector3 upper_left = intersection(canvas.xMin, canvas.yMax);
                 Vector3 upper_center = intersection(canvas.center.x, canvas.yMax);
                 Vector3 upper_right = intersection(canvas.xMax, canvas.yMax);
 
                 cached_lower_rail = ArcFactory.curve(lower_left, lower_center, lower_right);
+                cached_middle_rail = ArcFactory.curve(middle_left, middle_center, middle_right);
                 cached_upper_rail = ArcFactory.curve(upper_left, upper_center, upper_right);
 
                 Vector3 canvas_center = intersection(canvas.center.x, canvas.center.y);
