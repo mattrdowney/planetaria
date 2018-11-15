@@ -61,36 +61,18 @@ namespace Planetaria
             Vector3 horizontal_position = PlanetariaMath.project_onto_equator(cartesian, cached_northern_hemisphere);
             float horizontal_ratio = (cached_middle_rail.position_to_angle(horizontal_position) + cached_middle_rail.half_angle)/cached_middle_rail.angle();
 
-            if (Vector3.Dot(cartesian, cached_northern_hemisphere) >= 0) // v >= 0.5
-            {
-                Vector3 lower_point = cached_middle_rail.position(horizontal_ratio, 0, ArcInterpolationType.UnsignedRatio);
-                Vector3 lower_normal = cached_middle_rail.normal(horizontal_ratio, 0, ArcInterpolationType.UnsignedRatio);
-                Vector3 upper_point = cached_upper_rail.position(horizontal_ratio, 0, ArcInterpolationType.UnsignedRatio);
-                Arc vertical_rail = ArcFactory.curve(lower_point, cartesian, upper_point);
+            Vector3 lower_point = cached_lower_rail.position(-cached_lower_rail.half_angle + horizontal_ratio*cached_lower_rail.angle());
+            Vector3 middle_point = cached_middle_rail.position(-cached_middle_rail.half_angle + horizontal_ratio*cached_middle_rail.angle());
+            Vector3 upper_point = cached_upper_rail.position(-cached_upper_rail.half_angle + horizontal_ratio*cached_upper_rail.angle());
+            Arc vertical_rail = ArcFactory.curve(lower_point, middle_point, upper_point);
+            ArcEditor.draw_simple_arc(vertical_rail);
 
-                float vertical_angle = vertical_rail.position_to_angle(cartesian);
-            
-                float u = horizontal_ratio;
-                float v = (vertical_angle + vertical_rail.half_angle)/vertical_rail.angle();
-                v = v/2 + 0.5f; // v >= 0.5
+            float vertical_ratio = (vertical_rail.position_to_angle(cartesian) + vertical_rail.half_angle)/vertical_rail.angle();
 
-                return new SphericalRectangleUVCoordinates(new Vector2(u, v), canvas);
-            }
-            else // v < 0.5
-            {
-                Vector3 lower_point = cached_lower_rail.position(horizontal_ratio, 0, ArcInterpolationType.UnsignedRatio);
-                Vector3 lower_normal = cached_lower_rail.normal(horizontal_ratio, 0, ArcInterpolationType.UnsignedRatio);
-                Vector3 upper_point = cached_middle_rail.position(horizontal_ratio, 0, ArcInterpolationType.UnsignedRatio);
-                Arc vertical_rail = ArcFactory.curve(lower_point, cartesian, upper_point);
+            float u = horizontal_ratio;
+            float v = vertical_ratio;
 
-                float vertical_angle = vertical_rail.position_to_angle(cartesian);
-
-                float u = horizontal_ratio;
-                float v = (vertical_angle + vertical_rail.half_angle)/vertical_rail.angle();
-                v = v/2 + 0.0f; // v < 0.5
-
-                return new SphericalRectangleUVCoordinates(new Vector2(u, v), canvas);
-            }
+            return new SphericalRectangleUVCoordinates(new Vector2(u, v), canvas);
         }
 
         /// <summary>
@@ -105,12 +87,12 @@ namespace Planetaria
             cache_spherical_rectangle(canvas);
 
             // FIXME: convert to middle rail format
-            Vector3 lower_point = cached_lower_rail.position(uv.x, 0, ArcInterpolationType.UnsignedRatio);
-            Vector3 lower_normal = cached_lower_rail.normal(uv.x, 0, ArcInterpolationType.UnsignedRatio);
-            Vector3 upper_point = cached_upper_rail.position(uv.x, 0, ArcInterpolationType.UnsignedRatio);
-            Arc vertical_rail = ArcFactory.curve(lower_point, lower_normal, upper_point);
+            Vector3 lower_point = cached_lower_rail.position(-cached_lower_rail.half_angle + uv.x*cached_lower_rail.angle());
+            Vector3 middle_point = cached_middle_rail.position(-cached_middle_rail.half_angle + uv.x*cached_middle_rail.angle());
+            Vector3 upper_point = cached_upper_rail.position(-cached_upper_rail.half_angle + uv.x*cached_upper_rail.angle());
+            Arc vertical_rail = ArcFactory.curve(lower_point, middle_point, upper_point);
 
-            return new NormalizedCartesianCoordinates(vertical_rail.position(uv.y, 0, ArcInterpolationType.UnsignedRatio));
+            return new NormalizedCartesianCoordinates(vertical_rail.position(-vertical_rail.half_angle + uv.y*vertical_rail.angle()));
         }
 
         
@@ -126,9 +108,12 @@ namespace Planetaria
                 Vector3 lower_center = intersection(canvas.center.x, canvas.yMin);
                 Vector3 lower_right = intersection(canvas.xMax, canvas.yMin);
 
-                Vector3 middle_left = intersection(canvas.xMin, canvas.center.y);
-                Vector3 middle_center = intersection(canvas.center.x, canvas.center.y);
-                Vector3 middle_right = intersection(canvas.xMax, canvas.center.y);
+                // construct middle rail from point closest to latitude=0 [ensures the widest/longest arc is used as the centerpoint since 0 is the equator]
+                float center_elevation = PlanetariaMath.median(canvas.yMin, 0, canvas.yMax);
+
+                Vector3 middle_left = intersection(canvas.xMin, center_elevation);
+                Vector3 middle_center = intersection(canvas.center.x, center_elevation);
+                Vector3 middle_right = intersection(canvas.xMax, center_elevation);
 
                 Vector3 upper_left = intersection(canvas.xMin, canvas.yMax);
                 Vector3 upper_center = intersection(canvas.center.x, canvas.yMax);

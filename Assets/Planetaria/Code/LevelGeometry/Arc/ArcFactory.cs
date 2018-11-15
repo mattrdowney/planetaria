@@ -205,7 +205,14 @@ namespace Planetaria
         {
             if (from == slope)
             {
-                slope = Vector3.up;
+                if (from != to)
+                {
+                    slope = to;
+                }
+                else
+                {
+                    slope = Vector3.right;
+                }
             }
 
             from.Normalize();
