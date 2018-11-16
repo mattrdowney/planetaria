@@ -54,69 +54,55 @@ namespace Planetaria
             // cache the canvas and derivative arcs (so they are not recomputed every time the function is called)
             cache_spherical_rectangle(canvas);
 
-            // UV calculations are independent of one another with the focus (in theory but don't need to be) - also means Arcs may not ultimately be required (outside of initialization of cache)
-            // find left/right hemisphere relative to canvas center
-            // find upper/lower hemisphere relative to canvas center
-
-            // compute Vector3.Angle(focus, cartesian) * Mathf.Deg2Rad
-            // compute dot product of the respective Bearing.attractor() to find if the distance is towards or away from canvas center (in bounds or out of UV [0,1]) - away implies the angle is negated
-            // fit (now positive or negative) angle to the interval angle_start -> angle_end as 0 -> 0.5 or 1 -> 0.5 depending on the left/right or upper/lower hemisphere.
-            // return result
-
-            float horizontal_ratio;
-            if (Vector3.Dot(cartesian, cached_northern_hemisphere) >= 0)
+            float u; // FIXME: keep it DRY (Do not Repeat Yourself)
+            if (Vector3.Dot(cartesian, cached_east_hemisphere) >= 0) // right (East)
             {
-                Vector3 up = Bearing.attractor(cartesian, cached_upper_rail.center_axis);
-                Arc intersector = ArcFactory.curve(cartesian, up, cartesian);
-                optional<Vector3> intersection = PlanetariaIntersection.arc_arc_intersection(cached_upper_rail, intersector, 0);
-                if (!intersection.exists) return new SphericalRectangleUVCoordinates(-Vector2.one, canvas); // FIXME:
-                horizontal_ratio = (cached_upper_rail.position_to_angle(intersection.data) + cached_upper_rail.half_angle)/cached_upper_rail.angle();
+                float angle = Vector3.Angle(cached_right_biangle_focus, cartesian) * Mathf.Deg2Rad;
+                angle = Vector3.Dot(cartesian, cached_right_positive_partition) >= 0 ? angle : -angle;
+                angle -= cached_right_start_angle;
+                u = angle / (cached_right_end_angle - cached_right_start_angle);
+                u = 1f - u/2;
             }
-            else
+            else // if (Vector3.Dot(cartesian, cached_east_hemisphere) < 0) // left (West)
             {
-                Vector3 down = Bearing.attractor(cartesian, cached_lower_rail.center_axis);
-                Arc intersector = ArcFactory.curve(cartesian, down, cartesian);
-                optional<Vector3> intersection = PlanetariaIntersection.arc_arc_intersection(cached_lower_rail, intersector, 0);
-                if (!intersection.exists) return new SphericalRectangleUVCoordinates(-Vector2.one, canvas); // FIXME:
-                horizontal_ratio = (cached_lower_rail.position_to_angle(intersection.data) + cached_lower_rail.half_angle)/cached_lower_rail.angle();
+                float angle = Vector3.Angle(cached_left_biangle_focus, cartesian) * Mathf.Deg2Rad;
+                angle = Vector3.Dot(cartesian, cached_left_positive_partition) >= 0 ? angle : -angle;
+                angle -= cached_left_start_angle;
+                u = angle / (cached_left_end_angle - cached_left_start_angle);
+                u = 0f + u/2;
             }
-            
-            Vector3 lower_point = cached_lower_rail.position(-cached_lower_rail.half_angle + horizontal_ratio*cached_lower_rail.angle());
-            Vector3 middle_point = cached_middle_rail.position(-cached_middle_rail.half_angle + horizontal_ratio*cached_middle_rail.angle());
-            Vector3 upper_point = cached_upper_rail.position(-cached_upper_rail.half_angle + horizontal_ratio*cached_upper_rail.angle());
-            Arc vertical_rail = ArcFactory.curve(lower_point, middle_point, upper_point);
-            ArcEditor.draw_simple_arc(vertical_rail);
 
-            float vertical_ratio = (vertical_rail.position_to_angle(cartesian) + vertical_rail.half_angle)/vertical_rail.angle();
-
-            float u = horizontal_ratio;
-            float v = vertical_ratio;
+            float v;
+            if (Vector3.Dot(cartesian, cached_north_hemisphere) >= 0) // upper (North)
+            {
+                float angle = Vector3.Angle(cached_upper_biangle_focus, cartesian) * Mathf.Deg2Rad;
+                angle = Vector3.Dot(cartesian, cached_upper_positive_partition) >= 0 ? angle : -angle;
+                angle -= cached_upper_start_angle;
+                v = angle / (cached_upper_end_angle - cached_upper_start_angle);
+                v = 1f - v/2;
+            }
+            else // if (Vector3.Dot(cartesian, cached_north_hemisphere) < 0) // lower (South)
+            {
+                float angle = Vector3.Angle(cached_lower_biangle_focus, cartesian) * Mathf.Deg2Rad;
+                angle = Vector3.Dot(cartesian, cached_lower_positive_partition) >= 0 ? angle : -angle;
+                angle -= cached_lower_start_angle;
+                v = angle / (cached_lower_end_angle - cached_lower_start_angle);
+                v = 0f + v/2;
+            }
 
             return new SphericalRectangleUVCoordinates(new Vector2(u, v), canvas);
         }
 
         /// <summary>
-        /// Inspector (Cache Mutator) - Creates a cartesian point on the surface of a sphere coordinate set from a uv coordinate and a rectangle.
+        /// Inspector - Creates a cartesian point on the surface of a sphere coordinate set from a uv coordinate and a rectangle.
         /// </summary>
-        /// <param name="uv">UV Coordinates for a spherical rectangle. Valid X/Y Range: [0, 1], although one axis may be in the (-INF, +INF) range.</param>
+        /// <param name="uv">UV Coordinates for a spherical rectangle. Valid X/Y Range: [0-, 1+].</param>
         /// <param name="canvas">A Rect (measuring radians) representing the start and stop angles relative to Quaternion.identity. X/Y Range: (-2PI, +2PI).</param>
         /// <returns>The cartesian point on the surface of a unit sphere the uv represents.</returns>
-        public static NormalizedCartesianCoordinates spherical_rectangle_to_cartesian(Vector2 uv, Rect canvas) // I really can't figure this out
+        public static NormalizedCartesianCoordinates spherical_rectangle_to_cartesian(Vector2 uv, Rect canvas)
         {
-            // cache the canvas and derivative arcs (so they are not recomputed every time the function is called)
-            cache_spherical_rectangle(canvas);
-
-            Vector3 lower_point = cached_lower_rail.position(-cached_lower_rail.half_angle + uv.x*cached_lower_rail.angle());
-            Vector3 middle_point = cached_middle_rail.position(-cached_middle_rail.half_angle + uv.x*cached_middle_rail.angle());
-            Vector3 upper_point = cached_upper_rail.position(-cached_upper_rail.half_angle + uv.x*cached_upper_rail.angle());
-            Arc vertical_rail = ArcFactory.curve(lower_point, middle_point, upper_point);
-
-            // I thought there might be a way to remove Arcs from the equation here, but I can't think of it.
-            // Arc interpolation is a pretty effective way to compute the position from UVs.
-
-            // The algorithm would probably have something to do with intersection(canvas.min, Vector2.Scale(canvas.size, uv)), but I thought I removed that for a reason (I thought I was using something similar at least).
-
-            return new NormalizedCartesianCoordinates(vertical_rail.position(-vertical_rail.half_angle + uv.y*vertical_rail.angle()));
+            Vector2 longitude_latitude = canvas.min + Vector2.Scale(canvas.size, uv); // it's possible the issue here was with uniform UV coverage, but I'll try it.
+            return new NormalizedCartesianCoordinates(intersection(longitude_latitude.x, longitude_latitude.y));
         }
 
         
@@ -132,42 +118,44 @@ namespace Planetaria
                 Vector3 lower_center = intersection(canvas.center.x, canvas.yMin);
                 Vector3 lower_right = intersection(canvas.xMax, canvas.yMin);
 
-                // construct middle rail from point closest to latitude=0 [ensures the widest/longest arc is used as the centerpoint since 0 is the equator]
-                float center_elevation = PlanetariaMath.median(canvas.yMin, 0, canvas.yMax);
-
-                Vector3 middle_left = intersection(canvas.xMin, center_elevation);
-                Vector3 middle_center = intersection(canvas.center.x, center_elevation);
-                Vector3 middle_right = intersection(canvas.xMax, center_elevation);
+                Vector3 middle_left = intersection(canvas.xMin, canvas.center.y);
+                Vector3 middle_center = intersection(canvas.center.x, canvas.center.y);
+                Vector3 middle_right = intersection(canvas.xMax, canvas.center.y);
 
                 Vector3 upper_left = intersection(canvas.xMin, canvas.yMax);
                 Vector3 upper_center = intersection(canvas.center.x, canvas.yMax);
                 Vector3 upper_right = intersection(canvas.xMax, canvas.yMax);
 
-                cached_lower_rail = ArcFactory.curve(lower_left, lower_center, lower_right);
-                cached_middle_rail = ArcFactory.curve(middle_left, middle_center, middle_right);
-                cached_upper_rail = ArcFactory.curve(upper_left, upper_center, upper_right);
+                Arc biangle_segment1 = ArcFactory.curve(upper_center, upper_left, -upper_center);
+                Arc biangle_segment2 = ArcFactory.curve(lower_center, lower_left, -lower_center);
+                cached_left_biangle_focus = PlanetariaIntersection.arc_arc_intersection(biangle_segment1, biangle_segment2, 0).data;
+                cached_left_positive_partition = Bearing.attractor(cached_left_biangle_focus, middle_left); // used for a dot product to determine if the angle applied for UV is +/-
+                cached_left_start_angle = Vector3.Angle(cached_left_biangle_focus, middle_left) * Mathf.Deg2Rad;
+                cached_left_end_angle = Vector3.Angle(cached_left_biangle_focus, middle_center) * Mathf.Deg2Rad;
 
-                //Arc biangle_segment1 = ArcFactory.curve(upper_center, upper_left, -upper_center);
-                //Arc biangle_segment2 = ArcFactory.curve(lower_center, lower_left, -lower_center);
-                //cached_left_biangle_focus = PlanetariaIntersection.arc_arc_intersection(biangle_segment1, biangle_segment2).data;
+                biangle_segment1 = ArcFactory.curve(upper_center, upper_right, -upper_center);
+                biangle_segment2 = ArcFactory.curve(lower_center, lower_right, -lower_center);
+                cached_right_biangle_focus = PlanetariaIntersection.arc_arc_intersection(biangle_segment1, biangle_segment2, 0).data;
+                cached_right_positive_partition = Bearing.attractor(cached_right_biangle_focus, middle_right); // used for a dot product to determine if the angle applied for UV is +/-
+                cached_right_start_angle = Vector3.Angle(cached_right_biangle_focus, middle_right) * Mathf.Deg2Rad;
+                cached_right_end_angle = Vector3.Angle(cached_right_biangle_focus, middle_center) * Mathf.Deg2Rad;
 
-                // similar for cached_right/upper/lower_biangle_focus
+                biangle_segment1 = ArcFactory.curve(middle_left, lower_left, -middle_left);
+                biangle_segment2 = ArcFactory.curve(middle_right, lower_right, -middle_right);
+                cached_lower_biangle_focus = PlanetariaIntersection.arc_arc_intersection(biangle_segment1, biangle_segment2, 0).data;
+                cached_lower_positive_partition = Bearing.attractor(cached_lower_biangle_focus, lower_center); // used for a dot product to determine if the angle applied for UV is +/-
+                cached_lower_start_angle = Vector3.Angle(cached_lower_biangle_focus, lower_center) * Mathf.Deg2Rad;
+                cached_lower_end_angle = Vector3.Angle(cached_lower_biangle_focus, middle_center) * Mathf.Deg2Rad;
 
-                // find cached_left_angle_start = Vector3.Angle(cached_left_biangle_focus, true middle_left (note median!)) * Mathf.Deg2Rad;
-                // find cached_left_angle_end = Vector3.Angle(cached_left_biangle_focus, true middle_center (note median!)) * Mathf.Deg2Rad;
+                biangle_segment1 = ArcFactory.curve(middle_left, upper_left, -middle_left);
+                biangle_segment2 = ArcFactory.curve(middle_right, upper_right, -middle_right);
+                cached_upper_biangle_focus = PlanetariaIntersection.arc_arc_intersection(biangle_segment1, biangle_segment2, 0).data;
+                cached_upper_positive_partition = Bearing.attractor(cached_upper_biangle_focus, upper_center); // used for a dot product to determine if the angle applied for UV is +/-
+                cached_upper_start_angle = Vector3.Angle(cached_upper_biangle_focus, upper_center) * Mathf.Deg2Rad;
+                cached_upper_end_angle = Vector3.Angle(cached_upper_biangle_focus, middle_center) * Mathf.Deg2Rad;
 
-                // similar for cached_right/upper/lower_angle_start and end
-
-                // find Bearing.attractor(cached_left_biangle_focus, true middle_left (note median!)) [used for a dot product to determine if the angle as applied for UV is +/-]
-                
-                // similar for right/upper/lower
-
-                Vector3 canvas_center = intersection(canvas.center.x, canvas.center.y);
-                cached_northern_hemisphere = Bearing.attractor(canvas_center, cached_upper_rail.position(0));
-
-                ArcEditor.draw_simple_arc(cached_lower_rail);
-                ArcEditor.draw_simple_arc(cached_middle_rail);
-                ArcEditor.draw_simple_arc(cached_upper_rail);
+                cached_north_hemisphere = Bearing.attractor(middle_center, upper_center);
+                cached_east_hemisphere = Bearing.attractor(middle_center, middle_right);
 
                 cached_canvas = canvas;
             }
@@ -209,14 +197,25 @@ namespace Planetaria
 
         // cache (to avoid recomputation every frame)
         private static Rect cached_canvas = new Rect(float.NaN, float.NaN, float.NaN, float.NaN); // will never equal any Rect (so data will always be re-cached)
-        private static Vector3 cached_northern_hemisphere; // this should be relative to canvas center for new version (can't tell if it's a bug that it wasn't relative to middle rail.
-        private static Arc cached_lower_rail; // TODO: Arcs will probably be unnecessary soon
-        private static Arc cached_middle_rail; 
-        private static Arc cached_upper_rail;
-        private static Vector3 cached_left_biangle_focus;
+        private static Vector3 cached_north_hemisphere; // this should be relative to canvas center for new version (can't tell if it's a bug that it wasn't relative to middle rail.
+        private static Vector3 cached_east_hemisphere;
+
+        private static Vector3 cached_left_biangle_focus; // possibility 1: array[4], possibility 2: struct of data (or both)
         private static Vector3 cached_right_biangle_focus;
         private static Vector3 cached_lower_biangle_focus;
         private static Vector3 cached_upper_biangle_focus;
+        private static Vector3 cached_left_positive_partition;
+        private static Vector3 cached_right_positive_partition;
+        private static Vector3 cached_lower_positive_partition;
+        private static Vector3 cached_upper_positive_partition;
+        private static float cached_left_start_angle;
+        private static float cached_right_start_angle;
+        private static float cached_lower_start_angle;
+        private static float cached_upper_start_angle;
+        private static float cached_left_end_angle;
+        private static float cached_right_end_angle;
+        private static float cached_lower_end_angle;
+        private static float cached_upper_end_angle;
     }
 }
 
