@@ -66,13 +66,17 @@ namespace Planetaria
         /// <summary>
         /// Inspector - returns the median of any three arbitrary numbers.
         /// </summary>
-        /// <param name="a">Any number (order does not matter).</param>
-        /// <param name="b">Any number (order does not matter).</param>
-        /// <param name="c">Any number (order does not matter).</param>
+        /// <param name="first">Any number (order does not matter).</param>
+        /// <param name="inner">Any number (order does not matter).</param>
+        /// <param name="last">Any number (order does not matter).</param>
         /// <returns>The median of the three numbers. (Does not handle NaNs.)</returns>
-        public static float median(float a, float b, float c) // probably first learned this somewhere else but: https://stackoverflow.com/questions/23392321/most-efficient-way-to-find-median-of-three-integers
+        public static float median(float first, float inner, float last) // probably first learned this somewhere else but: https://stackoverflow.com/questions/23392321/most-efficient-way-to-find-median-of-three-integers
         {
-            return Mathf.Max(Mathf.Min(a, b), Mathf.Min(Mathf.Max(a, b), c));
+            float left_minimum = Mathf.Min(first, inner);
+            float left_maximum = Mathf.Max(first, inner);
+            float minimum_or_median = Mathf.Min(left_maximum, last);
+            float median_value = Mathf.Max(left_minimum, minimum_or_median);
+            return median_value;
         }
 
         /// <summary>
