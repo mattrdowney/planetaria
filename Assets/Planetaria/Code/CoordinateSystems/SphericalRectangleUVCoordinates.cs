@@ -136,7 +136,6 @@ namespace Planetaria
             Vector2 longitude_latitude = canvas.min + Vector2.Scale(canvas.size, uv); // it's possible the issue here was with uniform UV coverage, but I'll try it.
             return new NormalizedCartesianCoordinates(intersection(longitude_latitude.x, longitude_latitude.y));
         }
-
         
         /// <summary>
         /// Inspector (Cache Mutator) - Updates the cache so that spherical rectangle calculations avoid recomputing old values.

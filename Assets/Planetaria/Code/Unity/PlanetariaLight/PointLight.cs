@@ -34,8 +34,22 @@ namespace Planetaria
             {
                 for (float u = pixel_width/2; u < 1f; u += pixel_width)
                 {
-                    // TODO: implement https://en.wikibooks.org/wiki/Cg_Programming/Unity/Cookies
-                    // with particular notice of "cookieAttenuation = tex2D(_LightTexture0, input.posLight.xy / input.posLight.w + float2(0.5, 0.5)).a"
+                    // Implement https://en.wikibooks.org/wiki/Cg_Programming/Unity/Cookies
+                    // With particular notice of "cookieAttenuation = tex2D(_LightTexture0, input.posLight.xy / input.posLight.w + float2(0.5, 0.5)).a"
+                    // w = z / d, where d = 1 (since this is a unit sphere of distance=1), so w = z
+                    // thus UV conversion is: (x,y)/z + (0.5,0.5) = (u,v)
+                    // thus the inverse is ((u,v) - (0.5,0.5))*z = (x,y)
+                    // we do not know z, but we know x^2 + y^2 + z^2 = 1
+                    // derivative knowledge:
+                    // z^2 = 1 - x^2 - y^2
+                    // z = +/-sqrt(1 - x^2 - y^2)
+                    // therefore:
+                    // ((u,v) - (0.5,0.5)) = +/-(x,y)/sqrt(1 - x^2 - y^2)
+                    // breaking this onto two lines:
+                    // u - 0.5 = +/-x/sqrt(1 - x^2 - y^2) [ u >= 0.5 --> x is positive ]
+                    // v - 0.5 = +/-y/sqrt(1 - x^2 - y^2) [ v >= 0.5 --> y is positive ]
+                    // I think there should be another equation based on spotAngle, namely you can find the x/y/z coordinates based on how projection of cucoloris works
+
                     // FIXME: this needs knowledge of the spotlight's field of view
 
                     UVCoordinates uv = new UVCoordinates(u, v);
