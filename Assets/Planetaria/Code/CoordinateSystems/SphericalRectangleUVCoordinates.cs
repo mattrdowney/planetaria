@@ -55,36 +55,39 @@ namespace Planetaria
             // cache the canvas and derivative arcs (so they are not recomputed every time the function is called)
             cache_spherical_rectangle(canvas);
 
+            Vector3 equator_projection = PlanetariaMath.project_onto_equator(cartesian, cached_north_hemisphere);
+            Vector3 prime_meridian_projection = PlanetariaMath.project_onto_equator(cartesian, cached_east_hemisphere);
+
             float u; // FIXME: keep it DRY (Do not Repeat Yourself)
             if (Vector3.Dot(cartesian, cached_east_hemisphere) >= 0) // right (East)
             {
                 float angle;
                 if (Vector3.Dot(cartesian, cached_right_positive_partition) >= 0)
                 {
-                    angle = Vector3.Angle(cached_right_biangle_focus, cartesian) * Mathf.Deg2Rad;
+                    angle = Vector3.Angle(cached_right_biangle_focus, equator_projection) * Mathf.Deg2Rad;
                 }
                 else
                 {
-                    angle = Vector3.Angle(-cached_right_biangle_focus, cartesian) * Mathf.Deg2Rad + Mathf.PI;
+                    angle = Vector3.Angle(-cached_right_biangle_focus, equator_projection) * Mathf.Deg2Rad + Mathf.PI;
                 }
                 angle -= cached_right_start_angle;
                 u = angle / (cached_right_end_angle - cached_right_start_angle);
-                u = 1f - u/2;
+                u = 0.5f + u/2;
             }
             else // if (Vector3.Dot(cartesian, cached_east_hemisphere) < 0) // left (West)
             {
                 float angle;
                 if (Vector3.Dot(cartesian, cached_left_positive_partition) >= 0)
                 {
-                    angle = Vector3.Angle(cached_left_biangle_focus, cartesian) * Mathf.Deg2Rad;
+                    angle = Vector3.Angle(cached_left_biangle_focus, equator_projection) * Mathf.Deg2Rad;
                 }
                 else
                 {
-                    angle = Vector3.Angle(-cached_left_biangle_focus, cartesian) * Mathf.Deg2Rad + Mathf.PI;
+                    angle = Vector3.Angle(-cached_left_biangle_focus, equator_projection) * Mathf.Deg2Rad + Mathf.PI;
                 }
                 angle -= cached_left_start_angle;
                 u = angle / (cached_left_end_angle - cached_left_start_angle);
-                u = 0f + u/2;
+                u = 0.5f - u/2;
             }
 
             float v;
@@ -93,30 +96,30 @@ namespace Planetaria
                 float angle;
                 if (Vector3.Dot(cartesian, cached_upper_positive_partition) >= 0)
                 {
-                    angle = Vector3.Angle(cached_upper_biangle_focus, cartesian) * Mathf.Deg2Rad;
+                    angle = Vector3.Angle(cached_upper_biangle_focus, prime_meridian_projection) * Mathf.Deg2Rad;
                 }
                 else
                 {
-                    angle = Vector3.Angle(-cached_upper_biangle_focus, cartesian) * Mathf.Deg2Rad + Mathf.PI;
+                    angle = Vector3.Angle(-cached_upper_biangle_focus, prime_meridian_projection) * Mathf.Deg2Rad + Mathf.PI;
                 }
                 angle -= cached_upper_start_angle;
                 v = angle / (cached_upper_end_angle - cached_upper_start_angle);
-                v = 1f - v/2;
+                v = 0.5f + v/2;
             }
             else // if (Vector3.Dot(cartesian, cached_north_hemisphere) < 0) // lower (South)
             {
                 float angle;
                 if (Vector3.Dot(cartesian, cached_lower_positive_partition) >= 0)
                 {
-                    angle = Vector3.Angle(cached_lower_biangle_focus, cartesian) * Mathf.Deg2Rad;
+                    angle = Vector3.Angle(cached_lower_biangle_focus, prime_meridian_projection) * Mathf.Deg2Rad;
                 }
                 else
                 {
-                    angle = Vector3.Angle(-cached_lower_biangle_focus, cartesian) * Mathf.Deg2Rad + Mathf.PI;
+                    angle = Vector3.Angle(-cached_lower_biangle_focus, prime_meridian_projection) * Mathf.Deg2Rad + Mathf.PI;
                 }
                 angle -= cached_lower_start_angle;
                 v = angle / (cached_lower_end_angle - cached_lower_start_angle);
-                v = 0f + v/2;
+                v = 0.5f - v/2;
             }
 
             return new SphericalRectangleUVCoordinates(new Vector2(u, v), canvas);
@@ -155,9 +158,9 @@ namespace Planetaria
                 Vector3 upper_center = intersection(canvas.center.x, canvas.yMax);
                 Vector3 upper_right = intersection(canvas.xMax, canvas.yMax);
 
-                Arc biangle_segment1 = ArcFactory.curve(upper_center, upper_left, -upper_center);
-                Arc biangle_segment2 = ArcFactory.curve(lower_center, lower_left, -lower_center);
-                cached_left_biangle_focus = -PlanetariaIntersection.arc_arc_intersection(biangle_segment1, biangle_segment2, 0).data;
+                Arc biangle_segment1 = ArcFactory.curve(upper_center, upper_right, -upper_center);
+                Arc biangle_segment2 = ArcFactory.curve(lower_center, lower_right, -lower_center);
+                cached_left_biangle_focus = PlanetariaIntersection.arc_arc_intersection(biangle_segment1, biangle_segment2, 0).data;
                 cached_left_positive_partition = Bearing.attractor(cached_left_biangle_focus, middle_left); // used for a dot product to determine if the angle applied for UV is +/-
                 if (Vector3.Dot(cached_left_positive_partition, middle_center) >= 0)
                 {
@@ -170,9 +173,9 @@ namespace Planetaria
                     cached_left_end_angle = Vector3.Angle(-cached_left_biangle_focus, middle_left) * Mathf.Deg2Rad + Mathf.PI;
                 }
 
-                biangle_segment1 = ArcFactory.curve(upper_center, upper_right, -upper_center);
-                biangle_segment2 = ArcFactory.curve(lower_center, lower_right, -lower_center);
-                cached_right_biangle_focus = -PlanetariaIntersection.arc_arc_intersection(biangle_segment1, biangle_segment2, 0).data;
+                biangle_segment1 = ArcFactory.curve(upper_center, upper_left, -upper_center);
+                biangle_segment2 = ArcFactory.curve(lower_center, lower_left, -lower_center);
+                cached_right_biangle_focus = PlanetariaIntersection.arc_arc_intersection(biangle_segment1, biangle_segment2, 0).data;
                 cached_right_positive_partition = Bearing.attractor(cached_right_biangle_focus, middle_right); // used for a dot product to determine if the angle applied for UV is +/-
                 if (Vector3.Dot(cached_right_positive_partition, middle_center) >= 0)
                 {
@@ -185,9 +188,9 @@ namespace Planetaria
                     cached_right_end_angle = Vector3.Angle(-cached_right_biangle_focus, middle_right) * Mathf.Deg2Rad + Mathf.PI;
                 }
 
-                biangle_segment1 = ArcFactory.curve(middle_left, lower_left, -middle_left);
-                biangle_segment2 = ArcFactory.curve(middle_right, lower_right, -middle_right);
-                cached_lower_biangle_focus = -PlanetariaIntersection.arc_arc_intersection(biangle_segment1, biangle_segment2, 0).data;
+                biangle_segment1 = ArcFactory.curve(middle_left, upper_left, -middle_left);
+                biangle_segment2 = ArcFactory.curve(middle_right, upper_right, -middle_right);
+                cached_lower_biangle_focus = PlanetariaIntersection.arc_arc_intersection(biangle_segment1, biangle_segment2, 0).data;
                 cached_lower_positive_partition = Bearing.attractor(cached_lower_biangle_focus, lower_center); // used for a dot product to determine if the angle applied for UV is +/-
                 if (Vector3.Dot(cached_lower_positive_partition, middle_center) >= 0)
                 {
@@ -200,9 +203,9 @@ namespace Planetaria
                     cached_lower_end_angle = Vector3.Angle(-cached_lower_biangle_focus, lower_center) * Mathf.Deg2Rad + Mathf.PI;
                 }
 
-                biangle_segment1 = ArcFactory.curve(middle_left, upper_left, -middle_left);
-                biangle_segment2 = ArcFactory.curve(middle_right, upper_right, -middle_right);
-                cached_upper_biangle_focus = -PlanetariaIntersection.arc_arc_intersection(biangle_segment1, biangle_segment2, 0).data;
+                biangle_segment1 = ArcFactory.curve(middle_left, lower_left, -middle_left);
+                biangle_segment2 = ArcFactory.curve(middle_right, lower_right, -middle_right);
+                cached_upper_biangle_focus = PlanetariaIntersection.arc_arc_intersection(biangle_segment1, biangle_segment2, 0).data;
                 cached_upper_positive_partition = Bearing.attractor(cached_upper_biangle_focus, upper_center); // used for a dot product to determine if the angle applied for UV is +/-
                 if (Vector3.Dot(cached_upper_positive_partition, middle_center) >= 0)
                 {
