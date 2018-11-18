@@ -14,6 +14,10 @@ namespace Planetaria
         private void initialize()
         {
             internal_light.spotAngle = (range * 2) * Mathf.Rad2Deg;
+            if (internal_camera == null)
+            {
+                internal_camera = GameObject.FindObjectOfType<Camera>();
+            }
             if (internal_cucoloris == null)
             {
                 internal_cucoloris = lighting_function();
@@ -29,7 +33,7 @@ namespace Planetaria
             float pixel_width = 1f/light_cucoloris.width;
             float pixel_height = 1f/light_cucoloris.height;
             Debug.Log(internal_light.spotAngle);
-            float field_of_view_constant = Mathf.Pow(Mathf.Tan(internal_light.spotAngle/2*Mathf.Deg2Rad), -2);
+            float field_of_view_constant = Mathf.Pow(Mathf.Tan(internal_light.spotAngle/2*Mathf.Deg2Rad), -2); // FIXME: recompute on resized camera fieldOfView
 
             int pixel = 0;
             for (float v = pixel_height/2; v < 1f; v += pixel_height)
@@ -47,21 +51,18 @@ namespace Planetaria
                     // [ v >= 0.5 --> y is positive ]
                     //
                     // thus:
-                    // tan^-1(FoV/2)*x/sqrt(1 - x^2 - y^2) = u and [I omitted the .5, a happy accident]
-                    // tan^-1(FoV/2)*y/sqrt(1 - x^2 - y^2) = v
+                    // (1/tan(FoV/2))*x/sqrt(1 - x^2 - y^2) = u and [I omitted the .5, a happy accident]
+                    // (1/tan(FoV/2))*y/sqrt(1 - x^2 - y^2) = v
                     // solve for x,y (in Wolfram Alpha)
                     // returns:
-                    // x = u/sqrt(tan^-2(FoV/2) + u^2 + v^2) [you need to multiply by sign(u-.5) and "u"/"v" is actually `u - .5`/`v - .5`]
-                    // y = v/sqrt(tan^-2(FoV/2) + u^2 + v^2)
-
+                    // x = u/sqrt(1/tan^2(FoV/2) + u^2 + v^2) ["u"/"v" is actually `u - .5`/`v - .5`]
+                    // y = v/sqrt(1/tan^2(FoV/2) + u^2 + v^2)
                     float signed_u = u - 0.5f;
                     float signed_v = v - 0.5f;
                     float signed_u_squared = signed_u*signed_u;
                     float signed_v_squared = signed_v*signed_v;
-                    float x = 2*signed_u/Mathf.Sqrt(field_of_view_constant + signed_u_squared + signed_v_squared);
-                    float y = 2*signed_v/Mathf.Sqrt(field_of_view_constant + signed_u_squared + signed_v_squared);
-                    // notably, as FOV approaches 180 degrees, only the centermost pixels become rendered;
-                    // tan(90) approaches infinity, dividing by ~ infinity approaches 0, which means most points map to the "center"
+                    float x = signed_u/Mathf.Sqrt(field_of_view_constant/4 + signed_u_squared + signed_v_squared);
+                    float y = signed_v/Mathf.Sqrt(field_of_view_constant/4 + signed_u_squared + signed_v_squared);
                     
                     // calculate z = sqrt(1 - x^2 - y^2)
                     float z = Mathf.Sqrt(1 - x*x - y*y);
@@ -73,8 +74,8 @@ namespace Planetaria
                     // use angle to determine lighting using any function desired (I prefer finding the length of the circle at the given radius to compute how spread out (unintense) the light is).
                     // remember to clamp light outside of its radius
                     float intensity_value = Mathf.Clamp(1f - angle/(internal_light.spotAngle/2*Mathf.Deg2Rad), 0, 1); // TODO: different function
-                    //byte intensity_color = (byte) Mathf.CeilToInt(intensity_value*byte.MaxValue);
-                    byte intensity_color = (byte) Mathf.CeilToInt(intensity_value != 0 ? byte.MaxValue : 0);
+                    byte intensity_color = (byte) Mathf.CeilToInt(intensity_value*byte.MaxValue);
+                   // byte intensity_color = (byte) Mathf.CeilToInt(intensity_value != 0 ? byte.MaxValue : 0);
                     pixels[pixel] = new Color32(0, 0, 0, intensity_color);
                     pixel += 1;
                 }
@@ -99,6 +100,7 @@ namespace Planetaria
         }
 
 		// Variables (non-Public)
+        private Camera internal_camera;
 
         private static Texture2D internal_cucoloris;
 	}
