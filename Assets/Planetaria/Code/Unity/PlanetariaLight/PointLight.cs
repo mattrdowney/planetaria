@@ -13,12 +13,12 @@ namespace Planetaria
 
         private void initialize()
         {
+            internal_light.spotAngle = range * Mathf.Rad2Deg;
             if (internal_cucoloris == null)
             {
                 internal_cucoloris = lighting_function();
             }
             internal_light.cookie = internal_cucoloris;
-            internal_light.spotAngle = range * Mathf.Rad2Deg;
         }
 
         public Texture2D lighting_function()
@@ -28,22 +28,21 @@ namespace Planetaria
             Color32[] pixels = new Color32[light_cucoloris.width*light_cucoloris.height];
             float pixel_width = 1f/light_cucoloris.width;
             float pixel_height = 1f/light_cucoloris.height;
+            Debug.Log(internal_light.spotAngle);
+            float field_of_view_constant = Mathf.Pow(Mathf.Tan(internal_light.spotAngle/2), 2);
 
             int pixel = 0;
             for (float v = pixel_height/2; v < 1f; v += pixel_height)
             {
                 for (float u = pixel_width/2; u < 1f; u += pixel_width)
                 {
-                    // Look at this hot garbage:
-
                     // Implement https://en.wikibooks.org/wiki/Cg_Programming/Unity/Cookies
                     // With particular notice of "cookieAttenuation = tex2D(_LightTexture0, input.posLight.xy / input.posLight.w + float2(0.5, 0.5)).a"
                     // w = z / d
                     //     where d = 1/tan(FoV(y)/2)
-                    // UV conversion, restated, is: (x,y)/w + (0.5,0.5) = (u,v) [ I should probably compute this via sampling, since that's simpler ] <-- Nevermind this comment, Wolfram Alpha equation solver did it (I was being lazy, I think it would have been easy enough to solve, and I should probably derive the equation as homework)
-                    // we know x^2 + y^2 + z^2 = 1
-                    // z^2 = 1 - x^2 - y^2
-                    // z = +/-sqrt(1 - x^2 - y^2)
+                    // UV conversion, restated, is: (x,y)/w + (0.5,0.5) = (u,v) 
+                    // we know x^2 + y^2 + z^2 = 1 (unit sphere definition, which is a given in Planetaria)
+                    // therefore: z = +/-sqrt(1 - x^2 - y^2)
                     // [ u >= 0.5 --> x is positive ]
                     // [ v >= 0.5 --> y is positive ]
                     //
@@ -52,29 +51,33 @@ namespace Planetaria
                     // tan(FoV/2)*y/sqrt(1 - x^2 - y^2) = v
                     // solve for x,y (in Wolfram Alpha)
                     // returns:
-                    // x = u/sqrt(tan^2(FoV/2) + u^2 + v^2) [you need to multiply by sign(u-.5) and "u" is actually `u - .5`]
+                    // x = u/sqrt(tan^2(FoV/2) + u^2 + v^2) [you need to multiply by sign(u-.5) and "u"/"v" is actually `u - .5`/`v - .5`]
                     // y = v/sqrt(tan^2(FoV/2) + u^2 + v^2)
 
-                    // notably, as FOV approaches 180 degrees, only the centermost pixels are rendered; tan(90) approaches infinity, dividing by ~ infinity approaches 0, which is likely the root of the behavior
                     // Also, I am essentially doing this:
                     // use UV coordinates of entire texture:
                     // convert UV -> XY using above system of equations.
-                    // calculate z = 1 - x^2 - y^2
-                    // calculate Vector3.Angle(Vector3.forward, new Vector3(x,y,z));
-                    // use angle to determine lighting using any function desired (the dot product probably isn't the way to go, I prefer finding the length of the circle at the given radius to compute how spread out (unintense) the light is).
+                    float signed_u = u - 0.5f;
+                    float signed_v = v - 0.5f;
+                    float signed_u_squared = signed_u*signed_u;
+                    float signed_v_squared = signed_v*signed_v;
+                    float x = signed_u/Mathf.Sqrt(field_of_view_constant + signed_u_squared + signed_v_squared);
+                    float y = signed_v/Mathf.Sqrt(field_of_view_constant + signed_u_squared + signed_v_squared);
+                    // notably, as FOV approaches 180 degrees, only the centermost pixels become rendered;
+                    // tan(90) approaches infinity, dividing by ~ infinity approaches 0, which means most points map to the "center"
+                    
+                    // calculate z = sqrt(1 - x^2 - y^2)
+                    float z = Mathf.Sqrt(1 - x*x - y*y);
 
-                    // FIXME: this needs knowledge of the spotlight's field of view (this was "d", which I missed)
-
-                    UVCoordinates uv = new UVCoordinates(u, v);
-                    PolarCoordinates polar = PolarCoordinates.rectangular(uv.data - new Vector2(0.5f, 0.5f)); // Get polar coordinates relative to UV center
-                    //polar = PolarCoordinates.polar(polar.radius, polar.angle + Mathf.PI/2); // Rotate 90 degrees counterclockwise.
-
-                    // we are interested in points of radius [0, 0.5].
-                    float angular_distance = Mathf.PI*polar.radius; // this range maps to [0, PI/2]
-                    float dot_product = Mathf.Clamp(Mathf.Sin(angular_distance), Precision.just_above_zero, 1); // Sine range is [-1, +1] // dot product uses Cos, right? (I changed this at some point, I think)
-                    //float inverse_square = dot_product*dot_product; // Inverse squared lighting (without the inverse!)
-                    byte intensity = (byte) Mathf.CeilToInt(dot_product*byte.MaxValue);
-                    pixels[pixel] = new Color32(intensity, intensity, intensity, intensity);
+                    // calculate distance to pixel (relative to field of view)
+                    Vector3 cartesian = new Vector3(x,y,z);
+                    float angle = Vector3.Angle(Vector3.forward, cartesian) * Mathf.Deg2Rad;
+                    
+                    // use angle to determine lighting using any function desired (I prefer finding the length of the circle at the given radius to compute how spread out (unintense) the light is).
+                    // remember to clamp light outside of its radius
+                    float intensity_value = Mathf.Clamp(1f - angle/(internal_light.spotAngle/2*Mathf.Deg2Rad), 0, 1); // TODO: different function
+                    byte intensity_color = (byte) Mathf.CeilToInt(intensity_value*byte.MaxValue);
+                    pixels[pixel] = new Color32(0, 0, 0, intensity_color);
                     pixel += 1;
                 }
             }
