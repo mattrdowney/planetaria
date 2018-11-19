@@ -24,16 +24,16 @@ namespace Planetaria
             }
         }
 
-        /// <summary>The cucoloris texture projected by the light.</summary>
-        public PlanetariaCucoloris cucoloris // TODO: figure out how to do this, since I will be using Unity's cucoloris system for the different light types.
+        /// <summary>The cuculoris texture projected by the light.</summary>
+        public PlanetariaCuculoris cuculoris // TODO: figure out how to do this, since I will be using Unity's cuculoris system for the different light types.
         {
             get
             {
-                return cucoloris_variable;
+                return cuculoris_variable;
             }
             set
             {
-                cucoloris_variable = value;
+                cuculoris_variable = value;
             }
         }
 
@@ -50,7 +50,7 @@ namespace Planetaria
             }
         }
 
-        /// <summary>The intensity of the light is multiplied by the light color and cucoloris (if present).</summary>
+        /// <summary>The intensity of the light is multiplied by the light color and cuculoris (if present).</summary>
         public float intensity
         {
             get
@@ -128,16 +128,18 @@ namespace Planetaria
             initialize();
         }
 
-		// Variables (non-Public)
+        // Variables (Public)
         
-        [SerializeField] [HideInInspector] protected Light internal_light; // CONSIDER: use an array of UnityEngine.Light? - most likely no, since that could be added in the child class if necessary
-
+        [SerializeField] private PlanetariaCuculoris cuculoris_variable; // this is technically a part of the public interface (because it is shown in the editor)
 		[SerializeField] private Color color_variable;
-        [SerializeField] private PlanetariaCucoloris cucoloris_variable;
         [SerializeField] private int culling_mask_variable;
         [SerializeField] private float intensity_variable;
         [SerializeField] private float range_variable;
-        [SerializeField] private PlanetariaLightType type_variable;
+
+		// Variables (non-Public)
+        
+        [SerializeField] [HideInInspector] private PlanetariaLightType type_variable;
+        [SerializeField] [HideInInspector] protected Light internal_light; // CONSIDER: use an array of UnityEngine.Light? - most likely no, since that could be added in the child class if necessary
 	}
 }
 

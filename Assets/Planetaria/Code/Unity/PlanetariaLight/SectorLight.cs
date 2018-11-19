@@ -24,21 +24,38 @@ namespace Planetaria
             }
         }
 
-		// Methods (Public)
-		
-		// Static Methods (Public)
-		
-		// Properties (non-Public)
-		
+        // Methods (Public)
+
+
+
 		// Methods (non-Public)
-		
-		// Static Methods (non-Public)
+
+        private void initialize()
+        {
+            internal_light.spotAngle = (range * 2) * Mathf.Rad2Deg;
+            if (internal_cuculoris == null)
+            {
+                internal_cuculoris = PoleLight.lighting_function(internal_light.spotAngle);
+            }
+            internal_light.cookie = internal_cuculoris;
+        }
 		
 		// Messages (non-Public)
-				
-		// Variables (Public)
-		
+
+        protected override void Awake()
+        {
+            base.Awake();
+            initialize();
+        }
+
+        protected override void Reset()
+        {
+            base.Reset();
+            initialize();
+        }
+
 		// Variables (non-Public)
+        private Texture2D internal_cuculoris;
         
         [SerializeField] private float sector_angle_variable;
 	}
