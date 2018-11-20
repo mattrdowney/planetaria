@@ -7,7 +7,7 @@ namespace Planetaria
 	/// A PlanetariaLight is of type PointLight, ArcLight, SectorLight, or WorldLight.
     /// </summary>
     [Serializable]
-	public abstract class PlanetariaLight : PlanetariaComponent
+	public sealed class PlanetariaLight : PlanetariaComponent
 	{
 		// Properties (Public)
 
@@ -73,6 +73,19 @@ namespace Planetaria
             set
             {
                 range_variable = value;
+            }
+        }
+
+        /// <summary>The angle of the circular sector (in radians) of the sector light. Range: [0, 2PI].</summary>
+        public float sectorAngle
+        {
+            get
+            {
+                return sector_angle_variable;
+            }
+            set
+            {
+                sector_angle_variable = value;
             }
         }
 
@@ -168,6 +181,13 @@ namespace Planetaria
             internal_light.range = 1000f; // FIXME: magic number: Setting light ranges to float.MaxValue does not work; the max range for SpotLights is a lot worse than PointLights.
             internal_light.shadows = LightShadows.None;
             internal_light.type = LightType.Spot;
+            internal_light.spotAngle = (range * 2) * Mathf.Rad2Deg;
+            if (internal_cuculoris == null)
+            {
+                internal_cuculoris = lighting_function(internal_light.spotAngle);
+                cuculoris.apply_to(ref internal_cuculoris, sectorAngle);
+            }
+            internal_light.cookie = internal_cuculoris;
         }
 
 		// Messages (non-Public)
@@ -187,15 +207,17 @@ namespace Planetaria
         // Variables (Public)
         
         [SerializeField] private PlanetariaCuculoris cuculoris_variable; // this is technically a part of the public interface (because it is shown in the editor)
-		[SerializeField] private Color color_variable;
-        [SerializeField] private int culling_mask_variable;
-        [SerializeField] private float intensity_variable;
-        [SerializeField] private float range_variable;
+		[SerializeField] private Color color_variable = Color.white;
+        [SerializeField] private int culling_mask_variable = 0;
+        [SerializeField] private float intensity_variable = 1;
+        [SerializeField] private float range_variable = 0.5f;
+        [SerializeField] private float sector_angle_variable = 2*Mathf.PI;
+        [SerializeField] private PlanetariaLightType type_variable = PlanetariaLightType.SectorLight; // FIXME: this does nothing
 
 		// Variables (non-Public)
         
-        [SerializeField] [HideInInspector] private PlanetariaLightType type_variable;
-        [SerializeField] [HideInInspector] protected Light internal_light; // CONSIDER: use an array of UnityEngine.Light? - most likely no, since that could be added in the child class if necessary
+        [SerializeField] [HideInInspector] private Texture2D internal_cuculoris;
+        [SerializeField] [HideInInspector] private Light internal_light; // CONSIDER: use an array of UnityEngine.Light? - most likely no, since that could be added in the child class if necessary
 	}
 }
 
