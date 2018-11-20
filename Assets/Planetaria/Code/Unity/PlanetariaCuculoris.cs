@@ -28,7 +28,7 @@ namespace Planetaria
 		
 		// Methods (Public)
 
-        public void apply_to(ref Texture2D lightmap, ColorLerpMode color_mode = ColorLerpMode.Interpolate)
+        public void apply_to(ref Texture2D lightmap, float total_angle = 2*Mathf.PI, ColorLerpMode color_mode = ColorLerpMode.Interpolate)
         {
             cache();            
             Color[] original_pixels = lightmap.GetPixels();
@@ -42,14 +42,14 @@ namespace Planetaria
                 for (int column = 0; column < lightmap.height; ++column)
                 {
                     // find the angle of the pixel to determine how the cuculoris will be applied
-                    Vector2 relative_position = new Vector2(row, column) - center;
+                    Vector2 relative_position = new Vector2(column, row) - center; // remember columns are x and rows are y
                     float angle = 0;
                     if (relative_position != Vector2.zero)
                     {
                         angle = Mathf.Atan2(relative_position.x, relative_position.y); // x/y inverted because the angle is relative to "forward" not "right"
                     }
                     // fetch closest user_cuculoris pixel (with special considerations for sector light) and multiply by original pixel
-                    replacement_pixels[pixel] = original_pixels[pixel] * get_color(angle, color_mode);
+                    replacement_pixels[pixel] = original_pixels[pixel] * get_color(angle, total_angle, color_mode);
                     pixel += 1;
                 }
             }
@@ -62,36 +62,59 @@ namespace Planetaria
         private void cache()
         {
             pixels = user_cuculoris.GetPixels32();
+            // CONSIDER: I don't think the RGB components matter here (no need to reset them to zero).
         }
 
-        private int get_closest_pixel_index(float angle) // FIXME: sector light
+        private int get_closest_pixel_index(float angle, float total_angle = 2*Mathf.PI)
         {
-            float ratio = 0.5f + angle/(2*Mathf.PI);
+            if (Mathf.Abs(angle) > total_angle/2)
+            {
+                Debug.LogError("Interface misuse: Assert: |angle| <= total_angle/2");
+            }
+            float ratio = 0.5f + angle/total_angle;
             int pixel_index = Mathf.FloorToInt(ratio * user_cuculoris.width);
             return Mathf.Clamp(pixel_index, 0, user_cuculoris.width-1);
         }
 
-        private float get_pixel_angle(int pixel_index)
+        private float get_pixel_angle(int pixel_index, float total_angle = 2*Mathf.PI)
         {
             float pixel_center = 0.5f + pixel_index;
             float ratio = pixel_center/user_cuculoris.width;
-            return ratio * (2*Mathf.PI) - Mathf.PI;
+            return (ratio - 0.5f)*total_angle;
         }
 
-        private Color32 get_color(float angle, ColorLerpMode color_mode)
+        private Color32 get_color(float angle, float total_angle, ColorLerpMode color_mode)
         {
+            if (Mathf.Abs(angle) > total_angle/2) // for sector lights when the angle is outside of the light's field of view
+            {
+                return Color.clear;
+            }
             int pixel_index = get_closest_pixel_index(angle);
-            if (color_mode == ColorLerpMode.Clamp)
+            if (color_mode == ColorLerpMode.Clamp) // return the nearest pixel
             {
                 return pixels[pixel_index];
             }
             float pixel_angle = get_pixel_angle(pixel_index);
             float relative_angle = Mathf.DeltaAngle(pixel_angle, angle);
             int adjacent_pixel_direction = (int) Mathf.Sign(relative_angle);
-            int pixel_index2 = pixel_index + adjacent_pixel_direction; // find the next closest pixel (+/- 1, wrapped)
-            pixel_index2 = pixel_index2 > user_cuculoris.width-1 ? 0 : pixel_index2;
-            pixel_index2 = pixel_index2 < 0 ? user_cuculoris.width-1 : pixel_index2;
-            float interpolator = Mathf.Abs(relative_angle)/((2*Mathf.PI)/user_cuculoris.width); // interpolator in range [0, 0.5] // NOTE: there are two adjacent pixels
+            int pixel_index2 = pixel_index + adjacent_pixel_direction; // find the next closest pixel (may be unwrapped i.e. -1 or user_cuculoris.width)
+            if (pixel_index2 <= -1) // outside left boundary (before user_cuculoris's leftmost pixel)
+            {
+                if (total_angle != 2*Mathf.PI) // sector light when there is no adjacent pixel (aside from Color.clear)
+                {
+                    return pixels[pixel_index]; // Clamp pixel, instead of interpolating with Color.clear
+                }
+                pixel_index2 = user_cuculoris.width-1;
+            }
+            else if (pixel_index2 >= user_cuculoris.width) // outside right boundary (after user_cuculoris's rightmost pixel)
+            {
+                if (total_angle != 2*Mathf.PI) // sector light when there is no adjacent pixel (aside from Color.clear)
+                {
+                    return pixels[pixel_index]; // Clamp pixel, instead of interpolating with Color.clear
+                }
+                pixel_index2 = 0;
+            }
+            float interpolator = Mathf.Abs(relative_angle)/(total_angle/user_cuculoris.width); // interpolator in range [0, 0.5] // NOTE: there are two adjacent pixels so the interpolator is effectively [-.5, +.5] per each pixel
             return Color32.Lerp(pixels[pixel_index], pixels[pixel_index2], interpolator);
         }
 

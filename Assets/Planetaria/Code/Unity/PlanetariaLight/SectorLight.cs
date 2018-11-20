@@ -35,7 +35,7 @@ namespace Planetaria
             internal_light.spotAngle = (range * 2) * Mathf.Rad2Deg;
             if (internal_cuculoris == null)
             {
-                internal_cuculoris = PoleLight.lighting_function(internal_light.spotAngle);
+                internal_cuculoris = lighting_function(internal_light.spotAngle);
             }
             internal_light.cookie = internal_cuculoris;
         }

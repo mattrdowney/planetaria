@@ -5,7 +5,7 @@ namespace Planetaria
     public static class Precision
     {
         public const float just_below_one = 0.99999994f; // largest IEEE float32 number below 1
-        public static readonly float just_above_zero = 1 - just_below_one;
+        public static readonly float just_above_zero = 1 - just_below_one; // FIXME: 2PI - just_above_zero == 2PI due to floating point truncation (this should go against the original concept of these epsilon values, if only because it's easy to misuse (I understand they were made for multiplication))
         public static readonly float just_above_one = 1 + just_above_zero;
         public static readonly float delta = 4 * Mathf.Pow(2, -23);
         public const float threshold = 1e-5f;
