@@ -29,8 +29,7 @@ namespace Planetaria
         public void apply_to(ref Texture2D lightmap, float total_angle = 2*Mathf.PI)
         {
             cache();            
-            Color[] original_pixels = lightmap.GetPixels();
-            Color[] replacement_pixels = new Color[lightmap.width*lightmap.height];
+            Color[] lightmap_pixels = lightmap.GetPixels();
             int pixel = 0;
             Vector2 center = new Vector2((lightmap.width-1)/2, (lightmap.height-1)/2);
 
@@ -47,11 +46,12 @@ namespace Planetaria
                         angle = Mathf.Atan2(relative_position.x, relative_position.y); // y/x inverted because the angle is relative to "forward" not "right"
                     }
                     // fetch closest user_cuculoris pixel (with special considerations for sector light) and multiply by original pixel
-                    replacement_pixels[pixel] = original_pixels[pixel] * get_color(angle, total_angle);
+                    lightmap_pixels[pixel] = lightmap_pixels[pixel] * get_color(angle, total_angle);
                     pixel += 1;
                 }
             }
-            lightmap.SetPixels(replacement_pixels);
+            Debug.Log("Happening");
+            lightmap.SetPixels(lightmap_pixels);
             lightmap.Apply();
         }
 
@@ -59,6 +59,11 @@ namespace Planetaria
 
         private void cache()
         {
+            if (one_dimensional_cuculoris == null)
+            {
+                one_dimensional_cuculoris = new Texture2D(1,1);
+                one_dimensional_cuculoris.SetPixels32(new Color32[] { Color.white });
+            }
             cuculoris_pixels = one_dimensional_cuculoris.GetPixels32();
             // CONSIDER: I don't think the RGB components matter here (no need to reset them to zero).
         }

@@ -17,7 +17,7 @@ namespace Planetaria
             int previous_indentation = EditorGUI.indentLevel;
             EditorGUI.indentLevel = 0;
             Rect texture_rectangle = new Rect(position.x, position.y, position.width, position.height);
-            EditorGUI.PropertyField(texture_rectangle, property.FindPropertyRelative("user_cuculoris"), GUIContent.none);
+            EditorGUI.PropertyField(texture_rectangle, property.FindPropertyRelative("one_dimensional_cuculoris"), GUIContent.none);
             EditorGUI.indentLevel = previous_indentation;
 
             EditorGUI.EndProperty();

@@ -182,11 +182,8 @@ namespace Planetaria
             internal_light.shadows = LightShadows.None;
             internal_light.type = LightType.Spot;
             internal_light.spotAngle = (range * 2) * Mathf.Rad2Deg;
-            if (internal_cuculoris == null)
-            {
-                internal_cuculoris = lighting_function(internal_light.spotAngle);
-                cuculoris.apply_to(ref internal_cuculoris, sectorAngle);
-            }
+            internal_cuculoris = lighting_function(internal_light.spotAngle);
+            cuculoris.apply_to(ref internal_cuculoris, sectorAngle);
             internal_light.cookie = internal_cuculoris;
         }
 
