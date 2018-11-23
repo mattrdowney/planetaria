@@ -5,7 +5,7 @@ namespace Planetaria
 {
     public class OctahedronSphere // NOTE: Shaders must use CullOff due to the clockwise-to-counterclockwise alternation of backfaces
     {
-        public static Mesh generate(int triangle_budget) // FIXME: int triangle_budget
+        public static Mesh generate(int triangle_budget)
         {
             return TessellatedMesh.generate(Octahedron.octahedron_mesh(), triangle_budget, 1, true)[0];
         }

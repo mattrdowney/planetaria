@@ -3,12 +3,12 @@
 namespace Planetaria
 {
     /// <summary>
-	/// An enumeration for the type of light (e.g. point light, arc light, sector light, or world light)
+	/// An enumeration for the type of light (e.g. pole light (point light) or sector light (spot light))
     /// </summary>
     [Serializable]
 	public enum PlanetariaLightType
 	{
-        PointLight,
+        PoleLight,
         SectorLight,
 	}
 }

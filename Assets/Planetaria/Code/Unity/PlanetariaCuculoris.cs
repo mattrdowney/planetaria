@@ -50,7 +50,6 @@ namespace Planetaria
                     pixel += 1;
                 }
             }
-            Debug.Log("Happening");
             lightmap.SetPixels(lightmap_pixels);
             lightmap.Apply();
         }

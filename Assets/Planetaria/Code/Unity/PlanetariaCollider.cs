@@ -48,7 +48,7 @@ namespace Planetaria
             {
                 rigidbody = this.GetComponentInParent<PlanetariaRigidbody>();
             }
-            PlanetariaCache.self.cache(this);
+            cache(this.shape);
             // add to collision_map and trigger_map for all objects currently intersecting (via Physics.OverlapBox()) // CONSIDER: I think Unity Fixed this, right?
         }
 
@@ -60,14 +60,27 @@ namespace Planetaria
             }
             set
             {
-                PlanetariaCache.self.uncache(this);
-                shape_variable = value;
+                cache(value);
+            }
+        }
+
+        private void cache(PlanetariaShape shape)
+        {
+            PlanetariaCache.self.uncache(this);
+            shape_variable = shape;
+            if (shape != null)
+            {
                 PlanetariaCache.self.cache(this);
                 PlanetariaSphereCollider sphere = shape.bounding_sphere;
 
                 internal_collider.center = sphere.center;
                 internal_collider.radius = sphere.radius;
             }
+            else
+            {
+                internal_collider.radius = float.NegativeInfinity; // FIXME: HACK: ensure there are no collisions
+            }
+            internal_collider.isTrigger = true; // Rigidbody must be added for collisions to be detected.
         }
 
         public void register(PlanetariaMonoBehaviour listener)
