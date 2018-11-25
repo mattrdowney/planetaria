@@ -214,20 +214,20 @@ namespace Planetaria
             }
         }
 
-        [MenuItem("Planetaria/Toggle Debug Graphics #g")]
-        private static void toggle_debug_graphics() // (Shift + g(raphics))
+        [MenuItem("Planetaria/Toggle Debug Graphics")]
+        private static void toggle_debug_graphics()
         {
             EditorGlobal.self.hide_graphics = !EditorGlobal.self.hide_graphics; // toggle state
         }
 
-        [MenuItem("Planetaria/Toggle Hidden Inspector #i")]
-        private static void toggle_hidden_inspector() // (Shift + i(nspector))
+        [MenuItem("Planetaria/Toggle Hidden Inspector")]
+        private static void toggle_hidden_inspector()
         {
             EditorGlobal.self.show_inspector = !EditorGlobal.self.show_inspector; // toggle state
             foreach (GameObject game_object in GameObject.FindObjectsOfType<GameObject>())
             {
                 // Hide planetaria internals (GitHub Issue #43 and #75).
-                // Toggling the inspector shows these objects (Shift + i(nspector))
+                // Toggling the inspector shows these objects
                 if (game_object.name.Substring(0, 2) == "__") // double underscore indicates hidden object
                 {
                     if (!EditorGlobal.self.show_inspector)
