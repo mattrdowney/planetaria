@@ -32,8 +32,7 @@ public class Cannon : PlanetariaComponent
         {
             optional<PlanetariaRaycastHit> raycast_information =
                     PlanetariaPhysics.raycast(ArcFactory.line(character_position, bullet_direction),
-                    1.25f*Mathf.PI, -5, QueryTriggerInteraction.Collide);
-                    //1 << LayerMask.NameToLayer("Debris"));
+                    1.25f*Mathf.PI, 1 << LayerMask.NameToLayer("Debris"), QueryTriggerInteraction.Collide);
 
             if (raycast_information.exists)
             {

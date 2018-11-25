@@ -10,10 +10,12 @@ public class Ship : PlanetariaMonoBehaviour
 
     private void Start()
     {
+        planetaria_collider = this.GetComponent<PlanetariaCollider>();
         planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
         planetaria_renderer = this.GetComponent<AreaRenderer>();
         transform.direction = new NormalizedCartesianCoordinates(Vector3.up);
         transform.localScale = +0.1f;
+        planetaria_collider.shape = PlanetariaShape.Create(+0.1f/2);
         OnFieldEnter.data = on_field_enter;
     }
 
@@ -74,6 +76,7 @@ public class Ship : PlanetariaMonoBehaviour
         PlanetariaGameObject.Destroy(this.gameObject);
     }
 
+    [NonSerialized] private PlanetariaCollider planetaria_collider;
     [NonSerialized] private AreaRenderer planetaria_renderer;
     [NonSerialized] private PlanetariaRigidbody planetaria_rigidbody;
     [NonSerialized] private float horizontal;

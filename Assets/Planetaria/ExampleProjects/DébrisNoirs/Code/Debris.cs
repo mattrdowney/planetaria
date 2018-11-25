@@ -13,6 +13,7 @@ public class Debris : PlanetariaMonoBehaviour
         planetaria_transform = this.GetComponent<PlanetariaTransform>();
         planetaria_renderer = this.GetComponent<AreaRenderer>();
         transform.localScale = +0.1f;
+        planetaria_collider.shape = PlanetariaShape.Create(+0.1f/2);
         planetaria_renderer.angle = UnityEngine.Random.Range(0, 2*Mathf.PI);
         
         // set sprite image

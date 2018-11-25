@@ -92,9 +92,9 @@ namespace Planetaria
             desired_angle = Mathf.Clamp(desired_angle, -2*Mathf.PI, 2*Mathf.PI);
 
             // primative arc points
-            Vector3 arc_left = arc.position(-desired_angle/2 - arc.angle()/2);
-            Vector3 arc_center = arc.position(0 - arc.angle()/2);
-            Vector3 arc_right = arc.position(+desired_angle/2 - arc.angle()/2);
+            Vector3 arc_left = arc.position(-arc.angle()/2);
+            Vector3 arc_center = arc.position(-arc.angle()/2 + desired_angle/2);
+            Vector3 arc_right = arc.position(-arc.angle()/2 + desired_angle);
 
             SerializedArc ray_arc = ArcFactory.curve(arc_left, arc_center, arc_right);
 

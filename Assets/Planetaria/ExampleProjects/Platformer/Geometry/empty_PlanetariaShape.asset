@@ -9,7 +9,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 98796d1e58552064db49e5b46d99053c, type: 3}
-  m_Name: level_0_PlanetariaShape
+  m_Name: empty_PlanetariaShape
   m_EditorClassIdentifier: 
   has_corners: 1
   ephemeral_arcs: 0
