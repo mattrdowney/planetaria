@@ -78,18 +78,14 @@ namespace Planetaria
 
         public List<Arc> block_collision(PlanetariaShape other, Quaternion shift_from_self_to_other) // TODO: AABB-equivalent would be nice here
         {
-            Debug.Log("Inside Block Collision Detection");
             List<Arc> union = new List<Arc>();
             for (int other_index = 0; other_index < other.block_list.Length; ++other_index)
             {
-                Debug.Log("Other ArcCollider detected");
                 PlanetariaArcCollider other_collider = other.block_list[other_index];
                 foreach (PlanetariaArcCollider this_collider in this.block_list)
                 {
-                    Debug.Log("Comparing with one of our ArcColliders");
                     if (other_collider.collides_with(this_collider, shift_from_self_to_other))
                     {
-                        Debug.Log("!!! Something should have happened !!!");
                         union.Add(other.arc_list[other_index]);
                         break; // try to see if the next arc collides (because we know this one does)
                     }

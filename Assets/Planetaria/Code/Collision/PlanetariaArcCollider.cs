@@ -13,12 +13,10 @@ namespace Planetaria
                 {
                     if (!this[self_index].collides_with(other[other_index], shift_from_self_to_other))
                     {
-                        Debug.Log("Failed ArcCollider collision on self:" + self_index + " other:" + other_index);
                         return false;
                     }
                 }
             }
-            Debug.Log("ArcCollider collision succeeded");
             return true;
         }
 

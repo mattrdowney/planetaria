@@ -132,7 +132,7 @@ namespace Planetaria
             horizontal_acceleration = Vector3.Dot(acceleration, right);
             vertical_acceleration = Vector3.Dot(acceleration, normal) - collision.magnetism;
             vertical_velocity += vertical_acceleration*Time.deltaTime;
-            if (!collision.grounded(velocity)) // TODO: check centripedal force
+            if (!collision.grounded(internal_velocity)) // TODO: check centripedal force
             {
                 derail(0, vertical_acceleration*delta); // Force OnCollisionExit, "un-collision" (and accelerate for a frame)
             }
@@ -142,8 +142,6 @@ namespace Planetaria
         {
             if (observer.exists && observer.data.colliding())
             {
-                Debug.Log("Derailing");
-
                 BlockCollision collision = observer.data.collisions()[0];
 
                 collision.geometry_visitor.move_position(0, transform.scale/2 * (1 + 1e-3f)); // extrude the player so they do not accidentally re-collide (immediately) // FIXME: magic number, move to Precision.*

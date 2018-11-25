@@ -117,58 +117,47 @@ namespace Planetaria
 
         private void OnTriggerStay(Collider collider)
         {
-            Debug.Log("Happening");
             optional<SphereCollider> sphere_collider = collider as SphereCollider;
             if (!sphere_collider.exists)
             {
                 Debug.LogError("This should never happen");
                 return;
             }
-            Debug.Log("Found sphere");
             optional<PlanetariaCollider> other_collider = PlanetariaCache.self.collider_fetch(sphere_collider.data);
             if (!other_collider.exists)
             {
                 Debug.LogError("This should never happen");
                 return;
             }
-            Debug.Log("Found planetaria collider");
             if (!this.is_field) // fields pass through each other (same as triggers) // TODO: move this optimization to first line (ideally don't call this function)
             {
-                Debug.Log("Found non-field");
                 Quaternion shift_from_self_to_other = other_collider.data.internal_transform.rotation;
                 if (this.internal_transform.rotation != Quaternion.identity) // Only shift orientation when necessary
                 {
-                    Debug.Log("Needs internal rotator");
                     // TODO: verify the order of operations is correct (and logic itself)
                     shift_from_self_to_other = Quaternion.Inverse(this.internal_transform.rotation) * shift_from_self_to_other;
                 }
 
                 if (other_collider.data.is_field) // field collision
                 {
-                    Debug.Log("Other field found");
                     if (this.shape.field_collision(other_collider.data.shape, shift_from_self_to_other))
                     {
-                        Debug.Log("Other field in range");
                         observer.potential_field_collision(other_collider.data); // TODO: augment field (like Unity triggers) works on both the sender and receiver.
                     }
                 }
                 else // block collision
                 {
-                    Debug.Log("Other block found");
                     // FIXME: TODO: make sure only the character collides for now
 
                     foreach (Arc intersection in this.shape.block_collision(other_collider.data.shape, shift_from_self_to_other))
                     {
-                        Debug.Log("Iterating across collisions");
                         Vector3 position = planetaria_transform.position.data;
                         if (other_collider.data.gameObject.internal_game_object.transform.rotation != Quaternion.identity) // Only shift orientation when necessary
                         {
                             position = Quaternion.Inverse(other_collider.data.gameObject.internal_game_object.transform.rotation) * position;
-}
-                        Debug.Log("Checking now");
+                        }
                         if (intersection.contains(position, planetaria_transform.scale/2))
                         {
-                            Debug.Log("Other block in range");
                             observer.potential_block_collision(intersection, other_collider.data); // block collisions are handled in OnCollisionStay(): notification stage
                         }
                     }

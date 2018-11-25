@@ -97,6 +97,19 @@ namespace Planetaria
         }
 
         /// <summary>
+        /// Inspector - move a position by its velocity.
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="velocity">A velocity vector perpendicular to the position. The magnitude is the radians to rotate (can be zero or greater).</param>
+        /// <returns>The mext position after adjusting by velocity.</returns>
+        public static Vector3 move(Vector3 position, Vector3 velocity)
+        {
+            float speed_in_radians = velocity.magnitude;
+            Vector3 direction = velocity.normalized;
+            return PlanetariaMath.spherical_linear_interpolation(position, direction, speed_in_radians);
+        }
+
+        /// <summary>
         /// Inspector - checks the distance between an infinitely long line and a point using perpendicular distance.
         /// </summary>
         /// <param name="line_segment_start">A point on the line.</param>

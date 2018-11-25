@@ -45,7 +45,6 @@ namespace Planetaria
                 initialize();
             }
             float delta_angle = delta_length * (arc_angle/arc_length);
-            Debug.Log(delta_length + " " + delta_angle + " " + angular_position);
             set_position(angular_position + delta_angle);
         }
 
@@ -76,18 +75,11 @@ namespace Planetaria
                 position = Quaternion.Inverse(block_transform.rotation) * position;
             }
 
-            Debug.Log("Contains running...");
-
-            if (!arc_visitor.arc.contains(position, offset)) // generally, this will return true
-            {
-                Debug.Log("Possible derail...");
-                bool left_contains = arc_visitor[-1].contains(position, offset); // ocasionally, you switch to the next arc: left...
-                bool right_contains = arc_visitor[+1].contains(position, offset); // ... or right
-                Debug.Log(left_contains + " " + right_contains);
-                return left_contains || right_contains; // if left, right, and center do not contain, then derail
-            }
-            Debug.Log("Everything good...");
-            return true; // more often than not, the player stays grounded
+            float extrusion = offset * (1 + Precision.threshold);
+            bool center_contains = arc_visitor.arc.contains(position, extrusion); // generally, the player stays on the current arc
+            bool left_contains = arc_visitor[-1].contains(position, extrusion); // ocasionally, you switch to the next arc: left...
+            bool right_contains = arc_visitor[+1].contains(position, extrusion); // ... or right
+            return center_contains || left_contains || right_contains; // if left, right, and center do not contain, then derail
         }
 
         /// <summary>
@@ -157,7 +149,6 @@ namespace Planetaria
             cached_position = arc_visitor.arc.position(angular_position, offset);
             cached_normal = arc_visitor.arc.normal(angular_position, offset);
             Debug.DrawRay(cached_position, cached_normal, Color.green);
-            Debug.Log(angular_position + "/" + arc_angle + " of " + arc_visitor + ", length: " + arc_length);
         }
     
         private Transform block_transform;

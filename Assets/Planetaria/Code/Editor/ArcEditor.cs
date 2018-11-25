@@ -74,7 +74,8 @@ namespace Planetaria
         /// Inspector - Draw an arc with lines only (basic)
         /// </summary>
         /// <param name="arc">The arc that will be rendered.</param>
-        public static void draw_simple_arc(Arc arc)
+        /// <param name="extrusion">The distance (radius) to extrude the radial arc.</param>
+        public static void draw_simple_arc(Arc arc, float extrusion = 0)
         {
             float start_angle = -arc.half_angle;
 
@@ -82,7 +83,7 @@ namespace Planetaria
             for (int segment = 1; segment <= segments; ++segment)
             {
                 float end_angle = -arc.half_angle + segment/(float)segments*arc.angle();
-                Debug.DrawLine(arc.position(start_angle), arc.position(end_angle), Color.yellow, 5f);
+                Debug.DrawLine(arc.position(start_angle, extrusion), arc.position(end_angle, extrusion), Color.yellow, 5f);
                 start_angle = end_angle;
             }
         }

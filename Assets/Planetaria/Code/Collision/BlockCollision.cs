@@ -76,7 +76,7 @@ namespace Planetaria
 
         public bool grounded(Vector3 velocity)
         {
-            return geometry_visitor.contains(geometry_visitor.position() + velocity*Time.deltaTime - geometry_visitor.normal()*Precision.threshold);
+            return geometry_visitor.contains(PlanetariaMath.move(geometry_visitor.position(), velocity*Time.deltaTime));
         }
 
         private static bool platform_collision(Arc arc, PlanetariaCollider collider, PlanetariaTransform transformation, PlanetariaRigidbody rigidbody, optional<Vector3> intersection_point)
