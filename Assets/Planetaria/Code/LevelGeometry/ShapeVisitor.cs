@@ -45,6 +45,7 @@ namespace Planetaria
                 initialize();
             }
             float delta_angle = delta_length * (arc_angle/arc_length);
+            Debug.Log(delta_length + " " + delta_angle + " " + angular_position);
             set_position(angular_position + delta_angle);
         }
 
@@ -66,21 +67,27 @@ namespace Planetaria
             return cached_position;
         }
 
-        public bool contains(Vector3 position)
+        public bool contains(Vector3 position) // this is intended for detecting if the PlanetariaRigidbody should derail.
         {
             position.Normalize(); // FIXME ? : this is an approximation
 
             if (block_transform.rotation != Quaternion.identity)
             {
-                position = Quaternion.Inverse(block_transform.rotation)*position;
+                position = Quaternion.Inverse(block_transform.rotation) * position;
             }
 
-            bool underground = offset < 0;
-            bool left_contains = arc_visitor[-1].contains(position, offset);
-            bool center_contains = arc_visitor[0].contains(position, offset);
-            bool right_contains = arc_visitor[+1].contains(position, offset);
+            Debug.Log("Contains running...");
 
-            return underground || left_contains || center_contains || right_contains;
+            if (!arc_visitor.arc.contains(position, offset)) // generally, this will return true
+            {
+                Debug.Log("Possible derail...");
+                bool left_contains = arc_visitor[-1].contains(position, offset); // ocasionally, you switch to the next arc: left...
+                bool right_contains = arc_visitor[+1].contains(position, offset); // ... or right
+                Debug.Log(left_contains + " " + right_contains);
+                return left_contains || right_contains; // if left, right, and center do not contain, then derail
+            }
+            Debug.Log("Everything good...");
+            return true; // more often than not, the player stays grounded
         }
 
         /// <summary>
@@ -108,14 +115,16 @@ namespace Planetaria
                 float extra_length = Mathf.Abs((left_angle_boundary - angular_position) * (arc_length / arc_angle));
                 arc_visitor = arc_visitor.left();
                 initialize(); // re-initialize
-                set_position(right_angle_boundary - extra_length * (arc_angle / arc_length));
+                angular_position = right_angle_boundary;
+                set_position(angular_position - extra_length * (arc_angle / arc_length));
             }
             else if (angular_position > right_angle_boundary)
             {
                 float extra_length = Mathf.Abs((angular_position - right_angle_boundary) * (arc_length / arc_angle));
                 arc_visitor = arc_visitor.right();
                 initialize(); // re-initialize
-                set_position(left_angle_boundary + extra_length * (arc_angle / arc_length));
+                angular_position = left_angle_boundary;
+                set_position(angular_position + extra_length * (arc_angle / arc_length));
             }
             calculate_location();
         }
@@ -148,6 +157,7 @@ namespace Planetaria
             cached_position = arc_visitor.arc.position(angular_position, offset);
             cached_normal = arc_visitor.arc.normal(angular_position, offset);
             Debug.DrawRay(cached_position, cached_normal, Color.green);
+            Debug.Log(angular_position + "/" + arc_angle + " of " + arc_visitor + ", length: " + arc_length);
         }
     
         private Transform block_transform;

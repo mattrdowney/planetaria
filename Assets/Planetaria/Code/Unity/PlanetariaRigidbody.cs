@@ -142,6 +142,8 @@ namespace Planetaria
         {
             if (observer.exists && observer.data.colliding())
             {
+                Debug.Log("Derailing");
+
                 BlockCollision collision = observer.data.collisions()[0];
 
                 collision.geometry_visitor.move_position(0, transform.scale/2 * (1 + 1e-3f)); // extrude the player so they do not accidentally re-collide (immediately) // FIXME: magic number, move to Precision.*

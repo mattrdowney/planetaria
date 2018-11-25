@@ -47,7 +47,7 @@
             index_variable = index;
         }
 
-        public Arc this[int relative_index]
+        public Arc this[int relative_index] // FIXME: this doesn't work with e.g. [0+2] or [0-2] (for single equator arc during a common ShapeVistor operation for corner checks) 
         {
             get
             {
@@ -85,6 +85,11 @@
         public override int GetHashCode() 
         {
             return shape_variable.GetHashCode() ^ index_variable.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return index_variable + "/" + shape_variable.Length + " (" + arc.type + ") of " + shape_variable;
         }
 
         private PlanetariaShape shape_variable;

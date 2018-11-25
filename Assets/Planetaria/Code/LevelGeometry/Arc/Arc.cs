@@ -51,14 +51,18 @@ namespace Planetaria
 
             // TODO: CONSIDER: contains should always returns false when (arc_latitude + extrusion) < -Mathf.PI/2 // (?) && GeometryType.ConcaveCorner (i.e. above ground)
 
-            bool above_floor = Mathf.Asin(Vector3.Dot(position, center_axis)) >= arc_latitude + Mathf.Min(extrusion, 0); // TODO: verify - potential bug?
-            bool below_ceiling = Mathf.Asin(Vector3.Dot(position, center_axis)) <= arc_latitude + Mathf.Max(extrusion, 0);
+            bool underground = extrusion < 0;
+
+            bool above_floor = Mathf.Asin(Vector3.Dot(position, center_axis)) >= arc_latitude; // TODO: verify - potential bug?
+            bool below_ceiling = Mathf.Asin(Vector3.Dot(position, center_axis)) <= arc_latitude + extrusion;
             bool correct_latitude = above_floor && below_ceiling;
 
             float angle = position_to_angle(position, extrusion);
             bool correct_angle = Mathf.Abs(angle) <= half_angle;
 
-            return correct_latitude && correct_angle;
+            bool arc_contains = correct_latitude && correct_angle;
+
+            return underground || arc_contains;
         }
 
         public Vector3 end(float extrusion = 0f)
@@ -88,7 +92,8 @@ namespace Planetaria
         /// <returns>The arc length.</returns>
         public float length(float extrusion = 0f)
         {
-            return Mathf.Abs(angle() * Mathf.Cos(arc_latitude + extrusion));
+            float radius = Mathf.Abs(Mathf.Cos(arc_latitude + extrusion)); //Mathf.Sin(arc_latitude + extrusion + Mathf.PI/2);
+            return angle() * radius; // circumference = 2*PI*radius, sector_length = theta*radius
         }
 
         /// <summary>
