@@ -74,16 +74,18 @@ namespace Planetaria
         /// Inspector - Draw an arc with lines only (basic)
         /// </summary>
         /// <param name="arc">The arc that will be rendered.</param>
-        /// <param name="extrusion">The distance (radius) to extrude the radial arc.</param>
-        public static void draw_simple_arc(Arc arc, float extrusion = 0)
+        /// <param name="distance">The distance of the arc, negative or positive (overrides actual distance).</param>
+        public static void draw_simple_arc(Arc arc, optional<float> distance = new optional<float>())
         {
             float start_angle = -arc.half_angle;
+
+            float angle = distance.exists ? distance.data : arc.angle();
 
             int segments = 50;
             for (int segment = 1; segment <= segments; ++segment)
             {
-                float end_angle = -arc.half_angle + segment/(float)segments*arc.angle();
-                Debug.DrawLine(arc.position(start_angle, extrusion), arc.position(end_angle, extrusion), Color.yellow, 5f);
+                float end_angle = -arc.half_angle + segment/(float)segments*angle;
+                Debug.DrawLine(arc.position(start_angle), arc.position(end_angle), Color.yellow, 5f);
                 start_angle = end_angle;
             }
         }
