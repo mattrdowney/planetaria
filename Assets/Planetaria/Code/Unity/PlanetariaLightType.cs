@@ -10,6 +10,7 @@ namespace Planetaria
 	{
         PoleLight,
         SectorLight,
+        ArcLight,
 	}
 }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using UnityEngine;
 
 namespace Planetaria
@@ -10,6 +11,19 @@ namespace Planetaria
 	public sealed class PlanetariaLight : PlanetariaComponent
 	{
 		// Properties (Public)
+
+        public SerializedArc arc
+        {
+            get
+            {
+                return arc_variable;
+            }
+            set
+            {
+                arc_variable = value;
+                on_arc_light_changed();
+            }
+        }
 
         /// <summary>The color of the light.</summary>
         public Color color
@@ -34,6 +48,17 @@ namespace Planetaria
             set
             {
                 cuculoris_variable = value;
+                on_pole_light_changed();
+                on_sector_light_changed();
+                on_arc_light_changed();
+                // NOTE: arc light cuculoris could exist. It is currently very difficult (I think?) due to Unity limitations.
+                // arc light cuculoris is defined as a cuculoris along the length of the arc projected perpendicular.
+                // you can have two rows of pixels, one for the top of the arc and the other for the bottom.
+                // Even if I didn't have the current cookie uniform scale issue, the cookie would have to be used symmetrically along the arc
+                // This is because the directional light projects on the front and back hemispheres according to the same secant line.
+                // Notably, the curvature of the arc changes from left to right, so a internal_cookie constructor needs:
+                // 1) a N*N texture instead of a 2*N texture and
+                // 2) to account for horizontal distance along the sphere's "equator" 
             }
         }
 
@@ -73,6 +98,9 @@ namespace Planetaria
             set
             {
                 range_variable = value;
+                on_pole_light_changed();
+                on_sector_light_changed();
+                on_arc_light_changed();
             }
         }
 
@@ -86,6 +114,7 @@ namespace Planetaria
             set
             {
                 sector_angle_variable = value;
+                on_sector_light_changed();
             }
         }
 
@@ -104,6 +133,9 @@ namespace Planetaria
             set
             {
                 type_variable = value;
+                on_pole_light_changed();
+                on_sector_light_changed();
+                on_arc_light_changed();
             }
         }
 
@@ -113,7 +145,7 @@ namespace Planetaria
 
             // FIXME: missing all UnityEngine.Light public methods
 
-        public static Texture2D lighting_function(float light_field_of_view, int resolution = 1024)
+        public static Texture2D create_pole_texture(float light_field_of_view, int resolution = 1024) // TODO: add light_lambda(range, angle, /*cuculoris*/ pixel_mask)
         {
             Texture2D light_cuculoris = new Texture2D(resolution, resolution);
             Color32[] pixels = new Color32[light_cuculoris.width*light_cuculoris.height];
@@ -168,6 +200,36 @@ namespace Planetaria
             light_cuculoris.Apply();
             return light_cuculoris;
         }
+
+        public static Texture2D create_arc_texture(Arc arc, float range, int resolution = 1024) // TODO: add light_lambda(range, angle, /*cuculoris*/ pixel_mask) same as pole light
+        {
+            float average_latitude = arc.arc_latitude;
+            float min_latitude = Mathf.Max(average_latitude - range, -Mathf.PI);
+            float max_latitude = Mathf.Min(average_latitude + range, +Mathf.PI);
+
+            float min_y = Mathf.Sin(min_latitude);
+            float max_y = Mathf.Sin(max_latitude);
+            float y_range = max_y - min_y;
+            //float average_y = (min_y + max_y) / 2;
+
+            Texture2D light_cuculoris = new Texture2D(2, resolution, TextureFormat.RGBA32, false); // mipmaps create artifacts because the left/top/bottom pixels should always be Color.clear so there is no lighting
+            light_cuculoris.wrapMode = TextureWrapMode.Clamp; // if you don't do this, the light effect will "repeat"
+            Color32[] pixels = Enumerable.Repeat(new Color32(0,0,0,0), 2*resolution).ToArray();
+            for (int row = 1; row <= (resolution-1) - 1; ++row) // calculate lighting function for column=2, row=2...n-1 // The left/top/bottom pixels need to be clear so UV clamping for the cuculoris renders the light as black instead
+            {
+                float y_ratio = (row+0.5f)/resolution;
+                float y = max_y - y_ratio*y_range;
+                float latitude = Mathf.Asin(y);
+                float angle = Mathf.Abs(latitude - average_latitude);
+
+                float ratio = Mathf.Clamp(angle/range, 0, 1); // TODO: different function
+                byte intensity_color = (byte) Mathf.CeilToInt((1f-ratio)*byte.MaxValue);
+                pixels[2*row + 1] = new Color32(0, 0, 0, intensity_color);
+            }
+            light_cuculoris.SetPixels32(pixels);
+            light_cuculoris.Apply();
+            return light_cuculoris;
+        }
     	
         // Methods (non-Public)
 
@@ -178,13 +240,71 @@ namespace Planetaria
             {
                 internal_light = Miscellaneous.GetOrAddComponent<Light>(game_object);
             }
+            if (internal_transform == null)
+            {
+                internal_transform = Miscellaneous.GetOrAddComponent<Transform>(game_object);
+            }
             internal_light.range = 1000f; // FIXME: magic number: Setting light ranges to float.MaxValue does not work; the max range for SpotLights is a lot worse than PointLights.
             internal_light.shadows = LightShadows.None;
+            on_pole_light_changed();
+            on_sector_light_changed();
+            on_arc_light_changed();
+        }
+
+        private void initialize_pole_light(optional<float> angle = new optional<float>())
+        {
             internal_light.type = LightType.Spot;
             internal_light.spotAngle = (range * 2) * Mathf.Rad2Deg;
-            internal_cuculoris = lighting_function(internal_light.spotAngle);
-            cuculoris.apply_to(ref internal_cuculoris, sectorAngle);
+            internal_cuculoris = create_pole_texture(internal_light.spotAngle);
+            cuculoris.apply_to(ref internal_cuculoris, angle.exists ? angle.data : 2*Mathf.PI);
             internal_light.cookie = internal_cuculoris;
+            internal_transform.position = Vector3.zero;
+            internal_transform.rotation = Quaternion.identity;
+        }
+
+        private void initialize_arc_light()
+        {
+            internal_light.type = LightType.Directional;
+
+            float average_latitude = arc.arc_latitude; // TODO: Keep it DRY (Do not Repeat Yourself) - create_arc_texture()
+            float min_latitude = Mathf.Max(average_latitude - range, -Mathf.PI);
+            float max_latitude = Mathf.Min(average_latitude + range, +Mathf.PI);
+
+            float min_y = Mathf.Sin(min_latitude);
+            float max_y = Mathf.Sin(max_latitude);
+            float y_range = max_y - min_y;
+
+            internal_light.cookieSize = y_range/2;
+            internal_cuculoris = create_arc_texture(arc, range);
+            //cuculoris.apply_to_arc(ref internal_cuculoris, angle.exists ? angle.data : 2*Mathf.PI); // FIXME: this function call shouldn't exist, the cuculoris should be passed into a separate function and be used as part of a lambda.
+            internal_light.cookie = internal_cuculoris;
+            Arc arc_light = arc;
+            internal_transform.position = arc_light.begin();
+            internal_transform.rotation = Quaternion.LookRotation(arc_light.end()-arc_light.begin(), arc_light.center_axis);
+        }
+
+        private void on_arc_light_changed()
+        {
+            if (type_variable == PlanetariaLightType.ArcLight)
+            {
+                initialize_arc_light();
+            }
+        }
+
+        private void on_pole_light_changed()
+        {
+            if (type_variable == PlanetariaLightType.PoleLight)
+            {
+                initialize_pole_light();
+            }
+        }
+
+        private void on_sector_light_changed()
+        {
+            if (type_variable == PlanetariaLightType.SectorLight)
+            {
+                initialize_pole_light(sectorAngle);
+            }
         }
 
 		// Messages (non-Public)
@@ -203,6 +323,7 @@ namespace Planetaria
 
         // Variables (Public)
         
+        [SerializeField] private SerializedArc arc_variable;
         [SerializeField] private PlanetariaCuculoris cuculoris_variable; // this is technically a part of the public interface (because it is shown in the editor)
 		[SerializeField] private Color color_variable = Color.white;
         [SerializeField] private int culling_mask_variable = 0;
@@ -213,6 +334,7 @@ namespace Planetaria
 
 		// Variables (non-Public)
         
+        [SerializeField] [HideInInspector] private Transform internal_transform;
         [SerializeField] [HideInInspector] private Texture2D internal_cuculoris;
         [SerializeField] [HideInInspector] private Light internal_light; // CONSIDER: use an array of UnityEngine.Light? - most likely no, since that could be added in the child class if necessary
 	}
