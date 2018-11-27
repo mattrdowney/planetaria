@@ -279,8 +279,8 @@ namespace Planetaria
             //cuculoris.apply_to_arc(ref internal_cuculoris, angle.exists ? angle.data : 2*Mathf.PI); // FIXME: this function call shouldn't exist, the cuculoris should be passed into a separate function and be used as part of a lambda.
             internal_light.cookie = internal_cuculoris;
             Arc arc_light = arc;
-            internal_transform.position = arc_light.begin();
-            internal_transform.rotation = Quaternion.LookRotation(arc_light.end()-arc_light.begin(), arc_light.center_axis);
+            internal_transform.position = arc_light.end(); // ORDER DEPENDENCY (begin/end cannot be swapped).
+            internal_transform.rotation = Quaternion.LookRotation(arc_light.begin()-arc_light.end(), arc_light.center_axis); // FIXME: the light should cutoff after the begin/end of arc (but it doesn't seem to)
         }
 
         private void on_arc_light_changed()
