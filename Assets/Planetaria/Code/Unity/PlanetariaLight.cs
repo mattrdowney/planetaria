@@ -214,6 +214,9 @@ namespace Planetaria
 
             Texture2D light_cuculoris = new Texture2D(2, resolution, TextureFormat.RGBA32, false); // mipmaps create artifacts because the left/top/bottom pixels should always be Color.clear so there is no lighting
             light_cuculoris.wrapMode = TextureWrapMode.Clamp; // if you don't do this, the light effect will "repeat"
+            light_cuculoris.filterMode = FilterMode.Point;
+            // TODO: RESEARCH: removing this line creates magic! //light_cuculoris.filterMode = FilterMode.Point; // Prevent blending adjacent pixels (which causes similar errors to the ones created by mipmaps)
+            // I understand how this created smooth lighting, although using this requires some finesse (you have to take the ratio of arc.length()/radius and use that to figure out the number of pixel columns (instead of just using 2))
             Color32[] pixels = Enumerable.Repeat(new Color32(0,0,0,0), 2*resolution).ToArray();
             for (int row = 1; row <= (resolution-1) - 1; ++row) // calculate lighting function for column=2, row=2...n-1 // The left/top/bottom pixels need to be clear so UV clamping for the cuculoris renders the light as black instead
             {
@@ -274,7 +277,7 @@ namespace Planetaria
             float max_y = Mathf.Sin(max_latitude);
             float y_range = max_y - min_y;
 
-            internal_light.cookieSize = y_range/2;
+            internal_light.cookieSize = y_range;
             internal_cuculoris = create_arc_texture(arc, range);
             //cuculoris.apply_to_arc(ref internal_cuculoris, angle.exists ? angle.data : 2*Mathf.PI); // FIXME: this function call shouldn't exist, the cuculoris should be passed into a separate function and be used as part of a lambda.
             internal_light.cookie = internal_cuculoris;
