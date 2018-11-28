@@ -8,7 +8,7 @@
 
 	SubShader
 	{
-		Tags { "Queue" = "AlphaTest" "RenderType" = "TransparentCutout" } // CONSIDER: transparent cutout should almost definitely be used // FIXME: optimize queue usage to avoid rendering since this is ZTest Always
+		Tags { "Queue" = "Geometry" "RenderType" = "TransparentCutout" } // CONSIDER: transparent cutout should almost definitely be used
 		LOD 100
 		Cull Off
 

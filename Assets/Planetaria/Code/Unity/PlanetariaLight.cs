@@ -10,6 +10,53 @@ namespace Planetaria
     [Serializable]
 	public sealed class PlanetariaLight : PlanetariaComponent
 	{
+        // TODO:
+        // Transfer current lighting model to UnityEngine.Light.DirectionalLight only (default).
+        // With a second option for UnityEngine.Light.Spotlight on pole/sector lights.
+        // I should assume ForwardRendering is used by default, but attempt to make DeferredRendering fast as well.
+        // This ignores the possibility of users attempting baked lighting and adding light probes for dynamic objects.
+        
+        // Directional lights are relatively cheap and have some interesting applications.
+        // Planetaria will probably be used for several games that have a sun at Vector3.up, and the assumption is that light...
+        // ... should be able to go from Vector3.up to Vector3.down (without stopping at the equator).
+        // In this case, using a shader lighting function that compares dot_product(light_direction, geometry_normal) <= 0"
+        // Determines the direction of the light (essentially for extra clipping).
+        // This means for the sun at Vector3.up you can have two directional lights (one facing up and one facing down)
+        // That create light for the entire globe.
+        // 
+        // For the case of the arc light:
+        // Arc lights can be rendered as two symmetric half arcs.
+        // Normally, the light passes through the planetarium and lights both hemispheres
+        // But with the clipping function, you can omit light rays that are out-of-bounds
+        // This means you can actually use PlanetariaCuculoris to define the lighting function.
+        // The built-in cuculoris should be used for the light "caps" at the beginning and end of the arc.
+        // Notably, the left of the texture is begin and the right of the texture is end.
+        // Then two additional cuculoris are provided that represent the top and bottom of the arc as a radial sweep.
+        // There's some logic related to the boundary computation of the arc (especially when arc_length=2*PI or the arc is far from the equator with a large radius, but those are easy-ish to solve)
+        // A simple non-cuculoris arc light will still be very fast, since you only need to compute a quick ~2*N texture (although you need two directional lights instead of one because the shader changed).
+        // That's about it, but I think this represents the *almost* final CPU version (obviously doing things on the GPU would be better).
+
+        // Additional Findings:
+        // Arc lights can actually use 1 to (2 or 3) directional lights.
+        // I think the algorithm should compare min(2*range + arc.length(), 2*PI) to 1/3*(2PI) and 2/3*(2PI) to determine the number of lights.
+        // I could use 2 lights max, but that would result in a lot of imprecision errors.
+        // Another interesting side effect of switching to new algorithms is that the arc light algorithm should point at the center of the range its rendering.
+        // The current algorithm starts from begin/end, which is sub-optimal in terms of error bounds.
+        // Instead, the centerpoints should be used (for a small arc (i.e. < 2/3PI) the directional light should point at the center of the arc.
+        // Additionally, using directional lights like this makes more sense than the original concept.
+        // This is because the old concept was like taking a sphere and pointing a light at it from the outside.
+        // The new concept uses directional lights pointing from the center of the sphere (which fits the planetaria concept better).
+        // (To be fair, directional lights cannot actually point from the center of the sphere, since they are from a point at infinity.)
+        // I believe the directional light still runs into the same issues of imprecision, so spot lights would work better when low-poly planetariums (e.g. octahedron) are used.
+        
+        // I think the resolution should generally cap at 256, this is because there are 256 possible alpha values, so generally the lighting function doesn't need more.
+        // Thus, for point and sector lights, the internal_cuculoris will generally be 256*256 (width*height).
+        // For arc lights, the resolution should aim for ~2*256 when no cuculoris is present (current algorithm)
+        // For arc lights with a PlanetariaCuculoris, the resolution should aim for N*256 (where N would often exceed 256) - note there would be up to three directional lights.
+        // (As an aside, I'm really hoping the seams between directional lights composing a single arc light don't have terrible artifacts.
+        // I think because vertex and pixel shading functions are used it will be fine, but I can imagine both light doubling and total darkness at the seam.)
+        // That's probably it for now. No idea when this will be implemented (it's not a priority until after Debris Noirs).
+
 		// Properties (Public)
 
         public SerializedArc arc
@@ -145,7 +192,7 @@ namespace Planetaria
 
             // FIXME: missing all UnityEngine.Light public methods
 
-        public static Texture2D create_pole_texture(float light_field_of_view, int resolution = 1024) // TODO: add light_lambda(range, angle, /*cuculoris*/ pixel_mask)
+        public static Texture2D create_pole_texture(float light_field_of_view, int resolution = 256) // TODO: add light_lambda(range, angle, /*cuculoris*/ pixel_mask)
         {
             Texture2D light_cuculoris = new Texture2D(resolution, resolution);
             Color32[] pixels = new Color32[light_cuculoris.width*light_cuculoris.height];
@@ -201,7 +248,7 @@ namespace Planetaria
             return light_cuculoris;
         }
 
-        public static Texture2D create_arc_texture(Arc arc, float range, int resolution = 1024) // TODO: add light_lambda(range, angle, /*cuculoris*/ pixel_mask) same as pole light
+        public static Texture2D create_arc_texture(Arc arc, float range, int resolution = 256) // TODO: add light_lambda(range, angle, /*cuculoris*/ pixel_mask) same as pole light
         {
             float average_latitude = arc.arc_latitude;
             float min_latitude = Mathf.Max(average_latitude - range, -Mathf.PI);
@@ -214,7 +261,7 @@ namespace Planetaria
 
             Texture2D light_cuculoris = new Texture2D(2, resolution, TextureFormat.RGBA32, false); // mipmaps create artifacts because the left/top/bottom pixels should always be Color.clear so there is no lighting
             light_cuculoris.wrapMode = TextureWrapMode.Clamp; // if you don't do this, the light effect will "repeat"
-            light_cuculoris.filterMode = FilterMode.Point;
+            light_cuculoris.filterMode = FilterMode.Bilinear; // FIXME: later, but this is good enough for now
             // TODO: RESEARCH: removing this line creates magic! //light_cuculoris.filterMode = FilterMode.Point; // Prevent blending adjacent pixels (which causes similar errors to the ones created by mipmaps)
             // I understand how this created smooth lighting, although using this requires some finesse (you have to take the ratio of arc.length()/radius and use that to figure out the number of pixel columns (instead of just using 2))
             Color32[] pixels = Enumerable.Repeat(new Color32(0,0,0,0), 2*resolution).ToArray();
