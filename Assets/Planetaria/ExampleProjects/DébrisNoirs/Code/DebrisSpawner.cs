@@ -34,7 +34,7 @@ public class DebrisSpawner : PlanetariaMonoBehaviour
                     break;
                 }
             }
-            if (seconds >= 5)
+            if (seconds >= 1)
             {
                 spawn_debris();
                 seconds = 0;

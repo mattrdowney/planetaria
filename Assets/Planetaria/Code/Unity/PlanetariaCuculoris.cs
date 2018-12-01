@@ -95,6 +95,7 @@ namespace Planetaria
             {
                 return Color.clear;
             }
+            // FIXME: Texture2D.GetPixelBilinear(angle/total_angle + 0.5f, 0); // things get jagged if you don't add this
             int pixel_index = get_closest_pixel_index(angle, total_angle);
             return cuculoris_pixels[pixel_index]; // return the nearest pixel found
         }

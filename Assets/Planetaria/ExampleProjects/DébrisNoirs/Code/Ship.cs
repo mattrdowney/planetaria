@@ -13,6 +13,7 @@ public class Ship : PlanetariaMonoBehaviour
         planetaria_collider = this.GetComponent<PlanetariaCollider>();
         planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
         planetaria_renderer = this.GetComponent<AreaRenderer>();
+        lidar = this.transform.Find("Lidar").gameObject.internal_game_object.transform;
         transform.direction = new NormalizedCartesianCoordinates(Vector3.up);
         transform.localScale = +0.1f;
         planetaria_collider.shape = PlanetariaShape.Create(+0.1f/2);
@@ -28,6 +29,8 @@ public class Ship : PlanetariaMonoBehaviour
         horizontal = Input.GetAxisRaw("OSVR_ThumbAxisX");
         vertical = Input.GetAxisRaw("OSVR_ThumbAxisY");
 #endif
+        lidar.transform.localRotation = Quaternion.Euler(0, 0, -360*Time.time); // FIXME: floating-point bug
+
         Vector2 input_direction = new Vector2(horizontal, vertical);
         if (input_direction.sqrMagnitude > 1) // FIXME: doesn't work for unbounded input types
         {
@@ -79,6 +82,7 @@ public class Ship : PlanetariaMonoBehaviour
     [NonSerialized] private PlanetariaCollider planetaria_collider;
     [NonSerialized] private AreaRenderer planetaria_renderer;
     [NonSerialized] private PlanetariaRigidbody planetaria_rigidbody;
+    [NonSerialized] private Transform lidar;
     [NonSerialized] private float horizontal;
     [NonSerialized] private float vertical;
 }
