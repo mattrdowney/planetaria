@@ -5,7 +5,7 @@ namespace Planetaria
 {
     public class TessellatedMesh
     {
-        public static Mesh[] generate(Mesh mesh, int triangle_budget, int minimum_chunks = 1, bool triangle_strip = false)
+        public static Mesh[] generate(Mesh mesh, int triangle_budget, int minimum_chunks = 1)
         {
             int triangles = mesh.triangles.Length/3;
             if (minimum_chunks < 1 || triangle_budget < triangles)
@@ -16,7 +16,7 @@ namespace Planetaria
             for (int triangle = 0; triangle < triangles; triangle += 1)
             {
                 // TODO create chunks: TessellatedTriangle call with triangle chunk size, then tessellate those triangles and add them to result
-                result.Add(TessellatedTriangle.generate(mesh, triangle, triangle_budget/triangles, triangle_strip));
+                result.Add(TessellatedTriangle.generate(mesh, triangle, triangle_budget/triangles));
             }
             CombineInstance[] mesh_combiner = new CombineInstance[result.Count];
             for (int submesh = 0; submesh < result.Count; submesh += 1)

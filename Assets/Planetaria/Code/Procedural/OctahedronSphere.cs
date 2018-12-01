@@ -7,7 +7,7 @@ namespace Planetaria
     {
         public static Mesh generate(int triangle_budget)
         {
-            return TessellatedMesh.generate(Octahedron.octahedron_mesh(), triangle_budget, 1, true)[0];
+            return TessellatedMesh.generate(Octahedron.octahedron_mesh(), triangle_budget, 1)[0];
         }
     }
 }

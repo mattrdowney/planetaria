@@ -6,7 +6,7 @@ namespace Planetaria
 {
     public class TessellatedTriangle
     {
-        public static Mesh generate(Mesh mesh, int triangle, int triangle_budget, bool triangle_strip = false)
+        public static Mesh generate(Mesh mesh, int triangle, int triangle_budget)
         {
             Debug.Log(triangle_budget);
             if (triangle_budget <= 0)
@@ -79,31 +79,27 @@ namespace Planetaria
                 }
             }
             List<Vector2> flipped_interpolators = new List<Vector2>();
-            if (triangle_strip == false)
+            for (int triangle_index = 0; triangle_index < interpolators.Count; triangle_index += 3)
             {
-                for (int triangle_index = 0; triangle_index < interpolators.Count; triangle_index += 3)
+                // flip triangle vertices
+                Vector2 interpolator_a = interpolators[triangle_index + 0];
+                Vector2 interpolator_b = interpolators[triangle_index + 1];
+                Vector2 interpolator_c = interpolators[triangle_index + 2];
+                Vector3 a = interpolated_vertex(interpolator_a);
+                Vector3 b = interpolated_vertex(interpolator_b);
+                Vector3 c = interpolated_vertex(interpolator_c);
+                Vector3 ba_vector = b - a;
+                Vector3 cb_vector = c - b;
+                Vector3 triangle_direction = Vector3.Cross(ba_vector, cb_vector);
+                bool cull_triangle = Vector3.Dot(triangle_direction, a) > 0;
+                if (cull_triangle)
                 {
-                    // flip triangle vertices
-                    Vector2 interpolator_1 = interpolators[triangle_index + 0];
-                    Vector2 interpolator_2 = interpolators[triangle_index + 1];
-                    Vector2 interpolator_3 = interpolators[triangle_index + 2];
-                    Vector3 ba_vector = interpolator_2 - interpolator_1;
-                    Vector3 cb_vector = interpolator_3 - interpolator_2;
-                    Vector3 triangle_direction = Vector3.Cross(ba_vector, cb_vector);
-                    bool cull_triangle = Vector3.Dot(triangle_direction, interpolator_1) < 0;
-                    if (cull_triangle)
-                    {
-                        flipped_interpolators.AddRange(new List<Vector2> { interpolator_3, interpolator_2, interpolator_1 }); // flip 1 and 3
-                    }
-                    else
-                    {
-                        flipped_interpolators.AddRange(new List<Vector2> { interpolator_1, interpolator_2, interpolator_3 });
-                    }
+                    flipped_interpolators.AddRange(new List<Vector2> { interpolator_c, interpolator_b, interpolator_a }); // flip 1 and 3
                 }
-            }
-            else
-            {
-                flipped_interpolators = interpolators;
+                else
+                {
+                    flipped_interpolators.AddRange(new List<Vector2> { interpolator_a, interpolator_b, interpolator_c });
+                }
             }
             List<int> triangle_set = new List<int>();
             List<Vector2> uv_set = new List<Vector2>();
@@ -116,7 +112,7 @@ namespace Planetaria
             }
             Mesh result = new Mesh();
             result.vertices = vertex_set.ToArray();
-            result.uv = uv_set.ToArray();
+            result.uv = uv_set.ToArray(); // TODO: CONSIDER: find UVs through SphericalBarycentricCoordinates (might level out the approximation issue at low resolutions)
             result.normals = vertex_set.Select(direction => -direction).ToArray(); // The normals are inside-out.
             result.triangles = triangle_set.ToArray();
             result.RecalculateBounds();
