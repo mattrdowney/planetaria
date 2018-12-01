@@ -29,6 +29,26 @@ namespace Planetaria
             PlanetariaCache.self.uncache(this);
         }
 
+        protected override void OnEnable()
+        {
+            this.
+                transform.
+                Find("__InternalCollider").
+                gameObject.
+                internal_game_object.
+                SetActive(true);
+        }
+
+        protected override void OnDisable()
+        {
+            this.
+                transform.
+                Find("__InternalCollider").
+                gameObject.
+                internal_game_object.
+                SetActive(false);
+        }
+
         private void initialize()
         {
             GameObject game_object = this.GetOrAddChild("InternalCollider");

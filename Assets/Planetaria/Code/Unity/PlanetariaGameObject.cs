@@ -83,6 +83,12 @@ namespace Planetaria
         {
             return new PlanetariaGameObject(game_object);
         }
+        
+        public static explicit operator PlanetariaGameObject(PlanetariaComponent component)
+        {
+            MonoBehaviour unity_base = component as MonoBehaviour;
+            return new PlanetariaGameObject(unity_base.gameObject);
+        }
 
         // Public Methods
         public Subtype AddComponent<Subtype>() where Subtype : PlanetariaComponent
@@ -108,12 +114,6 @@ namespace Planetaria
         public Subtype GetComponentInParent<Subtype>() where Subtype : PlanetariaComponent
         {
             return internal_game_object.GetComponentInParent<Subtype>();
-        }
-
-        public static explicit operator PlanetariaGameObject(PlanetariaComponent component)
-        {
-            MonoBehaviour unity_base = component;
-            return new PlanetariaGameObject(unity_base.gameObject);
         }
 
         /// <summary>

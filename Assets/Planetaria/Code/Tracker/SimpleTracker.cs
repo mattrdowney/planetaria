@@ -13,7 +13,7 @@ namespace Planetaria
             last_position = target.position.data;
         }
 
-        public override void step()
+        public override void step() // FIXME: move this code into PlanetariaTransform, for simplicity sake (because this would be a headache for most programmers)
         {
             if (last_position != target.position.data)
             {

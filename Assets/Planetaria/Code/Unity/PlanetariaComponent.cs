@@ -1,24 +1,20 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Planetaria
 {
     [RequireComponent(typeof(PlanetariaTransform))] // TODO: CHECK: How does this work with PlanetariaTransform? Infinite loop?
     public abstract class PlanetariaComponent : MonoBehaviour
     {
-        protected virtual void Awake()
-        {
-            if (!game_object_variable)
-            {
-                game_object_variable = (PlanetariaGameObject) this;
-            }
-        }
+        protected virtual void Awake() { }
 
         protected virtual void OnDestroy() { } // TODO: OnDestroy() no longer needs to be declared as empty in other files.
 
-        protected virtual void Reset()
-        {
-            game_object_variable = (PlanetariaGameObject) this;
-        }
+        protected virtual void OnEnable() { }
+
+        protected virtual void OnDisable() { }
+
+        protected virtual void Reset() { }
 
         public new PlanetariaTransform transform
         {
@@ -27,7 +23,15 @@ namespace Planetaria
 
         public new PlanetariaGameObject gameObject
         {
-            get { return game_object_variable; }
+            get
+            {
+                if (!initialized)
+                {
+                    game_object_variable = (PlanetariaGameObject) this;
+                }
+                return (PlanetariaGameObject) this;
+                //return game_object_variable;
+            }
         }
 
         public Subtype AddComponent<Subtype>() where Subtype : PlanetariaComponent // mostly boilerplate code
@@ -70,6 +74,7 @@ namespace Planetaria
             return gameObject.internal_game_object.GetComponentsInParent<Subtype>();
         }
 
+        [SerializeField] [HideInInspector] private bool initialized; // optional<PlanetariaGameObject> didn't work
         [SerializeField] [HideInInspector] private PlanetariaGameObject game_object_variable; // FIXME: bug when switching Component from GameObject1 to GameObject2 (reference improperly held).
     }
 }

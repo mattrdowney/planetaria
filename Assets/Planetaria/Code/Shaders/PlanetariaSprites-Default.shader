@@ -1,6 +1,6 @@
 ﻿// Unity built-in shader source. Copyright (c) 2016 Unity Technologies. MIT license (see license.txt) - with modifications
 
-Shader "Planetaria/PlanetariaSprite"
+Shader "Planetaria/PlanetariaSprites/Default"
 {
 	Properties
 	{
@@ -37,7 +37,7 @@ Shader "Planetaria/PlanetariaSprite"
 
 			half4 LightingTwoDimensional(SurfaceOutput surface, half3 light_direction, half attenuation)
 			{
-				half light_value = sign(dot(surface.Normal, light_direction))*0.5 + 0.5;
+				half light_value = sign(dot(surface.Normal, light_direction))*0.5 + 0.5; // NOTE: sign can return -1, +1, OR 0 (intended)
 				half4 result;
 				result.rgb = surface.Albedo * _LightColor0.rgb * light_value * attenuation;
 				result.a = surface.Alpha;

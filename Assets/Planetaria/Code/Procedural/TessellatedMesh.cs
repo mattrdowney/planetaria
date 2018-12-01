@@ -22,10 +22,9 @@ namespace Planetaria
             for (int submesh = 0; submesh < result.Count; submesh += 1)
             {
                 mesh_combiner[submesh].mesh = result[submesh];
-                mesh_combiner[submesh].transform = Matrix4x4.identity;
             }
             Mesh combined_result = new Mesh();
-            combined_result.CombineMeshes(mesh_combiner);
+            combined_result.CombineMeshes(mesh_combiner, true, false);
             return new Mesh[] { combined_result };
         }
     }

@@ -13,7 +13,15 @@ namespace Planetaria
             initialize();
         }
 
-        protected override void OnDestroy() { }
+        protected override void OnEnable()
+        {
+            //this.transform.Find("__Renderer").gameObject.internal_game_object.SetActive(true);
+        }
+
+        protected override void OnDisable()
+        {
+            //this.transform.Find("__Renderer").gameObject.internal_game_object.SetActive(false);
+        }
 
         protected override sealed void Reset()
         {
@@ -119,7 +127,7 @@ namespace Planetaria
 
         [SerializeField] public float offset = 1;
 
-        protected static short next_available_order(int layer_identifier)
+        protected static short next_available_order(int layer_identifier) // TODO: remove this
         {
             short order = order_identifier;
             if (order == short.MaxValue)

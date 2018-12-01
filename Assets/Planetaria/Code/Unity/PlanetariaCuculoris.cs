@@ -27,8 +27,7 @@ namespace Planetaria
 		// Methods (Public)
 
         public void apply_to(ref Texture2D lightmap, float total_angle = 2*Mathf.PI)
-        {
-            cache();            
+        {         
             Color[] lightmap_pixels = lightmap.GetPixels();
             int pixel = 0;
             Vector2 center = new Vector2((lightmap.width-1)/2, (lightmap.height-1)/2);
@@ -56,17 +55,6 @@ namespace Planetaria
 
         // Methods (non-Public)
 
-        private void cache()
-        {
-            if (one_dimensional_cuculoris == null)
-            {
-                one_dimensional_cuculoris = new Texture2D(1,1);
-                one_dimensional_cuculoris.SetPixels32(new Color32[] { Color.white });
-            }
-            cuculoris_pixels = one_dimensional_cuculoris.GetPixels32();
-            // CONSIDER: I don't think the RGB components matter here (no need to reset them to zero).
-        }
-
         private int get_closest_pixel_index(float angle, float total_angle)
         {
             if (Mathf.Abs(angle) > total_angle/2)
@@ -89,24 +77,18 @@ namespace Planetaria
             return (ratio - 0.5f)*total_angle;
         }
 
-        private Color32 get_color(float angle, float total_angle)
+        private Color get_color(float angle, float total_angle)
         {
             if (Mathf.Abs(angle) > total_angle/2) // for sector lights when the angle is outside of the light's field of view
             {
                 return Color.clear;
             }
-            // FIXME: Texture2D.GetPixelBilinear(angle/total_angle + 0.5f, 0); // things get jagged if you don't add this
-            int pixel_index = get_closest_pixel_index(angle, total_angle);
-            return cuculoris_pixels[pixel_index]; // return the nearest pixel found
+            return one_dimensional_cuculoris.GetPixelBilinear(angle/total_angle + 0.5f, 0); // things get jagged if you don't add this
         }
 
 		// Variables (Public)
 		
         [SerializeField] public Texture2D one_dimensional_cuculoris; // FIXME: OnValidate() // this is a functionally-1D (width only of 1st row)
-        
-        // Variables (non-Public)
-		
-        [NonSerialized] private Color32[] cuculoris_pixels;
 	}
 }
 

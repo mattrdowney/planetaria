@@ -22,61 +22,89 @@ public class Ship : PlanetariaMonoBehaviour
 
     private void Update()
     {
+        if (!dead || respawn_time < 5f)
+        {
 #if UNITY_EDITOR
-        horizontal = Input.GetAxisRaw("Horizontal");
-        vertical = Input.GetAxisRaw("Vertical");
+            horizontal = Input.GetAxisRaw("Horizontal");
+            vertical = Input.GetAxisRaw("Vertical");
 #else
-        horizontal = Input.GetAxisRaw("OSVR_ThumbAxisX");
-        vertical = Input.GetAxisRaw("OSVR_ThumbAxisY");
+            horizontal = Input.GetAxisRaw("OSVR_ThumbAxisX");
+            vertical = Input.GetAxisRaw("OSVR_ThumbAxisY");
 #endif
-        lidar.transform.localRotation = Quaternion.Euler(0, 0, -360*Time.time); // FIXME: floating-point bug
+            lidar.transform.localRotation = Quaternion.Euler(0, 0, lidar.transform.localEulerAngles.z - 1080f * Time.deltaTime);
 
-        Vector2 input_direction = new Vector2(horizontal, vertical);
-        if (input_direction.sqrMagnitude > 1) // FIXME: doesn't work for unbounded input types
-        {
-            input_direction.Normalize();
+            Vector2 input_direction = new Vector2(horizontal, vertical);
+            if (input_direction.sqrMagnitude > 1) // FIXME: doesn't work for unbounded input types
+            {
+                input_direction.Normalize();
+            }
+
+            if (input_direction.sqrMagnitude > 0)
+            {
+                float current_angle = planetaria_renderer.angle * Mathf.Rad2Deg;
+                float target_angle = Mathf.Atan2(input_direction.y, input_direction.x) * Mathf.Rad2Deg;
+                float interpolator = 360 * 3 / Mathf.Abs(Mathf.DeltaAngle(current_angle, target_angle)) * Time.deltaTime;
+                planetaria_renderer.angle = Mathf.LerpAngle(current_angle, target_angle, interpolator) * Mathf.Deg2Rad;
+            }
+
+            // TODO: verify (pretty likely to have at least one error) // Bunch of errors, not elegant
+            // Design specs:
+            // Aim forward along velocity: no drag (i.e. drag coefficient of 1) and accelerate.
+            // Aim backwards against velocity: full drag (e.g. drag coefficient of .5) and "decelerate"
+            // No input: partial drag (e.g. drag coefficient of .75) and "decelerate"
+            // Aim perpendicular to velocity (left/right): partial drag (e.g. coefficient of .75) but take a percentage of the momentum that would be lost and apply it along input_direction
+
+            // add velocity based on input
+            planetaria_rigidbody.relative_velocity += input_direction * Time.deltaTime;
+            Vector2 velocity = planetaria_rigidbody.relative_velocity;
+
+            // drag in coincident direction varies from coefficient of 1->~0.8->~0.5
+            float similarity = Vector2.Dot(velocity.normalized, input_direction);
+            float drag_modifier = Mathf.Lerp(0.6f, 1.0f, (similarity + 1f) / 2);
+            Vector2 coincident_velocity = input_direction != Vector2.zero ? (Vector2)Vector3.Project(velocity, input_direction) : velocity;
+            coincident_velocity *= Mathf.Pow(drag_modifier, Time.deltaTime);
+
+            // get perpendicular velocity (unmodified)
+            Vector2 perpendicular_velocity = input_direction != Vector2.zero ? Vector3.ProjectOnPlane(velocity, input_direction) : Vector3.zero;
+
+            // apply velocity changes
+            planetaria_rigidbody.relative_velocity = coincident_velocity + perpendicular_velocity;
+
+            // apply unusued drag
+            //planetaria_rigidbody.relative_velocity *= Mathf.Pow(0.8f, Time.deltaTime * (1f - input_direction.magnitude));
         }
-
-        if (input_direction.sqrMagnitude > 0)
+        if (dead)
         {
-            float current_angle = planetaria_renderer.angle*Mathf.Rad2Deg;
-            float target_angle = Mathf.Atan2(input_direction.y, input_direction.x)*Mathf.Rad2Deg;
-            float interpolator = 360*3 / Mathf.Abs(Mathf.DeltaAngle(current_angle, target_angle)) * Time.deltaTime;
-            planetaria_renderer.angle = Mathf.LerpAngle(current_angle, target_angle, interpolator)*Mathf.Deg2Rad;
+            respawn_time -= Time.deltaTime;
+            if (respawn_time < 0) // ORDER DEPENDENCY
+            {
+                dead = false;
+                planetaria_collider.enabled = true;
+                planetaria_renderer.enabled = true;
+            }
+            else if (respawn_time < 5f)
+            {
+                planetaria_renderer.enabled = (respawn_time % 1) > 0.5f;
+            }
+            else if (respawn_time < 10f)
+            {
+                planetaria_rigidbody.absolute_velocity *= Mathf.Pow(0.25f, Time.deltaTime);
+            }
         }
-        
-        // TODO: verify (pretty likely to have at least one error) // Bunch of errors, not elegant
-        // Design specs:
-        // Aim forward along velocity: no drag (i.e. drag coefficient of 1) and accelerate.
-        // Aim backwards against velocity: full drag (e.g. drag coefficient of .5) and "decelerate"
-        // No input: partial drag (e.g. drag coefficient of .75) and "decelerate"
-        // Aim perpendicular to velocity (left/right): partial drag (e.g. coefficient of .75) but take a percentage of the momentum that would be lost and apply it along input_direction
-
-        // add velocity based on input
-        planetaria_rigidbody.relative_velocity += input_direction * Time.deltaTime;
-        Vector2 velocity = planetaria_rigidbody.relative_velocity;
-
-        // drag in coincident direction varies from coefficient of 1->~0.8->~0.5
-        float similarity = Vector2.Dot(velocity.normalized, input_direction);
-        float drag_modifier = Mathf.Lerp(0.6f, 1.0f, (similarity + 1f) / 2);
-        Vector2 coincident_velocity = input_direction != Vector2.zero ? (Vector2) Vector3.Project(velocity, input_direction) : velocity;
-        coincident_velocity *= Mathf.Pow(drag_modifier, Time.deltaTime);
-
-        // get perpendicular velocity (unmodified)
-        Vector2 perpendicular_velocity = input_direction != Vector2.zero ? Vector3.ProjectOnPlane(velocity, input_direction) : Vector3.zero;
-
-        // apply velocity changes
-        planetaria_rigidbody.relative_velocity = coincident_velocity + perpendicular_velocity;
-
-        // apply unusued drag
-        //planetaria_rigidbody.relative_velocity *= Mathf.Pow(0.8f, Time.deltaTime * (1f - input_direction.magnitude));
     }
 
     public void on_field_enter(PlanetariaCollider collider)
     {
-        Debug.Log("Ship Colliding");
-        PlanetariaGameObject.Destroy(collider.gameObject);
-        PlanetariaGameObject.Destroy(this.gameObject);
+        Debug.Log("Ship Colliding"); // Why isn't this being called? w/e being lazy...
+        //die();
+    }
+
+    public void die()
+    {
+        dead = true;
+        respawn_time = 10f;
+        planetaria_collider.enabled = false; // FIXME: This bug is pretty amusing
+        planetaria_renderer.enabled = false;
     }
 
     [NonSerialized] private PlanetariaCollider planetaria_collider;
@@ -85,6 +113,9 @@ public class Ship : PlanetariaMonoBehaviour
     [NonSerialized] private Transform lidar;
     [NonSerialized] private float horizontal;
     [NonSerialized] private float vertical;
+
+    [NonSerialized] private bool dead = false;
+    [NonSerialized] private float respawn_time = 0;
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
