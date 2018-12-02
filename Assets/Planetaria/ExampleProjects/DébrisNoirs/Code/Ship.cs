@@ -22,7 +22,7 @@ public class Ship : PlanetariaMonoBehaviour
 
     private void Update()
     {
-        if (!dead || respawn_time < 5f)
+        if (!dead || respawn_time < 3f)
         {
 #if UNITY_EDITOR
             horizontal = Input.GetAxisRaw("Horizontal");
@@ -82,11 +82,11 @@ public class Ship : PlanetariaMonoBehaviour
                 planetaria_collider.enabled = true;
                 planetaria_renderer.enabled = true;
             }
-            else if (respawn_time < 5f)
+            else if (respawn_time < 3f)
             {
-                planetaria_renderer.enabled = (respawn_time % 1) > 0.5f;
+                planetaria_renderer.enabled = (respawn_time % 0.5f) > 0.25f;
             }
-            else if (respawn_time < 10f)
+            else if (respawn_time < 6f)
             {
                 planetaria_rigidbody.absolute_velocity *= Mathf.Pow(0.25f, Time.deltaTime);
             }
@@ -102,7 +102,7 @@ public class Ship : PlanetariaMonoBehaviour
     public void die()
     {
         dead = true;
-        respawn_time = 10f;
+        respawn_time = 6f;
         planetaria_collider.enabled = false; // FIXME: This bug is pretty amusing
         planetaria_renderer.enabled = false;
     }

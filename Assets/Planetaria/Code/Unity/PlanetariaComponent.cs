@@ -29,8 +29,7 @@ namespace Planetaria
                 {
                     game_object_variable = (PlanetariaGameObject) this;
                 }
-                return (PlanetariaGameObject) this;
-                //return game_object_variable;
+                return game_object_variable;
             }
         }
 
@@ -74,7 +73,7 @@ namespace Planetaria
             return gameObject.internal_game_object.GetComponentsInParent<Subtype>();
         }
 
-        [SerializeField] [HideInInspector] private bool initialized; // optional<PlanetariaGameObject> didn't work
+        [SerializeField] [HideInInspector] private bool initialized = false; // optional<PlanetariaGameObject> didn't work
         [SerializeField] [HideInInspector] private PlanetariaGameObject game_object_variable; // FIXME: bug when switching Component from GameObject1 to GameObject2 (reference improperly held).
     }
 }

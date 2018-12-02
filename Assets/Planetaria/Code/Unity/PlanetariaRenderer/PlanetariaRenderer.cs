@@ -15,12 +15,12 @@ namespace Planetaria
 
         protected override void OnEnable()
         {
-            //this.transform.Find("__Renderer").gameObject.internal_game_object.SetActive(true);
+            this.transform.Find("__Renderer").gameObject.internal_game_object.SetActive(true);
         }
 
         protected override void OnDisable()
         {
-            //this.transform.Find("__Renderer").gameObject.internal_game_object.SetActive(false);
+            this.transform.Find("__Renderer").gameObject.internal_game_object.SetActive(false);
         }
 
         protected override sealed void Reset()

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using Planetaria;
 
 public class Cannon : PlanetariaComponent
@@ -9,6 +10,7 @@ public class Cannon : PlanetariaComponent
     {
         main_character = GameObject.FindObjectOfType<Ship>().gameObject.internal_game_object.transform;
         main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
+        spotlight = GameObject.FindObjectOfType<Ship>().transform.Find("Spotlight").gameObject.internal_game_object.transform;
 #if UNITY_EDITOR
         GameObject.FindObjectOfType<PlanetariaActuator>().input_device_type = PlanetariaActuator.InputDevice.Mouse;
 #else
@@ -28,6 +30,8 @@ public class Cannon : PlanetariaComponent
 #else
         firing = Input.GetAxisRaw("OSVR_IndexTrigger") > .9f;
 #endif
+        
+        spotlight.localRotation = Quaternion.Euler(0, 0, Vector3.SignedAngle(main_character.up, bullet_direction, main_character.forward));
         if (firing)
         {
             optional<PlanetariaRaycastHit> raycast_information =
@@ -39,6 +43,7 @@ public class Cannon : PlanetariaComponent
             if (raycast_information.exists)
             {
                 Debug.Log(raycast_information.data.collider.name);
+                raycast_information.data.collider.gameObject.GetComponent<Debris>().destroy_asteroid();
             }
             else
             {
@@ -58,6 +63,7 @@ public class Cannon : PlanetariaComponent
 
     private Transform main_character;
     private Transform main_controller;
+    [NonSerialized] private Transform spotlight;
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

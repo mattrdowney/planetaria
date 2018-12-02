@@ -43,7 +43,12 @@ public class Debris : PlanetariaMonoBehaviour
     public void on_field_enter(PlanetariaCollider collider)
     {
         collider.gameObject.GetComponent<Ship>().die();
-        if (this.stage != SpaceRockSize.Small && collider.gameObject)
+        destroy_asteroid();
+    }
+
+    public void destroy_asteroid()
+    {
+        if (this.stage != SpaceRockSize.Small)
         {
             for (int space_rock = 0; space_rock < 2; ++space_rock)
             {

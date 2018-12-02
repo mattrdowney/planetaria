@@ -159,7 +159,7 @@ namespace Planetaria
 
         public PlanetariaTransform Find(string name)
         {
-            return internal_transform.Find(name).GetComponent<PlanetariaTransform>();
+            return Miscellaneous.GetOrAddComponent<PlanetariaTransform>(internal_transform.Find(name));
         }
 
         public PlanetariaTransform GetChild(int index)
