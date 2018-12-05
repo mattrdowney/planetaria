@@ -23,17 +23,23 @@ namespace Planetaria
 
         protected override void OnPopulateMesh(VertexHelper vertex_helper)
         {
-            // I'm pretty certain I need to 1) if possible re-use UVs (otherwise I don't think this works), and 2) override vertices.
-            // This will be interesting, because I'm blindly testing the API of UnityEngine.UI.Text (more or less).
-            // Note: text rendering uses atlassing (not un-expected, but since font-letter pairs are generated on the fly and hot reloaded it means extra consideration must be taken).
-
+            // I cannot change the canvas screen scaling, so store the inverse scale for later
+            float parent_scale = rectTransform.parent.lossyScale.x; // x == y == z (in this case)
+            float undo_scale = 1f/parent_scale; // parent should exist for everything but the canvas
+            rectTransform.localScale = Vector3.one;
+            // Get the text position for normal 2D text.
             base.OnPopulateMesh(vertex_helper);
+            // Re-use UVs generated from text atlassing while modifying the positions on screen for spherical 2D text.
             for (int triangle = 0; triangle < vertex_helper.currentVertCount; triangle += 1)
             {
                 UIVertex vertex = new UIVertex();
                 vertex_helper.PopulateUIVertex(ref vertex, triangle);
-                vertex.position = ((NormalizedCartesianCoordinates)new NormalizedSphericalCoordinates(vertex.position.y/rectTransform.lossyScale.y/200, vertex.position.x/rectTransform.lossyScale.x/200)).data;
+                Debug.Log(vertex.position.x + " and " + rectTransform.localPosition.x);
+                vertex.position = ((NormalizedCartesianCoordinates)new NormalizedSphericalCoordinates((vertex.position.y+rectTransform.localPosition.y)/Screen.height, (vertex.position.x+rectTransform.localPosition.x)/Screen.height)).data;
                 vertex.normal = -vertex.position;
+                vertex.position -= Vector3.forward*0.01f;
+                //vertex.position -= Vector3.Scale(rectTransform.localPosition, new Vector3(1f/Screen.width, 1f/Screen.height, 1f));
+                vertex.position *= undo_scale;
                 vertex_helper.SetUIVertex(vertex, triangle);
             }
         }

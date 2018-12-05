@@ -26,6 +26,17 @@ namespace Planetaria
         }
 
         /// <summary>
+        /// Finds the area of a circle along surface of a sphere. Not PI*r^2 (the equation for a plane).
+        /// </summary>
+        /// <param name="radius">The radius of the sphere in radians. Range: [0, PI].</param>
+        /// <returns>The area of the circle i.e. 2*PI*(sphere_radius^2)*(1-cosine(radius/sphere_radius)).</returns>
+        /// <seealso cref="https://math.stackexchange.com/questions/1832110/area-of-a-circle-on-sphere"/>
+        public static float area_of_circle_on_sphere(float radius, float sphere_radius = 1f)
+        {
+            return 2*Mathf.PI*(sphere_radius*sphere_radius)*(1-Mathf.Cos(radius/sphere_radius));
+        }
+
+        /// <summary>
         /// Find the radius of the base of a cone. Useful for determining sizes for camera shutter effects.
         /// </summary>
         /// <param name="cone_height">The height of the cone (e.g. the distance from the camera's focus (e.g. near/far clipping planes)).</param>

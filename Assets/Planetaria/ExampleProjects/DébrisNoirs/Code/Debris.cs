@@ -4,6 +4,15 @@ using Planetaria;
 
 public class Debris : PlanetariaMonoBehaviour
 {
+    // how many asteroid stages? small/medium/large?
+    // how many rocks spawned per stage? 2? // A random range?
+    // changing the stage or spawning formula seems silly, but I should still consider it more.
+    // asteroids sizes (relative to screen): original seems like 2.08% (ship), 1.46% (small), 2.60% (medium), 5.00% (large)
+    // changing the size formula will happen, mostly to make small asteroids easier to hit.
+    // bullet lifetime (original): ~1.2s (4 bullets) thus an effective fire rate of 0.3s/shot
+    // I want to add multiple bullets on deck (4 like original) to simulate reloading by multiple crewmates and add a reloading sound effect that is ~1 second (as opposed to the alternative).
+    // consider making asteroids bounce off of one another (with mostly elastic collisions) without destroying each other
+    // the collision issue would be problematic, though (since it would create a lot of unusual collisions), so probably not.
     protected override void OnConstruction() { }
 
     private void Start()
