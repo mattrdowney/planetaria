@@ -32,7 +32,7 @@ namespace Planetaria
             {
                 UIVertex vertex = new UIVertex();
                 vertex_helper.PopulateUIVertex(ref vertex, triangle);
-                vertex.position = ((NormalizedCartesianCoordinates)new NormalizedSphericalCoordinates(vertex.position.y/100, vertex.position.x/100)).data;
+                vertex.position = ((NormalizedCartesianCoordinates)new NormalizedSphericalCoordinates(vertex.position.y/rectTransform.lossyScale.y/200, vertex.position.x/rectTransform.lossyScale.x/200)).data;
                 vertex.normal = -vertex.position;
                 vertex_helper.SetUIVertex(vertex, triangle);
             }

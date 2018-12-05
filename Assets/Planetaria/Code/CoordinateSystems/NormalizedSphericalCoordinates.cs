@@ -41,9 +41,9 @@ namespace Planetaria
         public static implicit operator NormalizedCartesianCoordinates(NormalizedSphericalCoordinates spherical)
         {
             Vector3 cartesian = new Vector3();
-            cartesian.x = Mathf.Cos(spherical.elevation) * Mathf.Cos(spherical.azimuth);
+            cartesian.x = Mathf.Cos(spherical.elevation) * Mathf.Sin(spherical.azimuth);
             cartesian.y = Mathf.Sin(spherical.elevation);
-            cartesian.z = Mathf.Cos(spherical.elevation) * Mathf.Sin(spherical.azimuth);
+            cartesian.z = Mathf.Cos(spherical.elevation) * Mathf.Cos(spherical.azimuth);
             return new NormalizedCartesianCoordinates(cartesian);
         }
 
