@@ -6,16 +6,27 @@ namespace Planetaria
     [Serializable]
     public struct NormalizedSphericalCoordinates // TODO: CONSIDER: LongitudeLatitudeCoordinates
     {
-        public Vector2 data
+        /// <summary>
+        /// The angle in radians between the positive z-axis and the vector in Cartian space measured counterclockwise around the y-axis (viewing angle is downward along y-axis). Range: [0, 2PI).
+        /// </summary>
+        public float azimuth
         {
-            get { return data_variable; }
+            get { return data_variable.y; }
+        }
+
+        /// <summary>
+        /// Elevation as signed angle above or below the x-z plane [-PI/2, +PI/2] (south pole, north pole respectively).
+        /// </summary>
+        public float elevation
+        {
+            get { return data_variable.x; }
         }
 
         /// <summary>
         /// Constructor - Stores a set of spherical coordinates on a unit sphere (i.e. rho=1) in a wrapper class.
         /// </summary>
-        /// <param name="elevation">The angle in radians between the negative y-axis and the vector in Cartesian space.</param>
-        /// <param name="azimuth">The angle in radians between the positive x-axis and the vector in Cartian space measured counterclockwise around the y-axis (viewing angle is downward along y-axis).</param>
+        /// <param name="elevation">Elevation as signed angle above or below the x-z plane [-PI/2, +PI/2] (south pole, north pole respectively).</param>
+        /// <param name="azimuth">The angle in radians between the positive z-axis and the vector in Cartian space measured counterclockwise around the y-axis (viewing angle is downward along y-axis). Range: [0, 2PI).</param>
         public NormalizedSphericalCoordinates(float elevation, float azimuth)
         {
             data_variable = new Vector2(elevation, azimuth);
@@ -30,9 +41,9 @@ namespace Planetaria
         public static implicit operator NormalizedCartesianCoordinates(NormalizedSphericalCoordinates spherical)
         {
             Vector3 cartesian = new Vector3();
-            cartesian.x = -Mathf.Sin(spherical.data.x) * Mathf.Cos(spherical.data.y);
-            cartesian.y = -Mathf.Cos(spherical.data.x);
-            cartesian.z = Mathf.Sin(spherical.data.x) * Mathf.Sin(spherical.data.y);
+            cartesian.x = Mathf.Cos(spherical.elevation) * Mathf.Cos(spherical.azimuth);
+            cartesian.y = Mathf.Sin(spherical.elevation);
+            cartesian.z = Mathf.Cos(spherical.elevation) * Mathf.Sin(spherical.azimuth);
             return new NormalizedCartesianCoordinates(cartesian);
         }
 
@@ -46,14 +57,15 @@ namespace Planetaria
         /// </summary>
         private void normalize() // FIXME: verify - it's been wrong until now at least
         {
-            if (data_variable.x < 0 || data_variable.x > Mathf.PI)
+            if (data_variable.x < -Mathf.PI/2 || data_variable.x > +Mathf.PI/2)
             {
-                data_variable.x = PlanetariaMath.modolo_using_euclidean_division(data_variable.x, 2*Mathf.PI); // modulo is undefined behavior with negative numbers
+                data_variable.x = PlanetariaMath.modolo_using_euclidean_division(data_variable.x + Mathf.PI/2, 2*Mathf.PI); // modulo is undefined behavior with negative numbers
                 if (data_variable.x > Mathf.PI) // result must be positive (due to euclidean division)
                 {
                     data_variable.x = 2*Mathf.PI - data_variable.x;
                     data_variable.y += Mathf.PI; // going past the pole (to the opposite hemisphere) changes the azimuth
                 }
+                data_variable.x -= Mathf.PI/2;
             }
 
             if (data_variable.y < 0 || data_variable.y >= 2*Mathf.PI)

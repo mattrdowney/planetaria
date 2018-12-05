@@ -13,7 +13,7 @@ namespace Planetaria
         {
             NormalizedSphericalCoordinates self_position = self.position;
             NormalizedSphericalCoordinates target_position = target.position;
-            self.position = new NormalizedSphericalCoordinates(self_position.data.x, target_position.data.y);
+            self.position = new NormalizedSphericalCoordinates(self_position.elevation, target_position.azimuth);
         }
 
         public override void cleanup() { }

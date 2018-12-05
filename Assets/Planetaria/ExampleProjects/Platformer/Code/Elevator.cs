@@ -9,7 +9,7 @@ public class Elevator : PlanetariaTracker
     {
         Vector3 start_position = self.GetComponent<PlanetariaCollider>().shape.center_of_mass();
         NormalizedSphericalCoordinates spherical = new NormalizedCartesianCoordinates(start_position);
-        NormalizedSphericalCoordinates shifted_spherical = new NormalizedSphericalCoordinates(spherical.data.x + Mathf.PI*0.75f, spherical.data.y);
+        NormalizedSphericalCoordinates shifted_spherical = new NormalizedSphericalCoordinates(spherical.elevation + Mathf.PI*0.75f, spherical.azimuth);
         NormalizedCartesianCoordinates shifted_cartesian = shifted_spherical;
         Vector3 end_position = shifted_cartesian.data;
 

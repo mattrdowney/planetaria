@@ -71,8 +71,8 @@ namespace Planetaria
         /// <returns>The spherical coordinates.</returns>
         public static implicit operator NormalizedSphericalCoordinates(NormalizedCartesianCoordinates cartesian)
         {
-            float elevation = Mathf.Acos(-cartesian.data.y); // FIXME: remove!!!
-            float azimuth = Mathf.Atan2(cartesian.data.z, -cartesian.data.x);
+            float elevation = Mathf.Asin(cartesian.data.y);
+            float azimuth = Mathf.Atan2(cartesian.data.x, cartesian.data.z); // counter-intuitively, z is the base ("x") axis
             return new NormalizedSphericalCoordinates(elevation, azimuth);
         }
 

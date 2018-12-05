@@ -64,17 +64,17 @@ namespace Planetaria
 
             for (float row = 0; row <= EditorGlobal.self.rows + 1; ++row) //going over with off by one errors won't ruin the program...
             {
-                float angle = Mathf.PI * row / (EditorGlobal.self.rows + 1);
+                float angle = Mathf.PI * row / (EditorGlobal.self.rows + 1); // TODO: verify the row/columns are not swapped
                 float x = Mathf.Sin(angle);
                 float y = Mathf.Cos(angle);
                 NormalizedSphericalCoordinates test_coordinates = new NormalizedCartesianCoordinates(new Vector3(x, y, 0));
 
-                float error = Mathf.Abs(Mathf.DeltaAngle(desired_coordinates.data.x * Mathf.Rad2Deg, test_coordinates.data.x * Mathf.Rad2Deg));
-                float old_error = Mathf.Abs(Mathf.DeltaAngle(desired_coordinates.data.x * Mathf.Rad2Deg, clamped_coordinates.data.x * Mathf.Rad2Deg));
+                float error = Mathf.Abs(Mathf.DeltaAngle(desired_coordinates.elevation * Mathf.Rad2Deg, test_coordinates.elevation * Mathf.Rad2Deg));
+                float old_error = Mathf.Abs(Mathf.DeltaAngle(desired_coordinates.elevation * Mathf.Rad2Deg, clamped_coordinates.elevation * Mathf.Rad2Deg));
 
                 if (error < old_error)
                 {
-                    clamped_coordinates = new NormalizedSphericalCoordinates(test_coordinates.data.x, clamped_coordinates.data.y);
+                    clamped_coordinates = new NormalizedSphericalCoordinates(test_coordinates.elevation, clamped_coordinates.azimuth);
                 }
             }
 
@@ -85,12 +85,12 @@ namespace Planetaria
                 float z = Mathf.Cos(angle);
                 NormalizedSphericalCoordinates test_coordinates = new NormalizedCartesianCoordinates(new Vector3(x, 0, z));
 
-                float error = Mathf.Abs(Mathf.DeltaAngle(desired_coordinates.data.y * Mathf.Rad2Deg, test_coordinates.data.y * Mathf.Rad2Deg));
-                float old_error = Mathf.Abs(Mathf.DeltaAngle(desired_coordinates.data.y * Mathf.Rad2Deg, clamped_coordinates.data.y * Mathf.Rad2Deg));
+                float error = Mathf.Abs(Mathf.DeltaAngle(desired_coordinates.azimuth * Mathf.Rad2Deg, test_coordinates.azimuth * Mathf.Rad2Deg));
+                float old_error = Mathf.Abs(Mathf.DeltaAngle(desired_coordinates.azimuth * Mathf.Rad2Deg, clamped_coordinates.azimuth * Mathf.Rad2Deg));
 
                 if (error < old_error)
                 {
-                    clamped_coordinates = new NormalizedSphericalCoordinates(clamped_coordinates.data.x, test_coordinates.data.y);
+                    clamped_coordinates = new NormalizedSphericalCoordinates(clamped_coordinates.elevation, test_coordinates.azimuth);
                 }
             }
 
