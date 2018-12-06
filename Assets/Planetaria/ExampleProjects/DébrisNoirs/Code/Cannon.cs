@@ -38,7 +38,9 @@ public class Cannon : PlanetariaComponent
                     PlanetariaPhysics.raycast(ArcFactory.line(character_position, bullet_direction),
                     1.25f*Mathf.PI, 1 << LayerMask.NameToLayer("Debris"), QueryTriggerInteraction.Collide);
 
+#if UNITY_EDITOR 
             ArcEditor.draw_simple_arc(ArcFactory.line(character_position, bullet_direction), 1.25f*Mathf.PI);
+#endif
 
             if (raycast_information.exists)
             {

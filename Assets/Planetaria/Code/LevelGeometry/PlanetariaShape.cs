@@ -3,7 +3,10 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+
+#if UNITY_EDITOR 
 using UnityEditor.SceneManagement;
+#endif
 
 namespace Planetaria
 {
@@ -11,8 +14,9 @@ namespace Planetaria
     public class PlanetariaShape : ScriptableObject // TODO: clean-up this file~
     {
         public enum AppendMode { OverwriteWithEphemeral, OverwriteWithPermanent, AppendWithEphemeral };
-
+#if UNITY_EDITOR 
         [MenuItem("Assets/Create/PlanetariaShape")]
+#endif
         public static PlanetariaShape Create()
         {
             PlanetariaShape asset = ScriptableObject.CreateInstance<PlanetariaShape>();
@@ -70,11 +74,13 @@ namespace Planetaria
             generate_colliders();
         }
 
+#if UNITY_EDITOR 
         public void save()
         {
             AssetDatabase.CreateAsset(this, "Assets/" + EditorSceneManager.GetActiveScene().name + "_PlanetariaShape.asset");
             AssetDatabase.SaveAssets();
         }
+#endif
 
         public List<Arc> block_collision(PlanetariaShape other, Quaternion shift_from_self_to_other) // TODO: AABB-equivalent would be nice here
         {

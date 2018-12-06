@@ -529,7 +529,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 0}
   angle_variable: 0
-  material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 3}
+  material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   scale_variable: 0
   internal_transform: {fileID: 422068635}
   internal_renderer: {fileID: 422068634}
@@ -653,7 +653,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 0}
   angle_variable: 1.5707964
-  material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 3}
+  material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   scale_variable: 0
   internal_transform: {fileID: 1207064185}
   internal_renderer: {fileID: 1207064184}
