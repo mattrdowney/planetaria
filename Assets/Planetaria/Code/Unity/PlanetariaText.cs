@@ -35,6 +35,11 @@ namespace Planetaria
         // (Theory based on non-uniform character spacing...)
         // Keep y coordinate as-is.
         // Adjust the x coordinate on the screen by considering the "angular sweep" from the left to the right of the text.
+        // 2nd Note:
+        // it seems like the x "angular sweep" is fine.
+        // the y size shrinks as the text gets closer to the periphery.
+        // This has to do with how I am using squares, not trapezoids (I think this is a special case of a right trapezoid).
+        // In this case, the approximation is fine because you can always generate the text at the center of the screen and rotate it.
 
         protected override void OnPopulateMesh(VertexHelper vertex_helper)
         {
@@ -52,17 +57,11 @@ namespace Planetaria
             {
                 UIVertex vertex = new UIVertex();
                 vertex_helper.PopulateUIVertex(ref vertex, triangle);
-                Debug.Log(vertex.position + " and " + Vector2.Scale(rectTransform.rect.center, rectTransform.rect.size));
-                Vector2 screen_point = Vector2.Scale(RectTransformUtility.PixelAdjustRect(rectTransform, canvas).center, camera.pixelRect.size);
-                vertex.position = camera.ScreenPointToRay((Vector3)screen_point + vertex.position).direction; // minor imprecision issues.
-                //Vector3[] corners = new Vector3[4];
-                //rectTransform.GetWorldCorners(corners); // this only needs to be computed once
-                //vertex.position = (corners[0] + corners[1] + corners[2] + corners[3]).normalized;
-                vertex.position = inverse_rotation * vertex.position;
-                //vertex.position = ((NormalizedCartesianCoordinates)new NormalizedSphericalCoordinates((vertex.position.y+rectTransform.localPosition.y)/Screen.height, (vertex.position.x+rectTransform.localPosition.x)/Screen.height)).data;
+                Debug.Log(vertex.position + " and " + rectTransform.anchoredPosition);
+                Vector2 screen_point = camera.WorldToScreenPoint(rectTransform.TransformPoint(Vector3.zero)) + vertex.position; // not sure how scale affects TransformPoint call (documentation aside), otherwise I'd pass vertex.position
+                Vector3 world_point = camera.ScreenPointToRay(screen_point).direction;
+                vertex.position = inverse_rotation * world_point;
                 vertex.normal = -vertex.position;
-                //vertex.position -= Vector3.forward*0.01f;
-                //vertex.position -= Vector3.Scale(rectTransform.localPosition, new Vector3(1f/Screen.width, 1f/Screen.height, 1f));
                 vertex.position *= undo_scale;
                 vertex_helper.SetUIVertex(vertex, triangle);
             }
