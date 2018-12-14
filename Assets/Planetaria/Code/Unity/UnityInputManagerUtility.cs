@@ -11,13 +11,27 @@ namespace Planetaria
     /// <see cref="http://plyoung.appspot.com/blog/manipulating-input-manager-in-script.html"/> // almost verbatim from this source
 	public class UnityInputManagerUtility
 	{
-        private static void add_keyboard_axis(KeyCode up, KeyCode left, KeyCode down, KeyCode right)
+        private static void add_keyboard_axes(KeyCode up, KeyCode left, KeyCode down, KeyCode right)
         {
             string axis_name = up.ToString() + left.ToString() + down.ToString() + right.ToString() + "Axis";
             add_axis(new UnityInputAxis() { name = horizontal, descriptive_name = axis_name, positive_button = right, negative_button = left,
                     sensitivity = 20f, gravity = 20f, type = UnityAxisType.KeyOrMouseButton, axis = UnityAxisIdentity.XAxis });
             add_axis(new UnityInputAxis() { name = vertical, descriptive_name = axis_name, positive_button = up, negative_button = down,
                     sensitivity = 20f, gravity = 20f, type = UnityAxisType.KeyOrMouseButton, axis = UnityAxisIdentity.XAxis });
+        }
+
+        private static void add_horizontal_joystick_axis(UnityAxisIdentity horizontal_axis)
+        {
+            string axis_name = "Joystick0" + horizontal_axis.ToString();
+            add_axis(new UnityInputAxis() { name = horizontal, descriptive_name = axis_name, joystick = UnityJoystickIdentity.JoystickAll,
+                    sensitivity = 1, gravity = 0, dead = 0.001f, type = UnityAxisType.JoystickAxis, axis = horizontal_axis });
+        }
+
+        private static void add_vertical_joystick_axis(UnityAxisIdentity vertical_axis)
+        {
+            string axis_name = "Joystick0" + vertical_axis.ToString();
+            add_axis(new UnityInputAxis() { name = vertical, descriptive_name = axis_name, joystick = UnityJoystickIdentity.JoystickAll,
+                    sensitivity = 1, gravity = 0, dead = 0.001f, type = UnityAxisType.JoystickAxis, axis = vertical_axis, invert = true });
         }
 
         [MenuItem("Planetaria/Generate Planetaria Input Manager Controls")]
@@ -29,47 +43,30 @@ namespace Planetaria
             //add_axis(new UnityInputAxis() { name = vertical, descriptive_name = "ScrollWheel", sensitivity = 1f, type = UnityAxisType.MouseMovement, axis = UnityAxisIdentity.Axis3 });
 
             // add common keyboard layouts
-            add_keyboard_axis(KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D);
-            add_keyboard_axis(KeyCode.T, KeyCode.F, KeyCode.G, KeyCode.H);
-            add_keyboard_axis(KeyCode.I, KeyCode.J, KeyCode.K, KeyCode.L);
-            add_keyboard_axis(KeyCode.UpArrow, KeyCode.LeftArrow, KeyCode.DownArrow, KeyCode.RightArrow);
-            add_keyboard_axis(KeyCode.Keypad8, KeyCode.Keypad4, KeyCode.Keypad2, KeyCode.Keypad6);
+            add_keyboard_axes(KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D);
+            add_keyboard_axes(KeyCode.T, KeyCode.F, KeyCode.G, KeyCode.H);
+            add_keyboard_axes(KeyCode.I, KeyCode.J, KeyCode.K, KeyCode.L);
+            add_keyboard_axes(KeyCode.UpArrow, KeyCode.LeftArrow, KeyCode.DownArrow, KeyCode.RightArrow);
+            add_keyboard_axes(KeyCode.Keypad8, KeyCode.Keypad4, KeyCode.Keypad2, KeyCode.Keypad6);
 
             // add common controller buttons
-            add_keyboard_axis(KeyCode.JoystickButton3, KeyCode.JoystickButton2, KeyCode.JoystickButton0, KeyCode.JoystickButton1);
-            add_keyboard_axis(KeyCode.JoystickButton19, KeyCode.JoystickButton18, KeyCode.JoystickButton16, KeyCode.JoystickButton17);
+            add_keyboard_axes(KeyCode.JoystickButton3, KeyCode.JoystickButton2, KeyCode.JoystickButton0, KeyCode.JoystickButton1);
+            add_keyboard_axes(KeyCode.JoystickButton19, KeyCode.JoystickButton18, KeyCode.JoystickButton16, KeyCode.JoystickButton17);
 
             // add common controller dpad
-            add_keyboard_axis(KeyCode.JoystickButton5, KeyCode.JoystickButton7, KeyCode.JoystickButton6, KeyCode.JoystickButton8);
-            add_keyboard_axis(KeyCode.JoystickButton13, KeyCode.JoystickButton11, KeyCode.JoystickButton14, KeyCode.JoystickButton12);
+            add_keyboard_axes(KeyCode.JoystickButton5, KeyCode.JoystickButton7, KeyCode.JoystickButton6, KeyCode.JoystickButton8);
+            add_keyboard_axes(KeyCode.JoystickButton13, KeyCode.JoystickButton11, KeyCode.JoystickButton14, KeyCode.JoystickButton12);
 
             // Add joystick axes
-            for (UnityAxisIdentity axis_number = UnityAxisIdentity.XAxis; axis_number <= UnityAxisIdentity.Axis28; axis_number++)
-            {
-                string axis_name;
-                string axis_description;
-                if ((int)axis_number % 2 == 1) // odd numbered axis means it is a horizontal axis
-                {
-                    axis_name = horizontal;
-                    axis_description = "Joystick0" + axis_number;
-                }
-                else // otherwise it is vertical (evens)
-                {
-                    axis_name = vertical;
-                    axis_description = "Joystick0" + axis_number;
-                }
-                add_axis(new UnityInputAxis()
-                {
-                    name = axis_name,
-                    descriptive_name = axis_description,
-                    dead = 0.001f,
-                    sensitivity = 1000f,
-                    gravity = 1000f,
-                    type = UnityAxisType.JoystickAxis,
-                    axis = axis_number,
-                    joystick = UnityJoystickIdentity.JoystickAll,
-                });
-            }
+            add_horizontal_joystick_axis(UnityAxisIdentity.XAxis);
+            add_vertical_joystick_axis(UnityAxisIdentity.YAxis);
+            add_vertical_joystick_axis(UnityAxisIdentity.Axis3); // HACK: due to design constraints (certain controllers overlap) - add third axis (even if 3/4 are rotated on some controllers)
+            add_horizontal_joystick_axis(UnityAxisIdentity.Axis4);
+            add_vertical_joystick_axis(UnityAxisIdentity.Axis5);
+            add_vertical_joystick_axis(UnityAxisIdentity.Axis6);
+            add_horizontal_joystick_axis(UnityAxisIdentity.Axis6);
+            add_vertical_joystick_axis(UnityAxisIdentity.Axis7);
+            add_horizontal_joystick_axis(UnityAxisIdentity.Axis8); // HACK: due to design constraints (certain controllers overlap) - add third axis (even if 7/8 are rotated on some controllers)
         }
         private static SerializedProperty get_child_property(SerializedProperty parent, string name)
         {
@@ -107,7 +104,7 @@ namespace Planetaria
             return false;
         }
 
-        private static void add_axis(UnityInputAxis axis)
+        private static void add_axis(UnityInputAxis axis) // TODO: in-place edit if axis exists
         {
             if (is_axis_defined(axis.name, axis.descriptive_name))
             {
