@@ -39,7 +39,7 @@ namespace Planetaria
                     break;
                 // Motion controllers (e.g. virtual reality)
                 case InputDevice.Gyroscope:
-                    internal_transform.rotation = camera_transform.rotation * InputTracking.GetLocalRotation(XRNode.RightHand); // FIXME: HACK:
+                    internal_transform.rotation = camera_transform.rotation * InputTracking.GetLocalRotation(virtual_reality_tracker_type); // FIXME: HACK:
                     break;
                 // Computer mouse
                 case InputDevice.Mouse:
@@ -60,6 +60,7 @@ namespace Planetaria
         }
 
         public InputDevice input_device_type = InputDevice.Gyroscope;
+        public XRNode virtual_reality_tracker_type;
         private Camera internal_camera;
         private Transform camera_transform;
         private Transform internal_transform;

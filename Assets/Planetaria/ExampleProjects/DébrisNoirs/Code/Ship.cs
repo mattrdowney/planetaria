@@ -10,10 +10,12 @@ public class Ship : PlanetariaMonoBehaviour
 
     private void Start()
     {
+        main_character = GameObject.FindObjectOfType<Ship>().gameObject.internal_game_object.transform;
+        main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
         planetaria_collider = this.GetComponent<PlanetariaCollider>();
         planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
-        planetaria_renderer = this.GetComponent<AreaRenderer>();
-        lidar = this.transform.Find("Lidar").gameObject.internal_game_object.transform;
+        ship_renderer = this.GetComponent<AreaRenderer>();
+        crosshair_renderer = PlanetariaGameObject.Find("Hand").GetComponent<AreaRenderer>();
         transform.direction = new NormalizedCartesianCoordinates(Vector3.up);
         transform.localScale = +0.1f;
         planetaria_collider.shape = PlanetariaShape.Create(+0.1f/2);
@@ -24,27 +26,14 @@ public class Ship : PlanetariaMonoBehaviour
     {
         if (!dead || respawn_time < 3f)
         {
-#if UNITY_EDITOR
-            horizontal = Input.GetAxisRaw("Horizontal");
-            vertical = Input.GetAxisRaw("Vertical");
-#else
-            horizontal = Input.GetAxisRaw("OSVR_ThumbAxisX");
-            vertical = Input.GetAxisRaw("OSVR_ThumbAxisY");
-#endif
-            lidar.transform.localRotation = Quaternion.Euler(0, 0, lidar.transform.localEulerAngles.z - 1080f * Time.deltaTime);
-
-            Vector2 input_direction = new Vector2(horizontal, vertical);
-            if (input_direction.sqrMagnitude > 1) // FIXME: doesn't work for unbounded input types
+            Vector2 input_direction = DebrisNoirsInput.movement();
+            crosshair_renderer.scale = input_direction.magnitude * crosshair_size;
+            if (input_direction.magnitude > 0)
             {
-                input_direction.Normalize();
-            }
-
-            if (input_direction.sqrMagnitude > 0)
-            {
-                float current_angle = planetaria_renderer.angle * Mathf.Rad2Deg;
-                float target_angle = Mathf.Atan2(input_direction.y, input_direction.x) * Mathf.Rad2Deg;
-                float interpolator = 360 * 3 / Mathf.Abs(Mathf.DeltaAngle(current_angle, target_angle)) * Time.deltaTime;
-                planetaria_renderer.angle = Mathf.LerpAngle(current_angle, target_angle, interpolator) * Mathf.Deg2Rad;
+                float target_angle = Mathf.Atan2(input_direction.y, input_direction.x);
+                float current_angle = ship_renderer.angle * Mathf.Rad2Deg;
+                float interpolator = 360 * 3 / Mathf.Abs(Mathf.DeltaAngle(current_angle, target_angle * Mathf.Rad2Deg)) * Time.deltaTime;
+                ship_renderer.angle = Mathf.LerpAngle(current_angle, target_angle * Mathf.Rad2Deg, interpolator) * Mathf.Deg2Rad;
             }
 
             // TODO: verify (pretty likely to have at least one error) // Bunch of errors, not elegant
@@ -80,11 +69,11 @@ public class Ship : PlanetariaMonoBehaviour
             {
                 dead = false;
                 planetaria_collider.enabled = true;
-                planetaria_renderer.enabled = true;
+                ship_renderer.enabled = true;
             }
             else if (respawn_time < 3f)
             {
-                planetaria_renderer.enabled = (respawn_time % 0.5f) > 0.25f;
+                ship_renderer.enabled = (respawn_time % 0.5f) > 0.25f;
             }
             else if (respawn_time < 6f)
             {
@@ -103,14 +92,18 @@ public class Ship : PlanetariaMonoBehaviour
     {
         dead = true;
         respawn_time = 6f;
-        planetaria_collider.enabled = false; // FIXME: This bug is pretty amusing
-        planetaria_renderer.enabled = false;
+        planetaria_collider.enabled = false;
+        ship_renderer.enabled = false;
     }
+    
+    [SerializeField] private float crosshair_size = 1f;
 
+    [NonSerialized] private Transform main_character;
+    [NonSerialized] private Transform main_controller;
     [NonSerialized] private PlanetariaCollider planetaria_collider;
-    [NonSerialized] private AreaRenderer planetaria_renderer;
+    [NonSerialized] private AreaRenderer crosshair_renderer;
+    [NonSerialized] private AreaRenderer ship_renderer;
     [NonSerialized] private PlanetariaRigidbody planetaria_rigidbody;
-    [NonSerialized] private Transform lidar;
     [NonSerialized] private float horizontal;
     [NonSerialized] private float vertical;
 

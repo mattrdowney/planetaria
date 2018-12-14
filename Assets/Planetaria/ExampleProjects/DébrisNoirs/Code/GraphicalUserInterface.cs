@@ -18,7 +18,8 @@ namespace Planetaria
 
         private void Start()
         {
-            graphical_user_interface = PlanetariaGameObject.Find("Head_Adjustor").gameObject.internal_game_object.transform;
+            graphical_user_interface = PlanetariaGameObject.Find("Head_Adjustor").gameObject.internal_game_object.GetComponent<RectTransform>();
+            graphical_user_interface.sizeDelta = graphical_user_interface.parent.GetComponent<RectTransform>().sizeDelta;
 #if UNITY_EDITOR
             inverse_start_rotation = Quaternion.identity;
 #else
@@ -38,7 +39,7 @@ namespace Planetaria
         // Variables (non-Public)
 
         private Quaternion inverse_start_rotation;
-        private Transform graphical_user_interface;
+        private RectTransform graphical_user_interface;
 	}
 }
 

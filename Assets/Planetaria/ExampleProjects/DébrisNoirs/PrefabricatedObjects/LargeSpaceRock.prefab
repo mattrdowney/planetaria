@@ -132,10 +132,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcbcac2b27276b84398b2afea6e2bdb8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  initialized: 0
   game_object_variable:
     game_object_variable: {fileID: 1175150822237868}
   angle_variable: 0
-  material: {fileID: 2100000, guid: daa7da90730f9a84cb50b804094c34ed, type: 2}
+  material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   scale_variable: 0.2
   internal_transform: {fileID: 4352634434168220}
   internal_renderer: {fileID: 212633172164088102}
@@ -152,6 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10f952ea7f9032546b3fc40bdd88e964, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  initialized: 0
   game_object_variable:
     game_object_variable: {fileID: 0}
   target: {fileID: 114166522899314562}
@@ -167,6 +169,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48d2cae72ee207743b9de842f4f0663d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  initialized: 0
   game_object_variable:
     game_object_variable: {fileID: 0}
   internal_transform: {fileID: 4717528800502344}
@@ -183,6 +186,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f906fac2cef965442b20471bfb3d9e14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  initialized: 0
   game_object_variable:
     game_object_variable: {fileID: 0}
   gravity: {x: 0, y: 0, z: 0}
@@ -199,6 +203,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a6c36a05a1232a4daf7cc94dd275fbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  initialized: 0
   game_object_variable:
     game_object_variable: {fileID: 1175150822237868}
   material: {fileID: 11400000, guid: a03d051b7bfe0d344abca6f59970c460, type: 2}
@@ -222,9 +227,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e88cd813f234cc48bba216ac10989da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  initialized: 0
   game_object_variable:
     game_object_variable: {fileID: 0}
-  speed: 0.5
+  speed: 0.2
   stage: 0
   prefabricated_debris: {fileID: 1175150822237868}
   debris_sprites:

@@ -2,57 +2,19 @@
 using UnityEngine;
 using Planetaria;
 
-public class Cannon : PlanetariaComponent
+public class Crosshair : PlanetariaComponent
 {
-    public GameObject prefabricated_object;
-
     private void Start()
     {
         main_character = GameObject.FindObjectOfType<Ship>().gameObject.internal_game_object.transform;
         main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
-        spotlight = GameObject.FindObjectOfType<Ship>().transform.Find("Spotlight").gameObject.internal_game_object.transform;
+        planetaria_transform = this.GetComponent<PlanetariaTransform>();
 #if UNITY_EDITOR
         GameObject.FindObjectOfType<PlanetariaActuator>().input_device_type = PlanetariaActuator.InputDevice.Mouse;
 #else
         GameObject.FindObjectOfType<PlanetariaActuator>().input_device_type = PlanetariaActuator.InputDevice.Gyroscope;
+        GameObject.FindObjectOfType<PlanetariaActuator>().virtual_reality_tracker_type = UnityEngine.XR.XRNode.Head;
 #endif
-    }
-
-    private void Update()
-    {
-        Vector3 character_position = main_character.forward;
-        Vector3 controller_position = main_controller.forward;
-        Vector3 bullet_direction = Bearing.attractor(character_position, controller_position);
-
-        bool firing;
-#if UNITY_EDITOR
-        firing = Input.GetButtonDown("Fire1");
-#else
-        firing = Input.GetAxisRaw("OSVR_IndexTrigger") > .9f;
-#endif
-        
-        spotlight.localRotation = Quaternion.Euler(0, 0, Vector3.SignedAngle(main_character.up, bullet_direction, main_character.forward));
-        if (firing)
-        {
-            optional<PlanetariaRaycastHit> raycast_information =
-                    PlanetariaPhysics.raycast(ArcFactory.line(character_position, bullet_direction),
-                    1.25f*Mathf.PI, 1 << LayerMask.NameToLayer("Debris"), QueryTriggerInteraction.Collide);
-
-#if UNITY_EDITOR 
-            ArcEditor.draw_simple_arc(ArcFactory.line(character_position, bullet_direction), 1.25f*Mathf.PI);
-#endif
-
-            if (raycast_information.exists)
-            {
-                Debug.Log(raycast_information.data.collider.name);
-                raycast_information.data.collider.gameObject.GetComponent<Debris>().destroy_asteroid();
-            }
-            else
-            {
-                Debug.Log("Hit nothing");
-            }
-            //PlanetariaGameObject.Instantiate(prefabricated_object, character_position, bullet_direction);
-        }
     }
 
     private void LateUpdate()
@@ -60,12 +22,12 @@ public class Cannon : PlanetariaComponent
         Vector3 character_position = main_character.forward;
         Vector3 controller_position = main_controller.forward;
         Vector3 crosshair_up = Bearing.repeller(controller_position, character_position);
-        main_controller.rotation = Quaternion.LookRotation(controller_position, crosshair_up);
+        planetaria_transform.direction = new NormalizedCartesianCoordinates(crosshair_up);
     }
 
     private Transform main_character;
     private Transform main_controller;
-    [NonSerialized] private Transform spotlight;
+    private PlanetariaTransform planetaria_transform;
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
