@@ -18,7 +18,6 @@ namespace Planetaria
             }
             if (last_input_frame + (int)(seconds_until_head_control/Time.fixedDeltaTime) > Time.frameCount)
             {
-                Debug.Log(Time.time);
                 return new Vector2(horizontal, vertical).normalized;
             }
 

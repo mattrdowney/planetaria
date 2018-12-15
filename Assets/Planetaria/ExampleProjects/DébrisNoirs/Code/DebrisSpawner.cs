@@ -47,7 +47,7 @@ public class DebrisSpawner : PlanetariaMonoBehaviour
         for (int debris = 0; debris < 4; ++debris)
         {
             Vector3 random_position = UnityEngine.Random.onUnitSphere;
-            if (Vector3.Dot(random_position, ship.position.data) > 0)
+            if (Vector3.Dot(random_position, ship.position) > 0)
             {
                 random_position *= -1;
             }

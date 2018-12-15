@@ -145,7 +145,6 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 0}
   internal_transform: {fileID: 139345969}
-  direction_variable: {x: 0, y: -1, z: 0}
   scale_variable: 1
 --- !u!114 &139345968
 MonoBehaviour:
@@ -440,7 +439,6 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 0}
   internal_transform: {fileID: 555057020}
-  direction_variable: {x: 0, y: 1, z: 0}
   scale_variable: 1
 --- !u!1 &678724328
 GameObject:
@@ -456,7 +454,6 @@ GameObject:
   - component: {fileID: 678724333}
   - component: {fileID: 678724332}
   - component: {fileID: 678724330}
-  - component: {fileID: 678724329}
   - component: {fileID: 678724331}
   m_Layer: 8
   m_Name: Ship
@@ -465,23 +462,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &678724329
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114263813013697902, guid: aaa1349aadcd2114a9d661fa04abe0a0,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 678724328}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 10f952ea7f9032546b3fc40bdd88e964, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initialized: 0
-  game_object_variable:
-    game_object_variable: {fileID: 0}
-  target: {fileID: 1775301686}
-  last_position: {x: 0, y: 0, z: 0}
 --- !u!114 &678724330
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1042,7 +1022,6 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 1428362753}
   internal_transform: {fileID: 1428362754}
-  direction_variable: {x: 0, y: 1, z: 0}
   scale_variable: 0
 --- !u!1 &1691319370
 GameObject:
@@ -1105,7 +1084,6 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 0}
   internal_transform: {fileID: 251460354}
-  direction_variable: {x: 0, y: 1, z: 0}
   scale_variable: 0.1
 --- !u!1 &2071245767
 GameObject:
@@ -1158,7 +1136,6 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 0}
   internal_transform: {fileID: 2071245771}
-  direction_variable: {x: 0, y: 1, z: 0}
   scale_variable: 1
 --- !u!114 &2071245770
 MonoBehaviour:

@@ -1,25 +1,30 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
 
 namespace Planetaria
 {
-    public class InstantHorizontalTracker : PlanetariaTracker
-    {
-        public override void setup()
+    /// <summary>
+	/// Singleton - Game Manager for Debris Noirs.
+    /// </summary>
+	public static class DebrisNoirs
+	{
+		public static void request_death(PlanetariaGameObject game_object)
         {
-            target = GameObject.Find("Character").GetComponent<PlanetariaTransform>(); // FIXME:
+            game_objects.Remove(game_object);
         }
 
-        public override void step()
+        public static bool request_life()
         {
-            NormalizedSphericalCoordinates self_position = new NormalizedCartesianCoordinates(self.position);
-            NormalizedSphericalCoordinates target_position = new NormalizedCartesianCoordinates(target.position);
-            NormalizedCartesianCoordinates next_position = new NormalizedSphericalCoordinates(self_position.elevation, target_position.azimuth);
-            self.position = next_position.data;
+            return game_objects.Count < maximum_game_objects;
         }
 
-        public override void cleanup() { }
-        public override void teleport() { }
-    }
+        public static void live(PlanetariaGameObject game_object)
+        {
+            game_objects.Add(game_object);
+        }
+
+        private const int maximum_game_objects = 100;
+        private static HashSet<PlanetariaGameObject> game_objects = new HashSet<PlanetariaGameObject>();
+	}
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

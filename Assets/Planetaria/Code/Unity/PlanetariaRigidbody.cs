@@ -102,7 +102,7 @@ namespace Planetaria
             Vector3 next_position = PlanetariaMath.spherical_linear_interpolation(get_position(), velocity.normalized, delta); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
             Vector3 next_velocity = PlanetariaMath.spherical_linear_interpolation(get_position(), velocity.normalized, delta + Mathf.PI/2);
             
-            transform.position = new NormalizedCartesianCoordinates(next_position);
+            transform.position = next_position;
             velocity = next_velocity.normalized * velocity.magnitude;
             //velocity = Vector3.ProjectOnPlane(velocity, get_position()); // TODO: CONSIDER: ensure velocity and position are orthogonal - they seem to desynchronize
         }
@@ -110,7 +110,7 @@ namespace Planetaria
         private void grounded_position()
         {
             collision.geometry_visitor.move_position(horizontal_velocity * Time.deltaTime);
-            transform.position = (NormalizedCartesianCoordinates) collision.geometry_visitor.position(); // NOTE: required so get_acceleration() functions
+            transform.position = collision.geometry_visitor.position(); // NOTE: required so get_acceleration() functions
             // project velocity
         }
 
@@ -147,7 +147,7 @@ namespace Planetaria
                 collision.geometry_visitor.move_position(0, transform.scale/2 * (1 + 1e-3f)); // extrude the player so they do not accidentally re-collide (immediately) // FIXME: magic number, move to Precision.*
                 x_velocity += horizontal_velocity;
                 //y_velocity += vertical_velocity;
-                transform.position = (NormalizedCartesianCoordinates) collision.geometry_visitor.position();
+                transform.position = collision.geometry_visitor.position();
                 Vector3 normal = collision.geometry_visitor.normal();
                 Vector3 right = Bearing.right(get_position(), normal);
                 velocity = right*x_velocity + normal*y_velocity;
@@ -237,7 +237,7 @@ namespace Planetaria
 
         public Vector3 get_position()
         {
-            return transform.position.data;
+            return transform.position;
         }
 
         public Vector3 get_previous_position()

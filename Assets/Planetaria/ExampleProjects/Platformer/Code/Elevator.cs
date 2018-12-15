@@ -20,8 +20,7 @@ public class Elevator : PlanetariaTracker
     {
         float interpolation_fraction = Mathf.PingPong(Time.time / 10f, 1); // FIXME: AnimationCurve (repeat) with optional hook for buttons
         Quaternion intermediate_position = Quaternion.Slerp(Quaternion.identity, rotator, interpolation_fraction); // FIXME: needs to work >=180 degrees
-        self.position = new NormalizedCartesianCoordinates(intermediate_position * Vector3.forward);
-        self.direction = new NormalizedCartesianCoordinates(intermediate_position * Vector3.up);
+        self.SetPositionAndDirection(intermediate_position * Vector3.forward, intermediate_position * Vector3.up);
     }
 
     public override void teleport() { }

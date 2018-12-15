@@ -33,7 +33,6 @@ namespace Planetaria
             {
                 internal_renderer = internal_transform.GetComponent<PlanetariaRenderer>();
             }
-            direction_variable = internal_transform.up;
             scale_variable = internal_transform.lossyScale.x;
         }
 
@@ -45,19 +44,17 @@ namespace Planetaria
         }
 
         /// <summary>
-        /// The direction the object faces. The object will rotate towards "direction".
+        /// Property - direction/"facing"/"forward"/"up".
         /// </summary>
-        /// <example>arc.normal() [dynamic] or Vector3.up [static]</example>
-        public NormalizedCartesianCoordinates direction // FIXME: TODO: localDirection, how do parents affect this?
+        public Vector3 direction
         {
             get
             {
-                return new NormalizedCartesianCoordinates(direction_variable);
+                return internal_transform.up;
             }
             set
             {
-                direction_variable = value.data;
-                internal_transform.rotation = Quaternion.LookRotation(internal_transform.forward, direction_variable);
+                internal_transform.rotation = Quaternion.LookRotation(position, value);
             }
         }
 
@@ -78,10 +75,10 @@ namespace Planetaria
             get { return internal_transform.hierarchyCount; }
         }
         
-        public NormalizedCartesianCoordinates localPosition // FIXME:
+        public NormalizedCartesianCoordinates localPosition // FIXME: really fix this...
         {
             get { return new NormalizedCartesianCoordinates(internal_transform.forward); }
-            set { internal_transform.rotation = Quaternion.LookRotation(internal_transform.forward, direction_variable); }
+            set { internal_transform.rotation = Quaternion.LookRotation(internal_transform.forward, Vector3.up); }
         }
 
         /// <summary>
@@ -114,10 +111,31 @@ namespace Planetaria
             set { SetParent(value); }
         }
 
-        public NormalizedCartesianCoordinates position
+        /// <summary>
+        /// Property - position (on a unit sphere). Maintains old direction/"facing"/"forward"/"up" direction if set.
+        /// </summary>
+        public Vector3 position
         {
-            get { return new NormalizedCartesianCoordinates(internal_transform.forward); }
-            set { internal_transform.rotation = Quaternion.LookRotation(value.data, direction_variable); }
+            get
+            {
+                return internal_transform.forward;
+            }
+            set
+            {
+                Vector3 current_position = internal_transform.forward;
+                Vector3 next_position = value;
+                if (current_position != next_position)
+                {
+                    Vector3 last_velocity = Bearing.attractor(current_position, next_position);
+                    Vector3 velocity = Bearing.repeller(next_position, current_position);
+                    Quaternion last_rotation = Quaternion.LookRotation(current_position, last_velocity);
+                    Quaternion rotation = Quaternion.LookRotation(next_position, velocity);
+                    Vector3 old_direction = gameObject.internal_game_object.transform.up;
+                    Vector3 relative_direction = Quaternion.Inverse(last_rotation) * old_direction;
+                    Vector3 next_direction = rotation * relative_direction;
+                    internal_transform.rotation = Quaternion.LookRotation(next_position, next_direction);
+                }
+            }
         }
 
         public PlanetariaTransform root
@@ -184,8 +202,7 @@ namespace Planetaria
 
         public void LookAt(PlanetariaTransform target)
         {
-            direction_variable = target.position.data;
-            internal_transform.rotation = Quaternion.LookRotation(internal_transform.forward, direction_variable);
+            internal_transform.rotation = Quaternion.LookRotation(internal_transform.forward, target.position);
         }
         
         // CONSIDER: implement RotateAround ?
@@ -200,15 +217,29 @@ namespace Planetaria
             internal_transform.SetAsLastSibling();
         }
 
+        public void SetDirection(Vector3 next_direction)
+        {
+            direction = next_direction;
+        }
+
         public void SetParent(PlanetariaTransform transformation)
         {
             internal_transform.SetParent(transformation.internal_transform);
         }
 
-        public void SetPositionAndDirection(Vector3 position, Vector3 direction)
+        public void SetPosition(Vector3 next_position)
         {
-            direction_variable = direction;
-            internal_transform.rotation = Quaternion.LookRotation(position, direction);
+            position = next_position;
+        }
+
+        /// <summary>
+        /// Mutator - Make object stand in "next_position" and face towards "next_direction".
+        /// </summary>
+        /// <param name="next_position">The position of the object on a unit sphere.</param>
+        /// <param name="next_direction">The direction the object faces. The object will rotate towards "direction". (E.g. arc.normal() [dynamic] or Vector3.up [static].)</param>
+        public void SetPositionAndDirection(Vector3 next_position, Vector3 next_direction)
+        {
+            internal_transform.rotation = Quaternion.LookRotation(next_position, next_direction);
         }
 
         public void SetSiblingIndex(int index)
@@ -229,7 +260,6 @@ namespace Planetaria
         [SerializeField] [HideInInspector] private optional<PlanetariaRigidbody> internal_rigidbody; // FIXME: implement
 
         //private Planetarium planetarium_variable; // cartesian_transform's position
-        [SerializeField] private Vector3 direction_variable; // CONSIDER: how do non-normalized vectors affect Quaternion.LookRotation()? Vector3.zero is the biggest issue.
         [SerializeField] private float scale_variable; // I thought this could be combined with transform.localScale/lossyScale, but it can't apparently
     }
 }

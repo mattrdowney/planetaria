@@ -19,7 +19,7 @@ public class Character : PlanetariaMonoBehaviour
         planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
         planetaria_collider = this.GetComponent<PlanetariaCollider>();
         planetaria_collider.material = material;
-        transform.direction = new NormalizedCartesianCoordinates(Vector3.up);
+        transform.direction = Vector3.up;
         transform.localScale = +0.1f;
         planetaria_collider.shape = PlanetariaShape.Create(+0.1f/2);
     }
@@ -67,7 +67,7 @@ public class Character : PlanetariaMonoBehaviour
                 velocity = Mathf.Sign(velocity)*3f*transform.scale;
             }
             planetaria_rigidbody.relative_velocity = new Vector2(velocity, 0);
-            transform.direction = (NormalizedCartesianCoordinates) collision.geometry_visitor.normal();
+            transform.direction = collision.geometry_visitor.normal();
             if (Time.time - last_jump_attempt < .2f)
             {
                 planetaria_rigidbody.derail(0, 3*transform.scale);
@@ -87,7 +87,7 @@ public class Character : PlanetariaMonoBehaviour
     private void on_block_exit(BlockCollision collision)
     {
         last_jump_attempt = -1;
-        transform.direction = new NormalizedCartesianCoordinates(Vector3.up);
+        transform.direction = Vector3.up;
         magnet_floor = false;
     }
 

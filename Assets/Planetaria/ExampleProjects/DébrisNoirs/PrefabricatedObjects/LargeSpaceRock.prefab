@@ -23,7 +23,6 @@ GameObject:
   - component: {fileID: 114333559544760878}
   - component: {fileID: 54590998685544960}
   - component: {fileID: 114063900155376884}
-  - component: {fileID: 114065781004214406}
   - component: {fileID: 114412575448817802}
   - component: {fileID: 114396915670349778}
   m_Layer: 10
@@ -142,22 +141,6 @@ MonoBehaviour:
   internal_renderer: {fileID: 212633172164088102}
   offset: 1
   sprite_variable: {fileID: 21300000, guid: ab361c2518dd0fc48bca4dab3ccc69ab, type: 3}
---- !u!114 &114065781004214406
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1175150822237868}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 10f952ea7f9032546b3fc40bdd88e964, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initialized: 0
-  game_object_variable:
-    game_object_variable: {fileID: 0}
-  target: {fileID: 114166522899314562}
-  last_position: {x: 0, y: 0, z: 0}
 --- !u!114 &114166522899314562
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -173,7 +156,6 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 0}
   internal_transform: {fileID: 4717528800502344}
-  direction_variable: {x: 0, y: 1, z: 0}
   scale_variable: 0.1
 --- !u!114 &114333559544760878
 MonoBehaviour:

@@ -170,7 +170,7 @@ namespace Planetaria
 
                     foreach (Arc intersection in this.shape.block_collision(other_collider.data.shape, shift_from_self_to_other))
                     {
-                        Vector3 position = planetaria_transform.position.data;
+                        Vector3 position = planetaria_transform.position;
                         if (other_collider.data.gameObject.internal_game_object.transform.rotation != Quaternion.identity) // Only shift orientation when necessary
                         {
                             position = Quaternion.Inverse(other_collider.data.gameObject.internal_game_object.transform.rotation) * position;

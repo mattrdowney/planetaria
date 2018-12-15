@@ -35,7 +35,7 @@ public class Debris : PlanetariaMonoBehaviour
         float deviation_angle = UnityEngine.Random.Range(-maximum_deviation_angles[(int)stage], +maximum_deviation_angles[(int)stage]);
         Vector2 local_direction = new Vector2(Mathf.Sin(deviation_angle), Mathf.Cos(deviation_angle));
         Vector3 direction = this.gameObject.internal_game_object.transform.rotation * local_direction;
-        planetaria_transform.direction = new NormalizedCartesianCoordinates(direction);
+        planetaria_transform.direction = direction;
 
         // apply random speed multiplier
         float speed_multiplier = UnityEngine.Random.Range(1.2f, 2f);
@@ -61,7 +61,7 @@ public class Debris : PlanetariaMonoBehaviour
         {
             for (int space_rock = 0; space_rock < 2; ++space_rock)
             {
-                PlanetariaGameObject game_object = PlanetariaGameObject.Instantiate(prefabricated_debris, planetaria_transform.position.data, planetaria_transform.direction.data);
+                PlanetariaGameObject game_object = PlanetariaGameObject.Instantiate(prefabricated_debris, planetaria_transform.position, planetaria_transform.direction);
                 Debris debris = game_object.GetComponent<Debris>();
                 debris.speed = this.speed;
                 debris.stage = this.stage + 1;

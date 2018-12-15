@@ -22,7 +22,7 @@ public class Crosshair : PlanetariaComponent
         Vector3 character_position = main_character.forward;
         Vector3 controller_position = main_controller.forward;
         Vector3 crosshair_up = Bearing.repeller(controller_position, character_position);
-        planetaria_transform.direction = new NormalizedCartesianCoordinates(crosshair_up);
+        planetaria_transform.direction = crosshair_up;
     }
 
     private Transform main_character;
