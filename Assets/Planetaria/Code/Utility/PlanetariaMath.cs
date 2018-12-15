@@ -167,6 +167,27 @@ namespace Planetaria
             return x_axis * Mathf.Cos(radians) + y_axis * Mathf.Sin(radians);
         }
 
+        
+        /// <summary>
+        /// Inspector - sample a triangular distribution to determine a random point (adjusted for its probability density function).
+        /// </summary>
+        /// <param name="uniform_random_sample">A random number from [0,1].</param>
+        /// <result>A number in the [0,+1] range with a probability density of zero at the boundaries {0} U {1} and one at the center {0.5}.</result>
+        /// <see cref="https://en.wikipedia.org/wiki/Triangular_distribution"/>
+        public static float triangular_distribution(float uniform_random_sample, float start_value, float center_value, float end_value)
+        {
+            // map 0 to 0, 0.125 to 0.25, 0.5 to 0.5, 0.875 to 0.75, and 1 to 1 (I think).
+            float cumulative_center_probability = (center_value - start_value) / (end_value - start_value);
+            if (uniform_random_sample < cumulative_center_probability)
+            {
+                return start_value + Mathf.Sqrt(uniform_random_sample*(end_value - start_value)*(center_value - start_value));
+            }
+            else
+            {
+                return end_value - Mathf.Sqrt((1-uniform_random_sample)*(end_value - start_value)*(end_value - center_value));
+            }
+        }
+
         /// <summary>
         /// Returns the horizontal field of view of a camera, given it's vertical field of view and aspect ratio
         /// </summary>

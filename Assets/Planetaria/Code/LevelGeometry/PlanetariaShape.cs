@@ -11,6 +11,9 @@ using UnityEditor.SceneManagement;
 namespace Planetaria
 {
     [Serializable]
+    /// <summary>
+    /// Data Structure - Navigation Mesh (also known as NavMesh) and Polygon/EdgeCollider2D that stores additional information.
+    /// </summary>
     public class PlanetariaShape : ScriptableObject // TODO: clean-up this file~
     {
         public enum AppendMode { OverwriteWithEphemeral, OverwriteWithPermanent, AppendWithEphemeral };
