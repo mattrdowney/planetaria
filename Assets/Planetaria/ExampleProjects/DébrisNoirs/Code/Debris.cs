@@ -51,6 +51,8 @@ public class Debris : PlanetariaMonoBehaviour
     
     public void on_field_enter(PlanetariaCollider collider)
     {
+        // if collision is detected with asteroid, get other asteroid's dot_product threshold (starts at -1 and progresses to +1 in ~1 second after spawning to prevent "double collisions") and average it with this asteroid's dot product threshold
+        // if the (lossy) dot product of the velocities is less than the average threshold, then collide
         collider.gameObject.GetComponent<Ship>().die();
         destroy_asteroid();
     }
