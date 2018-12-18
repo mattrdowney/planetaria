@@ -12,48 +12,33 @@ public class DebrisSpawner : PlanetariaMonoBehaviour
     void Start ()
     {
 		ship = PlanetariaGameObject.Find("Ship").transform;
-        StartCoroutine(detect_debris()); // FIXME: string for function name means Visual Studio can't detect usage
+        StartCoroutine(spawn_debris_repeating()); // FIXME: string for function name means Visual Studio can't detect usage
 	}
 
-    public IEnumerator detect_debris()
+    public IEnumerator spawn_debris_repeating()
     {
-        int seconds = 0;
         while (true)
         {
-            yield return new WaitForSeconds(1f);
-            seconds += 1;
-
-            // Actually detect any remaining debris
-            GameObject[] game_objects = GameObject.FindObjectsOfType<GameObject>();
-            int debris_layer = LayerMask.NameToLayer("Debris");
-            foreach (GameObject game_object in game_objects)
-            {
-                if (game_object.layer == debris_layer)
-                {
-                    seconds = 0; // if there is still debris, do not continue to the next round yet
-                    break;
-                }
-            }
-            if (seconds >= 1)
-            {
-                spawn_debris();
-                seconds = 0;
-            }
+            yield return delay;
+            spawn_debris();
         }
     }
 
     private void spawn_debris()
     {
-        for (int debris = 0; debris < 4; ++debris)
+        if (DebrisNoirs.request_life())
         {
             Vector3 random_position = UnityEngine.Random.onUnitSphere;
             if (Vector3.Dot(random_position, ship.position) > 0)
             {
                 random_position *= -1;
             }
-            PlanetariaGameObject.Instantiate(prefabricated_debris, random_position);
+            PlanetariaGameObject debris = PlanetariaGameObject.Instantiate(prefabricated_debris, random_position);
+            DebrisNoirs.live(debris);
         }
     }
+
+    private static WaitForSeconds delay = new WaitForSeconds(1f);
 
     [SerializeField] public GameObject prefabricated_debris;
     [NonSerialized] private PlanetariaTransform ship;

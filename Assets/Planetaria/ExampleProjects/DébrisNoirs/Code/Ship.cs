@@ -12,13 +12,12 @@ public class Ship : PlanetariaMonoBehaviour
     {
         main_character = GameObject.FindObjectOfType<Ship>().gameObject.internal_game_object.transform;
         main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
-        thrusters = GameObject.FindObjectOfType<Ship>().gameObject.internal_game_object.transform.Find("ThrustersConnector");
         planetaria_collider = this.GetComponent<PlanetariaCollider>();
         planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
         ship_renderer = this.GetComponent<AreaRenderer>();
         crosshair_renderer = PlanetariaGameObject.Find("Hand").GetComponent<AreaRenderer>();
         transform.direction = Vector3.up;
-        transform.localScale = +0.1f;
+        transform.scale = +0.05f;
         planetaria_collider.shape = PlanetariaShape.Create(+0.1f/2);
         OnFieldEnter.data = on_field_enter;
     }
@@ -35,7 +34,6 @@ public class Ship : PlanetariaMonoBehaviour
                 float current_angle = ship_renderer.angle * Mathf.Rad2Deg;
                 float interpolator = 360 * 3 / Mathf.Abs(Mathf.DeltaAngle(current_angle, target_angle * Mathf.Rad2Deg)) * Time.deltaTime;
                 ship_renderer.angle = Mathf.LerpAngle(current_angle, target_angle * Mathf.Rad2Deg, interpolator) * Mathf.Deg2Rad;
-                thrusters.localEulerAngles = new Vector3(thrusters.localEulerAngles.x, thrusters.localEulerAngles.y, ship_renderer.angle * Mathf.Rad2Deg - 90);
             }
 
             // TODO: verify (pretty likely to have at least one error) // Bunch of errors, not elegant
@@ -102,7 +100,6 @@ public class Ship : PlanetariaMonoBehaviour
 
     [NonSerialized] private Transform main_character;
     [NonSerialized] private Transform main_controller;
-    [NonSerialized] private Transform thrusters;
     [NonSerialized] private PlanetariaCollider planetaria_collider;
     [NonSerialized] private AreaRenderer crosshair_renderer;
     [NonSerialized] private AreaRenderer ship_renderer;

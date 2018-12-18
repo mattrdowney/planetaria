@@ -98,7 +98,7 @@ namespace Planetaria
             set
             {
                 scale_variable = value;
-                internal_transform.localScale = Vector3.one * scale_variable/2;
+                internal_transform.localScale = Vector3.one * scale_variable;
             }
         }
 

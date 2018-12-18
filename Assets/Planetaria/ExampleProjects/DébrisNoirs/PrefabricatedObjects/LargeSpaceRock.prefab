@@ -156,7 +156,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 0}
   internal_transform: {fileID: 4717528800502344}
-  scale_variable: 0.1
+  scale_variable: 0.2
 --- !u!114 &114333559544760878
 MonoBehaviour:
   m_ObjectHideFlags: 1
