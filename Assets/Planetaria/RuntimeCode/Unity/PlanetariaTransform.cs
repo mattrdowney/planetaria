@@ -260,7 +260,7 @@ namespace Planetaria
         [SerializeField] [HideInInspector] private optional<PlanetariaRigidbody> internal_rigidbody; // FIXME: implement
 
         //private Planetarium planetarium_variable; // cartesian_transform's position
-        [SerializeField] private float scale_variable; // I thought this could be combined with transform.localScale/lossyScale, but it can't apparently
+        [SerializeField] [HideInInspector] private float scale_variable; // I thought this could be combined with transform.localScale/lossyScale, but it can't apparently
     }
 }
 

@@ -5,6 +5,7 @@ namespace Planetaria
     /// <summary>
 	/// Singleton - Game Manager for Debris Noirs.
     /// </summary>
+    /// <seealso cref="https://www.arcade-history.com/?n=asteroids-upright-model&page=detail&id=126"/> // Extra information about Asteroids (1979)
 	public static class DebrisNoirs
 	{
 		public static void request_death(PlanetariaGameObject game_object)

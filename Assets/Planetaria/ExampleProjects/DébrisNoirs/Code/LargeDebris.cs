@@ -2,7 +2,7 @@
 using UnityEngine;
 using Planetaria;
 
-public class Debris : PlanetariaMonoBehaviour
+public class LargeDebris : PlanetariaMonoBehaviour
 {
     // how many asteroid stages? small/medium/large?
     // how many rocks spawned per stage? 2? // A random range?
@@ -28,9 +28,6 @@ public class Debris : PlanetariaMonoBehaviour
         planetaria_transform = this.GetComponent<PlanetariaTransform>();
         planetaria_renderer = this.GetComponent<AreaRenderer>();
         planetaria_renderer.angle = UnityEngine.Random.Range(0, 2*Mathf.PI);
-        
-        // set sprite image
-        planetaria_renderer.sprite = debris_sprites[(int)stage];
 
         // set collider size
         transform.scale = debris_sizes[(int)stage];
@@ -69,7 +66,7 @@ public class Debris : PlanetariaMonoBehaviour
             for (int space_rock = 0; space_rock < 2; ++space_rock)
             {
                 PlanetariaGameObject game_object = PlanetariaGameObject.Instantiate(prefabricated_debris, planetaria_transform.position, planetaria_transform.direction);
-                Debris debris = game_object.GetComponent<Debris>();
+                LargeDebris debris = game_object.GetComponent<LargeDebris>();
                 debris.speed = this.speed;
                 debris.stage = this.stage + 1;
             }

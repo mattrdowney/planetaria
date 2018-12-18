@@ -17,8 +17,7 @@ public class Ship : PlanetariaMonoBehaviour
         ship_renderer = this.GetComponent<AreaRenderer>();
         crosshair_renderer = PlanetariaGameObject.Find("Hand").GetComponent<AreaRenderer>();
         transform.direction = Vector3.up;
-        transform.scale = +0.05f;
-        planetaria_collider.shape = PlanetariaShape.Create(+0.1f/2);
+        planetaria_collider.shape = PlanetariaShape.Create(transform.scale);
         OnFieldEnter.data = on_field_enter;
     }
 

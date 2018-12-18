@@ -1,15 +1,10 @@
 {
-    "name": "Tests",
+    "name": "PlanetariaEditor",
     "references": [
-        "Planetaria",
-        "PlanetariaEditor"
+        "Planetaria"
     ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
-    ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
