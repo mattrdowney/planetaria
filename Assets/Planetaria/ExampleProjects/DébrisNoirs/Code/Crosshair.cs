@@ -2,7 +2,7 @@
 using UnityEngine;
 using Planetaria;
 
-public class Crosshair : PlanetariaComponent
+public class Crosshair : PlanetariaMonoBehaviour
 {
     private void Start()
     {
@@ -24,6 +24,9 @@ public class Crosshair : PlanetariaComponent
         Vector3 crosshair_up = Bearing.repeller(controller_position, character_position);
         planetaria_transform.direction = crosshair_up;
     }
+
+    protected override void OnConstruction() { }
+    protected override void OnDestruction() { }
 
     private Transform main_character;
     private Transform main_controller;

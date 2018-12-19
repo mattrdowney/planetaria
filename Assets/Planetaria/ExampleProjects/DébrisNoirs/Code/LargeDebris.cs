@@ -8,6 +8,7 @@ using Planetaria;
 public class LargeDebris : PlanetariaMonoBehaviour
 {
     protected override void OnConstruction() { }
+    protected override void OnDestruction() { }
 
     private void OnValidate()
     {
@@ -34,8 +35,6 @@ public class LargeDebris : PlanetariaMonoBehaviour
         // set velocity
         planetaria_rigidbody.relative_velocity = new Vector2(0, speed);
     }
-
-    protected override void OnDestruction() { }
 
     [SerializeField] private float speed = 2*Mathf.PI/50;
 

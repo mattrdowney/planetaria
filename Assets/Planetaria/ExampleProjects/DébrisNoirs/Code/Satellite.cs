@@ -87,7 +87,7 @@ public class Satellite : PlanetariaMonoBehaviour
         //die();
     }
 
-    public void die()
+    private void die()
     {
         dead = true;
         respawn_time = 6f;
