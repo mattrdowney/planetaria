@@ -136,6 +136,11 @@ namespace Planetaria
 
         private void OnTriggerStay(Collider collider)
         {
+            if (this.is_field) // fields pass through each other (same as triggers)
+            {
+                return; // optimization: fields don't need collision information normally.
+                // if a block collides with a field, the block will notify the field.
+            }
             optional<SphereCollider> sphere_collider = collider as SphereCollider;
             if (!sphere_collider.exists)
             {
@@ -148,37 +153,33 @@ namespace Planetaria
                 Debug.LogError("This should never happen");
                 return;
             }
-            if (!this.is_field) // fields pass through each other (same as triggers) // TODO: move this optimization to first line (ideally don't call this function)
+
+            Quaternion shift_from_self_to_other = other_collider.data.internal_transform.rotation;
+            if (this.internal_transform.rotation != Quaternion.identity) // Only shift orientation when necessary
             {
-                Quaternion shift_from_self_to_other = other_collider.data.internal_transform.rotation;
-                if (this.internal_transform.rotation != Quaternion.identity) // Only shift orientation when necessary
-                {
-                    // TODO: verify the order of operations is correct (and logic itself)
-                    shift_from_self_to_other = Quaternion.Inverse(this.internal_transform.rotation) * shift_from_self_to_other;
-                }
+                // TODO: verify the order of operations is correct (and logic itself)
+                shift_from_self_to_other = Quaternion.Inverse(this.internal_transform.rotation) * shift_from_self_to_other;
+            }
 
-                if (other_collider.data.is_field) // field collision
+            if (other_collider.data.is_field) // field collision
+            {
+                if (this.shape.field_collision(other_collider.data.shape, shift_from_self_to_other))
                 {
-                    if (this.shape.field_collision(other_collider.data.shape, shift_from_self_to_other))
+                    observer.potential_field_collision(other_collider.data); // TODO: augment field (like Unity triggers) works on both the sender and receiver.
+                }
+            }
+            else // block collision
+            {
+                foreach (Arc intersection in this.shape.block_collision(other_collider.data.shape, shift_from_self_to_other))
+                {
+                    Vector3 position = planetaria_transform.position;
+                    if (other_collider.data.gameObject.internal_game_object.transform.rotation != Quaternion.identity) // Only shift orientation when necessary
                     {
-                        observer.potential_field_collision(other_collider.data); // TODO: augment field (like Unity triggers) works on both the sender and receiver.
+                        position = Quaternion.Inverse(other_collider.data.gameObject.internal_game_object.transform.rotation) * position;
                     }
-                }
-                else // block collision
-                {
-                    // FIXME: TODO: make sure only the character collides for now
-
-                    foreach (Arc intersection in this.shape.block_collision(other_collider.data.shape, shift_from_self_to_other))
+                    if (intersection.contains(position, planetaria_transform.scale/2))
                     {
-                        Vector3 position = planetaria_transform.position;
-                        if (other_collider.data.gameObject.internal_game_object.transform.rotation != Quaternion.identity) // Only shift orientation when necessary
-                        {
-                            position = Quaternion.Inverse(other_collider.data.gameObject.internal_game_object.transform.rotation) * position;
-                        }
-                        if (intersection.contains(position, planetaria_transform.scale/2))
-                        {
-                            observer.potential_block_collision(intersection, other_collider.data); // block collisions are handled in OnCollisionStay(): notification stage
-                        }
+                        observer.potential_block_collision(intersection, other_collider.data); // block collisions are handled in OnCollisionStay(): notification stage
                     }
                 }
             }

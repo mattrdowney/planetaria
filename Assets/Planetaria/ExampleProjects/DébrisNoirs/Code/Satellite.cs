@@ -18,6 +18,7 @@ public class Satellite : PlanetariaMonoBehaviour
         crosshair_renderer = PlanetariaGameObject.Find("Hand").GetComponent<AreaRenderer>();
         transform.direction = Vector3.up;
         planetaria_collider.shape = PlanetariaShape.Create(transform.scale);
+        
         OnFieldEnter.data = on_field_enter;
     }
 
@@ -84,7 +85,7 @@ public class Satellite : PlanetariaMonoBehaviour
     public void on_field_enter(PlanetariaCollider collider)
     {
         Debug.Log("Satellite Colliding"); // Why isn't this being called? w/e being lazy...
-        //die();
+        die();
     }
 
     private void die()
