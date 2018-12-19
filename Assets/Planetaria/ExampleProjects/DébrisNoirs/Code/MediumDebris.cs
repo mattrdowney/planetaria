@@ -26,7 +26,7 @@ public class MediumDebris : PlanetariaMonoBehaviour
         planetaria_transform.direction = direction;
 
         // apply random speed multiplier
-        float speed_multiplier = UnityEngine.Random.Range(1.2f, 2f);
+        float speed_multiplier = UnityEngine.Random.Range(1, 1.25f);
         speed *= speed_multiplier;
 
         // set velocity
@@ -46,7 +46,7 @@ public class MediumDebris : PlanetariaMonoBehaviour
     {
         for (int space_rock = 0; space_rock < 2; ++space_rock)
         {
-            PlanetariaGameObject game_object = PlanetariaGameObject.Instantiate(prefabricated_debris, planetaria_transform.position, planetaria_transform.direction);
+            PlanetariaGameObject game_object = PlanetariaGameObject.Instantiate(small_debris, planetaria_transform.position, planetaria_transform.direction);
             SmallDebris debris = game_object.GetComponent<SmallDebris>();
             debris.speed = this.speed;
         }
@@ -58,10 +58,7 @@ public class MediumDebris : PlanetariaMonoBehaviour
     [NonSerialized] private PlanetariaRigidbody planetaria_rigidbody;
     [NonSerialized] private PlanetariaTransform planetaria_transform;
 
-    [SerializeField] public /*static*/ GameObject prefabricated_debris;
-    [SerializeField] public /*static*/ Sprite[] debris_sprites;
-    [SerializeField] public /*static*/ float[] maximum_deviation_angles;
-    [SerializeField] public /*static*/ float[] debris_sizes;
+    [SerializeField] public /*static*/ GameObject small_debris;
 
     [SerializeField] private float speed = 1;
 }

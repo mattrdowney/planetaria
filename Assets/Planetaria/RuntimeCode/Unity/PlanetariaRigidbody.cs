@@ -41,9 +41,9 @@ namespace Planetaria
             previous_position = get_position();
             if (observer.exists && observer.data.colliding()) // grounded
             {
-                grounded_track(Time.deltaTime/2);
+                grounded_track(Time.fixedDeltaTime/2);
                 grounded_position();
-                grounded_accelerate(Time.deltaTime);
+                grounded_accelerate(Time.fixedDeltaTime);
             }
             else // non-grounded / "aerial"
             {
@@ -52,18 +52,18 @@ namespace Planetaria
                 // "This is especially useful when computing orbital dynamics, as many other integration schemes, such as the (order-4) Runge-Kutta method, do not conserve energy and allow the system to drift substantially over time." - Wikipedia
                 // http://lolengine.net/blog/2011/12/14/understanding-motion-in-games
                 // http://www.richardlord.net/presentations/physics-for-flash-games.html
-                velocity += acceleration * (Time.deltaTime/2);
-                aerial_move(velocity.magnitude * Time.deltaTime);
+                velocity += acceleration * (Time.fixedDeltaTime/2);
+                aerial_move(velocity.magnitude * Time.fixedDeltaTime);
                 acceleration = get_acceleration();
             }
 
             if (observer.exists && observer.data.colliding()) // grounded
             {
-                grounded_track(Time.deltaTime/2);
+                grounded_track(Time.fixedDeltaTime/2);
             }
             else // non-grounded / "aerial"
             {
-                velocity += acceleration * (Time.deltaTime/2);
+                velocity += acceleration * (Time.fixedDeltaTime/2);
             }
         }
 
@@ -103,13 +103,17 @@ namespace Planetaria
             Vector3 next_velocity = PlanetariaMath.spherical_linear_interpolation(get_position(), velocity.normalized, delta + Mathf.PI/2);
             
             transform.position = next_position;
-            velocity = next_velocity.normalized * velocity.magnitude;
+            velocity = next_velocity.normalized * velocity.magnitude; // FIXME: I thought this was numerically stable, but it seems to create more energy.
+            if (this.name != "Satellite")
+            {
+                Debug.Log(velocity.magnitude);
+            }
             //velocity = Vector3.ProjectOnPlane(velocity, get_position()); // TODO: CONSIDER: ensure velocity and position are orthogonal - they seem to desynchronize
         }
 
         private void grounded_position()
         {
-            collision.geometry_visitor.move_position(horizontal_velocity * Time.deltaTime);
+            collision.geometry_visitor.move_position(horizontal_velocity * Time.fixedDeltaTime);
             transform.position = collision.geometry_visitor.position(); // NOTE: required so get_acceleration() functions
             // project velocity
         }
@@ -131,7 +135,7 @@ namespace Planetaria
             acceleration = get_acceleration();
             horizontal_acceleration = Vector3.Dot(acceleration, right);
             vertical_acceleration = Vector3.Dot(acceleration, normal) - collision.magnetism;
-            vertical_velocity += vertical_acceleration*Time.deltaTime;
+            vertical_velocity += vertical_acceleration*Time.fixedDeltaTime;
             if (!collision.grounded(internal_velocity)) // TODO: check centripedal force
             {
                 derail(0, vertical_acceleration*delta); // Force OnCollisionExit, "un-collision" (and accelerate for a frame)
@@ -165,7 +169,7 @@ namespace Planetaria
             if (observer.exists)
             {
                 Vector3 x = horizontal_velocity * Bearing.right(get_position(), collision.geometry_visitor.normal());
-                Vector3 y = vertical_acceleration * Time.deltaTime * collision.geometry_visitor.normal();
+                Vector3 y = vertical_acceleration * Time.fixedDeltaTime * collision.geometry_visitor.normal();
                 velocity = x + y;
             }
         }
@@ -205,6 +209,10 @@ namespace Planetaria
                 //velocity = x + y;
                 velocity = internal_transform.TransformDirection(value);
                 synchronize_velocity_air_to_ground();
+                if (this.name != "Satellite")
+                {
+                    Debug.Log(velocity.magnitude);
+                }
             }
         }
 
@@ -237,6 +245,7 @@ namespace Planetaria
 
         public Vector3 get_position()
         {
+            // TODO: while this isn't useful now, I could use caching later
             return transform.position;
         }
 

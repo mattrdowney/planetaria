@@ -271,4 +271,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 403f9ff19abb86641b6aaefb1a80317e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  initialized: 0
+  game_object_variable:
+    game_object_variable: {fileID: 4871731741837279479}
+  small_debris: {fileID: 6232152889581167726, guid: 2b0d67d6289766c4990a73ae4f38d694,
+    type: 3}
   speed: 0.23271057
