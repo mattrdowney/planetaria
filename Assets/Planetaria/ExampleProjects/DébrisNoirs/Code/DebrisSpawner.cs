@@ -11,7 +11,7 @@ public class DebrisSpawner : PlanetariaMonoBehaviour
 
     void Start ()
     {
-		ship = PlanetariaGameObject.Find("Ship").transform;
+		ship = PlanetariaGameObject.Find("Satellite").transform;
         StartCoroutine(spawn_debris_repeating()); // FIXME: string for function name means Visual Studio can't detect usage
 	}
 

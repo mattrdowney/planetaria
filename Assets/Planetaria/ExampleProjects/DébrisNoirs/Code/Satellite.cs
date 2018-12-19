@@ -2,7 +2,7 @@
 using UnityEngine;
 using Planetaria;
 
-public class Ship : PlanetariaMonoBehaviour
+public class Satellite : PlanetariaMonoBehaviour
 {
     protected override void OnConstruction() { }
 
@@ -10,7 +10,7 @@ public class Ship : PlanetariaMonoBehaviour
 
     private void Start()
     {
-        main_character = GameObject.FindObjectOfType<Ship>().gameObject.internal_game_object.transform;
+        main_character = GameObject.FindObjectOfType<Satellite>().gameObject.internal_game_object.transform;
         main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
         planetaria_collider = this.GetComponent<PlanetariaCollider>();
         planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
@@ -43,7 +43,7 @@ public class Ship : PlanetariaMonoBehaviour
             // Aim perpendicular to velocity (left/right): partial drag (e.g. coefficient of .75) but take a percentage of the momentum that would be lost and apply it along input_direction
 
             // add velocity based on input
-            planetaria_rigidbody.relative_velocity += input_direction * Time.deltaTime;
+            planetaria_rigidbody.relative_velocity += input_direction * acceleration * Time.deltaTime;
             Vector2 velocity = planetaria_rigidbody.relative_velocity;
 
             // drag in coincident direction varies from coefficient of 1->~0.8->~0.5
@@ -83,7 +83,7 @@ public class Ship : PlanetariaMonoBehaviour
 
     public void on_field_enter(PlanetariaCollider collider)
     {
-        Debug.Log("Ship Colliding"); // Why isn't this being called? w/e being lazy...
+        Debug.Log("Satellite Colliding"); // Why isn't this being called? w/e being lazy...
         //die();
     }
 
@@ -96,6 +96,7 @@ public class Ship : PlanetariaMonoBehaviour
     }
     
     [SerializeField] private float crosshair_size = 1f;
+    [SerializeField] private float acceleration = 2f;
 
     [NonSerialized] private Transform main_character;
     [NonSerialized] private Transform main_controller;

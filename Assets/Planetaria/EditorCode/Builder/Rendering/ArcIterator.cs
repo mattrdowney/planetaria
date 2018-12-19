@@ -1,22 +1,23 @@
-﻿using UnityEngine;
-using Planetaria;
+﻿#if UNITY_EDITOR
 
-public class Missile : PlanetariaMonoBehaviour
+namespace Planetaria
 {
-    protected override void OnConstruction() { }
-
-    protected override void OnDestruction() { }
-
-    private void Start()
+    public struct ArcIterator
     {
-        rigidbody = GetComponent<PlanetariaRigidbody>();
-        rigidbody.relative_velocity = Vector2.up*Mathf.PI;
-        PlanetariaGameObject.Destroy(this.gameObject, 2f);
-        transform.localScale = +0.01f;
-    }
+        public Arc arc { get; private set; }
+        public float begin { get; private set; }
+        public float end { get; private set; }
 
-    [SerializeField] private new PlanetariaRigidbody rigidbody; // TODO: check how storing/caching rigidbodies works in MonoBehaviours (this needs the new keyword)
+        public ArcIterator(Arc arc, float begin, float end)
+        {
+            this.arc = arc;
+            this.begin = begin;
+            this.end = end;
+        }
+    }
 }
+
+#endif
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal

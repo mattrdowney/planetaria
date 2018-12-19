@@ -7,7 +7,7 @@ namespace Planetaria
 	/// Procedurally generates engine noises.
     /// </summary>
     [RequireComponent(typeof(AudioSource))]
-	public class ShipAudio : PlanetariaMonoBehaviour
+	public class SatelliteAudio : PlanetariaMonoBehaviour
     {
         private void Update()
         {

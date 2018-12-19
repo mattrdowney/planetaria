@@ -24,7 +24,7 @@ namespace Planetaria
             // if no controller exists (or hasn't been used for 20 seconds), then use the head's orientation as a controller.
             if (!main_character || !main_character)
             {
-                main_character = GameObject.FindObjectOfType<Ship>().gameObject.internal_game_object.transform;
+                main_character = GameObject.FindObjectOfType<Satellite>().gameObject.internal_game_object.transform;
                 main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
             }
             Vector3 direction = Bearing.attractor(main_character.forward, main_controller.forward);

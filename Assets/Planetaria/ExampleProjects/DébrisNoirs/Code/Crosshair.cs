@@ -6,7 +6,7 @@ public class Crosshair : PlanetariaComponent
 {
     private void Start()
     {
-        main_character = GameObject.FindObjectOfType<Ship>().gameObject.internal_game_object.transform;
+        main_character = GameObject.FindObjectOfType<Satellite>().gameObject.internal_game_object.transform;
         main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
         planetaria_transform = this.GetComponent<PlanetariaTransform>();
 #if UNITY_EDITOR

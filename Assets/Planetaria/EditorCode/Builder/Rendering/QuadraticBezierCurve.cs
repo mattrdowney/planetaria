@@ -1,19 +1,25 @@
-﻿namespace Planetaria
-{
-    public struct ArcIterator
-    {
-        public Arc arc { get; private set; }
-        public float begin { get; private set; }
-        public float end { get; private set; }
+﻿#if UNITY_EDITOR
 
-        public ArcIterator(Arc arc, float begin, float end)
+using UnityEngine;
+
+namespace Planetaria
+{
+    public struct QuadraticBezierCurve
+    {
+        public Vector2 begin_uv { get; private set; }
+        public Vector2 control_uv { get; private set; }
+        public Vector2 end_uv { get; private set; }
+
+        public QuadraticBezierCurve(Vector2 begin_uv, Vector2 control_uv, Vector2 end_uv)
         {
-            this.arc = arc;
-            this.begin = begin;
-            this.end = end;
+            this.begin_uv = begin_uv;
+            this.control_uv = control_uv;
+            this.end_uv = end_uv;
         }
     }
 }
+
+#endif
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal

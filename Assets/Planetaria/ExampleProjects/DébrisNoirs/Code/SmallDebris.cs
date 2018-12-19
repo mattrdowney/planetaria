@@ -15,4 +15,6 @@ public class SmallDebris : MonoBehaviour
     {
         
     }
+
+    [SerializeField] private float speed = 1;
 }

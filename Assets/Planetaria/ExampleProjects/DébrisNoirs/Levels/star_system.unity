@@ -456,7 +456,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1996407451135126, guid: aaa1349aadcd2114a9d661fa04abe0a0, type: 3}
       propertyPath: m_Name
-      value: Ship
+      value: Satellite
       objectReference: {fileID: 0}
     - target: {fileID: 4436393650129868, guid: aaa1349aadcd2114a9d661fa04abe0a0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -501,6 +501,21 @@ PrefabInstance:
     - target: {fileID: 4436393650129868, guid: aaa1349aadcd2114a9d661fa04abe0a0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 212513914080064210, guid: aaa1349aadcd2114a9d661fa04abe0a0,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 212513914080064210, guid: aaa1349aadcd2114a9d661fa04abe0a0,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 212513914080064210, guid: aaa1349aadcd2114a9d661fa04abe0a0,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aaa1349aadcd2114a9d661fa04abe0a0, type: 3}

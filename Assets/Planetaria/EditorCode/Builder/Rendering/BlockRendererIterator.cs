@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#if UNITY_EDITOR
+
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Planetaria
@@ -89,6 +91,8 @@ namespace Planetaria
         private static Dictionary<Arc, List<Discontinuity>> discontinuities;
     }
 }
+
+#endif
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
