@@ -95,6 +95,11 @@ public class Satellite : PlanetariaMonoBehaviour
         planetaria_collider.enabled = false;
         ship_renderer.enabled = false;
     }
+
+    public bool is_dead()
+    {
+        return dead;
+    }
     
     [SerializeField] private float crosshair_size = 1f;
     [SerializeField] private float acceleration = 2f;

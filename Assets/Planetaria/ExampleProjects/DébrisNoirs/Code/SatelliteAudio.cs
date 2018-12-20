@@ -11,23 +11,31 @@ namespace Planetaria
     {
         private void Start()
         {
-            satellite = this.GetComponent<PlanetariaRigidbody>();
+            satellite = this.GetComponent<Satellite>();
+            satellite_rigidbody = this.GetComponent<PlanetariaRigidbody>();
         }
 
         private void Update()
         {
-            Vector2 player_velocity = satellite.relative_velocity;
-            Vector2 player_acceleration = DebrisNoirsInput.movement();
-            float player_acceleration_angle = Mathf.Atan2(player_acceleration.y, player_acceleration.x);
-            Vector2 partial_velocity = player_velocity/3;
-            if (partial_velocity.magnitude > 1)
+            if (satellite.is_dead())
             {
-                partial_velocity.Normalize();
+                //thruster_force = Mathf.Max(0, thruster_force - Time.deltaTime*2f);
+                thruster_force *= Mathf.Pow(0.05f, Time.deltaTime); // works better with logarithmically-perceived scale for hearing
+                return;
             }
-
-
-            thruster_force = (1 - Vector2.Dot(partial_velocity, player_acceleration))/2; // moving forward implies 0 force; backwards implies 1 force
-            thruster_force *= player_acceleration.magnitude; // FIXME: almost right, but part wrong // idea: if the thrusters aren't being used then don't assume 0.5 force
+            Vector2 player_velocity = satellite_rigidbody.relative_velocity;
+            Vector2 player_acceleration = DebrisNoirsInput.movement();
+            thruster_force = Mathf.Lerp(minimum_volume_multiplier, 1, player_acceleration.magnitude);
+            thruster_resistance = 0; // force is more precisely representing how much "change" is happening (in angle/direction of satellite)
+            if (player_acceleration != Vector2.zero) // if thrusters are on, there is likely a change in direction
+            {
+                Vector2 partial_velocity = player_velocity / Mathf.PI;
+                if (partial_velocity.magnitude > 1)
+                {
+                    partial_velocity.Normalize();
+                }
+                thruster_resistance = (player_acceleration.magnitude - Vector2.Dot(partial_velocity, player_acceleration)) / 2; // moving forward implies 0 force; backwards implies 1 force
+            }
         }
 
         // use dot product of velocity and input to determine if the player is fighting their momentum.
@@ -49,20 +57,25 @@ namespace Planetaria
                     wave_value = PlanetariaMath.triangular_distribution(random_number, -volume, 0, +volume);
                     random_number = (float) random_number_generator.NextDouble();
                     // this approximately determines the pitch
-                    repeats_left = Mathf.FloorToInt(PlanetariaMath.triangular_distribution(random_number, 100, 150, 200)); // FIXME: MAGIC NUMBER:
+                    repeats_left = Mathf.FloorToInt(PlanetariaMath.triangular_distribution(random_number, 172, 259, 518)); // FIXME: MAGIC NUMBER:
                 }
                 random_number = (float) random_number_generator.NextDouble();
-                float thruster_multiplier = 1 + thruster_variance_multiplier*random_number*thruster_force;
-                data[sample] = wave_value * thruster_multiplier;
+                float resistance_multiplier = 1 + thruster_variance_multiplier*random_number*thruster_resistance;
+                data[sample] = wave_value * resistance_multiplier * thruster_force;
                 repeats_left -= 1;
             }
         }
 
-        private PlanetariaRigidbody satellite;
+        private Satellite satellite;
+        private PlanetariaRigidbody satellite_rigidbody;
+        private bool player_dead;
 
         private const float volume = 0.004f;
+        private const float minimum_volume_multiplier = 0.5f;
         private const float thruster_variance_multiplier = 2f;
         private float thruster_force;
+        private float thruster_resistance;
+        private float acceleration;
         private float wave_value;
         private int repeats_left = 0;
 
