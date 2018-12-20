@@ -17,7 +17,7 @@ public class FramesPerSecondDisplay : MonoBehaviour
  
 		GUIStyle style = new GUIStyle();
  
-		Rect rect = new Rect(0, 0, w, h * 2 / 100);
+		Rect rect = new Rect(w/2, h/2, w, h * 2 / 10);
 		style.alignment = TextAnchor.UpperLeft;
 		style.fontSize = h * 2 / 20;
 		style.normal.textColor = new Color (1.0f, 1.0f, 1.0f, 1.0f);

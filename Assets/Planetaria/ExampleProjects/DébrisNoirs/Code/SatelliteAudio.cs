@@ -9,34 +9,29 @@ namespace Planetaria
     [RequireComponent(typeof(AudioSource))]
 	public class SatelliteAudio : PlanetariaMonoBehaviour
     {
+        private void Start()
+        {
+            satellite = this.GetComponent<PlanetariaRigidbody>();
+        }
+
         private void Update()
         {
-            player_velocity = DebrisNoirsInput.movement();
-            float player_velocity_angle = Mathf.Atan2(player_velocity.y, player_velocity.x);
-
-            // angle = PI/2 --> ramp 1 to 1.5
-            // angles = (0, PI) --> ramp 1 to 1 (no ramp)
-            // angles = -PI --> ramp 1.5 to 1
-            // this means the values are approximately Sin(angle) or velocity.y, but you want even distribution
-            if (player_velocity_angle >= Mathf.PI/2) // Quadrant II
+            Vector2 player_velocity = satellite.relative_velocity;
+            Vector2 player_acceleration = DebrisNoirsInput.movement();
+            float player_acceleration_angle = Mathf.Atan2(player_acceleration.y, player_acceleration.x);
+            Vector2 partial_velocity = player_velocity/3;
+            if (partial_velocity.magnitude > 1)
             {
-                velocity_interpolator = Mathf.Lerp(1, 0, (player_velocity_angle - (Mathf.PI/2))/(Mathf.PI/2));
-            }
-            else if (player_velocity_angle >= 0) // Quadrant I
-            {
-                velocity_interpolator = Mathf.Lerp(0, 1, player_velocity_angle/(Mathf.PI/2));
-            }
-            else if (player_velocity_angle >= -Mathf.PI/2) // Quadrant IV
-            {
-                velocity_interpolator = Mathf.Lerp(0, -1, -player_velocity_angle/(Mathf.PI/2));
-            }
-            else // if (player_velocity_angle < -Mathf.PI/2) // Quadrant III
-            {
-                velocity_interpolator = Mathf.Lerp(-1, 0, -(player_velocity_angle + (Mathf.PI/2))/(Mathf.PI/2));
+                partial_velocity.Normalize();
             }
 
-            // CONSIDER: two controls for ramp height - left and right (one based on sine, other based on cosine).
+
+            thruster_force = (1 - Vector2.Dot(partial_velocity, player_acceleration))/2; // moving forward implies 0 force; backwards implies 1 force
+            thruster_force *= player_acceleration.magnitude; // FIXME: almost right, but part wrong // idea: if the thrusters aren't being used then don't assume 0.5 force
         }
+
+        // use dot product of velocity and input to determine if the player is fighting their momentum.
+        // if they are, add extra noise so it sounds like the thrusters are working harder (harsher noise).
 
         private void OnAudioFilterRead(float[] data, int channels)
         {
@@ -45,46 +40,30 @@ namespace Planetaria
             // go through the audio clip that needs to be generated
             for (int sample = 0; sample < data.Length; sample += 1)
             {
+                float random_number;
                 // play a sound for multiple frames (e.g. a "square wave")
                 if (repeats_left <= 0) // but randomly generate new samples as needed
                 {
-                    // TODO: figure out how to change the noise based on the direction of movement e.g. North/South (without changing too many audio properties).
-                    // most likely, the sound should come from in front, but if you changed the position to the direction extruded PI/2 it might have the best effect
-                    // e.g. heading down would make the sound come from below, up from above, left from the left and right from the right.
-                    // alternatively, you could make the pitch lower for heading south, higher for heading north
-                    // you could also make the wave_value (-0.1f, 0.1f*velocity.x, +0.1f) - doesn't seem to work (as I'd expect).
-                    // get random numbers to make the sound less predictable
-                    float random_number = (float) random_number_generator.NextDouble();
+                    random_number = (float) random_number_generator.NextDouble();
                     // this determines the local amplitude (volume)
                     wave_value = PlanetariaMath.triangular_distribution(random_number, -volume, 0, +volume);
                     random_number = (float) random_number_generator.NextDouble();
                     // this approximately determines the pitch
-                    total_repeats = Mathf.FloorToInt(PlanetariaMath.triangular_distribution(random_number, 100, 150, 200)); // FIXME: MAGIC NUMBER:
-                    repeats_left = total_repeats;
+                    repeats_left = Mathf.FloorToInt(PlanetariaMath.triangular_distribution(random_number, 100, 150, 200)); // FIXME: MAGIC NUMBER:
                 }
-                // actually create the sound
-                if (velocity_interpolator > 0) // moving up
-                {
-                    data[sample] = wave_value * (1 + (1-(repeats_left / (float)total_repeats)) * velocity_interpolator * velocity_multiplier);
-                }
-                else // moving down
-                {
-                    data[sample] = wave_value * (1 + (repeats_left / (float)total_repeats) * velocity_interpolator * velocity_multiplier);
-                }
+                random_number = (float) random_number_generator.NextDouble();
+                float thruster_multiplier = 1 + thruster_variance_multiplier*random_number*thruster_force;
+                data[sample] = wave_value * thruster_multiplier;
                 repeats_left -= 1;
-            }
-            for (int sample = 0; sample < data.Length; sample += 1)
-            {
-                data[sample] *= (1+(player_velocity.x+1)*velocity_multiplier*velocity_multiplier);
             }
         }
 
-        private const float volume = 0.03f;
-        private Vector2 player_velocity;
-        private float velocity_interpolator;
-        private float velocity_multiplier = 0.4f;
+        private PlanetariaRigidbody satellite;
+
+        private const float volume = 0.004f;
+        private const float thruster_variance_multiplier = 2f;
+        private float thruster_force;
         private float wave_value;
-        private int total_repeats = 0;
         private int repeats_left = 0;
 
         protected override void OnConstruction() { }
