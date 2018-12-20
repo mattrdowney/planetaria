@@ -20,12 +20,22 @@ namespace Planetaria
             if (satellite.is_dead())
             {
                 //thruster_force = Mathf.Max(0, thruster_force - Time.deltaTime*2f);
-                thruster_force *= Mathf.Pow(0.05f, Time.deltaTime); // works better with logarithmically-perceived scale for hearing
+                thruster_force *= Mathf.Pow(0.1f, Time.deltaTime); // works better with logarithmically-perceived scale for hearing
                 return;
             }
             Vector2 player_velocity = satellite_rigidbody.relative_velocity;
             Vector2 player_acceleration = DebrisNoirsInput.movement();
-            thruster_force = Mathf.Lerp(minimum_volume_multiplier, 1, player_acceleration.magnitude);
+            float next_thruster_force = Mathf.Lerp(minimum_volume_multiplier, 1, player_acceleration.magnitude);
+            if (next_thruster_force > thruster_force)
+            {
+                // immediately increasing volume is okay
+                thruster_force = next_thruster_force;
+            }
+            else
+            {
+                // when changing acceleration into reverse, there are sometime small sound gaps when you don't want them.
+                thruster_force = Mathf.Lerp(thruster_force, next_thruster_force, Time.deltaTime / Mathf.Abs(next_thruster_force - thruster_force)); // when changing acceleration (there are sometime small sound gaps when you don't want them).
+            }
             thruster_resistance = 0; // force is more precisely representing how much "change" is happening (in angle/direction of satellite)
             if (player_acceleration != Vector2.zero) // if thrusters are on, there is likely a change in direction
             {
@@ -70,9 +80,9 @@ namespace Planetaria
         private PlanetariaRigidbody satellite_rigidbody;
         private bool player_dead;
 
-        private const float volume = 0.004f;
+        private const float volume = 0.025f;
         private const float minimum_volume_multiplier = 0.5f;
-        private const float thruster_variance_multiplier = 2f;
+        private const float thruster_variance_multiplier = 2f; // does not include original (1)
         private float thruster_force;
         private float thruster_resistance;
         private float acceleration;

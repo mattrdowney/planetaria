@@ -42,8 +42,8 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 1
-  m_Center: {x: 0, y: 0, z: 1}
+  m_Radius: 0.03142333
+  m_Center: {x: 0, y: 0, z: 1.000494}
 --- !u!1 &6232152889581167726
 GameObject:
   m_ObjectHideFlags: 0
@@ -98,7 +98,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 0}
   internal_transform: {fileID: 4935132203839943753}
-  scale_variable: 0.0418879
+  scale_variable: 0.03141593
 --- !u!114 &9030799430953152995
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -150,7 +150,7 @@ MonoBehaviour:
     game_object_variable: {fileID: 6232152889581167726}
   angle_variable: 0
   material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  scale_variable: 0.0418879
+  scale_variable: 0.03141593
   internal_transform: {fileID: 143063171975802440}
   internal_renderer: {fileID: 8839952160739676433}
   offset: 1
@@ -171,7 +171,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 6232152889581167726}
   material: {fileID: 11400000, guid: a03d051b7bfe0d344abca6f59970c460, type: 2}
-  shape_variable: {fileID: 11400000, guid: 0b9b07b9c46f8c149880e5643645af05, type: 2}
+  shape_variable: {fileID: 11400000, guid: 391a7fbf08109354d905b78164fc13d7, type: 2}
   observer:
     planetaria_transformation: {fileID: 0}
     planetaria_collider: {fileID: 0}
@@ -192,7 +192,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 094036de377917f468aa805716616762, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 0.2094395
+  initialized: 0
+  game_object_variable:
+    game_object_variable: {fileID: 6232152889581167726}
+  speed: 0.15707964
 --- !u!1 &7205330247971649930
 GameObject:
   m_ObjectHideFlags: 0
@@ -219,7 +222,7 @@ Transform:
   m_GameObject: {fileID: 7205330247971649930}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 1}
-  m_LocalScale: {x: 0.0418879, y: 0.0418879, z: 0.0418879}
+  m_LocalScale: {x: 0.03141593, y: 0.03141593, z: 0.03141593}
   m_Children: []
   m_Father: {fileID: 4935132203839943753}
   m_RootOrder: 0

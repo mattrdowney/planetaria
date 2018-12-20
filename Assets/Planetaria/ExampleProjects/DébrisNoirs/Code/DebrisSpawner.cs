@@ -12,35 +12,57 @@ public class DebrisSpawner : PlanetariaMonoBehaviour
     void Start ()
     {
 		ship = PlanetariaGameObject.Find("Satellite").transform;
-        StartCoroutine(spawn_debris_repeating()); // FIXME: string for function name means Visual Studio can't detect usage
+        large_debris_spawner = spawn_large_debris();
+        StartCoroutine(large_debris_spawner);
+        medium_debris_spawner = spawn_medium_debris();
+        StartCoroutine(medium_debris_spawner);
 	}
 
-    public IEnumerator spawn_debris_repeating()
+    public IEnumerator spawn_large_debris()
     {
         while (true)
         {
             yield return delay;
-            spawn_debris();
+            if (!spawn_debris(false)) // since large debris is permanent, you can stop at 50.
+            {
+                StopCoroutine(large_debris_spawner);
+            }
         }
     }
 
-    private void spawn_debris()
+    public IEnumerator spawn_medium_debris()
     {
-        if (DebrisNoirs.request_life())
+        yield return new WaitForSeconds(2*25+1-51); // spawn 25 large asteroids before spawning first medium asteroid, then alternate between 26 medium and remaining 25 large. 
+        while (true)
+        {
+            spawn_debris(true);
+            yield return delay;
+        }
+    }
+
+    private bool spawn_debris(bool ephemeral)
+    {
+        if (DebrisNoirs.request_life(ephemeral))
         {
             Vector3 random_position = UnityEngine.Random.onUnitSphere;
             if (Vector3.Dot(random_position, ship.position) > 0)
             {
                 random_position *= -1;
             }
-            PlanetariaGameObject debris = PlanetariaGameObject.Instantiate(prefabricated_debris, random_position);
-            DebrisNoirs.live(debris);
+            PlanetariaGameObject debris = PlanetariaGameObject.Instantiate(ephemeral ? medium_debris : large_debris, random_position);
+            DebrisNoirs.live(debris, ephemeral);
+            return true;
         }
+        return false;
     }
 
-    private static WaitForSeconds delay = new WaitForSeconds(1f);
+    private static WaitForSeconds delay = new WaitForSeconds(2f);
 
-    [SerializeField] public GameObject prefabricated_debris;
+    IEnumerator large_debris_spawner;
+    IEnumerator medium_debris_spawner;
+
+    [SerializeField] public GameObject large_debris;
+    [SerializeField] public GameObject medium_debris;
     [NonSerialized] private PlanetariaTransform ship;
 }
 

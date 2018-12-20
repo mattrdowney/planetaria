@@ -54,7 +54,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 0}
   internal_transform: {fileID: 4717528800502344}
-  scale_variable: 0.1256637
+  scale_variable: 0.07853982
 --- !u!114 &114333559544760878
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -106,7 +106,7 @@ MonoBehaviour:
     game_object_variable: {fileID: 1175150822237868}
   angle_variable: 0
   material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  scale_variable: 0.1256637
+  scale_variable: 0.07853982
   internal_transform: {fileID: 4352634434168220}
   internal_renderer: {fileID: 212633172164088102}
   offset: 1
@@ -127,7 +127,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 1175150822237868}
   material: {fileID: 11400000, guid: a03d051b7bfe0d344abca6f59970c460, type: 2}
-  shape_variable: {fileID: 11400000, guid: 46b4e02719276a341949a6a2c9d3fd7d, type: 2}
+  shape_variable: {fileID: 11400000, guid: d1635f3baf5552a488c8a3828b5b4f49, type: 2}
   observer:
     planetaria_transformation: {fileID: 0}
     planetaria_collider: {fileID: 0}
@@ -151,7 +151,7 @@ MonoBehaviour:
   initialized: 0
   game_object_variable:
     game_object_variable: {fileID: 1175150822237868}
-  speed: 0.12566371
+  speed: 0.07853982
   planetaria_renderer: {fileID: 114063900155376884}
   planetaria_collider: {fileID: 114396915670349778}
   planetaria_rigidbody: {fileID: 114333559544760878}
@@ -182,7 +182,7 @@ Transform:
   m_GameObject: {fileID: 1748661578952492}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 1}
-  m_LocalScale: {x: 0.1256637, y: 0.1256637, z: 0.1256637}
+  m_LocalScale: {x: 0.07853982, y: 0.07853982, z: 0.07853982}
   m_Children: []
   m_Father: {fileID: 4717528800502344}
   m_RootOrder: 0
@@ -277,5 +277,5 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.06295183
-  m_Center: {x: 0, y: 0, z: 1.001979}
+  m_Radius: 0.07877845
+  m_Center: {x: 0, y: 0, z: 1.003098}

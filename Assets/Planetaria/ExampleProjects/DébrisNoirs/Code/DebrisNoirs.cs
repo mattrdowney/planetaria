@@ -10,21 +10,35 @@ namespace Planetaria
 	{
 		public static void request_death(PlanetariaGameObject game_object)
         {
-            game_objects.Remove(game_object);
+            large_debris.Remove(game_object);
+            medium_debris.Remove(game_object);
         }
 
-        public static bool request_life()
+        public static bool request_life(bool ephemeral)
         {
-            return game_objects.Count < maximum_game_objects;
+            if (ephemeral)
+            {
+                return medium_debris.Count < maximum_medium_debris;
+            }
+            return large_debris.Count < maximum_large_debris;
         }
 
-        public static void live(PlanetariaGameObject game_object)
+        public static void live(PlanetariaGameObject game_object, bool ephemeral)
         {
-            game_objects.Add(game_object);
+            if (ephemeral)
+            {
+                medium_debris.Add(game_object);
+            }
+            else
+            {
+                large_debris.Add(game_object);
+            }
         }
 
-        private const int maximum_game_objects = 100;
-        private static HashSet<PlanetariaGameObject> game_objects = new HashSet<PlanetariaGameObject>();
+        private const int maximum_large_debris = 50;
+        private const int maximum_medium_debris = 26;
+        private static HashSet<PlanetariaGameObject> large_debris = new HashSet<PlanetariaGameObject>();
+        private static HashSet<PlanetariaGameObject> medium_debris = new HashSet<PlanetariaGameObject>();
 	}
 }
 

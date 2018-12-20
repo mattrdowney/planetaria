@@ -53,10 +53,10 @@ public class MediumDebris : PlanetariaMonoBehaviour
         PlanetariaGameObject.Destroy(this.gameObject);
     }
 
-    [NonSerialized] private AreaRenderer planetaria_renderer;
-    [NonSerialized] private PlanetariaCollider planetaria_collider;
-    [NonSerialized] private PlanetariaRigidbody planetaria_rigidbody;
-    [NonSerialized] private PlanetariaTransform planetaria_transform;
+    [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer;
+    [SerializeField] [HideInInspector] private PlanetariaCollider planetaria_collider;
+    [SerializeField] [HideInInspector] private PlanetariaRigidbody planetaria_rigidbody;
+    [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;
 
     [SerializeField] public /*static*/ GameObject small_debris;
 

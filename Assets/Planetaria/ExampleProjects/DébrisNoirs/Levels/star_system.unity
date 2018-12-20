@@ -162,7 +162,9 @@ MonoBehaviour:
   initialized: 0
   game_object_variable:
     game_object_variable: {fileID: 0}
-  prefabricated_debris: {fileID: 1175150822237868, guid: 8627fecc27453de42ac3e4bedb216c9a,
+  large_debris: {fileID: 1175150822237868, guid: 8627fecc27453de42ac3e4bedb216c9a,
+    type: 3}
+  medium_debris: {fileID: 4871731741837279479, guid: 0f139500d8c235649aa7d844ed6fdae7,
     type: 3}
 --- !u!4 &139345969
 Transform:
