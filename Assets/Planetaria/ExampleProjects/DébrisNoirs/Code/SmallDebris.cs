@@ -2,6 +2,12 @@
 using UnityEngine;
 using Planetaria;
 
+/// <summary>
+/// Small debris collides with medium and small debris.
+/// It is almost as fast as medium debris, smaller than the player, and predictable
+/// (although it could collide with another rock just before hitting the player).
+/// It has a cool-down (see TemperatureCooling) where it cannot collide with other rocks.
+/// </summary>
 public class SmallDebris : PlanetariaMonoBehaviour
 {
     protected override void OnConstruction() { }

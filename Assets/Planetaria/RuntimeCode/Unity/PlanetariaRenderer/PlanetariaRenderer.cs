@@ -5,7 +5,7 @@ namespace Planetaria
 {
     [DisallowMultipleComponent]
     [Serializable]
-    public abstract class PlanetariaRenderer : PlanetariaComponent
+    public abstract class PlanetariaRenderer : PlanetariaComponent // FIXME: There is a bug similar to PlanetariaCollider with layers. If the parent object changes layers, the generated internal child object won't match layers, creating renderer layer bugs (I don't use layers often with rendering, but it is a feature). This one cannot be fixed in the same way, so it's harder.
     {
         protected override sealed void Awake()
         {

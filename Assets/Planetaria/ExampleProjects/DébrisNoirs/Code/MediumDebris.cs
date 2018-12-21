@@ -2,6 +2,11 @@
 using UnityEngine;
 using Planetaria;
 
+/// <summary>
+/// Medium debris collides with medium and small debris.
+/// It is the fastest debris, mid-sized, and un-predictable because it could break into two pieces of small debris.
+/// It has a cool-down (see TemperatureCooling) where it cannot collide with other rocks.
+/// </summary>
 public class MediumDebris : PlanetariaMonoBehaviour
 {
     protected override void OnConstruction() { }

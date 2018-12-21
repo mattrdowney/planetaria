@@ -1,9 +1,19 @@
-﻿using Planetaria;
+﻿using UnityEngine;
+using Planetaria;
 
 public class TemperatureCooling : PlanetariaMonoBehaviour
 {
     protected override void OnConstruction() { }
     protected override void OnDestruction() { }
+
+    private void OnValidate()
+    {
+        planetaria_collider = this.GetComponent<PlanetariaCollider>();
+        planetaria_renderer_foreground = this.GetComponent<AreaRenderer>();
+    }
+
+    [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer_foreground;
+    [SerializeField] [HideInInspector] private PlanetariaCollider planetaria_collider;
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

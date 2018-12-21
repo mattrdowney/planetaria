@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace Planetaria
+namespace Planetaria // FIXME: PlanetariaCollider spawns a child, which must always be the same layer as the parent! This is tricky. Although I don't need more than one collider anymore, so the likely (best-ish) solution is the lazy one i.e. get rid of the child object altogether.
 {
     [DisallowMultipleComponent]
     [Serializable]

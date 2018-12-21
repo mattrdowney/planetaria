@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 9088400021973058670}
   - component: {fileID: 6692108813496830931}
   - component: {fileID: 8984918893261588298}
+  - component: {fileID: 4537936838934254997}
   m_Layer: 10
   m_Name: SmallDebris
   m_TagString: Untagged
@@ -274,6 +275,21 @@ MonoBehaviour:
   planetaria_rigidbody: {fileID: 9030799430953152995}
   planetaria_transform: {fileID: 3984320215594233651}
   speed: 0.15707964
+--- !u!114 &4537936838934254997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6232152889581167726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a49b5ce2b204964691fa6ac01ea0031, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialized: 0
+  game_object_variable:
+    game_object_variable: {fileID: 0}
 --- !u!1 &7205330247971649930
 GameObject:
   m_ObjectHideFlags: 0

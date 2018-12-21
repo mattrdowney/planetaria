@@ -289,6 +289,7 @@ GameObject:
   - component: {fileID: 4531760913050232137}
   - component: {fileID: 1396147014388546085}
   - component: {fileID: 2314084233997458771}
+  - component: {fileID: 7989572571644811303}
   m_Layer: 10
   m_Name: MediumDebris
   m_TagString: Untagged
@@ -434,3 +435,18 @@ MonoBehaviour:
   small_debris: {fileID: 6232152889581167726, guid: 2b0d67d6289766c4990a73ae4f38d694,
     type: 3}
   speed: 0.1745329
+--- !u!114 &7989572571644811303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4871731741837279479}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a49b5ce2b204964691fa6ac01ea0031, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialized: 0
+  game_object_variable:
+    game_object_variable: {fileID: 0}
