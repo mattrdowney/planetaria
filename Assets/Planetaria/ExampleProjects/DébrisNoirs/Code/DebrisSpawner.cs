@@ -59,7 +59,7 @@ public class DebrisSpawner : PlanetariaMonoBehaviour
     private static WaitForSeconds delay = new WaitForSeconds(2f);
 
     IEnumerator large_debris_spawner;
-    IEnumerator medium_debris_spawner;
+    IEnumerator medium_debris_spawner; // while it may not appear you need this thread, you do for "restarting it".
 
     [SerializeField] public GameObject large_debris;
     [SerializeField] public GameObject medium_debris;

@@ -8,6 +8,13 @@ namespace Planetaria
     /// <seealso cref="https://www.arcade-history.com/?n=asteroids-upright-model&page=detail&id=126"/> // Extra information about Asteroids (1979)
 	public static class DebrisNoirs
 	{
+        public static void heat_death()
+        {
+            large_debris.Clear();
+            medium_debris.Clear();
+            // TODO: get all GameObjects and delete any that are small/medium/large debris.
+        }
+
 		public static void request_death(PlanetariaGameObject game_object)
         {
             large_debris.Remove(game_object);

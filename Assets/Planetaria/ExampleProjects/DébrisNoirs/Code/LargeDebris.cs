@@ -15,12 +15,14 @@ public class LargeDebris : PlanetariaMonoBehaviour
         planetaria_collider = this.GetComponent<PlanetariaCollider>();
         planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
         planetaria_transform = this.GetComponent<PlanetariaTransform>();
-        planetaria_renderer = this.GetComponent<AreaRenderer>();
+        planetaria_renderer_foreground = this.GetComponent<AreaRenderer>();
+        planetaria_renderer_background = planetaria_transform.Find("Silhouette").GetComponent<AreaRenderer>();
     }
 
     private void Start()
     {
-        planetaria_renderer.angle = UnityEngine.Random.Range(0, 2*Mathf.PI); // this is random rotation for the sprite image.
+        planetaria_renderer_foreground.angle = UnityEngine.Random.Range(0, 2*Mathf.PI); // this is random rotation for the sprite image.
+        planetaria_renderer_background.angle = planetaria_renderer_foreground.angle; // and the silhouette
 
         // apply random rotation
         float deviation_angle = UnityEngine.Random.Range(-Mathf.PI, +Mathf.PI); // random rotation for the velocity
@@ -38,7 +40,8 @@ public class LargeDebris : PlanetariaMonoBehaviour
 
     [SerializeField] private float speed = 2*Mathf.PI/50;
 
-    [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer;
+    [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer_foreground;
+    [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer_background;
     [SerializeField] [HideInInspector] private PlanetariaCollider planetaria_collider;
     [SerializeField] [HideInInspector] private PlanetariaRigidbody planetaria_rigidbody;
     [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;
