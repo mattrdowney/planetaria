@@ -56,8 +56,8 @@ GameObject:
   - component: {fileID: 3984320215594233651}
   - component: {fileID: 9030799430953152995}
   - component: {fileID: 6437731967863527539}
-  - component: {fileID: 6692108813496830931}
   - component: {fileID: 9088400021973058670}
+  - component: {fileID: 6692108813496830931}
   - component: {fileID: 8984918893261588298}
   m_Layer: 10
   m_Name: SmallDebris
@@ -133,28 +133,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &6692108813496830931
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6232152889581167726}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fcbcac2b27276b84398b2afea6e2bdb8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initialized: 0
-  game_object_variable:
-    game_object_variable: {fileID: 6232152889581167726}
-  angle_variable: 0
-  material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  scale_variable: 0.03141593
-  internal_transform: {fileID: 143063171975802440}
-  internal_renderer: {fileID: 8839952160739676433}
-  offset: 1
-  sprite_variable: {fileID: 21300000, guid: 7b31f3fc21af3fc499089c3bfa559cfc, type: 3}
 --- !u!114 &9088400021973058670
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -180,6 +158,28 @@ MonoBehaviour:
   planetaria_transform: {fileID: 3984320215594233651}
   internal_collider: {fileID: 5481390049502406360}
   is_field_variable: 0
+--- !u!114 &6692108813496830931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6232152889581167726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcbcac2b27276b84398b2afea6e2bdb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialized: 0
+  game_object_variable:
+    game_object_variable: {fileID: 6232152889581167726}
+  angle_variable: 0
+  material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  scale_variable: 0.03141593
+  internal_transform: {fileID: 143063171975802440}
+  internal_renderer: {fileID: 8839952160739676433}
+  offset: 1
+  sprite_variable: {fileID: 21300000, guid: 7b31f3fc21af3fc499089c3bfa559cfc, type: 3}
 --- !u!114 &8984918893261588298
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -195,6 +195,10 @@ MonoBehaviour:
   initialized: 0
   game_object_variable:
     game_object_variable: {fileID: 6232152889581167726}
+  planetaria_renderer: {fileID: 6692108813496830931}
+  planetaria_collider: {fileID: 9088400021973058670}
+  planetaria_rigidbody: {fileID: 9030799430953152995}
+  planetaria_transform: {fileID: 3984320215594233651}
   speed: 0.15707964
 --- !u!1 &7205330247971649930
 GameObject:

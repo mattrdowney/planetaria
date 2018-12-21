@@ -16,8 +16,6 @@ public class Satellite : PlanetariaMonoBehaviour
         planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
         ship_renderer = this.GetComponent<AreaRenderer>();
         crosshair_renderer = PlanetariaGameObject.Find("Hand").GetComponent<AreaRenderer>();
-        transform.direction = Vector3.up;
-        planetaria_collider.shape = PlanetariaShape.Create(transform.scale);
         
         OnFieldEnter.data = on_field_enter;
     }
@@ -30,7 +28,7 @@ public class Satellite : PlanetariaMonoBehaviour
             crosshair_renderer.scale = input_direction.magnitude * crosshair_size;
             if (input_direction.magnitude > 0)
             {
-                float target_angle = Mathf.Atan2(input_direction.y, input_direction.x);
+                float target_angle = Mathf.Atan2(input_direction.y, input_direction.x) - Mathf.PI/2;
                 float current_angle = ship_renderer.angle * Mathf.Rad2Deg;
                 float interpolator = 360 * 3 / Mathf.Abs(Mathf.DeltaAngle(current_angle, target_angle * Mathf.Rad2Deg)) * Time.deltaTime;
                 ship_renderer.angle = Mathf.LerpAngle(current_angle, target_angle * Mathf.Rad2Deg, interpolator) * Mathf.Deg2Rad;

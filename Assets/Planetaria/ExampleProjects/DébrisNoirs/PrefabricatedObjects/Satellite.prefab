@@ -24,13 +24,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1540318306964052}
-  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 1}
-  m_LocalScale: {x: 0.050265484, y: 0.050265484, z: 0.050265484}
+  m_LocalScale: {x: 0.03926991, y: 0.03926991, z: 0.03926991}
   m_Children: []
   m_Father: {fileID: 4436393650129868}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &212513914080064210
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -67,13 +67,13 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 3
   m_Sprite: {fileID: 21300000, guid: 511467ccf35c93c4190efa7401484a63, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2, y: 2}
+  m_Size: {x: 3.08, y: 3.46}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -121,8 +121,8 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.0503229
-  m_Center: {x: 0, y: 0, z: 1.001265}
+  m_Radius: 0.03929372
+  m_Center: {x: 0, y: 0, z: 1.000772}
 --- !u!1 &1996407451135126
 GameObject:
   m_ObjectHideFlags: 0
@@ -178,7 +178,7 @@ MonoBehaviour:
   initialized: 0
   game_object_variable:
     game_object_variable: {fileID: 1996407451135126}
-  crosshair_size: 1
+  crosshair_size: 0.2
   acceleration: 2
 --- !u!114 &114502162093895280
 MonoBehaviour:
@@ -196,7 +196,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 1996407451135126}
   internal_transform: {fileID: 4436393650129868}
-  scale_variable: 0.050265484
+  scale_variable: 0.03926991
 --- !u!114 &114556726867480252
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -247,7 +247,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 1996407451135126}
   material: {fileID: 11400000, guid: a03d051b7bfe0d344abca6f59970c460, type: 2}
-  shape_variable: {fileID: 11400000, guid: ac96811ae7892c14dbdd36cb712c25cb, type: 2}
+  shape_variable: {fileID: 11400000, guid: 25de28ce073c23744a527233509d784b, type: 2}
   observer:
     planetaria_transformation: {fileID: 0}
     planetaria_collider: {fileID: 0}
@@ -273,7 +273,7 @@ MonoBehaviour:
     game_object_variable: {fileID: 1996407451135126}
   angle_variable: 1.5707964
   material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  scale_variable: 0.050265484
+  scale_variable: 0.03926991
   internal_transform: {fileID: 4297728193751634}
   internal_renderer: {fileID: 212513914080064210}
   offset: 1
