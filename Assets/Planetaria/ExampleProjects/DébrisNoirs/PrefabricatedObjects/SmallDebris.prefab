@@ -1,49 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1716972593333025126
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2163682195607217910}
-  - component: {fileID: 5481390049502406360}
-  m_Layer: 10
-  m_Name: __InternalCollider
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2163682195607217910
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1716972593333025126}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 4935132203839943753}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &5481390049502406360
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1716972593333025126}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.03142333
-  m_Center: {x: 0, y: 0, z: 1.000494}
 --- !u!1 &3376805001493880599
 GameObject:
   m_ObjectHideFlags: 0
@@ -75,7 +31,7 @@ Transform:
   m_Children:
   - {fileID: 3189120460322217744}
   m_Father: {fileID: 4935132203839943753}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &315767790396956841
 MonoBehaviour:
@@ -129,6 +85,7 @@ GameObject:
   - component: {fileID: 9030799430953152995}
   - component: {fileID: 6437731967863527539}
   - component: {fileID: 9088400021973058670}
+  - component: {fileID: 2142266552542890597}
   - component: {fileID: 6692108813496830931}
   - component: {fileID: 8984918893261588298}
   - component: {fileID: 4537936838934254997}
@@ -151,7 +108,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 143063171975802440}
-  - {fileID: 2163682195607217910}
   - {fileID: 2502875590712843877}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -228,10 +184,23 @@ MonoBehaviour:
     planetaria_transformation: {fileID: 0}
     planetaria_collider: {fileID: 0}
     observers: []
-  internal_transform: {fileID: 2163682195607217910}
+  internal_transform: {fileID: 4935132203839943753}
   planetaria_transform: {fileID: 3984320215594233651}
-  internal_collider: {fileID: 5481390049502406360}
+  internal_collider: {fileID: 2142266552542890597}
   is_field_variable: 0
+--- !u!135 &2142266552542890597
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6232152889581167726}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.03142333
+  m_Center: {x: 0, y: 0, z: 1.000494}
 --- !u!114 &6692108813496830931
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -289,7 +258,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   initialized: 0
   game_object_variable:
-    game_object_variable: {fileID: 0}
+    game_object_variable: {fileID: 6232152889581167726}
+  planetaria_renderer_foreground: {fileID: 6692108813496830931}
+  planetaria_collider: {fileID: 9088400021973058670}
 --- !u!1 &7205330247971649930
 GameObject:
   m_ObjectHideFlags: 0

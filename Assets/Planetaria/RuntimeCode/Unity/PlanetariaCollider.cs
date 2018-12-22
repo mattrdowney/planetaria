@@ -30,34 +30,23 @@ namespace Planetaria // FIXME: PlanetariaCollider spawns a child, which must alw
 
         protected override void OnEnable()
         {
-            this.
-                transform.
-                Find("__InternalCollider").
-                gameObject.
-                internal_game_object.
-                SetActive(true);
+            internal_collider.enabled = true;
         }
 
         protected override void OnDisable()
         {
-            this.
-                transform.
-                Find("__InternalCollider").
-                gameObject.
-                internal_game_object.
-                SetActive(false);
+            internal_collider.enabled = false;
         }
 
         private void initialize()
         {
-            GameObject game_object = this.GetOrAddChild("InternalCollider");
             if (internal_collider == null)
             {
-                internal_collider = Miscellaneous.GetOrAddComponent<SphereCollider>(game_object);
+                internal_collider = Miscellaneous.GetOrAddComponent<SphereCollider>(this.gameObject.internal_game_object);
             }
             if (internal_transform == null)
             {
-                internal_transform = Miscellaneous.GetOrAddComponent<Transform>(game_object);
+                internal_transform = Miscellaneous.GetOrAddComponent<Transform>(this.gameObject.internal_game_object);
             }
             if (planetaria_transform == null)
             {
