@@ -104,10 +104,6 @@ namespace Planetaria
             
             transform.position = next_position;
             velocity = next_velocity.normalized * velocity.magnitude; // FIXME: I thought this was numerically stable, but it seems to create more energy.
-            if (this.name != "Satellite")
-            {
-                Debug.Log(velocity.magnitude);
-            }
             //velocity = Vector3.ProjectOnPlane(velocity, get_position()); // TODO: CONSIDER: ensure velocity and position are orthogonal - they seem to desynchronize
         }
 
@@ -209,10 +205,6 @@ namespace Planetaria
                 //velocity = x + y;
                 velocity = internal_transform.TransformDirection(value);
                 synchronize_velocity_air_to_ground();
-                if (this.name != "Satellite")
-                {
-                    Debug.Log(velocity.magnitude);
-                }
             }
         }
 

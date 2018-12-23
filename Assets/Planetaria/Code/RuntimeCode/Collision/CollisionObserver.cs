@@ -183,59 +183,45 @@ namespace Planetaria
             {
                 if (!current_fields.Contains(field))
                 {
-                    notify_enter_field(field, true);
+                    notify_enter_field(field);
                 }
             }
             foreach (PlanetariaCollider field in current_fields) // if a field is no longer detected, exit
             {
                 if (!field_candidates.Contains(field))
                 {
-                    notify_exit_field(field, true);
+                    notify_exit_field(field);
                 }
             }
             current_fields = field_candidates; // Swap happens here (to avoid iterator invalidation)
-            notify_stay_field(true); // ORDER DEPENDENCY : current_fields must be set first!
+            notify_stay_field(); // ORDER DEPENDENCY : current_fields must be set first!
             field_candidates = new List<PlanetariaCollider>(); // .Clear doesn't work because of reference/pointer logic
         }
 
-        internal void notify_enter_field(PlanetariaCollider field, bool notify_other = false)
+        internal void notify_enter_field(PlanetariaCollider field)
         {
             foreach (PlanetariaMonoBehaviour observer in observers)
             {
                 observer.enter_field(field);
-                if (notify_other)
-                {
-                    field.get_observer().notify_enter_field(this.collider());
-                }
             }
         }
 
-        internal void notify_stay_field(bool notify_other = false)
+        internal void notify_stay_field()
         {
-            int iteration = 0;
             foreach (PlanetariaMonoBehaviour observer in observers)
             {
                 foreach (PlanetariaCollider field in current_fields)
                 {
                     observer.stay_field(field);
-                    if (notify_other && iteration == 0)
-                    {
-                        field.get_observer().notify_enter_field(this.collider());
-                    }
                 }
-                iteration += 1;
             }
         }
 
-        internal void notify_exit_field(PlanetariaCollider field, bool notify_other = false)
+        internal void notify_exit_field(PlanetariaCollider field)
         {
             foreach (PlanetariaMonoBehaviour observer in observers)
             {
                 observer.exit_field(field);
-                if (notify_other)
-                {
-                    field.get_observer().notify_enter_field(this.collider());
-                }
             }
             //current_fields.Remove(field); // Don't want invalidated iterators - swap at end of loop
         }

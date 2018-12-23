@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.UI;
 using Planetaria;
 
 public class Satellite : PlanetariaMonoBehaviour
@@ -16,13 +17,16 @@ public class Satellite : PlanetariaMonoBehaviour
         planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
         ship_renderer = this.GetComponent<AreaRenderer>();
         crosshair_renderer = PlanetariaGameObject.Find("Hand").GetComponent<AreaRenderer>();
+        stopwatch = GameObject.FindObjectOfType<DebrisNoirsStopwatch>();
+        debris_spawner = GameObject.FindObjectOfType<DebrisSpawner>();
+        loading_disc = GameObject.FindObjectOfType<Image>();
         
         OnFieldEnter.data = on_field_enter;
     }
 
     private void Update()
     {
-        if (!dead || respawn_time < 3f)
+        if (!dead || dead_time < 0)
         {
             Vector2 input_direction = DebrisNoirsInput.movement();
             crosshair_renderer.scale = input_direction.magnitude * crosshair_size;
@@ -62,20 +66,25 @@ public class Satellite : PlanetariaMonoBehaviour
         }
         if (dead)
         {
-            respawn_time -= Time.deltaTime;
-            if (respawn_time < 0) // ORDER DEPENDENCY
+            if (dead_time < 0)
             {
-                dead = false;
-                planetaria_collider.enabled = true;
                 ship_renderer.enabled = true;
+                ship_renderer.color = Color.grey;
             }
-            else if (respawn_time < 3f)
-            {
-                ship_renderer.enabled = (respawn_time % 0.5f) > 0.25f;
-            }
-            else if (respawn_time < 6f)
+            else
             {
                 planetaria_rigidbody.absolute_velocity *= Mathf.Pow(0.25f, Time.deltaTime);
+                dead_time -= Time.deltaTime;
+            }
+            respawn_time += Time.deltaTime;
+            if (DebrisNoirsInput.movement().magnitude > 0.3f)
+            {
+                respawn_time = 0;
+            }
+            loading_disc.fillAmount = respawn_time/3;
+            if (respawn_time >= 3.0f)
+            {
+                respawn();
             }
         }
     }
@@ -89,14 +98,29 @@ public class Satellite : PlanetariaMonoBehaviour
     private void die()
     {
         dead = true;
-        respawn_time = 6f;
+        dead_time = 3f;
+        respawn_time = 0;
         planetaria_collider.enabled = false;
         ship_renderer.enabled = false;
+        stopwatch.stop_clock();
     }
 
     public bool is_dead()
     {
         return dead;
+    }
+
+    private void respawn()
+    {
+        DebrisNoirs.heat_death();
+        debris_spawner.heat_death();
+        stopwatch.reset_clock();
+        stopwatch.start_clock();
+        dead = false;
+        planetaria_collider.enabled = true;
+        ship_renderer.enabled = true;
+        ship_renderer.color = Color.white;
+        loading_disc.fillAmount = 0;
     }
     
     [SerializeField] private float crosshair_size = 1f;
@@ -108,10 +132,14 @@ public class Satellite : PlanetariaMonoBehaviour
     [NonSerialized] private AreaRenderer crosshair_renderer;
     [NonSerialized] private AreaRenderer ship_renderer;
     [NonSerialized] private PlanetariaRigidbody planetaria_rigidbody;
+    [NonSerialized] private DebrisNoirsStopwatch stopwatch;
+    [NonSerialized] private DebrisSpawner debris_spawner;
+    [NonSerialized] private Image loading_disc;
     [NonSerialized] private float horizontal;
     [NonSerialized] private float vertical;
 
     [NonSerialized] private bool dead = false;
+    [NonSerialized] private float dead_time = 0;
     [NonSerialized] private float respawn_time = 0;
 }
 

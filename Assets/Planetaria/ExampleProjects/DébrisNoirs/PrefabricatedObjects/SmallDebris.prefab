@@ -72,6 +72,7 @@ MonoBehaviour:
   internal_renderer: {fileID: 3948651267133966122}
   offset: 1
   sprite_variable: {fileID: 21300000, guid: ce484183ac66d164ebaa5301a6fd6e0c, type: 3}
+  sprite_renderer: {fileID: 0}
 --- !u!1 &6232152889581167726
 GameObject:
   m_ObjectHideFlags: 0
@@ -187,7 +188,7 @@ MonoBehaviour:
   internal_transform: {fileID: 4935132203839943753}
   planetaria_transform: {fileID: 3984320215594233651}
   internal_collider: {fileID: 2142266552542890597}
-  is_field_variable: 0
+  is_field_variable: 1
 --- !u!135 &2142266552542890597
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -215,7 +216,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   initialized: 0
   game_object_variable:
-    game_object_variable: {fileID: 6232152889581167726}
+    game_object_variable: {fileID: 0}
   angle_variable: 0
   material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   scale_variable: 0.03141593
@@ -223,6 +224,7 @@ MonoBehaviour:
   internal_renderer: {fileID: 8839952160739676433}
   offset: 1
   sprite_variable: {fileID: 21300000, guid: 7b31f3fc21af3fc499089c3bfa559cfc, type: 3}
+  sprite_renderer: {fileID: 8839952160739676433}
 --- !u!114 &8984918893261588298
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -259,6 +261,7 @@ MonoBehaviour:
   initialized: 0
   game_object_variable:
     game_object_variable: {fileID: 6232152889581167726}
+  cooldown_timer: 3
   planetaria_renderer_foreground: {fileID: 6692108813496830931}
   planetaria_collider: {fileID: 9088400021973058670}
 --- !u!1 &7205330247971649930
@@ -334,7 +337,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.32, y: 0.32}
+  m_Size: {x: 2.56, y: 2.56}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

@@ -4,11 +4,29 @@ namespace Planetaria
 {
     public sealed class AreaRenderer : PlanetariaRenderer
     {
+        // Properties (Public)
+
+        public Color color
+        {
+            get
+            {
+                return sprite_renderer.color;
+            }
+            set
+            {
+                sprite_renderer.color = value;
+            }
+        }
+
         protected sealed override void set_renderer()
         {
             if (internal_renderer == null)
             {
                 internal_renderer = Miscellaneous.GetOrAddComponent<SpriteRenderer>(internal_transform);
+            }
+            if (sprite_renderer == null)
+            {
+                sprite_renderer = Miscellaneous.GetOrAddComponent<SpriteRenderer>(internal_transform);
             }
             internal_renderer.sharedMaterial = material;
 
@@ -31,6 +49,7 @@ namespace Planetaria
         }
 
         [SerializeField] private Sprite sprite_variable;
+        [SerializeField] [HideInInspector] private SpriteRenderer sprite_renderer;
     }
 }
 

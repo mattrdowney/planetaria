@@ -45,6 +45,7 @@ public class SmallDebris : PlanetariaMonoBehaviour
     
     public void on_field_enter(PlanetariaCollider collider)
     {
+        DebrisNoirs.request_death(this.gameObject, DebrisNoirs.DebrisSize.Small);
         PlanetariaGameObject.Destroy(this.gameObject);
     }
 

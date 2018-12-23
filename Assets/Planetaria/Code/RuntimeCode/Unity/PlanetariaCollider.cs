@@ -125,11 +125,6 @@ namespace Planetaria // FIXME: PlanetariaCollider spawns a child, which must alw
 
         private void OnTriggerStay(Collider collider)
         {
-            if (this.is_field) // fields pass through each other (same as triggers)
-            {
-                return; // optimization: fields don't need collision information normally.
-                // if a block collides with a field, the block will notify the field.
-            }
             optional<SphereCollider> sphere_collider = collider as SphereCollider;
             if (!sphere_collider.exists)
             {

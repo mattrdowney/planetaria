@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Planetaria
 {
@@ -6,46 +7,54 @@ namespace Planetaria
 	/// Singleton - Game Manager for Debris Noirs.
     /// </summary>
     /// <seealso cref="https://www.arcade-history.com/?n=asteroids-upright-model&page=detail&id=126"/> // Extra information about Asteroids (1979)
-	public static class DebrisNoirs
+	public static class DebrisNoirs // LAZY SINGLETON
 	{
+        public enum DebrisSize { Large = 0, Medium = 1, Small = 2 }
+
         public static void heat_death()
         {
-            large_debris.Clear();
-            medium_debris.Clear();
-            // TODO: get all GameObjects and delete any that are small/medium/large debris.
-        }
-
-		public static void request_death(PlanetariaGameObject game_object)
-        {
-            large_debris.Remove(game_object);
-            medium_debris.Remove(game_object);
-        }
-
-        public static bool request_life(bool ephemeral)
-        {
-            if (ephemeral)
+            for (int type = 0; type <= (int) DebrisSize.Small; type += 1)
             {
-                return medium_debris.Count < maximum_medium_debris;
-            }
-            return large_debris.Count < maximum_large_debris;
-        }
-
-        public static void live(PlanetariaGameObject game_object, bool ephemeral)
-        {
-            if (ephemeral)
-            {
-                medium_debris.Add(game_object);
-            }
-            else
-            {
-                large_debris.Add(game_object);
+                if (debris[type] != null)
+                {
+                    foreach (PlanetariaGameObject game_object in debris[type])
+                    {
+                        PlanetariaGameObject.Destroy(game_object);
+                    }
+                    debris[type].Clear();
+                }
             }
         }
 
-        private const int maximum_large_debris = 50;
-        private const int maximum_medium_debris = 26;
-        private static HashSet<PlanetariaGameObject> large_debris = new HashSet<PlanetariaGameObject>();
-        private static HashSet<PlanetariaGameObject> medium_debris = new HashSet<PlanetariaGameObject>();
+		public static void request_death(PlanetariaGameObject game_object, DebrisSize type)
+        {
+            if (debris[(int)type] == null)
+            {
+                debris[(int)type] = new HashSet<PlanetariaGameObject>();
+            }
+            debris[(int)type].Remove(game_object);
+        }
+
+        public static bool request_life(DebrisSize type)
+        {
+            if (debris[(int)type] == null)
+            {
+                debris[(int)type] = new HashSet<PlanetariaGameObject>();
+            }
+            return debris[(int)type].Count < maximum_debris_objects[(int)type];
+        }
+
+        public static void live(PlanetariaGameObject game_object, DebrisSize type)
+        {
+            if (debris[(int)type] == null)
+            {
+                debris[(int)type] = new HashSet<PlanetariaGameObject>();
+            }
+            debris[(int)type].Add(game_object);
+        }
+
+        private static readonly int[] maximum_debris_objects = new int[] { 50, 26, int.MaxValue };
+        private static HashSet<PlanetariaGameObject>[] debris = new HashSet<PlanetariaGameObject>[3];
 	}
 }
 

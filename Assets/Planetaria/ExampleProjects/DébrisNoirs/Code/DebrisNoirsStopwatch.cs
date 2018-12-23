@@ -1,32 +1,50 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.UI;
 using Planetaria;
 
-public class TemperatureCooling : PlanetariaMonoBehaviour
+public class DebrisNoirsStopwatch : PlanetariaMonoBehaviour
 {
-    protected override void OnConstruction() { }
-    protected override void OnDestruction() { }
+    public void reset_clock()
+    {
+        time = new DebrisNoirsTime();
+    }
+
+    public void start_clock()
+    {
+        state = StopwatchState.Started;
+    }
+
+    public void stop_clock()
+    {
+        state = StopwatchState.Stopped;
+    }
 
     private void OnValidate()
     {
-        planetaria_collider = this.GetComponent<PlanetariaCollider>();
-        planetaria_renderer_foreground = this.GetComponent<AreaRenderer>();
+        text = this.gameObject.internal_game_object.GetComponent<Text>();
+        time = new DebrisNoirsTime();
     }
 
+    // Update is called once per frame
     private void Update()
     {
-        planetaria_renderer_foreground.color = Color.Lerp(Color.grey, Color.white, cooldown_timer/3); // FIXME: MAGIC NUMBERS:
-        if (cooldown_timer < 0)
+        if (state != StopwatchState.Stopped)
         {
-            planetaria_collider.gameObject.layer = LayerMask.NameToLayer("EphemeralDebris");
-            planetaria_renderer_foreground.color = Color.grey;
+            time.increment(Time.deltaTime);
         }
-        cooldown_timer -= Time.deltaTime;
+        text.text = time.ToString();
     }
 
-    [SerializeField] private float cooldown_timer = 3f;
+    protected override void OnConstruction() { }
+    protected override void OnDestruction() { }
 
-    [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer_foreground;
-    [SerializeField] [HideInInspector] private PlanetariaCollider planetaria_collider;
+    private enum StopwatchState { Stopped = 0, Started = 1 }
+
+    [SerializeField] [HideInInspector] private Text text;
+
+    [NonSerialized] [HideInInspector] private StopwatchState state = StopwatchState.Started;
+    [NonSerialized] [HideInInspector] DebrisNoirsTime time;
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

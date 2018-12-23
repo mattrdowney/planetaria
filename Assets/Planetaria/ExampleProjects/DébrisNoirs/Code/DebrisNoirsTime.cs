@@ -1,35 +1,33 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class PlanetariaStopwatch : MonoBehaviour
+[Serializable]
+public class DebrisNoirsTime
 {
-    // Update is called once per frame
-    void Update()
+    public void increment(float positive_delta_time)
     {
-        if (state != StopwatchState.Stopped)
+        fraction += positive_delta_time;
+        if (fraction >= 1f)
         {
-            fraction += Time.deltaTime;
-            if (fraction >= 1f)
+            fraction -= 1f; // This technically wouldn't work if the frames per second of update was <1.
+            seconds += 1;
+            if (seconds >= seconds_in_minute)
             {
-                fraction -= 1f; // This technically wouldn't work if the frames per second of update was <1.
-                seconds += 1;
-                if (seconds >= seconds_in_minute)
+                seconds -= seconds_in_minute; // this is equivalent to seconds = 0
+                minutes += 1;
+                if (minutes >= minutes_in_hour)
                 {
-                    seconds -= seconds_in_minute; // this is equivalent to seconds = 0
-                    minutes += 1;
-                    if (minutes >= minutes_in_hour)
+                    minutes -= minutes_in_hour; // this is equivalent to minutes = 0
+                    hours += 1;
+                    if (hours >= hours_in_day)
                     {
-                        minutes -= minutes_in_hour; // this is equivalent to minutes = 0
-                        hours += 1;
-                        if (hours >= hours_in_day)
+                        hours -= hours_in_day; // this is equivalent to hours = 0
+                        days += 1;
+                        if (days >= days_in_year)
                         {
-                            hours -= hours_in_day; // this is equivalent to hours = 0
-                            days += 1;
-                            if (days >= days_in_year)
-                            {
-                                days -= days_in_year; // this is equivalent to days = 0
-                                years += 1;
-                            }
+                            days -= days_in_year; // this is equivalent to days = 0
+                            years += 1;
                         }
                     }
                 }
@@ -99,17 +97,13 @@ public class PlanetariaStopwatch : MonoBehaviour
         }
         return result;
     }
-
-    private enum StopwatchState { Stopped = 0, Started = 1 }
-
-    [NonSerialized] [HideInInspector] private StopwatchState state = StopwatchState.Stopped;
-
-    [NonSerialized] [HideInInspector] private float fraction = 0;
-    [NonSerialized] [HideInInspector] private int seconds = 0;
-    [NonSerialized] [HideInInspector] private int minutes = 0;
-    [NonSerialized] [HideInInspector] private int hours = 0;
-    [NonSerialized] [HideInInspector] private int days = 0;
-    [NonSerialized] [HideInInspector] private uint years = 0; // I'm being pedantic here for defined-behavior uint overflow (only an AI could play this for a year, much less 2^32 years, but hey, it's not quite the heat death of the universe).
+    
+    [NonSerialized] [HideInInspector] private float fraction;
+    [NonSerialized] [HideInInspector] private int seconds;
+    [NonSerialized] [HideInInspector] private int minutes;
+    [NonSerialized] [HideInInspector] private int hours;
+    [NonSerialized] [HideInInspector] private int days;
+    [NonSerialized] [HideInInspector] private uint years; // I'm being pedantic here for defined-behavior uint overflow (only an AI could play this for a year, much less 2^32 years, but hey, it's not quite the heat death of the universe).
 
     private const int seconds_in_minute = 60;
     private const int minutes_in_hour = 60;

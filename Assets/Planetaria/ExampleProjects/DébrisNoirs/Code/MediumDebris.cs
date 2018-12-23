@@ -56,6 +56,7 @@ public class MediumDebris : PlanetariaMonoBehaviour
             PlanetariaGameObject game_object = PlanetariaGameObject.Instantiate(small_debris, planetaria_transform.position, planetaria_transform.direction);
             SmallDebris debris = game_object.GetComponent<SmallDebris>();
             debris.speed = this.speed;
+            DebrisNoirs.live(game_object, DebrisNoirs.DebrisSize.Small);
         }
         PlanetariaGameObject.Destroy(this.gameObject);
     }

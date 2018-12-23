@@ -23,7 +23,7 @@ public class DebrisSpawner : PlanetariaMonoBehaviour
         while (true)
         {
             yield return delay;
-            if (!spawn_debris(false)) // since large debris is permanent, you can stop at 50.
+            if (!spawn_debris(DebrisNoirs.DebrisSize.Large)) // since large debris is permanent, you can stop at 50.
             {
                 StopCoroutine(large_debris_spawner);
             }
@@ -32,25 +32,34 @@ public class DebrisSpawner : PlanetariaMonoBehaviour
 
     public IEnumerator spawn_medium_debris()
     {
-        yield return new WaitForSeconds(2*25+1-51); // spawn 25 large asteroids before spawning first medium asteroid, then alternate between 26 medium and remaining 25 large. 
+        yield return new WaitForSeconds(2*24+1-48); // spawn 25 large asteroids before spawning first medium asteroid, then alternate between 26 medium and remaining 25 large. 
         while (true)
         {
-            spawn_debris(true);
             yield return delay;
+            spawn_debris(DebrisNoirs.DebrisSize.Medium);
         }
     }
 
-    private bool spawn_debris(bool ephemeral)
+    public void heat_death()
     {
-        if (DebrisNoirs.request_life(ephemeral))
+        StopAllCoroutines(); // I prefer this version, as long as it doesn't stop the audio thread (I really don't think it's possible, though)
+        large_debris_spawner = spawn_large_debris();
+        StartCoroutine(large_debris_spawner);
+        medium_debris_spawner = spawn_medium_debris();
+        StartCoroutine(medium_debris_spawner);
+    }
+
+    private bool spawn_debris(DebrisNoirs.DebrisSize type)
+    {
+        if (DebrisNoirs.request_life(type))
         {
             Vector3 random_position = UnityEngine.Random.onUnitSphere;
             if (Vector3.Dot(random_position, ship.position) > 0)
             {
                 random_position *= -1;
             }
-            PlanetariaGameObject debris = PlanetariaGameObject.Instantiate(ephemeral ? medium_debris : large_debris, random_position);
-            DebrisNoirs.live(debris, ephemeral);
+            PlanetariaGameObject debris = PlanetariaGameObject.Instantiate(type == DebrisNoirs.DebrisSize.Medium ? medium_debris : large_debris, random_position);
+            DebrisNoirs.live(debris, type);
             return true;
         }
         return false;
