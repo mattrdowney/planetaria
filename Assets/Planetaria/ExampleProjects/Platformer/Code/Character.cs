@@ -23,7 +23,7 @@ namespace Platformer
             planetaria_collider.material = material;
             transform.direction = Vector3.up;
             transform.localScale = +0.1f;
-            planetaria_collider.shape = PlanetariaShape.Create(+0.1f / 2);
+            planetaria_collider.shape = PlanetariaShape.Create(+0.1f / 2); // FIXME: cached
         }
 
         private void Update()

@@ -8,44 +8,79 @@ namespace DebrisNoirs
     /// </summary>
     public static class DebrisNoirsInput
     {
-        public static Vector2 movement()
+        /// <summary>
+        /// Inspector - Gets primative controller and keyboard axes (horizontal and vertical).
+        /// </summary>
+        /// <returns>The horizontal and verical component of any controller input, normalized.</returns>
+        public static Vector2 get_primative_axes()
         {
-            // traditional movement with a controller
             float horizontal = Input.GetAxis("PlanetariaUniversalInputHorizontal");
             float vertical = Input.GetAxis("PlanetariaUniversalInputVertical");
-            if (horizontal != 0 || vertical != 0)
+            Vector2 input_axes = new Vector2(horizontal, vertical);
+            if (input_axes.SqrMagnitude() > 1)
             {
-                last_input_frame = Time.frameCount;
+                input_axes.Normalize();
             }
-            if (last_input_frame + (int)(seconds_until_head_control / Time.fixedDeltaTime) > Time.frameCount)
-            {
-                return new Vector2(horizontal, vertical).normalized;
-            }
+            return input_axes;
+        }
 
-            // if no controller exists (or hasn't been used for 20 seconds), then use the head's orientation as a controller.
-            if (!main_character || !main_character)
+        /// <summary>
+        /// Inspector - Get the input direction based on the virtual reality headset's view direction (or mouse position in Editor mode).
+        /// </summary>
+        /// <returns>The position/direction the player is looking relative to the satellite.</returns>
+        public static Vector2 get_compound_axes()
+        {
+            // Supposed to be called if no controller exists (or hasn't been used for 20 seconds).
+            // In which case: use the head's orientation or mouse as a controller.
+            if (!main_character || !main_controller)
             {
                 main_character = GameObject.FindObjectOfType<Satellite>().gameObject.internal_game_object.transform;
                 main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
             }
+            
+            // The direction from the satellite to the controller (which represents either the head's view direction or the mouse position).
             Vector3 direction = Bearing.attractor(main_character.forward, main_controller.forward);
             float target_angle = Vector3.SignedAngle(main_character.up, direction, main_character.forward) * Mathf.Deg2Rad;
+            // Distance from satellite to controller (which represents either the head's view direction or the mouse position).
             float target_distance = Vector3.Angle(main_character.forward, main_controller.forward) * Mathf.Deg2Rad;
-            target_distance *= 3;
-            if (target_distance > 1) // FIXME: doesn't work for unbounded input types
-            {
-                target_distance = 1;
-            }
-            // add velocity based on input
+            target_distance = Mathf.Clamp01(target_distance/Mathf.PI); // Normalize a distance [0,PI] to range [0,1].
+            // Return the composite input direction.
             Vector2 input_direction = new Vector2(-Mathf.Sin(target_angle), Mathf.Cos(target_angle)) * target_distance;
             return input_direction;
+        }
+
+        public static Vector2 get_axes() // NOTE: This shouldn't be a bottleneck, so the redundancy/inefficiency is fine.
+        {
+            Vector2 result;
+            // traditional movement e.g. with a controller or keyboard
+            if (using_primative_axis())
+            {
+                result = get_primative_axes();
+                return result.SqrMagnitude() > 0.01f ? result.normalized : Vector2.zero;
+            }
+            result = get_compound_axes();
+            return result.magnitude > 0.03926991f/2 /*hardcoded ship radius*/ ? result.normalized : Vector2.zero;
+        }
+
+        /// <summary>
+        /// Inspector - Is the player using a primative movement device (e.g. controller, keyboard).
+        /// </summary>
+        /// <returns>Is a primative controller being used?</returns>
+        public static bool using_primative_axis()
+        {
+            if (get_primative_axes() != Vector2.zero) // if any overloaded axis is being used at all (ignoring a deadzone of ~0.001f)
+            {
+                last_primative_input_frame = Time.frameCount;
+            }
+            int allowed_frames_without_input = Mathf.CeilToInt(seconds_until_head_control / Time.fixedDeltaTime);
+            return last_primative_input_frame + allowed_frames_without_input >= Time.frameCount;
         }
 
         private static Transform main_character;
         private static Transform main_controller;
 
         private const float seconds_until_head_control = 20f;
-        private static int last_input_frame = int.MinValue;
+        private static int last_primative_input_frame = int.MinValue;
     }
 }
 

@@ -18,7 +18,6 @@ namespace DebrisNoirs
             planetaria_collider = this.GetComponent<PlanetariaCollider>();
             planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
             ship_renderer = this.GetComponent<AreaRenderer>();
-            crosshair_renderer = PlanetariaGameObject.Find("Hand").GetComponent<AreaRenderer>();
             stopwatch = GameObject.FindObjectOfType<DebrisNoirsStopwatch>();
             debris_spawner = GameObject.FindObjectOfType<DebrisSpawner>();
             loading_disc = GameObject.FindObjectOfType<Image>();
@@ -30,8 +29,7 @@ namespace DebrisNoirs
         {
             if (!dead || dead_time < 0)
             {
-                Vector2 input_direction = DebrisNoirsInput.movement();
-                crosshair_renderer.scale = input_direction.magnitude * crosshair_size;
+                Vector2 input_direction = DebrisNoirsInput.get_axes();
                 if (input_direction.magnitude > 0)
                 {
                     float target_angle = Mathf.Atan2(input_direction.y, input_direction.x) - Mathf.PI / 2;
@@ -79,7 +77,7 @@ namespace DebrisNoirs
                     dead_time -= Time.deltaTime;
                 }
                 respawn_time += Time.deltaTime;
-                if (DebrisNoirsInput.movement().magnitude > 0.3f)
+                if (DebrisNoirsInput.get_axes().magnitude > 0.3f)
                 {
                     respawn_time = 0;
                 }
@@ -125,13 +123,11 @@ namespace DebrisNoirs
             loading_disc.fillAmount = 0;
         }
 
-        [SerializeField] private float crosshair_size = 1f;
         [SerializeField] private float acceleration = 2f;
 
         [NonSerialized] private Transform main_character;
         [NonSerialized] private Transform main_controller;
         [NonSerialized] private PlanetariaCollider planetaria_collider;
-        [NonSerialized] private AreaRenderer crosshair_renderer;
         [NonSerialized] private AreaRenderer ship_renderer;
         [NonSerialized] private PlanetariaRigidbody planetaria_rigidbody;
         [NonSerialized] private DebrisNoirsStopwatch stopwatch;

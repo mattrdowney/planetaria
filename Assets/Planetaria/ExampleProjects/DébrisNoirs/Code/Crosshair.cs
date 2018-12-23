@@ -5,11 +5,16 @@ namespace DebrisNoirs
 {
     public class Crosshair : PlanetariaMonoBehaviour
     {
-        private void Start()
+        private void OnValidate()
         {
             main_character = GameObject.FindObjectOfType<Satellite>().gameObject.internal_game_object.transform;
             main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
             planetaria_transform = this.GetComponent<PlanetariaTransform>();
+            crosshair_renderer = PlanetariaGameObject.Find("Hand").GetComponent<AreaRenderer>();
+        }
+
+        private void Start()
+        {
 #if UNITY_EDITOR
             GameObject.FindObjectOfType<PlanetariaActuator>().input_device_type = PlanetariaActuator.InputDevice.Mouse;
 #else
@@ -24,14 +29,30 @@ namespace DebrisNoirs
             Vector3 controller_position = main_controller.forward;
             Vector3 crosshair_up = Bearing.repeller(controller_position, character_position);
             planetaria_transform.direction = crosshair_up;
+
+            if (DebrisNoirsInput.using_primative_axis()) // ORDER DEPENDENCY
+            {
+                crosshair_renderer.scale = 0;
+            }
+            else if (DebrisNoirsInput.get_axes() != Vector2.zero)
+            {
+                crosshair_renderer.scale = crosshair_size;
+            }
+            else
+            {
+                crosshair_renderer.scale = 0;
+            }
         }
 
         protected override void OnConstruction() { }
         protected override void OnDestruction() { }
 
-        private Transform main_character;
-        private Transform main_controller;
-        private PlanetariaTransform planetaria_transform;
+        [SerializeField] [HideInInspector] private Transform main_character;
+        [SerializeField] [HideInInspector] private Transform main_controller;
+        [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;
+        [SerializeField] [HideInInspector] private AreaRenderer crosshair_renderer;
+
+        private const float crosshair_size = 0.03926991f; // same as satellite size
     }
 }
 

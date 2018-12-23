@@ -488,7 +488,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   initialized: 0
   game_object_variable:
-    game_object_variable: {fileID: 0}
+    game_object_variable: {fileID: 555057018}
   input_device_type: 2
   virtual_reality_tracker_type: 0
 --- !u!114 &555057022
@@ -505,7 +505,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   initialized: 0
   game_object_variable:
-    game_object_variable: {fileID: 0}
+    game_object_variable: {fileID: 555057018}
+  main_character: {fileID: 1487655635}
+  main_controller: {fileID: 555057020}
+  planetaria_transform: {fileID: 555057023}
+  crosshair_renderer: {fileID: 555057019}
 --- !u!114 &555057023
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -829,6 +833,12 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 1337311879}
   text: {fileID: 1337311881}
+--- !u!4 &1487655635 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4436393650129868, guid: aaa1349aadcd2114a9d661fa04abe0a0,
+    type: 3}
+  m_PrefabInstance: {fileID: 899376987}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1691319370
 GameObject:
   m_ObjectHideFlags: 3

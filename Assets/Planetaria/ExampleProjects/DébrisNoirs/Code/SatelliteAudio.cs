@@ -24,7 +24,7 @@ namespace DebrisNoirs
                 return;
             }
             Vector2 player_velocity = satellite_rigidbody.relative_velocity;
-            Vector2 player_acceleration = DebrisNoirsInput.movement();
+            Vector2 player_acceleration = DebrisNoirsInput.get_axes();
             float next_thruster_force = Mathf.Lerp(minimum_volume_multiplier, 1, player_acceleration.magnitude);
             if (next_thruster_force > thruster_force)
             {
