@@ -91,7 +91,6 @@ namespace DebrisNoirs
 
         public void on_field_enter(PlanetariaCollider collider)
         {
-            Debug.Log("Satellite Colliding"); // Why isn't this being called? w/e being lazy...
             die();
         }
 

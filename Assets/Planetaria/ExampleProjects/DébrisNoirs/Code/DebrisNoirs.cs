@@ -32,6 +32,10 @@ namespace DebrisNoirs
             {
                 debris[(int)type] = new HashSet<PlanetariaGameObject>();
             }
+            if (debris[(int)type].Contains(game_object))
+            {
+                UnityEngine.Debug.Log("Deleting!");
+            }
             debris[(int)type].Remove(game_object); // FIXME: interesting bug PlanetariaGameObjects do not compare equal
         }
 

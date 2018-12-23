@@ -8,7 +8,7 @@ namespace Planetaria
     /// A wrapper class that encapsulates a reference to a GameObject
     /// </summary>
     [Serializable]
-    public class PlanetariaGameObject // TODO: test this... a lot
+    public class PlanetariaGameObject // TODO: test this... a lot // Classes have problems, inheritance just doesn't work, structs are ideal but the default constructor is giving me issues. Nonetheless, I will use classes with overridden == and .Equals()
     {
         // Properties
         public bool activeInHierarchy // mostly boilerplate code
@@ -247,7 +247,49 @@ namespace Planetaria
             return game_object != null && game_object.internal_game_object; // TODO: make sure this works with nulls and Unity nulls (destroyed objects)
         }
 
-        [SerializeField] private GameObject game_object_variable = null; // TODO: re-evaluate [HideInInspector] and [SerializeField] and public/private
+        public override bool Equals(System.Object other) // The fact that I had to do any of this is la~m~e
+        {
+            return this.Equals(other as PlanetariaGameObject);
+        }
+
+        public override int GetHashCode()
+        {
+            return internal_game_object.GetHashCode();
+        }
+
+        public bool Equals(PlanetariaGameObject other)
+        {
+            if (System.Object.ReferenceEquals(this, other))
+            {
+                return true;
+            }
+            if (System.Object.ReferenceEquals(this.internal_game_object, other != null ? other.internal_game_object : null))
+            {
+                return true;
+            }
+            
+            return this.internal_game_object == (other != null ? other.internal_game_object : null);
+        }
+
+        public static bool operator ==(PlanetariaGameObject left, PlanetariaGameObject right)
+        {
+            if (System.Object.ReferenceEquals(left, null))
+            {
+                if (System.Object.ReferenceEquals(right, null))
+                {
+                    return true;
+                }
+                return right.Equals(left); // Unity nulls are weird, so you still have to check for equality.
+            }
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(PlanetariaGameObject left, PlanetariaGameObject right)
+        {
+            return !(left == right);
+        }
+
+        [SerializeField] private GameObject game_object_variable; // TODO: re-evaluate [HideInInspector] and [SerializeField] and public/private
     }
 }
 
