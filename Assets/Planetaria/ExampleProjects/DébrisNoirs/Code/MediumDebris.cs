@@ -1,75 +1,78 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using Planetaria;
 
-/// <summary>
-/// Medium debris collides with medium and small debris.
-/// It is the fastest debris, mid-sized, and un-predictable because it could break into two pieces of small debris.
-/// It has a cool-down (see TemperatureCooling) where it cannot collide with other rocks.
-/// </summary>
-public class MediumDebris : PlanetariaMonoBehaviour
+namespace DebrisNoirs
 {
-    protected override void OnConstruction() { }
-    protected override void OnDestruction() { }
-    
-    private void OnValidate()
+    /// <summary>
+    /// Medium debris collides with medium and small debris.
+    /// It is the fastest debris, mid-sized, and un-predictable because it could break into two pieces of small debris.
+    /// It has a cool-down (see TemperatureCooling) where it cannot collide with other rocks.
+    /// </summary>
+    public class MediumDebris : PlanetariaMonoBehaviour
     {
-        planetaria_collider = this.GetComponent<PlanetariaCollider>();
-        planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
-        planetaria_transform = this.GetComponent<PlanetariaTransform>();
-        planetaria_renderer_foreground = this.GetComponent<AreaRenderer>();
-        planetaria_renderer_background = planetaria_transform.Find("Silhouette").GetComponent<AreaRenderer>();
-    }
+        protected override void OnConstruction() { }
+        protected override void OnDestruction() { }
 
-    private void Start()
-    {
-        planetaria_renderer_foreground.angle = UnityEngine.Random.Range(0, 2*Mathf.PI); // this is random rotation for the sprite image.
-        planetaria_renderer_background.angle = planetaria_renderer_foreground.angle; // and the silhouette
-
-        // apply random rotation
-        float deviation_angle = UnityEngine.Random.Range(-Mathf.PI, +Mathf.PI);
-        Vector2 local_direction = new Vector2(Mathf.Sin(deviation_angle), Mathf.Cos(deviation_angle));
-        Vector3 direction = this.gameObject.internal_game_object.transform.rotation * local_direction;
-        planetaria_transform.direction = direction;
-
-        // apply random speed multiplier
-        float speed_multiplier = UnityEngine.Random.Range(1, 1.25f);
-        speed *= speed_multiplier;
-
-        // set velocity
-        planetaria_rigidbody.relative_velocity = new Vector2(0, speed);
-
-        OnFieldEnter.data = on_field_enter;
-    }
-    
-    public void on_field_enter(PlanetariaCollider collider)
-    {
-        // if collision is detected with asteroid, get other asteroid's dot_product threshold (starts at -1 and progresses to +1 in ~1 second after spawning to prevent "double collisions") and average it with this asteroid's dot product threshold
-        // if the (lossy) dot product of the velocities is less than the average threshold, then collide
-        destroy_asteroid();
-    }
-
-    public void destroy_asteroid()
-    {
-        for (int space_rock = 0; space_rock < 2; ++space_rock)
+        private void OnValidate()
         {
-            PlanetariaGameObject game_object = PlanetariaGameObject.Instantiate(small_debris, planetaria_transform.position, planetaria_transform.direction);
-            SmallDebris debris = game_object.GetComponent<SmallDebris>();
-            debris.speed = this.speed;
-            DebrisNoirs.live(game_object, DebrisNoirs.DebrisSize.Small);
+            planetaria_collider = this.GetComponent<PlanetariaCollider>();
+            planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
+            planetaria_transform = this.GetComponent<PlanetariaTransform>();
+            planetaria_renderer_foreground = this.GetComponent<AreaRenderer>();
+            planetaria_renderer_background = planetaria_transform.Find("Silhouette").GetComponent<AreaRenderer>();
         }
-        PlanetariaGameObject.Destroy(this.gameObject);
+
+        private void Start()
+        {
+            planetaria_renderer_foreground.angle = UnityEngine.Random.Range(0, 2 * Mathf.PI); // this is random rotation for the sprite image.
+            planetaria_renderer_background.angle = planetaria_renderer_foreground.angle; // and the silhouette
+
+            // apply random rotation
+            float deviation_angle = UnityEngine.Random.Range(-Mathf.PI, +Mathf.PI);
+            Vector2 local_direction = new Vector2(Mathf.Sin(deviation_angle), Mathf.Cos(deviation_angle));
+            Vector3 direction = this.gameObject.internal_game_object.transform.rotation * local_direction;
+            planetaria_transform.direction = direction;
+
+            // apply random speed multiplier
+            float speed_multiplier = UnityEngine.Random.Range(1, 1.25f);
+            speed *= speed_multiplier;
+
+            // set velocity
+            planetaria_rigidbody.relative_velocity = new Vector2(0, speed);
+
+            OnFieldEnter.data = on_field_enter;
+        }
+
+        public void on_field_enter(PlanetariaCollider collider)
+        {
+            // if collision is detected with asteroid, get other asteroid's dot_product threshold (starts at -1 and progresses to +1 in ~1 second after spawning to prevent "double collisions") and average it with this asteroid's dot product threshold
+            // if the (lossy) dot product of the velocities is less than the average threshold, then collide
+            destroy_asteroid();
+        }
+
+        public void destroy_asteroid()
+        {
+            for (int space_rock = 0; space_rock < 2; ++space_rock)
+            {
+                PlanetariaGameObject game_object = PlanetariaGameObject.Instantiate(small_debris, planetaria_transform.position, planetaria_transform.direction);
+                SmallDebris debris = game_object.GetComponent<SmallDebris>();
+                debris.speed = this.speed;
+                DebrisNoirs.live(game_object, DebrisNoirs.DebrisSize.Small);
+            }
+            DebrisNoirs.request_death(this.gameObject, DebrisNoirs.DebrisSize.Medium);
+            PlanetariaGameObject.Destroy(this.gameObject);
+        }
+
+        [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer_foreground;
+        [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer_background;
+        [SerializeField] [HideInInspector] private PlanetariaCollider planetaria_collider;
+        [SerializeField] [HideInInspector] private PlanetariaRigidbody planetaria_rigidbody;
+        [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;
+
+        [SerializeField] public /*static*/ GameObject small_debris;
+
+        [SerializeField] private float speed = 1;
     }
-
-    [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer_foreground;
-    [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer_background;
-    [SerializeField] [HideInInspector] private PlanetariaCollider planetaria_collider;
-    [SerializeField] [HideInInspector] private PlanetariaRigidbody planetaria_rigidbody;
-    [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;
-
-    [SerializeField] public /*static*/ GameObject small_debris;
-
-    [SerializeField] private float speed = 1;
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
+using Planetaria;
 
-namespace Planetaria
+namespace Platformer
 {
     public class Door : PlanetariaMonoBehaviour
     {

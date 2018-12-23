@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
+using Planetaria;
 
-namespace Planetaria
+namespace DebrisNoirs
 {
     /// <summary>
-	/// Encapsulate movement (layer of abstraction)
+    /// Encapsulate movement (layer of abstraction)
     /// </summary>
-	public static class DebrisNoirsInput
-	{
+    public static class DebrisNoirsInput
+    {
         public static Vector2 movement()
         {
             // traditional movement with a controller
@@ -16,7 +17,7 @@ namespace Planetaria
             {
                 last_input_frame = Time.frameCount;
             }
-            if (last_input_frame + (int)(seconds_until_head_control/Time.fixedDeltaTime) > Time.frameCount)
+            if (last_input_frame + (int)(seconds_until_head_control / Time.fixedDeltaTime) > Time.frameCount)
             {
                 return new Vector2(horizontal, vertical).normalized;
             }
@@ -39,13 +40,13 @@ namespace Planetaria
             Vector2 input_direction = new Vector2(-Mathf.Sin(target_angle), Mathf.Cos(target_angle)) * target_distance;
             return input_direction;
         }
-        
+
         private static Transform main_character;
         private static Transform main_controller;
 
         private const float seconds_until_head_control = 20f;
         private static int last_input_frame = int.MinValue;
-	}
+    }
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

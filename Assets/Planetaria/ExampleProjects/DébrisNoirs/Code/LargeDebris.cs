@@ -1,50 +1,52 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using Planetaria;
 
-/// <summary>
-/// Large Debris does not collide with other debris. It is large (duh), slow-moving, and predictable.
-/// </summary>
-public class LargeDebris : PlanetariaMonoBehaviour
+namespace DebrisNoirs
 {
-    protected override void OnConstruction() { }
-    protected override void OnDestruction() { }
-
-    private void OnValidate()
+    /// <summary>
+    /// Large Debris does not collide with other debris. It is large (duh), slow-moving, and predictable.
+    /// </summary>
+    public class LargeDebris : PlanetariaMonoBehaviour
     {
-        planetaria_collider = this.GetComponent<PlanetariaCollider>();
-        planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
-        planetaria_transform = this.GetComponent<PlanetariaTransform>();
-        planetaria_renderer_foreground = this.GetComponent<AreaRenderer>();
-        planetaria_renderer_background = planetaria_transform.Find("Silhouette").GetComponent<AreaRenderer>();
+        protected override void OnConstruction() { }
+        protected override void OnDestruction() { }
+
+        private void OnValidate()
+        {
+            planetaria_collider = this.GetComponent<PlanetariaCollider>();
+            planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
+            planetaria_transform = this.GetComponent<PlanetariaTransform>();
+            planetaria_renderer_foreground = this.GetComponent<AreaRenderer>();
+            planetaria_renderer_background = planetaria_transform.Find("Silhouette").GetComponent<AreaRenderer>();
+        }
+
+        private void Start()
+        {
+            planetaria_renderer_foreground.angle = UnityEngine.Random.Range(0, 2 * Mathf.PI); // this is random rotation for the sprite image.
+            planetaria_renderer_background.angle = planetaria_renderer_foreground.angle; // and the silhouette
+
+            // apply random rotation
+            float deviation_angle = UnityEngine.Random.Range(-Mathf.PI, +Mathf.PI); // random rotation for the velocity
+            Vector2 local_direction = new Vector2(Mathf.Sin(deviation_angle), Mathf.Cos(deviation_angle));
+            Vector3 direction = this.gameObject.internal_game_object.transform.rotation * local_direction;
+            planetaria_transform.direction = direction;
+
+            // apply random speed multiplier
+            float speed_multiplier = UnityEngine.Random.Range(0.75f, 1.25f);
+            speed *= speed_multiplier;
+
+            // set velocity
+            planetaria_rigidbody.relative_velocity = new Vector2(0, speed);
+        }
+
+        [SerializeField] private float speed = 2 * Mathf.PI / 50;
+
+        [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer_foreground;
+        [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer_background;
+        [SerializeField] [HideInInspector] private PlanetariaCollider planetaria_collider;
+        [SerializeField] [HideInInspector] private PlanetariaRigidbody planetaria_rigidbody;
+        [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;
     }
-
-    private void Start()
-    {
-        planetaria_renderer_foreground.angle = UnityEngine.Random.Range(0, 2*Mathf.PI); // this is random rotation for the sprite image.
-        planetaria_renderer_background.angle = planetaria_renderer_foreground.angle; // and the silhouette
-
-        // apply random rotation
-        float deviation_angle = UnityEngine.Random.Range(-Mathf.PI, +Mathf.PI); // random rotation for the velocity
-        Vector2 local_direction = new Vector2(Mathf.Sin(deviation_angle), Mathf.Cos(deviation_angle));
-        Vector3 direction = this.gameObject.internal_game_object.transform.rotation * local_direction;
-        planetaria_transform.direction = direction;
-
-        // apply random speed multiplier
-        float speed_multiplier = UnityEngine.Random.Range(0.75f, 1.25f);
-        speed *= speed_multiplier;
-
-        // set velocity
-        planetaria_rigidbody.relative_velocity = new Vector2(0, speed);
-    }
-
-    [SerializeField] private float speed = 2*Mathf.PI/50;
-
-    [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer_foreground;
-    [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer_background;
-    [SerializeField] [HideInInspector] private PlanetariaCollider planetaria_collider;
-    [SerializeField] [HideInInspector] private PlanetariaRigidbody planetaria_rigidbody;
-    [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

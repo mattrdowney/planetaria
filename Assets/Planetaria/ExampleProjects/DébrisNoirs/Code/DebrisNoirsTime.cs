@@ -1,114 +1,116 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable]
-public class DebrisNoirsTime
+namespace DebrisNoirs
 {
-    public void increment(float positive_delta_time)
+    [Serializable]
+    public class DebrisNoirsTime
     {
-        fraction += positive_delta_time;
-        if (fraction >= 1f)
+        public void increment(float positive_delta_time)
         {
-            fraction -= 1f; // This technically wouldn't work if the frames per second of update was <1.
-            seconds += 1;
-            if (seconds >= seconds_in_minute)
+            fraction += positive_delta_time;
+            if (fraction >= 1f)
             {
-                seconds -= seconds_in_minute; // this is equivalent to seconds = 0
-                minutes += 1;
-                if (minutes >= minutes_in_hour)
+                fraction -= 1f; // This technically wouldn't work if the frames per second of update was <1.
+                seconds += 1;
+                if (seconds >= seconds_in_minute)
                 {
-                    minutes -= minutes_in_hour; // this is equivalent to minutes = 0
-                    hours += 1;
-                    if (hours >= hours_in_day)
+                    seconds -= seconds_in_minute; // this is equivalent to seconds = 0
+                    minutes += 1;
+                    if (minutes >= minutes_in_hour)
                     {
-                        hours -= hours_in_day; // this is equivalent to hours = 0
-                        days += 1;
-                        if (days >= days_in_year)
+                        minutes -= minutes_in_hour; // this is equivalent to minutes = 0
+                        hours += 1;
+                        if (hours >= hours_in_day)
                         {
-                            days -= days_in_year; // this is equivalent to days = 0
-                            years += 1;
+                            hours -= hours_in_day; // this is equivalent to hours = 0
+                            days += 1;
+                            if (days >= days_in_year)
+                            {
+                                days -= days_in_year; // this is equivalent to days = 0
+                                years += 1;
+                            }
                         }
                     }
                 }
             }
         }
-    }
 
-    public override string ToString()
-    {
-        string result = "";
-        if (years > 0)
+        public override string ToString()
         {
-            result += (years.ToString() + "-");
-        }
-        if (days > 0)
-        {
+            string result = "";
             if (years > 0)
             {
-                // print all of the digits in 365, if the year is being printed.
-                result += (days.ToString().PadLeft(3, '0') + " "); // pad leading zeros
+                result += (years.ToString() + "-");
             }
-            else
+            if (days > 0)
             {
-                result += (days.ToString() + " ");
+                if (years > 0)
+                {
+                    // print all of the digits in 365, if the year is being printed.
+                    result += (days.ToString().PadLeft(3, '0') + " "); // pad leading zeros
+                }
+                else
+                {
+                    result += (days.ToString() + " ");
+                }
             }
+            if (hours > 0)
+            {
+                if (years > 0 || days > 0)
+                {
+                    // print all of the digits in 24, if the year or day is being printed.
+                    result += (hours.ToString().PadLeft(2, '0') + ":");
+                }
+                else
+                {
+                    result += (hours.ToString() + ":");
+                }
+            }
+            if (minutes > 0)
+            {
+                if (years > 0 || days > 0 || hours > 0)
+                {
+                    // print all of the digits in 60, if the year or day or hour is being printed.
+                    result += (minutes.ToString().PadLeft(2, '0') + ":");
+                }
+                else
+                {
+                    result += (minutes.ToString() + ":");
+                }
+            }
+            if (seconds >= 0) // always happens (unless, a bug exists that makes seconds negative).
+            {
+                if (years > 0 || days > 0 || hours > 0 || minutes > 0)
+                {
+                    // print all of the digits in 60, if the year or day or hour or minutes is being printed.
+                    result += (seconds.ToString().PadLeft(2, '0') + ".");
+                }
+                else
+                {
+                    result += (seconds.ToString().PadLeft(1, '0') + "."); // at the bare minimum, if you want to display something it should look like 0.00
+                }
+            }
+            if (fraction >= 0) // always happens (unless, a bug exists that makes fraction negative).
+            {
+                int hundredths = Mathf.FloorToInt(fraction * 100);
+                result += hundredths.ToString().PadRight(2, '0'); // this is the only time we pad on the right with zeros (trailing zeros).
+            }
+            return result;
         }
-        if (hours > 0)
-        {
-            if (years > 0 || days > 0)
-            {
-                // print all of the digits in 24, if the year or day is being printed.
-                result += (hours.ToString().PadLeft(2, '0') + ":");
-            }
-            else
-            {
-                result += (hours.ToString() + ":");
-            }
-        }
-        if (minutes > 0)
-        {
-            if (years > 0 || days > 0 || hours > 0)
-            {
-                // print all of the digits in 60, if the year or day or hour is being printed.
-                result += (minutes.ToString().PadLeft(2, '0') + ":");
-            }
-            else
-            {
-                result += (minutes.ToString() + ":");
-            }
-        }
-        if (seconds >= 0) // always happens (unless, a bug exists that makes seconds negative).
-        {
-            if (years > 0 || days > 0 || hours > 0 || minutes > 0)
-            {
-                // print all of the digits in 60, if the year or day or hour or minutes is being printed.
-                result += (seconds.ToString().PadLeft(2, '0') + ".");
-            }
-            else
-            {
-                result += (seconds.ToString().PadLeft(1,'0') + "."); // at the bare minimum, if you want to display something it should look like 0.00
-            }
-        }
-        if (fraction >= 0) // always happens (unless, a bug exists that makes fraction negative).
-        {
-            int hundredths = Mathf.FloorToInt(fraction * 100);
-            result += hundredths.ToString().PadRight(2, '0'); // this is the only time we pad on the right with zeros (trailing zeros).
-        }
-        return result;
-    }
-    
-    [NonSerialized] [HideInInspector] private float fraction;
-    [NonSerialized] [HideInInspector] private int seconds;
-    [NonSerialized] [HideInInspector] private int minutes;
-    [NonSerialized] [HideInInspector] private int hours;
-    [NonSerialized] [HideInInspector] private int days;
-    [NonSerialized] [HideInInspector] private uint years; // I'm being pedantic here for defined-behavior uint overflow (only an AI could play this for a year, much less 2^32 years, but hey, it's not quite the heat death of the universe).
 
-    private const int seconds_in_minute = 60;
-    private const int minutes_in_hour = 60;
-    private const int hours_in_day = 24;
-    private const int days_in_year = 365;
+        [NonSerialized] [HideInInspector] private float fraction;
+        [NonSerialized] [HideInInspector] private int seconds;
+        [NonSerialized] [HideInInspector] private int minutes;
+        [NonSerialized] [HideInInspector] private int hours;
+        [NonSerialized] [HideInInspector] private int days;
+        [NonSerialized] [HideInInspector] private uint years; // I'm being pedantic here for defined-behavior uint overflow (only an AI could play this for a year, much less 2^32 years, but hey, it's not quite the heat death of the universe).
+
+        private const int seconds_in_minute = 60;
+        private const int minutes_in_hour = 60;
+        private const int hours_in_day = 24;
+        private const int days_in_year = 365;
+    }
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

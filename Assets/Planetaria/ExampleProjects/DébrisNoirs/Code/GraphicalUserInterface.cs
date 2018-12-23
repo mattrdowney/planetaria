@@ -1,20 +1,20 @@
 ﻿using UnityEngine;
-using UnityEngine.XR;
+using Planetaria;
 
-namespace Planetaria
+namespace DebrisNoirs
 {
     /// <summary>
-	///
+    ///
     /// </summary>
-	public class GraphicalUserInterface : PlanetariaMonoBehaviour
-	{
+    public class GraphicalUserInterface : PlanetariaMonoBehaviour
+    {
         // Methods (non-Public)
-        
+
         protected override void OnConstruction() { }
 
         protected override void OnDestruction() { }
 
-		// Messages (non-Public)
+        // Messages (non-Public)
 
         private void Start()
         {
@@ -29,7 +29,7 @@ namespace Planetaria
 
         private void LateUpdate()
         {
-             // TODO: implement color, transparency, head_tracking, etc
+            // TODO: implement color, transparency, head_tracking, etc
 #if UNITY_EDITOR
 #else
             graphical_user_interface.rotation = Quaternion.Inverse(InputTracking.GetLocalRotation(XRNode.Head) * inverse_start_rotation);
@@ -40,7 +40,7 @@ namespace Planetaria
 
         private Quaternion inverse_start_rotation;
         private RectTransform graphical_user_interface;
-	}
+    }
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

@@ -2,73 +2,76 @@
 using UnityEngine;
 using Planetaria;
 
-public class Laser : MonoBehaviour  // TODO: PlanetariaComponent
+namespace Platformer
 {
-    public GameObject prefabricated_object;
-
-    private void Start()
+    public class Laser : MonoBehaviour  // TODO: PlanetariaComponent
     {
-        main_character = GameObject.FindObjectOfType<Character>().gameObject.internal_game_object.transform;
-        main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
-        arc_renderer = GameObject.FindObjectOfType<ArcRenderer>();
-        point_light = GameObject.FindObjectOfType<PlanetariaLight>();
-#if UNITY_EDITOR
-        GameObject.FindObjectOfType<PlanetariaActuator>().input_device_type = PlanetariaActuator.InputDevice.Mouse;
-#else
-        GameObject.FindObjectOfType<PlanetariaActuator>().input_device_type = PlanetariaActuator.InputDevice.Gyroscope;
-        GameObject.FindObjectOfType<PlanetariaActuator>().virtual_reality_tracker_type = UnityEngine.XR.XRNode.RightHand;
-#endif
-    }
+        public GameObject prefabricated_object;
 
-    private void Update()
-    {
-        Vector3 character_position = main_character.forward;
-        Vector3 controller_position = main_controller.forward;
-        List<SerializedArc> laser = new List<SerializedArc> { ArcFactory.line(character_position, controller_position) };
-        arc_renderer.shape = PlanetariaShape.Create(laser, false);
-        arc_renderer.recalculate();
-
-        bool firing;
+        private void Start()
+        {
+            main_character = GameObject.FindObjectOfType<Character>().gameObject.internal_game_object.transform;
+            main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
+            arc_renderer = GameObject.FindObjectOfType<ArcRenderer>();
+            point_light = GameObject.FindObjectOfType<PlanetariaLight>();
 #if UNITY_EDITOR
-        firing = Input.GetButton("Fire1");
+            GameObject.FindObjectOfType<PlanetariaActuator>().input_device_type = PlanetariaActuator.InputDevice.Mouse;
 #else
-        firing = Input.GetButton("OSVR_IndexTrigger");
+            GameObject.FindObjectOfType<PlanetariaActuator>().input_device_type = PlanetariaActuator.InputDevice.Gyroscope;
+            GameObject.FindObjectOfType<PlanetariaActuator>().virtual_reality_tracker_type = UnityEngine.XR.XRNode.RightHand;
 #endif
-        if (firing)
-        {
-            arc_renderer.material.color = Color.red;
-        }
-        else
-        {
-            arc_renderer.material.color = Color.blue;
         }
 
-        /*PlanetariaRaycastHit[] collision_info = PlanetariaPhysics.raycast_all(Arc.line(character_position, controller_position));
-        Vector3 last_position = character_position;
-        bool blue = true;
-        Color color;
-        foreach (PlanetariaRaycastHit hit in collision_info)
+        private void Update()
         {
+            Vector3 character_position = main_character.forward;
+            Vector3 controller_position = main_controller.forward;
+            List<SerializedArc> laser = new List<SerializedArc> { ArcFactory.line(character_position, controller_position) };
+            arc_renderer.shape = PlanetariaShape.Create(laser, false);
+            arc_renderer.recalculate();
+
+            bool firing;
+#if UNITY_EDITOR
+            firing = Input.GetButton("Fire1");
+#else
+            firing = Input.GetButton("OSVR_IndexTrigger");
+#endif
+            if (firing)
+            {
+                arc_renderer.material.color = Color.red;
+            }
+            else
+            {
+                arc_renderer.material.color = Color.blue;
+            }
+
+            /*PlanetariaRaycastHit[] collision_info = PlanetariaPhysics.raycast_all(Arc.line(character_position, controller_position));
+            Vector3 last_position = character_position;
+            bool blue = true;
+            Color color;
+            foreach (PlanetariaRaycastHit hit in collision_info)
+            {
+                color = blue ? Color.blue : Color.red;
+                Debug.DrawLine(last_position, hit.point, color);
+                last_position = hit.point;
+                blue = !blue;
+            }
             color = blue ? Color.blue : Color.red;
-            Debug.DrawLine(last_position, hit.point, color);
-            last_position = hit.point;
-            blue = !blue;
-        }
-        color = blue ? Color.blue : Color.red;
-        Debug.DrawLine(last_position, controller_position, color);
-        arc_renderer.*/
+            Debug.DrawLine(last_position, controller_position, color);
+            arc_renderer.*/
 
-        /*if (Input.GetButtonDown("Jump"))
-        {
-            PlanetariaGameObject.Instantiate(prefabricated_object, controller_position);
-            //Destroy(new object, 3 seconds) + test Destroy for PlanetariaGameObject
-        }*/
+            /*if (Input.GetButtonDown("Jump"))
+            {
+                PlanetariaGameObject.Instantiate(prefabricated_object, controller_position);
+                //Destroy(new object, 3 seconds) + test Destroy for PlanetariaGameObject
+            }*/
+        }
+
+        private Transform main_character;
+        private Transform main_controller;
+        private ArcRenderer arc_renderer;
+        private PlanetariaLight point_light;
     }
-    
-    private Transform main_character;
-    private Transform main_controller;
-    private ArcRenderer arc_renderer;
-    private PlanetariaLight point_light;
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

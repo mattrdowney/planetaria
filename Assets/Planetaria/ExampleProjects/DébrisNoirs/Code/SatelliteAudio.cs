@@ -1,13 +1,13 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
+using Planetaria;
 
-namespace Planetaria
+namespace DebrisNoirs
 {
     /// <summary>
-	/// Procedurally generates engine noises.
+    /// Procedurally generates engine noises.
     /// </summary>
     [RequireComponent(typeof(AudioSource))]
-	public class SatelliteAudio : PlanetariaMonoBehaviour
+    public class SatelliteAudio : PlanetariaMonoBehaviour
     {
         private void Start()
         {
@@ -62,15 +62,15 @@ namespace Planetaria
                 // play a sound for multiple frames (e.g. a "square wave")
                 if (repeats_left <= 0) // but randomly generate new samples as needed
                 {
-                    random_number = (float) random_number_generator.NextDouble();
+                    random_number = (float)random_number_generator.NextDouble();
                     // this determines the local amplitude (volume)
                     wave_value = PlanetariaMath.triangular_distribution(random_number, -volume, 0, +volume);
-                    random_number = (float) random_number_generator.NextDouble();
+                    random_number = (float)random_number_generator.NextDouble();
                     // this approximately determines the pitch
                     repeats_left = Mathf.FloorToInt(PlanetariaMath.triangular_distribution(random_number, 172, 259, 518)); // FIXME: MAGIC NUMBER:
                 }
-                random_number = (float) random_number_generator.NextDouble();
-                float resistance_multiplier = 1 + thruster_variance_multiplier*random_number*thruster_resistance;
+                random_number = (float)random_number_generator.NextDouble();
+                float resistance_multiplier = 1 + thruster_variance_multiplier * random_number * thruster_resistance;
                 data[sample] = wave_value * resistance_multiplier * thruster_force;
                 repeats_left -= 1;
             }

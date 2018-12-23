@@ -3,76 +3,79 @@ using System.Collections;
 using UnityEngine;
 using Planetaria;
 
-[Serializable]
-public class DebrisSpawner : PlanetariaMonoBehaviour
+namespace DebrisNoirs
 {
-    protected override void OnConstruction() { }
-    protected override void OnDestruction() { }
-
-    void Start ()
+    [Serializable]
+    public class DebrisSpawner : PlanetariaMonoBehaviour
     {
-		ship = PlanetariaGameObject.Find("Satellite").transform;
-        large_debris_spawner = spawn_large_debris();
-        StartCoroutine(large_debris_spawner);
-        medium_debris_spawner = spawn_medium_debris();
-        StartCoroutine(medium_debris_spawner);
-	}
+        protected override void OnConstruction() { }
+        protected override void OnDestruction() { }
 
-    public IEnumerator spawn_large_debris()
-    {
-        while (true)
+        void Start()
         {
-            yield return delay;
-            if (!spawn_debris(DebrisNoirs.DebrisSize.Large)) // since large debris is permanent, you can stop at 50.
+            ship = PlanetariaGameObject.Find("Satellite").transform;
+            large_debris_spawner = spawn_large_debris();
+            StartCoroutine(large_debris_spawner);
+            medium_debris_spawner = spawn_medium_debris();
+            StartCoroutine(medium_debris_spawner);
+        }
+
+        public IEnumerator spawn_large_debris()
+        {
+            while (true)
             {
-                StopCoroutine(large_debris_spawner);
+                yield return delay;
+                if (!spawn_debris(DebrisNoirs.DebrisSize.Large)) // since large debris is permanent, you can stop at 50.
+                {
+                    StopCoroutine(large_debris_spawner);
+                }
             }
         }
-    }
 
-    public IEnumerator spawn_medium_debris()
-    {
-        yield return new WaitForSeconds(2*24+1-48); // spawn 25 large asteroids before spawning first medium asteroid, then alternate between 26 medium and remaining 25 large. 
-        while (true)
+        public IEnumerator spawn_medium_debris()
         {
-            yield return delay;
-            spawn_debris(DebrisNoirs.DebrisSize.Medium);
-        }
-    }
-
-    public void heat_death()
-    {
-        StopAllCoroutines(); // I prefer this version, as long as it doesn't stop the audio thread (I really don't think it's possible, though)
-        large_debris_spawner = spawn_large_debris();
-        StartCoroutine(large_debris_spawner);
-        medium_debris_spawner = spawn_medium_debris();
-        StartCoroutine(medium_debris_spawner);
-    }
-
-    private bool spawn_debris(DebrisNoirs.DebrisSize type)
-    {
-        if (DebrisNoirs.request_life(type))
-        {
-            Vector3 random_position = UnityEngine.Random.onUnitSphere;
-            if (Vector3.Dot(random_position, ship.position) > 0)
+            yield return new WaitForSeconds(2 * 24 + 1 - 48); // spawn 25 large asteroids before spawning first medium asteroid, then alternate between 26 medium and remaining 25 large. 
+            while (true)
             {
-                random_position *= -1;
+                yield return delay;
+                spawn_debris(DebrisNoirs.DebrisSize.Medium);
             }
-            PlanetariaGameObject debris = PlanetariaGameObject.Instantiate(type == DebrisNoirs.DebrisSize.Medium ? medium_debris : large_debris, random_position);
-            DebrisNoirs.live(debris, type);
-            return true;
         }
-        return false;
+
+        public void heat_death()
+        {
+            StopAllCoroutines(); // I prefer this version, as long as it doesn't stop the audio thread (I really don't think it's possible, though)
+            large_debris_spawner = spawn_large_debris();
+            StartCoroutine(large_debris_spawner);
+            medium_debris_spawner = spawn_medium_debris();
+            StartCoroutine(medium_debris_spawner);
+        }
+
+        private bool spawn_debris(DebrisNoirs.DebrisSize type)
+        {
+            if (DebrisNoirs.request_life(type))
+            {
+                Vector3 random_position = UnityEngine.Random.onUnitSphere;
+                if (Vector3.Dot(random_position, ship.position) > 0)
+                {
+                    random_position *= -1;
+                }
+                PlanetariaGameObject debris = PlanetariaGameObject.Instantiate(type == DebrisNoirs.DebrisSize.Medium ? medium_debris : large_debris, random_position);
+                DebrisNoirs.live(debris, type);
+                return true;
+            }
+            return false;
+        }
+
+        private static WaitForSeconds delay = new WaitForSeconds(2f);
+
+        IEnumerator large_debris_spawner;
+        IEnumerator medium_debris_spawner; // while it may not appear you need this thread, you do for "restarting it".
+
+        [SerializeField] public GameObject large_debris;
+        [SerializeField] public GameObject medium_debris;
+        [NonSerialized] private PlanetariaTransform ship;
     }
-
-    private static WaitForSeconds delay = new WaitForSeconds(2f);
-
-    IEnumerator large_debris_spawner;
-    IEnumerator medium_debris_spawner; // while it may not appear you need this thread, you do for "restarting it".
-
-    [SerializeField] public GameObject large_debris;
-    [SerializeField] public GameObject medium_debris;
-    [NonSerialized] private PlanetariaTransform ship;
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

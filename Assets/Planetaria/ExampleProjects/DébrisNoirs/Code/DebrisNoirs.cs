@@ -1,19 +1,19 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
+using Planetaria;
 
-namespace Planetaria
+namespace DebrisNoirs
 {
     /// <summary>
-	/// Singleton - Game Manager for Debris Noirs.
+    /// Singleton - Game Manager for Debris Noirs.
     /// </summary>
     /// <seealso cref="https://www.arcade-history.com/?n=asteroids-upright-model&page=detail&id=126"/> // Extra information about Asteroids (1979)
-	public static class DebrisNoirs // LAZY SINGLETON
-	{
+    public static class DebrisNoirs // LAZY SINGLETON
+    {
         public enum DebrisSize { Large = 0, Medium = 1, Small = 2 }
 
         public static void heat_death()
         {
-            for (int type = 0; type <= (int) DebrisSize.Small; type += 1)
+            for (int type = 0; type <= (int)DebrisSize.Small; type += 1)
             {
                 if (debris[type] != null)
                 {
@@ -26,13 +26,13 @@ namespace Planetaria
             }
         }
 
-		public static void request_death(PlanetariaGameObject game_object, DebrisSize type)
+        public static void request_death(PlanetariaGameObject game_object, DebrisSize type)
         {
             if (debris[(int)type] == null)
             {
                 debris[(int)type] = new HashSet<PlanetariaGameObject>();
             }
-            debris[(int)type].Remove(game_object);
+            debris[(int)type].Remove(game_object); // FIXME: interesting bug PlanetariaGameObjects do not compare equal
         }
 
         public static bool request_life(DebrisSize type)
@@ -55,7 +55,7 @@ namespace Planetaria
 
         private static readonly int[] maximum_debris_objects = new int[] { 50, 26, int.MaxValue };
         private static HashSet<PlanetariaGameObject>[] debris = new HashSet<PlanetariaGameObject>[3];
-	}
+    }
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

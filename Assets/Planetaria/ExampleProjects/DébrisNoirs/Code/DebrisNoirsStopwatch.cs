@@ -3,48 +3,51 @@ using UnityEngine;
 using UnityEngine.UI;
 using Planetaria;
 
-public class DebrisNoirsStopwatch : PlanetariaMonoBehaviour
+namespace DebrisNoirs
 {
-    public void reset_clock()
+    public class DebrisNoirsStopwatch : PlanetariaMonoBehaviour
     {
-        time = new DebrisNoirsTime();
-    }
-
-    public void start_clock()
-    {
-        state = StopwatchState.Started;
-    }
-
-    public void stop_clock()
-    {
-        state = StopwatchState.Stopped;
-    }
-
-    private void OnValidate()
-    {
-        text = this.gameObject.internal_game_object.GetComponent<Text>();
-        time = new DebrisNoirsTime();
-    }
-
-    // Update is called once per frame
-    private void Update()
-    {
-        if (state != StopwatchState.Stopped)
+        public void reset_clock()
         {
-            time.increment(Time.deltaTime);
+            time = new DebrisNoirsTime();
         }
-        text.text = time.ToString();
+
+        public void start_clock()
+        {
+            state = StopwatchState.Started;
+        }
+
+        public void stop_clock()
+        {
+            state = StopwatchState.Stopped;
+        }
+
+        private void OnValidate()
+        {
+            text = this.gameObject.internal_game_object.GetComponent<Text>();
+            time = new DebrisNoirsTime();
+        }
+
+        // Update is called once per frame
+        private void Update()
+        {
+            if (state != StopwatchState.Stopped)
+            {
+                time.increment(Time.deltaTime);
+            }
+            text.text = time.ToString();
+        }
+
+        protected override void OnConstruction() { }
+        protected override void OnDestruction() { }
+
+        private enum StopwatchState { Stopped = 0, Started = 1 }
+
+        [SerializeField] [HideInInspector] private Text text;
+
+        [NonSerialized] [HideInInspector] private StopwatchState state = StopwatchState.Started;
+        [NonSerialized] [HideInInspector] DebrisNoirsTime time;
     }
-
-    protected override void OnConstruction() { }
-    protected override void OnDestruction() { }
-
-    private enum StopwatchState { Stopped = 0, Started = 1 }
-
-    [SerializeField] [HideInInspector] private Text text;
-
-    [NonSerialized] [HideInInspector] private StopwatchState state = StopwatchState.Started;
-    [NonSerialized] [HideInInspector] DebrisNoirsTime time;
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

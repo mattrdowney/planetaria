@@ -1,31 +1,34 @@
-﻿using Planetaria;
-using UnityEngine;
+﻿using UnityEngine;
+using Planetaria;
 
-public class Elevator : PlanetariaTracker
+namespace Platformer
 {
-    public override void cleanup() { }
-
-    public override void setup()
+    public class Elevator : PlanetariaTracker
     {
-        Vector3 start_position = self.GetComponent<PlanetariaCollider>().shape.center_of_mass();
-        NormalizedSphericalCoordinates spherical = new NormalizedCartesianCoordinates(start_position);
-        NormalizedSphericalCoordinates shifted_spherical = new NormalizedSphericalCoordinates(spherical.elevation + Mathf.PI*0.75f, spherical.azimuth);
-        NormalizedCartesianCoordinates shifted_cartesian = shifted_spherical;
-        Vector3 end_position = shifted_cartesian.data;
+        public override void cleanup() { }
 
-        rotator = Quaternion.FromToRotation(start_position, end_position);
+        public override void setup()
+        {
+            Vector3 start_position = self.GetComponent<PlanetariaCollider>().shape.center_of_mass();
+            NormalizedSphericalCoordinates spherical = new NormalizedCartesianCoordinates(start_position);
+            NormalizedSphericalCoordinates shifted_spherical = new NormalizedSphericalCoordinates(spherical.elevation + Mathf.PI * 0.75f, spherical.azimuth);
+            NormalizedCartesianCoordinates shifted_cartesian = shifted_spherical;
+            Vector3 end_position = shifted_cartesian.data;
+
+            rotator = Quaternion.FromToRotation(start_position, end_position);
+        }
+
+        public override void step()
+        {
+            float interpolation_fraction = Mathf.PingPong(Time.time / 10f, 1); // FIXME: AnimationCurve (repeat) with optional hook for buttons
+            Quaternion intermediate_position = Quaternion.Slerp(Quaternion.identity, rotator, interpolation_fraction); // FIXME: needs to work >=180 degrees
+            self.SetPositionAndDirection(intermediate_position * Vector3.forward, intermediate_position * Vector3.up);
+        }
+
+        public override void teleport() { }
+
+        private Quaternion rotator;
     }
-
-    public override void step()
-    {
-        float interpolation_fraction = Mathf.PingPong(Time.time / 10f, 1); // FIXME: AnimationCurve (repeat) with optional hook for buttons
-        Quaternion intermediate_position = Quaternion.Slerp(Quaternion.identity, rotator, interpolation_fraction); // FIXME: needs to work >=180 degrees
-        self.SetPositionAndDirection(intermediate_position * Vector3.forward, intermediate_position * Vector3.up);
-    }
-
-    public override void teleport() { }
-
-    private Quaternion rotator;
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

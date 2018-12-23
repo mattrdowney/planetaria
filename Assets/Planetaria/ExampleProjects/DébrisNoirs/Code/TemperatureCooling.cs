@@ -1,32 +1,35 @@
 ﻿using UnityEngine;
 using Planetaria;
 
-public class TemperatureCooling : PlanetariaMonoBehaviour
+namespace DebrisNoirs
 {
-    protected override void OnConstruction() { }
-    protected override void OnDestruction() { }
-
-    private void OnValidate()
+    public class TemperatureCooling : PlanetariaMonoBehaviour
     {
-        planetaria_collider = this.GetComponent<PlanetariaCollider>();
-        planetaria_renderer_foreground = this.GetComponent<AreaRenderer>();
-    }
+        protected override void OnConstruction() { }
+        protected override void OnDestruction() { }
 
-    private void Update()
-    {
-        planetaria_renderer_foreground.color = Color.Lerp(Color.grey, Color.white, cooldown_timer/3); // FIXME: MAGIC NUMBERS:
-        if (cooldown_timer < 0)
+        private void OnValidate()
         {
-            planetaria_collider.gameObject.layer = LayerMask.NameToLayer("EphemeralDebris");
-            planetaria_renderer_foreground.color = Color.grey;
+            planetaria_collider = this.GetComponent<PlanetariaCollider>();
+            planetaria_renderer_foreground = this.GetComponent<AreaRenderer>();
         }
-        cooldown_timer -= Time.deltaTime;
+
+        private void Update()
+        {
+            planetaria_renderer_foreground.color = Color.Lerp(Color.grey, Color.white, cooldown_timer / 3); // FIXME: MAGIC NUMBERS:
+            if (cooldown_timer < 0)
+            {
+                planetaria_collider.gameObject.layer = LayerMask.NameToLayer("EphemeralDebris");
+                planetaria_renderer_foreground.color = Color.grey;
+            }
+            cooldown_timer -= Time.deltaTime;
+        }
+
+        [SerializeField] private float cooldown_timer = 3f;
+
+        [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer_foreground;
+        [SerializeField] [HideInInspector] private PlanetariaCollider planetaria_collider;
     }
-
-    [SerializeField] private float cooldown_timer = 3f;
-
-    [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer_foreground;
-    [SerializeField] [HideInInspector] private PlanetariaCollider planetaria_collider;
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

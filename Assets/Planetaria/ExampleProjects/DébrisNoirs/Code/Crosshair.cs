@@ -1,36 +1,38 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using Planetaria;
 
-public class Crosshair : PlanetariaMonoBehaviour
+namespace DebrisNoirs
 {
-    private void Start()
+    public class Crosshair : PlanetariaMonoBehaviour
     {
-        main_character = GameObject.FindObjectOfType<Satellite>().gameObject.internal_game_object.transform;
-        main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
-        planetaria_transform = this.GetComponent<PlanetariaTransform>();
+        private void Start()
+        {
+            main_character = GameObject.FindObjectOfType<Satellite>().gameObject.internal_game_object.transform;
+            main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
+            planetaria_transform = this.GetComponent<PlanetariaTransform>();
 #if UNITY_EDITOR
-        GameObject.FindObjectOfType<PlanetariaActuator>().input_device_type = PlanetariaActuator.InputDevice.Mouse;
+            GameObject.FindObjectOfType<PlanetariaActuator>().input_device_type = PlanetariaActuator.InputDevice.Mouse;
 #else
-        GameObject.FindObjectOfType<PlanetariaActuator>().input_device_type = PlanetariaActuator.InputDevice.Gyroscope;
-        GameObject.FindObjectOfType<PlanetariaActuator>().virtual_reality_tracker_type = UnityEngine.XR.XRNode.Head;
+            GameObject.FindObjectOfType<PlanetariaActuator>().input_device_type = PlanetariaActuator.InputDevice.Gyroscope;
+            GameObject.FindObjectOfType<PlanetariaActuator>().virtual_reality_tracker_type = UnityEngine.XR.XRNode.Head;
 #endif
+        }
+
+        private void LateUpdate()
+        {
+            Vector3 character_position = main_character.forward;
+            Vector3 controller_position = main_controller.forward;
+            Vector3 crosshair_up = Bearing.repeller(controller_position, character_position);
+            planetaria_transform.direction = crosshair_up;
+        }
+
+        protected override void OnConstruction() { }
+        protected override void OnDestruction() { }
+
+        private Transform main_character;
+        private Transform main_controller;
+        private PlanetariaTransform planetaria_transform;
     }
-
-    private void LateUpdate()
-    {
-        Vector3 character_position = main_character.forward;
-        Vector3 controller_position = main_controller.forward;
-        Vector3 crosshair_up = Bearing.repeller(controller_position, character_position);
-        planetaria_transform.direction = crosshair_up;
-    }
-
-    protected override void OnConstruction() { }
-    protected override void OnDestruction() { }
-
-    private Transform main_character;
-    private Transform main_controller;
-    private PlanetariaTransform planetaria_transform;
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
