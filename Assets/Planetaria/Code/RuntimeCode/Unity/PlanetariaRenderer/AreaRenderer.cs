@@ -43,8 +43,7 @@ namespace Planetaria
             set
             {
                 sprite_variable = value;
-                SpriteRenderer renderer = Miscellaneous.GetOrAddComponent<SpriteRenderer>(internal_transform);
-                renderer.sprite = sprite_variable;
+                sprite_renderer.sprite = sprite_variable;
             }
         }
 

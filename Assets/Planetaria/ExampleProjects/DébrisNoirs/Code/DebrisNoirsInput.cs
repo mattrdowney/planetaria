@@ -28,7 +28,7 @@ namespace DebrisNoirs
         /// Inspector - Get the input direction based on the virtual reality headset's view direction (or mouse position in Editor mode).
         /// </summary>
         /// <returns>The position/direction the player is looking relative to the satellite.</returns>
-        public static Vector2 get_compound_axes()
+        public static Vector2 get_compound_axes() // FIXME: the respawn zone in ghost mode shifts in direction of velocity
         {
             // Supposed to be called if no controller exists (or hasn't been used for 20 seconds).
             // In which case: use the head's orientation or mouse as a controller.
@@ -56,10 +56,36 @@ namespace DebrisNoirs
             if (using_primative_axis())
             {
                 result = get_primative_axes();
-                return result.SqrMagnitude() > 0.01f ? result.normalized : Vector2.zero;
+                if (result.sqrMagnitude < 0.01f)
+                {
+                    last_non_input_frame = Time.frameCount;
+                    return Vector2.zero;
+                }
+                // I would generally prefer to interpolate back and forth (not one-directional) but whatever.
+                return result.normalized * Mathf.Clamp01((Time.frameCount-last_non_input_frame+1) * Time.fixedDeltaTime / seconds_until_full_acceleration);
             }
+            // movement with either neck control (virtual reality) or mouse
             result = get_compound_axes();
-            return result.magnitude > 0.03926991f/2 /*hardcoded ship radius*/ ? result.normalized : Vector2.zero;
+            if (result.magnitude < 0.03926991f/2) // hardcoded ship radius
+            {
+                last_non_input_frame = Time.frameCount;
+                return Vector2.zero;
+            }
+            return result.normalized * Mathf.Clamp01((Time.frameCount-last_non_input_frame+1) * Time.fixedDeltaTime / seconds_until_full_acceleration);
+        }
+
+        public static Vector2 get_direction()
+        {
+            Vector2 result;
+            // traditional movement e.g. with a controller or keyboard
+            if (using_primative_axis())
+            {
+                result = get_primative_axes();
+                return result.normalized;
+            }
+            // movement with either neck control (virtual reality) or mouse
+            result = get_compound_axes();
+            return result.normalized;
         }
 
         /// <summary>
@@ -80,7 +106,9 @@ namespace DebrisNoirs
         private static Transform main_controller;
 
         private const float seconds_until_head_control = 20f;
+        private const float seconds_until_full_acceleration = 0.5f;
         private static int last_primative_input_frame = int.MinValue;
+        private static int last_non_input_frame = 0;
     }
 }
 

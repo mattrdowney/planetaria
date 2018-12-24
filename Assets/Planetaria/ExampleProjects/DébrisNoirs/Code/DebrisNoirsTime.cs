@@ -4,8 +4,37 @@ using UnityEngine;
 namespace DebrisNoirs
 {
     [Serializable]
-    public class DebrisNoirsTime
+    public struct DebrisNoirsTime
     {
+        public DebrisNoirsTime(string player_preferences_name)
+        {
+            fraction = 0; // If there are no high scores yet, then 0.00 is the high score.
+            seconds = 0;
+            minutes = 0;
+            hours = 0;
+            days = 0;
+            years = 0;
+            if(PlayerPrefs.HasKey(player_preferences_name + "_fraction"))
+            {
+                fraction = PlayerPrefs.GetFloat(player_preferences_name + "_fraction");
+                seconds = PlayerPrefs.GetInt(player_preferences_name + "_seconds"); // HACK: assume others exist as well
+                minutes = PlayerPrefs.GetInt(player_preferences_name + "_minutes");
+                hours = PlayerPrefs.GetInt(player_preferences_name + "_hours");
+                days = PlayerPrefs.GetInt(player_preferences_name + "_days");
+                years = (uint) PlayerPrefs.GetInt(player_preferences_name + "_years"); // I think casting back and forth works, as long as I am consistent // also this would never matter
+            }
+        }
+
+        public void save(string player_preferences_name)
+        {
+            PlayerPrefs.SetFloat(player_preferences_name + "_fraction", fraction);
+            PlayerPrefs.SetInt(player_preferences_name + "_seconds", seconds);
+            PlayerPrefs.SetInt(player_preferences_name + "_minutes", minutes);
+            PlayerPrefs.SetInt(player_preferences_name + "_hours", hours);
+            PlayerPrefs.SetInt(player_preferences_name + "_days", days);
+            PlayerPrefs.SetInt(player_preferences_name + "_years", (int)years); // casting should work
+        }
+
         public void increment(float positive_delta_time)
         {
             fraction += positive_delta_time;
@@ -34,6 +63,36 @@ namespace DebrisNoirs
                     }
                 }
             }
+        }
+
+        public static bool operator >(DebrisNoirsTime left, DebrisNoirsTime right)
+        {
+            if (left.years != right.years) // compare years (most important)
+            {
+                return left.years > right.years;
+            }
+            if (left.days != right.days) // compare days
+            {
+                return left.days > right.days;
+            }
+            if (left.hours != right.hours) // compare hours
+            {
+                return left.hours > right.hours;
+            }
+            if (left.minutes != right.minutes) // compare minutes
+            {
+                return left.minutes > right.minutes;
+            }
+            if (left.seconds != right.seconds) // compare seconds
+            {
+                return left.seconds > right.seconds;
+            }
+            return left.fraction > right.fraction; // compare decimal (least important)
+        }
+
+        public static bool operator <(DebrisNoirsTime left, DebrisNoirsTime right)
+        {
+            return right > left;
         }
 
         public override string ToString()

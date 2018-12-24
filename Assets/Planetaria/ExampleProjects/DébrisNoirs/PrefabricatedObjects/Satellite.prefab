@@ -287,6 +287,8 @@ MonoBehaviour:
   initialized: 0
   game_object_variable:
     game_object_variable: {fileID: 1996407451135126}
+  satellite_sprite: {fileID: 21300000, guid: 511467ccf35c93c4190efa7401484a63, type: 3}
+  ghost_sprite: {fileID: 21300000, guid: cba0b4bad81796546923b5666c64ef27, type: 3}
   acceleration: 2
 --- !u!114 &114502162093895280
 MonoBehaviour:

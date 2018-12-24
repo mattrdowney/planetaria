@@ -26,6 +26,7 @@ namespace Planetaria // FIXME: PlanetariaCollider spawns a child, which must alw
         protected override void OnDestroy()
         {
             PlanetariaCache.self.uncache(this);
+            GameObject.Destroy(internal_collider);
         }
 
         protected override void OnEnable()

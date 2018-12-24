@@ -3,8 +3,10 @@ guid: adeb2a67b8d8fe146b841789254a7857
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
-  executionOrder: 0
+  defaultReferences:
+  - satellite_sprite: {fileID: 21300000, guid: 511467ccf35c93c4190efa7401484a63, type: 3}
+  - ghost_sprite: {fileID: 21300000, guid: cba0b4bad81796546923b5666c64ef27, type: 3}
+  executionOrder: 300
   icon: {instanceID: 0}
   userData: 
   assetBundleName: 

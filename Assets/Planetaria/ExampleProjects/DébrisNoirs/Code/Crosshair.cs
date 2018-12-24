@@ -28,19 +28,15 @@ namespace DebrisNoirs
             Vector3 character_position = main_character.forward;
             Vector3 controller_position = main_controller.forward;
             Vector3 crosshair_up = Bearing.repeller(controller_position, character_position);
-            planetaria_transform.direction = crosshair_up;
 
-            if (DebrisNoirsInput.using_primative_axis()) // ORDER DEPENDENCY
+            if (DebrisNoirsInput.using_primative_axis())
             {
                 crosshair_renderer.scale = 0;
-            }
-            else if (DebrisNoirsInput.get_axes() != Vector2.zero)
-            {
-                crosshair_renderer.scale = crosshair_size;
             }
             else
             {
-                crosshair_renderer.scale = 0;
+                crosshair_renderer.angle = Vector3.SignedAngle(main_controller.up, crosshair_up, main_controller.forward) * Mathf.Deg2Rad;
+                crosshair_renderer.scale = crosshair_size *DebrisNoirsInput.get_axes().magnitude;
             }
         }
 

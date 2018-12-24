@@ -14,10 +14,7 @@ namespace DebrisNoirs
         void Start()
         {
             ship = PlanetariaGameObject.Find("Satellite").transform;
-            large_debris_spawner = spawn_large_debris();
-            StartCoroutine(large_debris_spawner);
-            medium_debris_spawner = spawn_medium_debris();
-            StartCoroutine(medium_debris_spawner);
+            spawn();
         }
 
         public IEnumerator spawn_large_debris()
@@ -42,9 +39,8 @@ namespace DebrisNoirs
             }
         }
 
-        public void heat_death()
+        public void spawn()
         {
-            StopAllCoroutines(); // I prefer this version, as long as it doesn't stop the audio thread (I really don't think it's possible, though)
             large_debris_spawner = spawn_large_debris();
             StartCoroutine(large_debris_spawner);
             medium_debris_spawner = spawn_medium_debris();

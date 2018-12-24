@@ -15,17 +15,37 @@ namespace DebrisNoirs
         public void start_clock()
         {
             state = StopwatchState.Started;
+            
+            player_score.rectTransform.anchoredPosition = new Vector3(0, 30, 0);
+            high_score.rectTransform.anchoredPosition = new Vector3(0, -30, 0);
         }
 
         public void stop_clock()
         {
             state = StopwatchState.Stopped;
+            if (time > best_time) // General commentary. Scores in this game are sort of bound by battery life, which is amusing.
+            {
+                time.save("high_score");
+                high_score.text = time.ToString();
+                best_time = time;
+            }
+
+            player_score.rectTransform.anchoredPosition = new Vector3(0, 300, 0);
+            high_score.rectTransform.anchoredPosition = new Vector3(0, -300, 0);
+            high_score_display_time = 10f;
         }
 
         private void OnValidate()
         {
-            text = this.gameObject.internal_game_object.GetComponent<Text>();
+            player_score = this.gameObject.internal_game_object.transform.Find("PlayerScore").GetComponent<Text>();
+            high_score = this.gameObject.internal_game_object.transform.Find("HighScore").GetComponent<Text>();
             time = new DebrisNoirsTime();
+        }
+
+        private void Start()
+        {
+            best_time = new DebrisNoirsTime("high_score");
+            high_score.text = best_time.ToString();
         }
 
         // Update is called once per frame
@@ -35,7 +55,16 @@ namespace DebrisNoirs
             {
                 time.increment(Time.deltaTime);
             }
-            text.text = time.ToString();
+            player_score.text = time.ToString();
+            if (high_score_display_time > 0)
+            {
+                high_score_display_time -= Time.deltaTime;
+                if (high_score_display_time <= 0)
+                {
+                    player_score.rectTransform.anchoredPosition = new Vector3(0, 30, 0);
+                    high_score.rectTransform.anchoredPosition = new Vector3(0, -30, 0);
+                }
+            }
         }
 
         protected override void OnConstruction() { }
@@ -43,10 +72,13 @@ namespace DebrisNoirs
 
         private enum StopwatchState { Stopped = 0, Started = 1 }
 
-        [SerializeField] [HideInInspector] private Text text;
+        [SerializeField] [HideInInspector] private Text player_score;
+        [SerializeField] [HideInInspector] private Text high_score;
 
         [NonSerialized] [HideInInspector] private StopwatchState state = StopwatchState.Started;
         [NonSerialized] [HideInInspector] DebrisNoirsTime time;
+        [NonSerialized] [HideInInspector] DebrisNoirsTime best_time;
+        [NonSerialized] [HideInInspector] float high_score_display_time;
     }
 }
 

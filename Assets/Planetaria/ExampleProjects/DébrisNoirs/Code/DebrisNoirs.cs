@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 using Planetaria;
 
 namespace DebrisNoirs
@@ -26,15 +27,32 @@ namespace DebrisNoirs
             }
         }
 
+        public static void ghost_world()
+        {
+            if (debris_spawner == null)
+            {
+                debris_spawner = GameObject.FindObjectOfType<DebrisSpawner>();
+            }
+            debris_spawner.StopAllCoroutines();
+            for (int type = 0; type <= (int)DebrisSize.Small; type += 1)
+            {
+                if (debris[type] != null)
+                {
+                    foreach (PlanetariaGameObject game_object in debris[type])
+                    {
+                        GameObject.Destroy(game_object.GetComponent<PlanetariaCollider>());
+                        GameObject.Destroy(game_object.GetComponent<TemperatureCooling>());
+                        game_object.layer = LayerMask.NameToLayer("EtherealDebris");
+                    }
+                }
+            }
+        }
+
         public static void request_death(PlanetariaGameObject game_object, DebrisSize type)
         {
             if (debris[(int)type] == null)
             {
                 debris[(int)type] = new HashSet<PlanetariaGameObject>();
-            }
-            if (debris[(int)type].Contains(game_object))
-            {
-                UnityEngine.Debug.Log("Deleting!");
             }
             debris[(int)type].Remove(game_object); // FIXME: interesting bug PlanetariaGameObjects do not compare equal
         }
@@ -57,6 +75,7 @@ namespace DebrisNoirs
             debris[(int)type].Add(game_object);
         }
 
+        private static DebrisSpawner debris_spawner;
         private static readonly int[] maximum_debris_objects = new int[] { 50, 26, int.MaxValue };
         private static HashSet<PlanetariaGameObject>[] debris = new HashSet<PlanetariaGameObject>[3];
     }

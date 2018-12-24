@@ -17,12 +17,13 @@ namespace DebrisNoirs
 
         private void Update()
         {
-            if (satellite.is_dead())
+            if (satellite.life() == 0)
             {
                 //thruster_force = Mathf.Max(0, thruster_force - Time.deltaTime*2f);
                 thruster_force *= Mathf.Pow(0.1f, Time.deltaTime); // works better with logarithmically-perceived scale for hearing
                 return;
             }
+            player_life = satellite.life();
             Vector2 player_velocity = satellite_rigidbody.relative_velocity;
             Vector2 player_acceleration = DebrisNoirsInput.get_axes();
             float next_thruster_force = Mathf.Lerp(minimum_volume_multiplier, 1, player_acceleration.magnitude);
@@ -71,7 +72,7 @@ namespace DebrisNoirs
                 }
                 random_number = (float)random_number_generator.NextDouble();
                 float resistance_multiplier = 1 + thruster_variance_multiplier * random_number * thruster_resistance;
-                data[sample] = wave_value * resistance_multiplier * thruster_force;
+                data[sample] = wave_value * resistance_multiplier * thruster_force * player_life;
                 repeats_left -= 1;
             }
         }
@@ -85,6 +86,7 @@ namespace DebrisNoirs
         private const float thruster_variance_multiplier = 2f; // does not include original (1)
         private float thruster_force;
         private float thruster_resistance;
+        private float player_life;
         private float acceleration;
         private float wave_value;
         private int repeats_left = 0;
