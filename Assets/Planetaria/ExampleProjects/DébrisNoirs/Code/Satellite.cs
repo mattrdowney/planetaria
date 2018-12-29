@@ -22,6 +22,7 @@ namespace DebrisNoirs
             debris_spawner = GameObject.FindObjectOfType<DebrisSpawner>();
             loading_disc = GameObject.FindObjectOfType<Image>();
 
+            planetaria_collider.shape = PlanetariaShape.Create(transform.localScale);
             OnFieldEnter.data = on_field_enter;
         }
 
@@ -102,7 +103,6 @@ namespace DebrisNoirs
             planetaria_collider.enabled = false;
             satellite_renderer.enabled = false;
             stopwatch.stop_clock();
-            DebrisNoirs.ghost_world();
             satellite_renderer.sprite = ghost_sprite;
         }
 

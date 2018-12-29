@@ -1,6 +1,8 @@
 *.jpg
 *.png
 
+/Assets/TextMesh Pro
+/Assets/TextMesh Pro.meta
 /Assets/UnitySVG
 /Assets/UnitySVG.meta
 /Assets/Plugins

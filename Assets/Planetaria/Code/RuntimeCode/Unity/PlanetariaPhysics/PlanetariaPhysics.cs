@@ -10,7 +10,7 @@ namespace Planetaria
                 float right, PlanetariaPhysicMaterialCombine right_type)
         {
             PlanetariaPhysicMaterialCombine type = (left_type >= right_type ? left_type : right_type);
-            switch(type)
+            switch(type) // meta-commentary: I wonder if many languages set up function addresses deterministically such that the minimum function pointer can be used e.g. func = min(fp1, fp2); (*func)(parameters);
             {
                 // Note: all functions map from (0,0)->0 and (1,1)->1 [and (c,c)->c for c >= 0]
                 // values (positive and negative) outside this range can still be used
@@ -22,6 +22,10 @@ namespace Planetaria
             }
             /*case PlanetariaPhysicMaterialCombine.Maximum:*/ return Mathf.Max(left, right);
         }
+
+        /*
+        private static PlanetariaCollider[] overlap_circle(Vector3 position, float radius, int layer_mask = Physics.DefaultRaycastLayers)
+        */
 
         /// <summary>
         /// Inspector - Finds the collision points between an arc extrapolated to be distance long (ordered by distance)

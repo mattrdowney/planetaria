@@ -29,7 +29,6 @@ namespace Planetaria
         }
 
         [SerializeField] [HideInInspector] private float radius = 0;
-        [SerializeField] [HideInInspector] private int triangle_budget = 1;
     }
 }
 

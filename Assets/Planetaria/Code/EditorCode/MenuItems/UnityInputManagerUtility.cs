@@ -34,6 +34,13 @@ namespace Planetaria
                     sensitivity = 1, gravity = 0, dead = 0.001f, type = UnityAxisType.JoystickAxis, axis = vertical_axis, invert = true });
         }
 
+        private static void add_button(KeyCode key)
+        {
+            string axis_name = key.ToString() + "Axis";
+            add_axis(new UnityInputAxis() { name = button, descriptive_name = axis_name, positive_button = key,
+                    sensitivity = 1000, gravity = 1000, dead = 0.001f, type = UnityAxisType.KeyOrMouseButton, axis = UnityAxisIdentity.XAxis });
+        }
+
         [MenuItem("Planetaria/Generate Planetaria Input Manager Controls")]
         public static void setup_planetaria_inputs()
         {
@@ -49,14 +56,6 @@ namespace Planetaria
             add_keyboard_axes(KeyCode.UpArrow, KeyCode.LeftArrow, KeyCode.DownArrow, KeyCode.RightArrow);
             add_keyboard_axes(KeyCode.Keypad8, KeyCode.Keypad4, KeyCode.Keypad2, KeyCode.Keypad6);
 
-            // add common controller buttons
-            add_keyboard_axes(KeyCode.JoystickButton3, KeyCode.JoystickButton2, KeyCode.JoystickButton0, KeyCode.JoystickButton1);
-            add_keyboard_axes(KeyCode.JoystickButton19, KeyCode.JoystickButton18, KeyCode.JoystickButton16, KeyCode.JoystickButton17);
-
-            // add common controller dpad
-            add_keyboard_axes(KeyCode.JoystickButton5, KeyCode.JoystickButton7, KeyCode.JoystickButton6, KeyCode.JoystickButton8);
-            add_keyboard_axes(KeyCode.JoystickButton13, KeyCode.JoystickButton11, KeyCode.JoystickButton14, KeyCode.JoystickButton12);
-
             // Add joystick axes
             add_horizontal_joystick_axis(UnityAxisIdentity.XAxis);
             add_vertical_joystick_axis(UnityAxisIdentity.YAxis);
@@ -67,6 +66,13 @@ namespace Planetaria
             add_horizontal_joystick_axis(UnityAxisIdentity.Axis6);
             add_vertical_joystick_axis(UnityAxisIdentity.Axis7);
             add_horizontal_joystick_axis(UnityAxisIdentity.Axis8); // HACK: due to design constraints (certain controllers overlap) - add third axis (even if 7/8 are rotated on some controllers)
+
+            add_button(KeyCode.Space);
+            for (int joystick_button = (int)KeyCode.JoystickButton0; joystick_button < (int)KeyCode.JoystickButton19; ++joystick_button)
+            {
+                add_button((KeyCode)joystick_button);
+            }
+            // OpenVR Trigger L/R ?
         }
         private static SerializedProperty get_child_property(SerializedProperty parent, string name)
         {
@@ -92,7 +98,6 @@ namespace Planetaria
 
             while (axis_iterator.Next(false))
             {
-                SerializedProperty axis_properties = axis_iterator.Copy();
                 if (get_child_property(axis_iterator, "m_Name").stringValue == axis_name)
                 {
                     if (get_child_property(axis_iterator, "descriptiveName").stringValue == axis_description)
@@ -173,6 +178,7 @@ namespace Planetaria
         
         private const string horizontal = "PlanetariaUniversalInputHorizontal";
         private const string vertical = "PlanetariaUniversalInputVertical";
+        private const string button = "PlanetariaUniversalInputButton";
 	}
 }
 

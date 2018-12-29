@@ -8,76 +8,34 @@ namespace DebrisNoirs
     /// Singleton - Game Manager for Debris Noirs.
     /// </summary>
     /// <seealso cref="https://www.arcade-history.com/?n=asteroids-upright-model&page=detail&id=126"/> // Extra information about Asteroids (1979)
-    public static class DebrisNoirs // LAZY SINGLETON
+    public static class DebrisNoirs
     {
-        public enum DebrisSize { Large = 0, Medium = 1, Small = 2 }
-
         public static void heat_death()
         {
-            for (int type = 0; type <= (int)DebrisSize.Small; type += 1)
+            foreach (PlanetariaGameObject game_object in debris)
             {
-                if (debris[type] != null)
-                {
-                    foreach (PlanetariaGameObject game_object in debris[type])
-                    {
-                        PlanetariaGameObject.Destroy(game_object);
-                    }
-                    debris[type].Clear();
-                }
+                PlanetariaGameObject.Destroy(game_object);
             }
         }
 
-        public static void ghost_world()
+        public static void request_death(PlanetariaGameObject game_object)
         {
-            if (debris_spawner == null)
-            {
-                debris_spawner = GameObject.FindObjectOfType<DebrisSpawner>();
-            }
-            debris_spawner.StopAllCoroutines();
-            for (int type = 0; type <= (int)DebrisSize.Small; type += 1)
-            {
-                if (debris[type] != null)
-                {
-                    foreach (PlanetariaGameObject game_object in debris[type])
-                    {
-                        GameObject.Destroy(game_object.GetComponent<PlanetariaCollider>());
-                        GameObject.Destroy(game_object.GetComponent<TemperatureCooling>());
-                        game_object.layer = LayerMask.NameToLayer("EtherealDebris");
-                    }
-                }
-            }
+            debris.Remove(game_object);
         }
 
-        public static void request_death(PlanetariaGameObject game_object, DebrisSize type)
+        public static bool request_life()
         {
-            if (debris[(int)type] == null)
-            {
-                debris[(int)type] = new HashSet<PlanetariaGameObject>();
-            }
-            debris[(int)type].Remove(game_object); // FIXME: interesting bug PlanetariaGameObjects do not compare equal
+            return debris.Count < maximum_debris_objects;
         }
 
-        public static bool request_life(DebrisSize type)
+        public static void live(PlanetariaGameObject game_object)
         {
-            if (debris[(int)type] == null)
-            {
-                debris[(int)type] = new HashSet<PlanetariaGameObject>();
-            }
-            return debris[(int)type].Count < maximum_debris_objects[(int)type];
-        }
-
-        public static void live(PlanetariaGameObject game_object, DebrisSize type)
-        {
-            if (debris[(int)type] == null)
-            {
-                debris[(int)type] = new HashSet<PlanetariaGameObject>();
-            }
-            debris[(int)type].Add(game_object);
+            debris.Add(game_object);
         }
 
         private static DebrisSpawner debris_spawner;
-        private static readonly int[] maximum_debris_objects = new int[] { 50, 26, int.MaxValue };
-        private static HashSet<PlanetariaGameObject>[] debris = new HashSet<PlanetariaGameObject>[3];
+        private const int maximum_debris_objects = 100;
+        private static HashSet<PlanetariaGameObject> debris = new HashSet<PlanetariaGameObject>();
     }
 }
 

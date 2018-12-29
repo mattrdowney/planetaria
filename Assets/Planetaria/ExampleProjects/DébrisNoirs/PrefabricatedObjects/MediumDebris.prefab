@@ -67,7 +67,7 @@ MonoBehaviour:
     game_object_variable: {fileID: 0}
   angle_variable: 0
   material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  scale_variable: 0
+  scale_variable: 0.04
   internal_transform: {fileID: 3513417272659246362}
   internal_renderer: {fileID: 8663057325919825322}
   offset: 1
@@ -99,7 +99,7 @@ Transform:
   m_GameObject: {fileID: 2264298246836719616}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 1}
-  m_LocalScale: {x: 0.05235988, y: 0.05235988, z: 0.05235988}
+  m_LocalScale: {x: 0.04, y: 0.04, z: 0.04}
   m_Children: []
   m_Father: {fileID: 2152837459117929555}
   m_RootOrder: 0
@@ -178,7 +178,7 @@ Transform:
   m_GameObject: {fileID: 4580784450915925030}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 1}
-  m_LocalScale: {x: 0.05235988, y: 0.05235988, z: 0.05235988}
+  m_LocalScale: {x: 0.04, y: 0.04, z: 0.04}
   m_Children: []
   m_Father: {fileID: 2978953387887693587}
   m_RootOrder: 0
@@ -247,7 +247,6 @@ GameObject:
   - component: {fileID: 8995664898786267293}
   - component: {fileID: 1396147014388546085}
   - component: {fileID: 2314084233997458771}
-  - component: {fileID: 7989572571644811303}
   m_Layer: 10
   m_Name: MediumDebris
   m_TagString: Untagged
@@ -287,7 +286,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 4871731741837279479}
   internal_transform: {fileID: 2978953387887693587}
-  scale_variable: 0.05235988
+  scale_variable: 0.04
 --- !u!114 &3928040869499941647
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -338,7 +337,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 4871731741837279479}
   material: {fileID: 11400000, guid: a03d051b7bfe0d344abca6f59970c460, type: 2}
-  shape_variable: {fileID: 11400000, guid: bae8f4aecdc4db1478e63ab04d85d54a, type: 2}
+  shape_variable: {fileID: 0}
   observer:
     planetaria_transformation: {fileID: 0}
     planetaria_collider: {fileID: 0}
@@ -358,8 +357,8 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.05242651
-  m_Center: {x: 0, y: 0, z: 1.001373}
+  m_Radius: 0.04002585
+  m_Center: {x: 0, y: 0.00000011755347, z: 1.0008007}
 --- !u!114 &1396147014388546085
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -377,7 +376,7 @@ MonoBehaviour:
     game_object_variable: {fileID: 0}
   angle_variable: 0
   material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  scale_variable: 0.05235988
+  scale_variable: 0.04
   internal_transform: {fileID: 258938294486948467}
   internal_renderer: {fileID: 7756991037193852894}
   offset: 1
@@ -392,7 +391,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4871731741837279479}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 403f9ff19abb86641b6aaefb1a80317e, type: 3}
+  m_Script: {fileID: 11500000, guid: 6924250d4c99928488a34cf251a180e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   initialized: 0
@@ -403,24 +402,9 @@ MonoBehaviour:
   planetaria_collider: {fileID: 4531760913050232137}
   planetaria_rigidbody: {fileID: 3928040869499941647}
   planetaria_transform: {fileID: 3028958542912904049}
-  small_debris: {fileID: 6232152889581167726, guid: 2b0d67d6289766c4990a73ae4f38d694,
+  spawned_debris: {fileID: 6232152889581167726, guid: 2b0d67d6289766c4990a73ae4f38d694,
     type: 3}
-  speed: 0.1745329
---- !u!114 &7989572571644811303
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4871731741837279479}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a49b5ce2b204964691fa6ac01ea0031, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initialized: 0
-  game_object_variable:
-    game_object_variable: {fileID: 4871731741837279479}
-  cooldown_timer: 3
-  planetaria_renderer_foreground: {fileID: 1396147014388546085}
-  planetaria_collider: {fileID: 4531760913050232137}
+  speed: 1
+  deviation_angle: 1.0471976
+  speed_deviation_multiplier: 2
+  points: 20

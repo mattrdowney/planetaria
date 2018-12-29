@@ -13,7 +13,6 @@ namespace Platformer
             main_character = GameObject.FindObjectOfType<Character>().gameObject.internal_game_object.transform;
             main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
             arc_renderer = GameObject.FindObjectOfType<ArcRenderer>();
-            point_light = GameObject.FindObjectOfType<PlanetariaLight>();
 #if UNITY_EDITOR
             GameObject.FindObjectOfType<PlanetariaActuator>().input_device_type = PlanetariaActuator.InputDevice.Mouse;
 #else
@@ -70,7 +69,6 @@ namespace Platformer
         private Transform main_character;
         private Transform main_controller;
         private ArcRenderer arc_renderer;
-        private PlanetariaLight point_light;
     }
 }
 

@@ -55,7 +55,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 0}
   internal_transform: {fileID: 4717528800502344}
-  scale_variable: 0.07853982
+  scale_variable: 0.06
 --- !u!114 &114333559544760878
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -106,7 +106,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 1175150822237868}
   material: {fileID: 11400000, guid: a03d051b7bfe0d344abca6f59970c460, type: 2}
-  shape_variable: {fileID: 11400000, guid: d1635f3baf5552a488c8a3828b5b4f49, type: 2}
+  shape_variable: {fileID: 0}
   observer:
     planetaria_transformation: {fileID: 0}
     planetaria_collider: {fileID: 0}
@@ -126,8 +126,8 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.07877845
-  m_Center: {x: 0, y: 0, z: 1.003098}
+  m_Radius: 0.06010309
+  m_Center: {x: 0, y: 0.000000116792236, z: 1.0018046}
 --- !u!114 &114063900155376884
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -145,7 +145,7 @@ MonoBehaviour:
     game_object_variable: {fileID: 0}
   angle_variable: 0
   material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  scale_variable: 0.07853982
+  scale_variable: 0.06
   internal_transform: {fileID: 4352634434168220}
   internal_renderer: {fileID: 212633172164088102}
   offset: 1
@@ -160,18 +160,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 1175150822237868}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e97558005a5fdf34ea648e47f5a00528, type: 3}
+  m_Script: {fileID: 11500000, guid: 6924250d4c99928488a34cf251a180e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   initialized: 0
   game_object_variable:
     game_object_variable: {fileID: 1175150822237868}
-  speed: 0.07853982
   planetaria_renderer_foreground: {fileID: 114063900155376884}
   planetaria_renderer_background: {fileID: 3846172002660577079}
   planetaria_collider: {fileID: 114396915670349778}
   planetaria_rigidbody: {fileID: 114333559544760878}
   planetaria_transform: {fileID: 114166522899314562}
+  spawned_debris: {fileID: 4871731741837279479, guid: 0f139500d8c235649aa7d844ed6fdae7,
+    type: 3}
+  speed: 0.06
+  deviation_angle: 3.1415927
+  speed_deviation_multiplier: 1.25
+  points: 10
 --- !u!1 &1748661578952492
 GameObject:
   m_ObjectHideFlags: 0
@@ -198,7 +203,7 @@ Transform:
   m_GameObject: {fileID: 1748661578952492}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 1}
-  m_LocalScale: {x: 0.07853982, y: 0.07853982, z: 0.07853982}
+  m_LocalScale: {x: 0.06, y: 0.06, z: 0.06}
   m_Children: []
   m_Father: {fileID: 4717528800502344}
   m_RootOrder: 0
@@ -277,7 +282,7 @@ Transform:
   m_GameObject: {fileID: 4326223265612361891}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 1}
-  m_LocalScale: {x: 0.07853982, y: 0.07853982, z: 0.07853982}
+  m_LocalScale: {x: 0.06, y: 0.06, z: 0.06}
   m_Children: []
   m_Father: {fileID: 2131812756183469186}
   m_RootOrder: 0
@@ -397,7 +402,7 @@ MonoBehaviour:
     game_object_variable: {fileID: 0}
   angle_variable: 0
   material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  scale_variable: 0
+  scale_variable: 0.06
   internal_transform: {fileID: 3658437199259691783}
   internal_renderer: {fileID: 3215742995616575464}
   offset: 1

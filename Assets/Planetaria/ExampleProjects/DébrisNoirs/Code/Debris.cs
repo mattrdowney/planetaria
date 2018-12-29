@@ -4,11 +4,9 @@ using Planetaria;
 namespace DebrisNoirs
 {
     /// <summary>
-    /// Medium debris collides with medium and small debris.
-    /// It is the fastest debris, mid-sized, and un-predictable because it could break into two pieces of small debris.
-    /// It has a cool-down (see TemperatureCooling) where it cannot collide with other rocks.
+    /// Debris are the space rocks / asteroids flying around on screen. The three types (small, medium, large) can be created with different variables.
     /// </summary>
-    public class MediumDebris : PlanetariaMonoBehaviour
+    public class Debris : PlanetariaMonoBehaviour
     {
         protected override void OnConstruction() { }
         protected override void OnDestruction() { }
@@ -20,21 +18,25 @@ namespace DebrisNoirs
             planetaria_transform = this.GetComponent<PlanetariaTransform>();
             planetaria_renderer_foreground = this.GetComponent<AreaRenderer>();
             planetaria_renderer_background = planetaria_transform.Find("Silhouette").GetComponent<AreaRenderer>();
+
+            planetaria_collider.shape = PlanetariaShape.Create(planetaria_transform.localScale);
+            planetaria_renderer_foreground.scale = planetaria_transform.localScale;
+            planetaria_renderer_background.scale = planetaria_transform.localScale;
         }
 
         private void Start()
         {
-            planetaria_renderer_foreground.angle = UnityEngine.Random.Range(0, 2 * Mathf.PI); // this is random rotation for the sprite image.
+            planetaria_renderer_foreground.angle = UnityEngine.Random.Range(0, 2*Mathf.PI); // this is random rotation for the sprite image.
             planetaria_renderer_background.angle = planetaria_renderer_foreground.angle; // and the silhouette
 
             // apply random rotation
-            float deviation_angle = UnityEngine.Random.Range(-Mathf.PI, +Mathf.PI);
-            Vector2 local_direction = new Vector2(Mathf.Sin(deviation_angle), Mathf.Cos(deviation_angle));
+            float random_deviation = UnityEngine.Random.Range(-deviation_angle, +deviation_angle);
+            Vector2 local_direction = new Vector2(Mathf.Sin(random_deviation), Mathf.Cos(random_deviation));
             Vector3 direction = this.gameObject.internal_game_object.transform.rotation * local_direction;
             planetaria_transform.direction = direction;
 
             // apply random speed multiplier
-            float speed_multiplier = UnityEngine.Random.Range(1, 1.25f);
+            float speed_multiplier = UnityEngine.Random.Range(1, speed_deviation_multiplier);
             speed *= speed_multiplier;
 
             // set velocity
@@ -45,21 +47,25 @@ namespace DebrisNoirs
 
         public void on_field_enter(PlanetariaCollider collider)
         {
-            // if collision is detected with asteroid, get other asteroid's dot_product threshold (starts at -1 and progresses to +1 in ~1 second after spawning to prevent "double collisions") and average it with this asteroid's dot product threshold
-            // if the (lossy) dot product of the velocities is less than the average threshold, then collide
             destroy_asteroid();
         }
 
         public void destroy_asteroid()
         {
-            for (int space_rock = 0; space_rock < 2; ++space_rock)
+            if (spawned_debris != null)
             {
-                PlanetariaGameObject game_object = PlanetariaGameObject.Instantiate(small_debris, planetaria_transform.position, planetaria_transform.direction);
-                SmallDebris debris = game_object.GetComponent<SmallDebris>();
-                debris.speed = this.speed;
-                DebrisNoirs.live(game_object, DebrisNoirs.DebrisSize.Small);
+                for (int space_rock = 0; space_rock < 2; ++space_rock)
+                {
+                    if (DebrisNoirs.request_life())
+                    {
+                        PlanetariaGameObject game_object = PlanetariaGameObject.Instantiate(spawned_debris, planetaria_transform.position, planetaria_transform.direction);
+                        Debris debris = game_object.GetComponent<Debris>();
+                        debris.speed = this.speed;
+                        DebrisNoirs.live(game_object);
+                    }
+                }
             }
-            DebrisNoirs.request_death(this.gameObject, DebrisNoirs.DebrisSize.Medium);
+            DebrisNoirs.request_death(this.gameObject);
             PlanetariaGameObject.Destroy(this.gameObject);
         }
 
@@ -69,9 +75,12 @@ namespace DebrisNoirs
         [SerializeField] [HideInInspector] private PlanetariaRigidbody planetaria_rigidbody;
         [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;
 
-        [SerializeField] public /*static*/ GameObject small_debris;
+        [SerializeField] public /*static*/ GameObject spawned_debris;
 
         [SerializeField] private float speed = 1;
+        [SerializeField] private float deviation_angle = Mathf.PI;
+        [SerializeField] private float speed_deviation_multiplier = 1.25f;
+        [SerializeField] private int points = 10;
     }
 }
 
