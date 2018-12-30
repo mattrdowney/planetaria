@@ -34,7 +34,7 @@ namespace DebrisNoirs
             {
                 optional<PlanetariaRaycastHit> raycast_information =
                         PlanetariaPhysics.raycast(ArcFactory.line(character_position, bullet_direction),
-                        1.25f * Mathf.PI, 1 << LayerMask.NameToLayer("EtherealDebris"), QueryTriggerInteraction.Collide);
+                        Mathf.PI, 1 << LayerMask.NameToLayer("Debris"), QueryTriggerInteraction.Collide);
 
                 if (raycast_information.exists)
                 {

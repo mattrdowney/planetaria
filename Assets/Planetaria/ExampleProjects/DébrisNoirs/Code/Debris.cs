@@ -56,16 +56,13 @@ namespace DebrisNoirs
             {
                 for (int space_rock = 0; space_rock < 2; ++space_rock)
                 {
-                    if (DebrisNoirs.request_life())
-                    {
-                        PlanetariaGameObject game_object = PlanetariaGameObject.Instantiate(spawned_debris, planetaria_transform.position, planetaria_transform.direction);
-                        Debris debris = game_object.GetComponent<Debris>();
-                        debris.speed = this.speed;
-                        DebrisNoirs.live(game_object);
-                    }
+                    PlanetariaGameObject game_object = PlanetariaGameObject.Instantiate(spawned_debris, planetaria_transform.position, planetaria_transform.direction);
+                    Debris debris = game_object.GetComponent<Debris>();
+                    debris.speed = this.speed;
+                    DebrisNoirs.live(game_object);
                 }
             }
-            DebrisNoirs.request_death(this.gameObject);
+            DebrisNoirs.die(this.gameObject);
             PlanetariaGameObject.Destroy(this.gameObject);
         }
 

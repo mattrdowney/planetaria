@@ -13,8 +13,6 @@ namespace DebrisNoirs
 
         private void Start()
         {
-            main_character = GameObject.FindObjectOfType<Satellite>().gameObject.internal_game_object.transform;
-            main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
             planetaria_collider = this.GetComponent<PlanetariaCollider>();
             planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
             satellite_renderer = this.GetComponent<AreaRenderer>();
@@ -103,6 +101,7 @@ namespace DebrisNoirs
             planetaria_collider.enabled = false;
             satellite_renderer.enabled = false;
             stopwatch.stop_clock();
+            debris_spawner.stop();
             satellite_renderer.sprite = ghost_sprite;
         }
 
@@ -135,9 +134,7 @@ namespace DebrisNoirs
         [SerializeField] private Sprite satellite_sprite;
         [SerializeField] private Sprite ghost_sprite;
         [SerializeField] private float acceleration = 2f;
-
-        [NonSerialized] private Transform main_character;
-        [NonSerialized] private Transform main_controller;
+        
         [NonSerialized] private PlanetariaCollider planetaria_collider;
         [NonSerialized] private AreaRenderer satellite_renderer;
         [NonSerialized] private PlanetariaRigidbody planetaria_rigidbody;

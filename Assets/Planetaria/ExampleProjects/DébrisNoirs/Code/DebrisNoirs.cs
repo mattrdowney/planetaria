@@ -10,22 +10,23 @@ namespace DebrisNoirs
     /// <seealso cref="https://www.arcade-history.com/?n=asteroids-upright-model&page=detail&id=126"/> // Extra information about Asteroids (1979)
     public static class DebrisNoirs
     {
+        public static bool empty()
+        {
+            return debris.Count == 0;
+        }
+
         public static void heat_death()
         {
             foreach (PlanetariaGameObject game_object in debris)
             {
                 PlanetariaGameObject.Destroy(game_object);
             }
+            debris.Clear();
         }
 
-        public static void request_death(PlanetariaGameObject game_object)
+        public static void die(PlanetariaGameObject game_object)
         {
             debris.Remove(game_object);
-        }
-
-        public static bool request_life()
-        {
-            return debris.Count < maximum_debris_objects;
         }
 
         public static void live(PlanetariaGameObject game_object)
@@ -34,7 +35,6 @@ namespace DebrisNoirs
         }
 
         private static DebrisSpawner debris_spawner;
-        private const int maximum_debris_objects = 100;
         private static HashSet<PlanetariaGameObject> debris = new HashSet<PlanetariaGameObject>();
     }
 }

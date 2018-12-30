@@ -13,7 +13,7 @@ namespace DebrisNoirs
 
         void Start()
         {
-            ship = PlanetariaGameObject.Find("Satellite").transform;
+            satellite = PlanetariaGameObject.Find("Satellite").transform;
             spawn();
         }
 
@@ -21,37 +21,56 @@ namespace DebrisNoirs
         {
             while (true)
             {
-                yield return delay;
-                spawn_debris();
+                yield return second_delay;
+                if (DebrisNoirs.empty())
+                {
+                    yield return five_second_delay; // give the player time to refresh
+                    for (int countdown = 5; countdown >= 1; countdown -= 1) // print countdown on user interface
+                    {
+                        text.text = countdown.ToString(); // display countdown
+                        yield return second_delay;
+                    }
+                    text.text = ""; // clear the screen
+                    round += 1; // enter next round
+                    spawn_debris();
+                }
             }
+        }
+
+        public void stop()
+        {
+            StopAllCoroutines();
         }
 
         public void spawn()
         {
+            round = 0;
             StartCoroutine(spawn_debris_subroutine());
         }
 
-        private bool spawn_debris()
+        private void spawn_debris()
         {
-            if (DebrisNoirs.request_life())
+            const int maximum_large_debris = 100; // most debris possible is 400 small debris (unlikely)
+            int debris_to_spawn = Mathf.Min(round, maximum_large_debris);
+            // Spawn 1 piece of debris on first round and n pieces on nth round.
+            for (int debris = 0; debris < debris_to_spawn; debris += 1)
             {
                 Vector3 random_position = UnityEngine.Random.onUnitSphere;
-                if (Vector3.Dot(random_position, ship.position) > 0)
+                if (Vector3.Dot(random_position, satellite.position) > 0)
                 {
                     random_position *= -1;
                 }
-                PlanetariaGameObject debris = PlanetariaGameObject.Instantiate(large_debris, random_position);
-                DebrisNoirs.live(debris);
-                return true;
+                DebrisNoirs.live(PlanetariaGameObject.Instantiate(large_debris, random_position));
             }
-            return false;
         }
 
-        private static WaitForSeconds delay = new WaitForSeconds(1f);
+        private static WaitForSeconds second_delay = new WaitForSeconds(1f);
+        private static WaitForSeconds five_second_delay = new WaitForSeconds(5f);
 
-        [SerializeField] public GameObject large_debris;
-        [SerializeField] public GameObject medium_debris;
-        [NonSerialized] private PlanetariaTransform ship;
+        public int round = 0;
+        [SerializeField] private GameObject large_debris;
+        [SerializeField] private UnityEngine.UI.Text text; 
+        [NonSerialized] private PlanetariaTransform satellite;
     }
 }
 

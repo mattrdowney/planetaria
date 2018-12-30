@@ -15,8 +15,8 @@ TagManager:
   - 
   - 
   - Satellite
-  - EphemeralDebris
-  - EtherealDebris
+  - Projectile
+  - Debris
   - SpawnZone
   - Player
   - Geometry
