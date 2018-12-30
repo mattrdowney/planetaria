@@ -68,8 +68,8 @@ namespace DebrisNoirs
         private static WaitForSeconds five_second_delay = new WaitForSeconds(5f);
 
         public int round = 0;
-        [SerializeField] private GameObject large_debris;
-        [SerializeField] private UnityEngine.UI.Text text; 
+        [SerializeField] public GameObject large_debris;
+        [SerializeField] public UnityEngine.UI.Text text; 
         [NonSerialized] private PlanetariaTransform satellite;
     }
 }

@@ -98,13 +98,13 @@ namespace Planetaria
 
         private void aerial_move(float delta)
         {
-            Debug.DrawRay(get_position(), velocity, Color.green);
             Vector3 next_position = PlanetariaMath.spherical_linear_interpolation(get_position(), velocity.normalized, delta); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
             Vector3 next_velocity = PlanetariaMath.spherical_linear_interpolation(get_position(), velocity.normalized, delta + Mathf.PI/2);
             
             transform.position = next_position;
             velocity = next_velocity.normalized * velocity.magnitude; // FIXME: I thought this was numerically stable, but it seems to create more energy.
             //velocity = Vector3.ProjectOnPlane(velocity, get_position()); // TODO: CONSIDER: ensure velocity and position are orthogonal - they seem to desynchronize
+            Debug.DrawRay(get_position(), velocity, Color.green); // draw new velocity (not old one)
         }
 
         private void grounded_position()

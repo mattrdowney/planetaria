@@ -30,13 +30,14 @@ namespace DebrisNoirs
         /// <returns>The position/direction the player is looking relative to the satellite.</returns>
         public static Vector2 get_compound_axes() // FIXME: the respawn zone in ghost mode shifts in direction of velocity
         {
-            // Supposed to be called if no controller exists (or hasn't been used for 20 seconds).
-            // In which case: use the head's orientation or mouse as a controller.
             if (!main_character || !main_controller)
             {
                 main_character = GameObject.FindObjectOfType<Satellite>().gameObject.internal_game_object.transform;
                 main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
             }
+            
+            // Supposed to be called if no controller exists (or hasn't been used for 20 seconds).
+            // In which case: use the head's orientation (or mouse) as a controller.
             
             // The direction from the satellite to the controller (which represents either the head's view direction or the mouse position).
             Vector3 direction = Bearing.attractor(main_character.forward, main_controller.forward);
@@ -58,20 +59,21 @@ namespace DebrisNoirs
                 result = get_primative_axes();
                 if (result.sqrMagnitude < 0.01f)
                 {
-                    last_non_input_frame = Time.frameCount;
+                    velocity = Mathf.Clamp01(velocity - acceleration*Time.deltaTime);
                     return Vector2.zero;
                 }
-                // I would generally prefer to interpolate back and forth (not one-directional) but whatever.
-                return result.normalized * Mathf.Clamp01((Time.frameCount-last_non_input_frame+1) * Time.fixedDeltaTime / seconds_until_full_acceleration);
+                velocity = Mathf.Clamp01(velocity + acceleration*Time.deltaTime);
+                return result.normalized * velocity;
             }
             // movement with either neck control (virtual reality) or mouse
             result = get_compound_axes();
-            if (result.magnitude < 0.03926991f/2) // hardcoded ship radius
+            if (result.magnitude < 0.03f/2) // hardcoded ship radius
             {
-                last_non_input_frame = Time.frameCount;
+                velocity = Mathf.Clamp01(velocity - acceleration*Time.deltaTime);
                 return Vector2.zero;
             }
-            return result.normalized * Mathf.Clamp01((Time.frameCount-last_non_input_frame+1) * Time.fixedDeltaTime / seconds_until_full_acceleration);
+            velocity = Mathf.Clamp01(velocity + acceleration*Time.deltaTime);
+            return result.normalized * velocity;
         }
 
         public static Vector2 get_direction()
@@ -94,21 +96,22 @@ namespace DebrisNoirs
         /// <returns>Is a primative controller being used?</returns>
         public static bool using_primative_axis()
         {
+            time_since_primative_input += Time.deltaTime;
             if (get_primative_axes() != Vector2.zero) // if any overloaded axis is being used at all (ignoring a deadzone of ~0.001f)
             {
-                last_primative_input_frame = Time.frameCount;
+                time_since_primative_input = 0;
             }
-            int allowed_frames_without_input = Mathf.CeilToInt(seconds_until_head_control / Time.fixedDeltaTime);
-            return last_primative_input_frame + allowed_frames_without_input >= Time.frameCount;
+            return time_since_primative_input <= seconds_until_head_control;
         }
 
         private static Transform main_character;
         private static Transform main_controller;
+        private static float velocity = 0;
+        private static float time_since_primative_input = float.MaxValue;
+        private static float time_until_bullet = 0;
 
         private const float seconds_until_head_control = 20f;
-        private const float seconds_until_full_acceleration = 0.5f;
-        private static int last_primative_input_frame = int.MinValue;
-        private static int last_non_input_frame = 0;
+        private const float acceleration = 2; // derivative of acceleration
     }
 }
 

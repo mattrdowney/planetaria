@@ -357,7 +357,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 1996407451135126}
   material: {fileID: 11400000, guid: a03d051b7bfe0d344abca6f59970c460, type: 2}
-  shape_variable: {fileID: 11400000, guid: 25de28ce073c23744a527233509d784b, type: 2}
+  shape_variable: {fileID: 0}
   observer:
     planetaria_transformation: {fileID: 0}
     planetaria_collider: {fileID: 0}
@@ -377,8 +377,8 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.03929372
-  m_Center: {x: 0, y: 0, z: 1.000772}
+  m_Radius: 0.039293718
+  m_Center: {x: 0, y: 0.00000011758206, z: 1.0007716}
 --- !u!114 &114708231038118120
 MonoBehaviour:
   m_ObjectHideFlags: 0

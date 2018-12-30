@@ -11,39 +11,31 @@ namespace DebrisNoirs
 
         protected override void OnDestruction() { }
 
-        private void Start()
+        private void OnValidate()
         {
             planetaria_collider = this.GetComponent<PlanetariaCollider>();
             planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
             satellite_renderer = this.GetComponent<AreaRenderer>();
+            silhouette_renderer = this.transform.Find("Silhouette").GetComponent<AreaRenderer>();
             stopwatch = GameObject.FindObjectOfType<DebrisNoirsStopwatch>();
             debris_spawner = GameObject.FindObjectOfType<DebrisSpawner>();
             loading_disc = GameObject.FindObjectOfType<Image>();
 
             planetaria_collider.shape = PlanetariaShape.Create(transform.localScale);
+            satellite_renderer.scale = transform.localScale;
+            silhouette_renderer.scale = transform.localScale;
+        }
+
+        private void Start()
+        {
             OnFieldEnter.data = on_field_enter;
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
             if (!dead || dead_time < 0)
             {
                 Vector2 input = DebrisNoirsInput.get_axes();
-                Vector2 input_direction = DebrisNoirsInput.get_direction();
-                if (input_direction.sqrMagnitude > 0)
-                {
-                    float target_angle = Mathf.Atan2(input_direction.y, input_direction.x) - Mathf.PI/2;
-                    float current_angle = satellite_renderer.angle * Mathf.Rad2Deg;
-                    float interpolator = 360 * 3 / Mathf.Abs(Mathf.DeltaAngle(current_angle, target_angle * Mathf.Rad2Deg)) * Time.deltaTime;
-                    satellite_renderer.angle = Mathf.LerpAngle(current_angle, target_angle * Mathf.Rad2Deg, interpolator) * Mathf.Deg2Rad;
-                }
-
-                // TODO: verify (pretty likely to have at least one error) // Bunch of errors, not elegant // I really don't care to change this, because it works (even if it's inefficient and unusual)
-                // Design specs:
-                // Aim forward along velocity: no drag (i.e. drag coefficient of 1) and accelerate.
-                // Aim backwards against velocity: full drag (e.g. drag coefficient of .5) and "decelerate"
-                // No input: partial drag (e.g. drag coefficient of .75) and "decelerate"
-                // Aim perpendicular to velocity (left/right): partial drag (e.g. coefficient of .75) but take a percentage of the momentum that would be lost and apply it along input_direction
 
                 // add velocity based on input
                 planetaria_rigidbody.relative_velocity += input * acceleration * Time.deltaTime;
@@ -64,19 +56,34 @@ namespace DebrisNoirs
                 // apply unusued drag
                 //planetaria_rigidbody.relative_velocity *= Mathf.Pow(0.8f, Time.deltaTime * (1f - input_direction.magnitude));
             }
+            else if (dead && dead_time >= 0)
+            {
+                planetaria_rigidbody.absolute_velocity *= Mathf.Pow(0.25f, Time.deltaTime);
+                dead_time -= Time.deltaTime;
+            }
+        }
+
+        private void Update()
+        {
+            // apply Sprite rotation (won't be seen unless visible)
+            Vector2 input_direction = DebrisNoirsInput.get_direction();
+            if (input_direction.sqrMagnitude > 0)
+            {
+                float target_angle = Mathf.Atan2(input_direction.y, input_direction.x) - Mathf.PI/2;
+                float current_angle = satellite_renderer.angle * Mathf.Rad2Deg;
+                float interpolator = 360 * 3 / Mathf.Abs(Mathf.DeltaAngle(current_angle, target_angle * Mathf.Rad2Deg)) * Time.deltaTime;
+                satellite_renderer.angle = Mathf.LerpAngle(current_angle, target_angle * Mathf.Rad2Deg, interpolator) * Mathf.Deg2Rad;
+                silhouette_renderer.angle = satellite_renderer.angle;
+            }
+
             if (dead)
             {
                 if (dead_time < 0)
                 {
                     satellite_renderer.enabled = true;
                 }
-                else
-                {
-                    planetaria_rigidbody.absolute_velocity *= Mathf.Pow(0.25f, Time.deltaTime);
-                    dead_time -= Time.deltaTime;
-                }
                 respawn_time += Time.deltaTime;
-                if (DebrisNoirsInput.get_axes().magnitude > 0.3f) 
+                if (DebrisNoirsInput.get_axes().magnitude > 0.3f)
                 {
                     respawn_time = 0;
                 }
@@ -131,12 +138,13 @@ namespace DebrisNoirs
             satellite_renderer.sprite = satellite_sprite;
         }
 
-        [SerializeField] private Sprite satellite_sprite;
-        [SerializeField] private Sprite ghost_sprite;
+        [SerializeField] public Sprite satellite_sprite;
+        [SerializeField] public Sprite ghost_sprite;
         [SerializeField] private float acceleration = 2f;
         
         [NonSerialized] private PlanetariaCollider planetaria_collider;
         [NonSerialized] private AreaRenderer satellite_renderer;
+        [NonSerialized] private AreaRenderer silhouette_renderer;
         [NonSerialized] private PlanetariaRigidbody planetaria_rigidbody;
         [NonSerialized] private DebrisNoirsStopwatch stopwatch;
         [NonSerialized] private DebrisSpawner debris_spawner;
