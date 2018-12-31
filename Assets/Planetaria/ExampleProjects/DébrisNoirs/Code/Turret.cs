@@ -6,8 +6,6 @@ namespace DebrisNoirs
 {
     public class Turret : PlanetariaMonoBehaviour
     {
-        public GameObject projectile;
-
         private void Start()
         {
             turret = this.gameObject.internal_game_object.transform;
@@ -32,7 +30,8 @@ namespace DebrisNoirs
         protected override void OnConstruction() { }
         protected override void OnDestruction() { }
 
-        private Transform turret;
+        [SerializeField] public GameObject projectile;
+        [SerializeField] private Transform turret;
     }
 }
 

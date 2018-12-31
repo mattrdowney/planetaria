@@ -70,7 +70,7 @@ namespace DebrisNoirs
         public int round = 0;
         [SerializeField] public GameObject large_debris;
         [SerializeField] public UnityEngine.UI.Text text; 
-        [NonSerialized] private PlanetariaTransform satellite;
+        [SerializeField] private PlanetariaTransform satellite;
     }
 }
 

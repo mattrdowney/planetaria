@@ -142,14 +142,16 @@ namespace DebrisNoirs
         [SerializeField] public Sprite ghost_sprite;
         [SerializeField] private float acceleration = 2f;
         
-        [NonSerialized] private Transform internal_transform;
-        [NonSerialized] private PlanetariaCollider planetaria_collider;
-        [NonSerialized] private AreaRenderer satellite_renderer;
-        [NonSerialized] private AreaRenderer silhouette_renderer;
-        [NonSerialized] private PlanetariaRigidbody planetaria_rigidbody;
-        [NonSerialized] private ScoreKeeper stopwatch;
-        [NonSerialized] private DebrisSpawner debris_spawner;
-        [NonSerialized] private Image loading_disc;
+        [SerializeField] private Transform internal_transform;
+        [SerializeField] private PlanetariaCollider planetaria_collider;
+        [SerializeField] private AreaRenderer satellite_renderer;
+        [SerializeField] private AreaRenderer silhouette_renderer;
+        [SerializeField] private PlanetariaRigidbody planetaria_rigidbody;
+
+        [SerializeField] private ScoreKeeper stopwatch;
+        [SerializeField] private DebrisSpawner debris_spawner;
+        [SerializeField] private Image loading_disc;
+
         [NonSerialized] private float horizontal;
         [NonSerialized] private float vertical;
 

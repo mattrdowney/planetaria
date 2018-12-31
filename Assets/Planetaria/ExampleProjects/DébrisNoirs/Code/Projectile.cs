@@ -24,16 +24,17 @@ namespace DebrisNoirs
         {
             // set velocity
             planetaria_rigidbody.relative_velocity = new Vector2(0, speed);
-
+            PlanetariaGameObject.Destroy(this.gameObject, lifetime);
             OnFieldEnter.data = on_field_enter;
         }
 
         public void on_field_enter(PlanetariaCollider collider)
         {
-            PlanetariaGameObject.Destroy(this.gameObject); // then die
+            PlanetariaGameObject.Destroy(this.gameObject);
         }
         
-        [SerializeField] public float speed = 1;
+        [SerializeField] public float speed = Mathf.PI;
+        [SerializeField] public float lifetime = 1;
         [SerializeField] [HideInInspector] private PlanetariaCollider planetaria_collider;
         [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer;
         [SerializeField] [HideInInspector] private PlanetariaRigidbody planetaria_rigidbody;

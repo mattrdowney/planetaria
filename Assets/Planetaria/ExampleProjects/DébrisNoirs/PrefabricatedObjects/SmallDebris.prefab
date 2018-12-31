@@ -239,6 +239,7 @@ MonoBehaviour:
   initialized: 0
   game_object_variable:
     game_object_variable: {fileID: 40}
+  score_keeper: {fileID: 0}
   planetaria_renderer_foreground: {fileID: 85}
   planetaria_renderer_background: {fileID: 76}
   planetaria_collider: {fileID: 89}

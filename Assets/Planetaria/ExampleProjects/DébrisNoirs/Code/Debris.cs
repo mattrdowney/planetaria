@@ -26,6 +26,7 @@ namespace DebrisNoirs
 
         private void Start()
         {
+            score_keeper = GameObject.FindObjectOfType<ScoreKeeper>(); // CONSIDER: how slow is this? (Could just make a singleton.)
             planetaria_renderer_foreground.angle = UnityEngine.Random.Range(0, 2*Mathf.PI); // this is random rotation for the sprite image.
             planetaria_renderer_background.angle = planetaria_renderer_foreground.angle; // and the silhouette
 
@@ -45,7 +46,7 @@ namespace DebrisNoirs
             OnFieldEnter.data = on_field_enter;
         }
 
-        public void on_field_enter(PlanetariaCollider collider)
+        public void on_field_enter(PlanetariaCollider collider) // FIXME: only destroy one piece of debris per bullet, which also means debris will not need notifications (I think that's a minor optimization).
         {
             // Add to player score
             if (collider.gameObject.layer == LayerMask.NameToLayer("Projectile"))
@@ -68,6 +69,7 @@ namespace DebrisNoirs
                 }
             }
             DebrisNoirs.die(this.gameObject);
+            Debug.Log("Happening" + Time.time);
             PlanetariaGameObject.Destroy(this.gameObject);
         }
 
