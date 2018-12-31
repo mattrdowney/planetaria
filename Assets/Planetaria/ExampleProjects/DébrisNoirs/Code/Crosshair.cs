@@ -7,14 +7,14 @@ namespace DebrisNoirs
     {
         private void OnValidate()
         {
-            main_character = GameObject.FindObjectOfType<Satellite>().gameObject.internal_game_object.transform;
-            main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
+            main_controller = this.GetComponent<PlanetariaActuator>().gameObject.internal_game_object.transform;
             planetaria_transform = this.GetComponent<PlanetariaTransform>();
-            crosshair_renderer = PlanetariaGameObject.Find("Hand").GetComponent<AreaRenderer>();
+            crosshair_renderer = this.GetComponent<AreaRenderer>();
         }
 
         private void Start()
         {
+            main_character = GameObject.FindObjectOfType<Satellite>().gameObject.internal_game_object.transform;
 #if UNITY_EDITOR
             GameObject.FindObjectOfType<PlanetariaActuator>().input_device_type = PlanetariaActuator.InputDevice.Mouse;
 #else
@@ -48,7 +48,7 @@ namespace DebrisNoirs
         [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;
         [SerializeField] [HideInInspector] private AreaRenderer crosshair_renderer;
 
-        private const float crosshair_size = 0.03926991f; // same as satellite size
+        private const float crosshair_size = 0.03f; // same as satellite size
     }
 }
 

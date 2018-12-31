@@ -60,7 +60,7 @@ namespace Planetaria
         }
 
         public InputDevice input_device_type = InputDevice.Gyroscope;
-        public XRNode virtual_reality_tracker_type;
+        public XRNode virtual_reality_tracker_type = XRNode.Head;
         private Camera internal_camera;
         private Transform camera_transform;
         private Transform internal_transform;

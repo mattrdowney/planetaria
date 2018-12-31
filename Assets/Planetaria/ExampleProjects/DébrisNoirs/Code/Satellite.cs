@@ -8,18 +8,15 @@ namespace DebrisNoirs
     public class Satellite : PlanetariaMonoBehaviour
     {
         protected override void OnConstruction() { }
-
         protected override void OnDestruction() { }
 
         private void OnValidate()
         {
             planetaria_collider = this.GetComponent<PlanetariaCollider>();
             planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
-            satellite_renderer = this.GetComponent<AreaRenderer>();
-            silhouette_renderer = this.transform.Find("Silhouette").GetComponent<AreaRenderer>();
-            stopwatch = GameObject.FindObjectOfType<DebrisNoirsStopwatch>();
-            debris_spawner = GameObject.FindObjectOfType<DebrisSpawner>();
-            loading_disc = GameObject.FindObjectOfType<Image>();
+            satellite_renderer = this.transform.Find("Chasis").GetComponent<AreaRenderer>();
+            silhouette_renderer = this.transform.Find("Chasis").Find("Silhouette").GetComponent<AreaRenderer>();
+            internal_transform = this.transform.Find("Chasis").gameObject.internal_game_object.GetComponent<Transform>();
 
             planetaria_collider.shape = PlanetariaShape.Create(transform.localScale);
             satellite_renderer.scale = transform.localScale;
@@ -28,6 +25,10 @@ namespace DebrisNoirs
 
         private void Start()
         {
+            stopwatch = GameObject.FindObjectOfType<ScoreKeeper>();
+            debris_spawner = GameObject.FindObjectOfType<DebrisSpawner>();
+            loading_disc = GameObject.FindObjectOfType<Image>();
+
             OnFieldEnter.data = on_field_enter;
         }
 
@@ -70,10 +71,9 @@ namespace DebrisNoirs
             if (input_direction.sqrMagnitude > 0)
             {
                 float target_angle = Mathf.Atan2(input_direction.y, input_direction.x) - Mathf.PI/2;
-                float current_angle = satellite_renderer.angle * Mathf.Rad2Deg;
+                float current_angle = internal_transform.localEulerAngles.z;
                 float interpolator = 360 * 3 / Mathf.Abs(Mathf.DeltaAngle(current_angle, target_angle * Mathf.Rad2Deg)) * Time.deltaTime;
-                satellite_renderer.angle = Mathf.LerpAngle(current_angle, target_angle * Mathf.Rad2Deg, interpolator) * Mathf.Deg2Rad;
-                silhouette_renderer.angle = satellite_renderer.angle;
+                internal_transform.localEulerAngles = new Vector3(0, 0, Mathf.LerpAngle(current_angle, target_angle * Mathf.Rad2Deg, interpolator));
             }
 
             if (dead)
@@ -142,11 +142,12 @@ namespace DebrisNoirs
         [SerializeField] public Sprite ghost_sprite;
         [SerializeField] private float acceleration = 2f;
         
+        [NonSerialized] private Transform internal_transform;
         [NonSerialized] private PlanetariaCollider planetaria_collider;
         [NonSerialized] private AreaRenderer satellite_renderer;
         [NonSerialized] private AreaRenderer silhouette_renderer;
         [NonSerialized] private PlanetariaRigidbody planetaria_rigidbody;
-        [NonSerialized] private DebrisNoirsStopwatch stopwatch;
+        [NonSerialized] private ScoreKeeper stopwatch;
         [NonSerialized] private DebrisSpawner debris_spawner;
         [NonSerialized] private Image loading_disc;
         [NonSerialized] private float horizontal;

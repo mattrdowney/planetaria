@@ -47,6 +47,11 @@ namespace DebrisNoirs
 
         public void on_field_enter(PlanetariaCollider collider)
         {
+            // Add to player score
+            if (collider.gameObject.layer == LayerMask.NameToLayer("Projectile"))
+            {
+                score_keeper.add(points);
+            }
             destroy_asteroid();
         }
 
@@ -66,6 +71,8 @@ namespace DebrisNoirs
             PlanetariaGameObject.Destroy(this.gameObject);
         }
 
+        
+        [SerializeField] public ScoreKeeper score_keeper;
         [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer_foreground;
         [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer_background;
         [SerializeField] [HideInInspector] private PlanetariaCollider planetaria_collider;

@@ -8,6 +8,17 @@ namespace DebrisNoirs
     /// </summary>
     public static class DebrisNoirsInput
     {
+        public static bool firing() // Assumes firing() is called every frame
+        {
+            bool fire_pressed = Input.GetButtonDown("PlanetariaUniversalInputButton");
+            bool fire_held = Input.GetButton("PlanetariaUniversalInputButton");
+
+            // FIXME: implement
+
+            return fire_pressed;
+        }
+        
+            // If a button is held, then continue firing every x milleseconds.
         /// <summary>
         /// Inspector - Gets primative controller and keyboard axes (horizontal and vertical).
         /// </summary>
@@ -107,7 +118,7 @@ namespace DebrisNoirs
         private static Transform main_character;
         private static Transform main_controller;
         private static float velocity = 0;
-        private static float time_since_primative_input = float.MaxValue;
+        private static float time_since_primative_input = 100;
         private static float time_until_bullet = 0;
 
         private const float seconds_until_head_control = 20f;
