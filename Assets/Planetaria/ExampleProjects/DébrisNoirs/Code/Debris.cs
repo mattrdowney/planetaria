@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using Planetaria;
 
 namespace DebrisNoirs
@@ -42,22 +43,15 @@ namespace DebrisNoirs
 
             // set velocity
             planetaria_rigidbody.relative_velocity = new Vector2(0, speed);
-
-            OnFieldEnter.data = on_field_enter;
         }
 
-        public void on_field_enter(PlanetariaCollider collider) // FIXME: only destroy one piece of debris per bullet, which also means debris will not need notifications (I think that's a minor optimization).
+        public bool destroy_asteroid()
         {
-            // Add to player score
-            if (collider.gameObject.layer == LayerMask.NameToLayer("Projectile"))
+            if (has_collided)
             {
-                score_keeper.add(points);
+                return false;
             }
-            destroy_asteroid();
-        }
-
-        public void destroy_asteroid()
-        {
+            score_keeper.add(points);
             if (spawned_debris != null)
             {
                 for (int space_rock = 0; space_rock < 2; ++space_rock)
@@ -69,8 +63,8 @@ namespace DebrisNoirs
                 }
             }
             DebrisNoirs.die(this.gameObject);
-            Debug.Log("Happening" + Time.time);
             PlanetariaGameObject.Destroy(this.gameObject);
+            return true;
         }
 
         
@@ -87,6 +81,7 @@ namespace DebrisNoirs
         [SerializeField] private float deviation_angle = Mathf.PI;
         [SerializeField] private float speed_deviation_multiplier = 1.25f;
         [SerializeField] private int points = 10;
+        [NonSerialized] private bool has_collided = false;
     }
 }
 

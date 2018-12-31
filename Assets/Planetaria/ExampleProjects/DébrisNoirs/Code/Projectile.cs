@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using Planetaria;
 
 namespace DebrisNoirs
@@ -30,7 +31,15 @@ namespace DebrisNoirs
 
         public void on_field_enter(PlanetariaCollider collider)
         {
-            PlanetariaGameObject.Destroy(this.gameObject);
+            if (!has_collided) // make sure one projectile doesn't collide with 2+ debris.
+            {
+                Debris debris = collider.GetComponent<Debris>();
+                if (debris.destroy_asteroid()) // make sure two projectiles don't collide with the same debris (wasting one of them).
+                {
+                    PlanetariaGameObject.Destroy(this.gameObject);
+                    has_collided = true;
+                }
+            }
         }
         
         [SerializeField] public float speed = Mathf.PI;
@@ -39,6 +48,7 @@ namespace DebrisNoirs
         [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer;
         [SerializeField] [HideInInspector] private PlanetariaRigidbody planetaria_rigidbody;
         [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;
+        [NonSerialized] private bool has_collided = false;
     }
 }
 

@@ -97,7 +97,12 @@ namespace DebrisNoirs
 
         public void on_field_enter(PlanetariaCollider collider)
         {
-            die();
+            if (!dead) // There's technically a small bug here, where the player can collide with debris that has already collided (with a projectile)
+            {
+                die();
+                Debris debris = collider.GetComponent<Debris>();
+                debris.destroy_asteroid(); // should not assign points, since the player died.
+            }
         }
 
         private void die()
