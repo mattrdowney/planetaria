@@ -8,6 +8,7 @@ namespace DebrisNoirs
     {
         private void Start()
         {
+            satellite = this.transform.parent.parent.GetComponent<Satellite>();
             turret = this.gameObject.internal_game_object.transform;
 #if UNITY_EDITOR
             GameObject.FindObjectOfType<PlanetariaActuator>().input_device_type = PlanetariaActuator.InputDevice.Mouse;
@@ -21,7 +22,7 @@ namespace DebrisNoirs
             Vector3 rail_position = turret.forward;
             Vector3 bullet_direction = turret.up;
             
-            if (DebrisNoirsInput.firing())
+            if (DebrisNoirsInput.firing() && satellite.life() == 1) // if firing and not dead
             {
                 PlanetariaGameObject.Instantiate(projectile, rail_position, bullet_direction);
             }
@@ -30,6 +31,7 @@ namespace DebrisNoirs
         protected override void OnConstruction() { }
         protected override void OnDestruction() { }
 
+        [SerializeField] public Satellite satellite;
         [SerializeField] public GameObject projectile;
         [SerializeField] private Transform turret;
     }

@@ -36,10 +36,12 @@ namespace DebrisNoirs
         {
             if (!dead || dead_time < 0)
             {
-                Vector2 input = DebrisNoirsInput.get_axes();
+                Vector2 input = DebrisNoirsInput.get_direction();
+                float real_acceleration = Mathf.Min(Mathf.Max(0, fuel - 1), Time.deltaTime) * acceleration;
+                fuel = Mathf.Clamp01(fuel);
 
                 // add velocity based on input
-                planetaria_rigidbody.relative_velocity += input * acceleration * Time.deltaTime;
+                planetaria_rigidbody.relative_velocity += input * real_acceleration;
                 Vector2 velocity = planetaria_rigidbody.relative_velocity;
 
                 // drag in coincident direction varies from coefficient of 1->~0.8->~0.5
@@ -66,14 +68,28 @@ namespace DebrisNoirs
 
         private void Update()
         {
+            if (DebrisNoirsInput.get_axes().magnitude > 0)
+            {
+                fuel += Time.deltaTime / seconds_to_max_fuel;
+            }
+            else
+            {
+                fuel -= Time.deltaTime / seconds_to_max_fuel;
+                fuel = Mathf.Max(0, fuel);
+            }
+            Debug.Log(fuel);
             // apply Sprite rotation (won't be seen unless visible)
             Vector2 input_direction = DebrisNoirsInput.get_direction();
             if (input_direction.sqrMagnitude > 0)
             {
                 float target_angle = Mathf.Atan2(input_direction.y, input_direction.x) - Mathf.PI/2;
                 float current_angle = internal_transform.localEulerAngles.z;
-                float interpolator = 360 * 3 / Mathf.Abs(Mathf.DeltaAngle(current_angle, target_angle * Mathf.Rad2Deg)) * Time.deltaTime;
-                internal_transform.localEulerAngles = new Vector3(0, 0, Mathf.LerpAngle(current_angle, target_angle * Mathf.Rad2Deg, interpolator));
+                float delta_angle = Mathf.Abs(Mathf.DeltaAngle(current_angle, target_angle * Mathf.Rad2Deg));
+                float interpolator = 360 * 3 / delta_angle * Time.deltaTime;
+                float new_angle = Mathf.LerpAngle(current_angle, target_angle * Mathf.Rad2Deg, interpolator);
+                internal_transform.localEulerAngles = new Vector3(0, 0, new_angle);
+                float actual_angle_change = Mathf.Abs(Mathf.DeltaAngle(current_angle, new_angle));
+                fuel = Mathf.Max(0, fuel - actual_angle_change / 45f);
             }
 
             if (dead)
@@ -115,6 +131,11 @@ namespace DebrisNoirs
             stopwatch.stop_clock();
             debris_spawner.stop();
             satellite_renderer.sprite = ghost_sprite;
+        }
+
+        public float get_fuel()
+        {
+            return fuel;
         }
 
         public float life()
@@ -159,10 +180,13 @@ namespace DebrisNoirs
 
         [NonSerialized] private float horizontal;
         [NonSerialized] private float vertical;
+        [NonSerialized] private float fuel;
 
         [NonSerialized] private bool dead = false;
         [NonSerialized] private float dead_time = 0;
         [NonSerialized] private float respawn_time = 0;
+
+        private const float seconds_to_max_fuel = 0.5f;
     }
 }
 

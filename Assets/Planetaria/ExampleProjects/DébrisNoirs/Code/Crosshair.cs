@@ -14,6 +14,7 @@ namespace DebrisNoirs
 
         private void Start()
         {
+            satellite = GameObject.FindObjectOfType<Satellite>();
             main_character = GameObject.FindObjectOfType<Satellite>().gameObject.internal_game_object.transform;
 #if UNITY_EDITOR
             GameObject.FindObjectOfType<PlanetariaActuator>().input_device_type = PlanetariaActuator.InputDevice.Mouse;
@@ -29,20 +30,14 @@ namespace DebrisNoirs
             Vector3 controller_position = main_controller.forward;
             Vector3 crosshair_up = Bearing.repeller(controller_position, character_position);
 
-            if (DebrisNoirsInput.using_primative_axis())
-            {
-                crosshair_renderer.scale = 0;
-            }
-            else
-            {
-                crosshair_renderer.angle = Vector3.SignedAngle(main_controller.up, crosshair_up, main_controller.forward) * Mathf.Deg2Rad;
-                crosshair_renderer.scale = crosshair_size *DebrisNoirsInput.get_axes().magnitude;
-            }
+            crosshair_renderer.angle = Vector3.SignedAngle(main_controller.up, crosshair_up, main_controller.forward) * Mathf.Deg2Rad;
+            crosshair_renderer.scale = crosshair_size*Mathf.Clamp01(satellite.get_fuel());
         }
 
         protected override void OnConstruction() { }
         protected override void OnDestruction() { }
 
+        [SerializeField] [HideInInspector] private Satellite satellite;
         [SerializeField] [HideInInspector] private Transform main_character;
         [SerializeField] [HideInInspector] private Transform main_controller;
         [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;

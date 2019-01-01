@@ -10,15 +10,15 @@ namespace DebrisNoirs
     {
         public static bool firing() // Assumes firing() is called every frame
         {
-            bool fire_pressed = Input.GetButtonDown("PlanetariaUniversalInputButton");
-            bool fire_held = Input.GetButton("PlanetariaUniversalInputButton");
-
-            // FIXME: implement
-
-            return fire_pressed;
+            time_until_bullet += Time.deltaTime;
+            if (time_until_bullet >= bullet_interval)
+            {
+                time_until_bullet -= bullet_interval;
+                return true;
+            }
+            return false; // CONSIDER: manual implementation if button/trigger pressed
         }
         
-            // If a button is held, then continue firing every x milleseconds.
         /// <summary>
         /// Inspector - Gets primative controller and keyboard axes (horizontal and vertical).
         /// </summary>
@@ -121,6 +121,7 @@ namespace DebrisNoirs
         private static float time_since_primative_input = 100;
         private static float time_until_bullet = 0;
 
+        private const float bullet_interval = 0.2f; // about 1.5x original (4 bullets at 1.2s, but you could fire every frame in theory)
         private const float seconds_until_head_control = 20f;
         private const float acceleration = 2; // derivative of acceleration
     }
