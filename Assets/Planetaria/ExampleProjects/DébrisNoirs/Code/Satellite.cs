@@ -77,7 +77,6 @@ namespace DebrisNoirs
                 fuel -= Time.deltaTime / seconds_to_max_fuel;
                 fuel = Mathf.Max(0, fuel);
             }
-            Debug.Log(fuel);
             // apply Sprite rotation (won't be seen unless visible)
             Vector2 input_direction = DebrisNoirsInput.get_direction();
             if (input_direction.sqrMagnitude > 0)
@@ -186,7 +185,7 @@ namespace DebrisNoirs
         [NonSerialized] private float dead_time = 0;
         [NonSerialized] private float respawn_time = 0;
 
-        private const float seconds_to_max_fuel = 0.5f;
+        private const float seconds_to_max_fuel = 0.15f;
     }
 }
 

@@ -4,25 +4,10 @@ using UnityEngine;
 
 namespace Planetaria
 {
-    // TODO: Multiton Design Pattern for multiple levels?
-    [DisallowMultipleComponent]
-    public class PlanetariaCache : MonoBehaviour  // TODO: PlanetariaComponent
+    // CONSIDER: Multiton Design Pattern for multiple levels?
+    public static class PlanetariaCache
     {
-        public static PlanetariaCache self
-        {
-            get
-            {
-                if (self_variable.exists)
-                {
-                    return self_variable.data;
-                }
-                GameObject game_object = Miscellaneous.GetOrAddObject("GameMaster");
-                self_variable = Miscellaneous.GetOrAddComponent<PlanetariaCache>(game_object);
-                return self_variable.data;
-            }
-        }
-
-        public PlanetariaCollider collider_fetch(SphereCollider key)
+        public static PlanetariaCollider collider_fetch(SphereCollider key)
         {
             if (!collider_cache.ContainsKey(key))
             {
@@ -33,19 +18,17 @@ namespace Planetaria
             return collider_cache[key];
         }
 
-        public void cache(PlanetariaCollider collider)
+        public static void cache(PlanetariaCollider collider)
         {
-            PlanetariaCache.self.collider_cache.Add(collider.get_sphere_collider(), collider);
+            PlanetariaCache.collider_cache.Add(collider.get_sphere_collider(), collider);
         }
 
-        public void uncache(PlanetariaCollider collider)
+        public static void uncache(PlanetariaCollider collider)
         {
-            PlanetariaCache.self.collider_cache.Remove(collider.get_sphere_collider());
+            PlanetariaCache.collider_cache.Remove(collider.get_sphere_collider());
         }
         
-        [NonSerialized] private Dictionary<SphereCollider, PlanetariaCollider> collider_cache = new Dictionary<SphereCollider, PlanetariaCollider>();
-
-        private static optional<PlanetariaCache> self_variable = new optional<PlanetariaCache>();
+        [NonSerialized] private static Dictionary<SphereCollider, PlanetariaCollider> collider_cache = new Dictionary<SphereCollider, PlanetariaCollider>();
     }
 }
 

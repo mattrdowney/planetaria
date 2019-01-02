@@ -121,7 +121,7 @@ namespace Planetaria
             Debug.Log(colliders.Length);
             foreach (SphereCollider sphere_collider in colliders)
             {
-                PlanetariaCollider planetaria_collider = PlanetariaCache.self.collider_fetch(sphere_collider);
+                PlanetariaCollider planetaria_collider = PlanetariaCache.collider_fetch(sphere_collider);
                 if (planetaria_collider.is_field && !collide_with_fields)
                 {
                     Debug.LogError("Why?");

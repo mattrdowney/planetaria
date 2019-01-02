@@ -539,6 +539,7 @@ MonoBehaviour:
   initialized: 0
   game_object_variable:
     game_object_variable: {fileID: 0}
+  satellite: {fileID: 0}
   projectile: {fileID: 44, guid: e9f4750c3905b3d4680dd085b42abcdc, type: 3}
   turret: {fileID: 5739891510674920037}
 --- !u!114 &2403386190931447900

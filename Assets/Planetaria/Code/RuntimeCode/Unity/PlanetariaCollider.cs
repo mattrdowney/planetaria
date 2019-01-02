@@ -25,7 +25,7 @@ namespace Planetaria // FIXME: PlanetariaCollider spawns a child, which must alw
 
         protected override void OnDestroy()
         {
-            PlanetariaCache.self.uncache(this);
+            PlanetariaCache.uncache(this);
             GameObject.Destroy(internal_collider);
         }
 
@@ -75,11 +75,11 @@ namespace Planetaria // FIXME: PlanetariaCollider spawns a child, which must alw
 
         private void cache(PlanetariaShape shape)
         {
-            PlanetariaCache.self.uncache(this);
+            PlanetariaCache.uncache(this);
             shape_variable = shape;
             if (shape != null)
             {
-                PlanetariaCache.self.cache(this);
+                PlanetariaCache.cache(this);
                 PlanetariaSphereCollider sphere = shape.bounding_sphere;
 
                 internal_collider.center = sphere.center;
@@ -132,7 +132,7 @@ namespace Planetaria // FIXME: PlanetariaCollider spawns a child, which must alw
                 Debug.LogError("This should never happen");
                 return;
             }
-            optional<PlanetariaCollider> other_collider = PlanetariaCache.self.collider_fetch(sphere_collider.data);
+            optional<PlanetariaCollider> other_collider = PlanetariaCache.collider_fetch(sphere_collider.data);
             if (!other_collider.exists)
             {
                 Debug.LogError("This should never happen");
