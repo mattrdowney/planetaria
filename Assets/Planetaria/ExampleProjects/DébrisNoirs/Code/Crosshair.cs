@@ -15,7 +15,7 @@ namespace DebrisNoirs
         private void Start()
         {
             satellite = GameObject.FindObjectOfType<Satellite>();
-            main_character = GameObject.FindObjectOfType<Satellite>().gameObject.internal_game_object.transform;
+            main_character = GameObject.FindObjectOfType<Satellite>().gameObject.transform;
 #if UNITY_EDITOR
             GameObject.FindObjectOfType<PlanetariaActuator>().input_device_type = PlanetariaActuator.InputDevice.Mouse;
 #else

@@ -43,7 +43,7 @@ namespace DebrisNoirs
         {
             if (!main_character || !main_controller)
             {
-                main_character = GameObject.FindObjectOfType<Satellite>().gameObject.internal_game_object.transform;
+                main_character = GameObject.FindObjectOfType<Satellite>().gameObject.transform;
                 main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
             }
             

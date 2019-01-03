@@ -44,7 +44,7 @@ namespace DebrisNoirs
 
         public void spawn()
         {
-            round = 0;
+            round = 100;
             StartCoroutine(spawn_debris_subroutine());
         }
 

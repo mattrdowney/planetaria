@@ -165,7 +165,6 @@ GameObject:
   - component: {fileID: 114502162093895280}
   - component: {fileID: 114556726867480252}
   - component: {fileID: 54852974177452380}
-  - component: {fileID: 114870004696340862}
   - component: {fileID: 7252158268403498653}
   - component: {fileID: 2008140876}
   - component: {fileID: 2008140875}
@@ -203,14 +202,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adeb2a67b8d8fe146b841789254a7857, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialized: 0
-  game_object_variable:
-    game_object_variable: {fileID: 1996407451135126}
   satellite_sprite: {fileID: 21300000, guid: 511467ccf35c93c4190efa7401484a63, type: 3}
   ghost_sprite: {fileID: 21300000, guid: cba0b4bad81796546923b5666c64ef27, type: 3}
   acceleration: 2
   internal_transform: {fileID: 964485387257191906}
-  planetaria_collider: {fileID: 114870004696340862}
+  planetaria_transform: {fileID: 0}
+  planetaria_collider: {fileID: 0}
   satellite_renderer: {fileID: 4131315501585170602}
   silhouette_renderer: {fileID: 1148063121}
   planetaria_rigidbody: {fileID: 114556726867480252}
@@ -268,31 +265,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &114870004696340862
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1996407451135126}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a6c36a05a1232a4daf7cc94dd275fbd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initialized: 0
-  game_object_variable:
-    game_object_variable: {fileID: 1996407451135126}
-  material: {fileID: 11400000, guid: a03d051b7bfe0d344abca6f59970c460, type: 2}
-  shape_variable: {fileID: 0}
-  observer:
-    planetaria_transformation: {fileID: 0}
-    planetaria_collider: {fileID: 0}
-    observers: []
-  internal_transform: {fileID: 4436393650129868}
-  planetaria_transform: {fileID: 114502162093895280}
-  internal_collider: {fileID: 7252158268403498653}
-  is_field_variable: 1
 --- !u!135 &7252158268403498653
 SphereCollider:
   m_ObjectHideFlags: 0

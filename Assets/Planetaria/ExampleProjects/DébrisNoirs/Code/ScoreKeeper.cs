@@ -8,14 +8,11 @@ namespace DebrisNoirs
 {
     public class ScoreKeeper : PlanetariaMonoBehaviour
     {
-        public void reset_clock()
-        {
-            score = 0;
-        }
-
         public void start_clock()
         {
             state = StopwatchState.Started;
+            score = 0;
+            player_score_text.text = "0";
             
             player_score_text.rectTransform.anchoredPosition = new Vector3(0, 30, 0);
             highscore_text.rectTransform.anchoredPosition = new Vector3(0, -30, 0);

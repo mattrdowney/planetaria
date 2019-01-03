@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Planetaria
@@ -28,7 +27,7 @@ namespace Planetaria
             PlanetariaCache.collider_cache.Remove(collider.get_sphere_collider());
         }
         
-        [NonSerialized] private static Dictionary<SphereCollider, PlanetariaCollider> collider_cache = new Dictionary<SphereCollider, PlanetariaCollider>();
+        private static Dictionary<SphereCollider, PlanetariaCollider> collider_cache = new Dictionary<SphereCollider, PlanetariaCollider>();
     }
 }
 

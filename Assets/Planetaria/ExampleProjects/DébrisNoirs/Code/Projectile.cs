@@ -4,11 +4,8 @@ using Planetaria;
 
 namespace DebrisNoirs
 {
-    public class Projectile : PlanetariaMonoBehaviour
+    public class Projectile : MonoBehaviour // HACK: normally I would use PlanetariaMonoBehaviour, but this should drastically improve collision performance
     {
-        protected override void OnConstruction() { }
-        protected override void OnDestruction() { }
-
         private void OnValidate()
         {
             planetaria_collider = this.GetComponent<PlanetariaCollider>();
@@ -19,17 +16,15 @@ namespace DebrisNoirs
             planetaria_collider.shape = PlanetariaShape.Create(planetaria_transform.localScale);
             planetaria_renderer.scale = planetaria_transform.localScale;
         }
-
-        // Start is called before the first frame update
+        
         void Start()
         {
             // set velocity
             planetaria_rigidbody.relative_velocity = new Vector2(0, speed);
             PlanetariaGameObject.Destroy(this.gameObject, lifetime);
-            OnFieldEnter.data = on_field_enter;
         }
 
-        public void on_field_enter(PlanetariaCollider collider)
+        public void OnTriggerEnter(Collider collider)
         {
             if (!has_collided) // make sure one projectile doesn't collide with 2+ debris.
             {

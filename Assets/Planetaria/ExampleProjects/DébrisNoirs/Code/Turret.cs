@@ -8,7 +8,7 @@ namespace DebrisNoirs
     {
         private void Start()
         {
-            satellite = this.transform.parent.parent.GetComponent<Satellite>();
+            satellite = this.transform.parent.parent.gameObject.internal_game_object.GetComponent<Satellite>();
             turret = this.gameObject.internal_game_object.transform;
 #if UNITY_EDITOR
             GameObject.FindObjectOfType<PlanetariaActuator>().input_device_type = PlanetariaActuator.InputDevice.Mouse;

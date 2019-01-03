@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 70}
   - component: {fileID: 71}
   - component: {fileID: 56}
-  - component: {fileID: 72}
   - component: {fileID: 60}
   - component: {fileID: 69}
   - component: {fileID: 78}
@@ -90,31 +89,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &72
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 32}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a6c36a05a1232a4daf7cc94dd275fbd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initialized: 0
-  game_object_variable:
-    game_object_variable: {fileID: 32}
-  material: {fileID: 11400000, guid: a03d051b7bfe0d344abca6f59970c460, type: 2}
-  shape_variable: {fileID: 0}
-  observer:
-    planetaria_transformation: {fileID: 0}
-    planetaria_collider: {fileID: 0}
-    observers: []
-  internal_transform: {fileID: 45}
-  planetaria_transform: {fileID: 70}
-  internal_collider: {fileID: 60}
-  is_field_variable: 1
 --- !u!135 &60
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -169,7 +143,7 @@ MonoBehaviour:
   score_keeper: {fileID: 0}
   planetaria_renderer_foreground: {fileID: 69}
   planetaria_renderer_background: {fileID: 79}
-  planetaria_collider: {fileID: 72}
+  planetaria_collider: {fileID: 0}
   planetaria_rigidbody: {fileID: 71}
   planetaria_transform: {fileID: 70}
   spawned_debris: {fileID: 39, guid: 0f139500d8c235649aa7d844ed6fdae7, type: 3}

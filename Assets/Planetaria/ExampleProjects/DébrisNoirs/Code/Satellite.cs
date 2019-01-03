@@ -5,22 +5,19 @@ using Planetaria;
 
 namespace DebrisNoirs
 {
-    public class Satellite : PlanetariaMonoBehaviour
+    public class Satellite : MonoBehaviour // HACK: normally I would use PlanetariaMonoBehaviour, but this should drastically improve collision performance
     {
-        protected override void OnConstruction() { }
-        protected override void OnDestruction() { }
-
         private void OnValidate()
         {
             planetaria_collider = this.GetComponent<PlanetariaCollider>();
             planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
             satellite_renderer = this.transform.Find("Chasis").GetComponent<AreaRenderer>();
             silhouette_renderer = this.transform.Find("Chasis").Find("Silhouette").GetComponent<AreaRenderer>();
-            internal_transform = this.transform.Find("Chasis").gameObject.internal_game_object.GetComponent<Transform>();
+            internal_transform = this.transform.Find("Chasis").gameObject.GetComponent<Transform>();
 
-            planetaria_collider.shape = PlanetariaShape.Create(transform.localScale);
-            satellite_renderer.scale = transform.localScale;
-            silhouette_renderer.scale = transform.localScale;
+            planetaria_collider.shape = PlanetariaShape.Create(planetaria_transform.localScale);
+            satellite_renderer.scale = planetaria_transform.localScale;
+            silhouette_renderer.scale = planetaria_transform.localScale;
         }
 
         private void Start()
@@ -28,8 +25,6 @@ namespace DebrisNoirs
             stopwatch = GameObject.FindObjectOfType<ScoreKeeper>();
             debris_spawner = GameObject.FindObjectOfType<DebrisSpawner>();
             loading_disc = GameObject.FindObjectOfType<Image>();
-
-            OnFieldEnter.data = on_field_enter;
         }
 
         private void FixedUpdate()
@@ -68,15 +63,6 @@ namespace DebrisNoirs
 
         private void Update()
         {
-            if (DebrisNoirsInput.get_axes().magnitude > 0)
-            {
-                fuel += Time.deltaTime / seconds_to_max_fuel;
-            }
-            else
-            {
-                fuel -= Time.deltaTime / seconds_to_max_fuel;
-                fuel = Mathf.Max(0, fuel);
-            }
             // apply Sprite rotation (won't be seen unless visible)
             Vector2 input_direction = DebrisNoirsInput.get_direction();
             if (input_direction.sqrMagnitude > 0)
@@ -87,8 +73,6 @@ namespace DebrisNoirs
                 float interpolator = 360 * 3 / delta_angle * Time.deltaTime;
                 float new_angle = Mathf.LerpAngle(current_angle, target_angle * Mathf.Rad2Deg, interpolator);
                 internal_transform.localEulerAngles = new Vector3(0, 0, new_angle);
-                float actual_angle_change = Mathf.Abs(Mathf.DeltaAngle(current_angle, new_angle));
-                fuel = Mathf.Max(0, fuel - actual_angle_change / 45f);
             }
 
             if (dead)
@@ -110,7 +94,7 @@ namespace DebrisNoirs
             }
         }
 
-        public void on_field_enter(PlanetariaCollider collider)
+        public void OnTriggerEnter(Collider collider)
         {
             if (!dead) // There's technically a small bug here, where the player can collide with debris that has already collided (with a projectile)
             {
@@ -154,7 +138,6 @@ namespace DebrisNoirs
         {
             DebrisNoirs.heat_death();
             debris_spawner.spawn();
-            stopwatch.reset_clock();
             stopwatch.start_clock();
             dead = false;
             planetaria_collider.enabled = true;
@@ -168,6 +151,7 @@ namespace DebrisNoirs
         [SerializeField] private float acceleration = 2f;
         
         [SerializeField] private Transform internal_transform;
+        [SerializeField] private PlanetariaTransform planetaria_transform;
         [SerializeField] private PlanetariaCollider planetaria_collider;
         [SerializeField] private AreaRenderer satellite_renderer;
         [SerializeField] private AreaRenderer silhouette_renderer;

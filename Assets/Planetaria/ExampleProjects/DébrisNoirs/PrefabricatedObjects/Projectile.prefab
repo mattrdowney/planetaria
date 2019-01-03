@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 101}
   - component: {fileID: 99}
   - component: {fileID: 98}
-  - component: {fileID: 97}
   - component: {fileID: 67}
   m_Layer: 9
   m_Name: Projectile
@@ -101,12 +100,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e8b58392ab6e3b478b0d3a7b6f8f1a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialized: 0
-  game_object_variable:
-    game_object_variable: {fileID: 44}
   speed: 3.1415927
   lifetime: 1
-  planetaria_collider: {fileID: 97}
+  planetaria_collider: {fileID: 0}
   planetaria_renderer: {fileID: 98}
   planetaria_rigidbody: {fileID: 101}
   planetaria_transform: {fileID: 100}
@@ -133,31 +129,6 @@ MonoBehaviour:
   offset: 1
   sprite_variable: {fileID: 0}
   sprite_renderer: {fileID: 74}
---- !u!114 &97
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 44}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a6c36a05a1232a4daf7cc94dd275fbd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initialized: 0
-  game_object_variable:
-    game_object_variable: {fileID: 44}
-  material: {fileID: 11400000, guid: a03d051b7bfe0d344abca6f59970c460, type: 2}
-  shape_variable: {fileID: 0}
-  observer:
-    planetaria_transformation: {fileID: 0}
-    planetaria_collider: {fileID: 0}
-    observers: []
-  internal_transform: {fileID: 59}
-  planetaria_transform: {fileID: 100}
-  internal_collider: {fileID: 67}
-  is_field_variable: 1
 --- !u!135 &67
 SphereCollider:
   m_ObjectHideFlags: 0

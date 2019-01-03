@@ -11,7 +11,7 @@ namespace DebrisNoirs
     {
         private void Start()
         {
-            satellite = this.GetComponent<Satellite>();
+            satellite = this.gameObject.internal_game_object.GetComponent<Satellite>();
             satellite_rigidbody = this.GetComponent<PlanetariaRigidbody>();
         }
 
