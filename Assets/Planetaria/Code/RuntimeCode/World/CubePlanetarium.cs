@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Linq; // TODO: Linq affects garbage collector (which affects virtual reality)
 using UnityEngine;
 
 namespace Planetaria

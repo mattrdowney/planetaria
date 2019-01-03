@@ -382,32 +382,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114870004696340862, guid: aaa1349aadcd2114a9d661fa04abe0a0,
-        type: 3}
-      propertyPath: shape_variable
-      value: 
-      objectReference: {fileID: 1037991373}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aaa1349aadcd2114a9d661fa04abe0a0, type: 3}
---- !u!114 &1037991373
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 98796d1e58552064db49e5b46d99053c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  has_corners: 0
-  ephemeral_arcs: 0
-  serialized_arc_list:
-  - compact_basis_vectors_variable: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
-    half_angle_variable: 3.1415927
-    arc_latitude_variable: -1.5407919
-    curvature_variable: 0
 --- !u!1001 &1539007697
 PrefabInstance:
   m_ObjectHideFlags: 0

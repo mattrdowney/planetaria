@@ -121,7 +121,7 @@ namespace DebrisNoirs
         private static float time_since_primative_input = 100;
         private static float time_until_bullet = 0;
 
-        private const float bullet_interval = 0.2f; // about 1.5x original (4 bullets at 1.2s, but you could fire every frame in theory)
+        private const float bullet_interval = 0.5f/7; // kill debris and its spawn (1+2+4 total) in half second; almost 4x original fire rate (original: 4 bullets at 1.2s, but you could fire every frame (~0.0166666667f) in theory)
         private const float seconds_until_head_control = 20f;
         private const float acceleration = 2; // derivative of acceleration
     }

@@ -21,11 +21,15 @@ namespace DebrisNoirs
         {
             while (true)
             {
-                yield return second_delay;
                 if (DebrisNoirs.empty())
                 {
-                    yield return five_second_delay; // give the player time to refresh
-                    for (int countdown = 5; countdown >= 1; countdown -= 1) // print countdown on user interface
+                    int round_difficulty = Mathf.Min(Mathf.CeilToInt(debris_to_spawn / 50f), 3); // give the player 0-5 second break, depending on last round's difficulty 
+                    for (int cooldown = round_difficulty; cooldown >= 1; cooldown -= 1) // let the player refresh
+                    {
+                        yield return second_delay; // give the player time to refresh
+                    }
+                    debris_to_spawn += (4 - round_difficulty); // spawn 4, 3...3, 2...2, 1... debris 
+                    for (int countdown = 3; countdown >= 1; countdown -= 1) // print countdown on user interface
                     {
                         text.text = countdown.ToString(); // display countdown
                         yield return second_delay;
@@ -34,6 +38,7 @@ namespace DebrisNoirs
                     round += 1; // enter next round
                     spawn_debris();
                 }
+                yield return second_delay;
             }
         }
 
@@ -44,19 +49,21 @@ namespace DebrisNoirs
 
         public void spawn()
         {
-            round = 100;
+            round = 0;
+            debris_to_spawn = 0;
             StartCoroutine(spawn_debris_subroutine());
         }
 
         private void spawn_debris()
         {
-            const int maximum_large_debris = 100; // most debris possible is 400 small debris (unlikely)
-            int debris_to_spawn = Mathf.Min(round, maximum_large_debris);
+            //const int maximum_large_debris = 256; // most debris possible is 256*4 small debris (unlikely) // HYPOTHESIS: no one will make it here (without cheating, glitching); prove me wrong
+            //int debris_to_spawn = Mathf.Min(round, maximum_large_debris);
             // Spawn 1 piece of debris on first round and n pieces on nth round.
-            for (int debris = 0; debris < debris_to_spawn; debris += 1)
+            Vector3 satellite_position = satellite.position;
+            for (int debris = 0; debris < debris_to_spawn; debris += 1) // UNLIMITED seems cooler //, but doesn't technically adhere to framerate specifications in some app stores for virtual reality *shrug*
             {
                 Vector3 random_position = UnityEngine.Random.onUnitSphere;
-                if (Vector3.Dot(random_position, satellite.position) > 0)
+                if (Vector3.Dot(random_position, satellite_position) > 0)
                 {
                     random_position *= -1;
                 }
@@ -68,6 +75,7 @@ namespace DebrisNoirs
         private static WaitForSeconds five_second_delay = new WaitForSeconds(5f);
 
         public int round = 0;
+        public int debris_to_spawn = 0;
         [SerializeField] public GameObject large_debris;
         [SerializeField] public UnityEngine.UI.Text text; 
         [SerializeField] private PlanetariaTransform satellite;

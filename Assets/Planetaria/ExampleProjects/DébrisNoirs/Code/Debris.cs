@@ -14,13 +14,13 @@ namespace DebrisNoirs
 
         private void OnValidate()
         {
-            planetaria_collider = this.GetComponent<PlanetariaCollider>();
+            //planetaria_collider = this.GetComponent<PlanetariaCollider>();
             planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
             planetaria_transform = this.GetComponent<PlanetariaTransform>();
             planetaria_renderer_foreground = this.GetComponent<AreaRenderer>();
             planetaria_renderer_background = planetaria_transform.Find("Silhouette").GetComponent<AreaRenderer>();
 
-            planetaria_collider.shape = PlanetariaShape.Create(planetaria_transform.localScale);
+            //planetaria_collider.shape = PlanetariaShape.Create(planetaria_transform.localScale);
             planetaria_renderer_foreground.scale = planetaria_transform.localScale;
             planetaria_renderer_background.scale = planetaria_transform.localScale;
         }
@@ -60,6 +60,10 @@ namespace DebrisNoirs
                     Debris debris = game_object.GetComponent<Debris>();
                     debris.speed = this.speed;
                     DebrisNoirs.live(game_object);
+                    // while asteroid revenge velocity (targetting satellite) is an interesting idea,
+                    // I don't think it's necessary (or would fully work as intended for that matter - it might be exploitable).
+                    // The game will probably be hard enough head/joystick controls
+                    // (and pros will still make mistakes eventually, even if its because of sleep deprivation)
                 }
             }
             DebrisNoirs.die(this.gameObject);
@@ -71,7 +75,7 @@ namespace DebrisNoirs
         [SerializeField] public ScoreKeeper score_keeper;
         [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer_foreground;
         [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer_background;
-        [SerializeField] [HideInInspector] private PlanetariaCollider planetaria_collider;
+        //[SerializeField] [HideInInspector] private PlanetariaCollider planetaria_collider;
         [SerializeField] [HideInInspector] private PlanetariaRigidbody planetaria_rigidbody;
         [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;
 

@@ -216,7 +216,6 @@ MonoBehaviour:
   score_keeper: {fileID: 0}
   planetaria_renderer_foreground: {fileID: 85}
   planetaria_renderer_background: {fileID: 76}
-  planetaria_collider: {fileID: 0}
   planetaria_rigidbody: {fileID: 88}
   planetaria_transform: {fileID: 81}
   spawned_debris: {fileID: 0}

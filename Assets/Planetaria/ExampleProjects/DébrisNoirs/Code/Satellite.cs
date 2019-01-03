@@ -7,15 +7,17 @@ namespace DebrisNoirs
 {
     public class Satellite : MonoBehaviour // HACK: normally I would use PlanetariaMonoBehaviour, but this should drastically improve collision performance
     {
+        // without aliens, the dominant strategy is mostly staying in place, but eh
         private void OnValidate()
         {
-            planetaria_collider = this.GetComponent<PlanetariaCollider>();
+            internal_collider = this.GetComponent<SphereCollider>();
             planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
             satellite_renderer = this.transform.Find("Chasis").GetComponent<AreaRenderer>();
             silhouette_renderer = this.transform.Find("Chasis").Find("Silhouette").GetComponent<AreaRenderer>();
             internal_transform = this.transform.Find("Chasis").gameObject.GetComponent<Transform>();
+            planetaria_transform = this.GetComponent<PlanetariaTransform>();
 
-            planetaria_collider.shape = PlanetariaShape.Create(planetaria_transform.localScale);
+            //internal_collider.shape = PlanetariaShape.Create(planetaria_transform.localScale);
             satellite_renderer.scale = planetaria_transform.localScale;
             silhouette_renderer.scale = planetaria_transform.localScale;
         }
@@ -109,7 +111,7 @@ namespace DebrisNoirs
             dead = true;
             dead_time = 3f;
             respawn_time = 0;
-            planetaria_collider.enabled = false;
+            internal_collider.enabled = false;
             satellite_renderer.enabled = false;
             stopwatch.stop_clock();
             debris_spawner.stop();
@@ -140,7 +142,7 @@ namespace DebrisNoirs
             debris_spawner.spawn();
             stopwatch.start_clock();
             dead = false;
-            planetaria_collider.enabled = true;
+            internal_collider.enabled = true;
             satellite_renderer.enabled = true;
             loading_disc.fillAmount = 0;
             satellite_renderer.sprite = satellite_sprite;
@@ -152,7 +154,7 @@ namespace DebrisNoirs
         
         [SerializeField] private Transform internal_transform;
         [SerializeField] private PlanetariaTransform planetaria_transform;
-        [SerializeField] private PlanetariaCollider planetaria_collider;
+        [SerializeField] private SphereCollider internal_collider;
         [SerializeField] private AreaRenderer satellite_renderer;
         [SerializeField] private AreaRenderer silhouette_renderer;
         [SerializeField] private PlanetariaRigidbody planetaria_rigidbody;

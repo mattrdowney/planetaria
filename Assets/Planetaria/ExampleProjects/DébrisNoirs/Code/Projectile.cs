@@ -8,12 +8,12 @@ namespace DebrisNoirs
     {
         private void OnValidate()
         {
-            planetaria_collider = this.GetComponent<PlanetariaCollider>();
+            //planetaria_collider = this.GetComponent<PlanetariaCollider>();
             planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
             planetaria_transform = this.GetComponent<PlanetariaTransform>();
             planetaria_renderer = this.GetComponent<AreaRenderer>();
 
-            planetaria_collider.shape = PlanetariaShape.Create(planetaria_transform.localScale);
+            //planetaria_collider.shape = PlanetariaShape.Create(planetaria_transform.localScale);
             planetaria_renderer.scale = planetaria_transform.localScale;
         }
         
@@ -23,6 +23,9 @@ namespace DebrisNoirs
             planetaria_rigidbody.relative_velocity = new Vector2(0, speed);
             PlanetariaGameObject.Destroy(this.gameObject, lifetime);
         }
+
+        // while I do like the idea of raycasting in update, that would require PlanetariaColliders or hacking my current raycast implementation, so true-to-original it is
+        // Also, raycasting would be broken with relative projectile velocities
 
         public void OnTriggerEnter(Collider collider)
         {
@@ -39,7 +42,7 @@ namespace DebrisNoirs
         
         [SerializeField] public float speed = Mathf.PI;
         [SerializeField] public float lifetime = 1;
-        [SerializeField] [HideInInspector] private PlanetariaCollider planetaria_collider;
+        //[SerializeField] [HideInInspector] private PlanetariaCollider planetaria_collider;
         [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer;
         [SerializeField] [HideInInspector] private PlanetariaRigidbody planetaria_rigidbody;
         [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;

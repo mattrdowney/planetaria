@@ -374,11 +374,10 @@ MonoBehaviour:
   score_keeper: {fileID: 0}
   planetaria_renderer_foreground: {fileID: 74}
   planetaria_renderer_background: {fileID: 86}
-  planetaria_collider: {fileID: 0}
   planetaria_rigidbody: {fileID: 80}
   planetaria_transform: {fileID: 77}
   spawned_debris: {fileID: 40, guid: 2b0d67d6289766c4990a73ae4f38d694, type: 3}
   speed: 1
   deviation_angle: 1.0471976
-  speed_deviation_multiplier: 2
+  speed_deviation_multiplier: 1.5
   points: 20
