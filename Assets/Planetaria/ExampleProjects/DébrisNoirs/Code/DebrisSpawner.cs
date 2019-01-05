@@ -28,7 +28,7 @@ namespace DebrisNoirs
                     {
                         yield return second_delay; // give the player time to refresh
                     }
-                    debris_to_spawn += (4 - round_difficulty); // spawn 4, 3...3, 2...2, 1... debris 
+                    debris_to_spawn += Mathf.Max(4 - round_difficulty, 1); // spawn 4, 3...3, 2...2, 1... debris 
                     for (int countdown = 3; countdown >= 1; countdown -= 1) // print countdown on user interface
                     {
                         text.text = countdown.ToString(); // display countdown
@@ -56,11 +56,8 @@ namespace DebrisNoirs
 
         private void spawn_debris()
         {
-            //const int maximum_large_debris = 256; // most debris possible is 256*4 small debris (unlikely) // HYPOTHESIS: no one will make it here (without cheating, glitching); prove me wrong
-            //int debris_to_spawn = Mathf.Min(round, maximum_large_debris);
-            // Spawn 1 piece of debris on first round and n pieces on nth round.
             Vector3 satellite_position = satellite.position;
-            for (int debris = 0; debris < debris_to_spawn; debris += 1) // UNLIMITED seems cooler //, but doesn't technically adhere to framerate specifications in some app stores for virtual reality *shrug*
+            for (int debris = 0; debris < debris_to_spawn; debris += 1)
             {
                 Vector3 random_position = UnityEngine.Random.onUnitSphere;
                 if (Vector3.Dot(random_position, satellite_position) > 0)

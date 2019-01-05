@@ -7,7 +7,7 @@ namespace DebrisNoirs
     /// <summary>
     /// Debris are the space rocks / asteroids flying around on screen. The three types (small, medium, large) can be created with different variables.
     /// </summary>
-    public class Debris : PlanetariaMonoBehaviour
+    public class Debris : PlanetariaMonoBehaviour // my code is metaphorical (and actual) trash
     {
         protected override void OnConstruction() { }
         protected override void OnDestruction() { }

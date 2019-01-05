@@ -35,6 +35,23 @@ namespace DebrisNoirs
             return input_axes;
         }
 
+        public static float get_primative_rotate()
+        {
+            float horizontal = Input.GetAxisRaw("PlanetariaUniversalInputHorizontal");
+            if (Mathf.Abs(horizontal) < 0.3f)
+            {
+                return 0; // do not rotate
+            }
+            return horizontal > 0 ? +1 : -1;
+        }
+
+        public static float get_primative_accelerate()
+        {
+            float vertical = Input.GetAxisRaw("PlanetariaUniversalInputVertical");
+            float acceleration = Mathf.Abs(vertical); // pressing up/down both accelerate ship (in part, so that inverted axis doesn't matter)
+            return acceleration > 0.3f ? 1 : 0; // acceleration is all or nothing
+        }
+
         /// <summary>
         /// Inspector - Get the input direction based on the virtual reality headset's view direction (or mouse position in Editor mode).
         /// </summary>
@@ -55,50 +72,81 @@ namespace DebrisNoirs
             float target_angle = Vector3.SignedAngle(main_character.up, direction, main_character.forward) * Mathf.Deg2Rad;
             // Distance from satellite to controller (which represents either the head's view direction or the mouse position).
             float target_distance = Vector3.Angle(main_character.forward, main_controller.forward) * Mathf.Deg2Rad;
-            target_distance = Mathf.Clamp01(target_distance/Mathf.PI); // Normalize a distance [0,PI] to range [0,1].
+            target_distance = Mathf.Clamp01((target_distance - 0.03f /*satellite radius, not divided by 2 because Actuator goes twice as far as head movement*/)/0.4f);
             // Return the composite input direction.
             Vector2 input_direction = new Vector2(-Mathf.Sin(target_angle), Mathf.Cos(target_angle)) * target_distance;
             return input_direction;
         }
 
-        public static Vector2 get_axes() // NOTE: This shouldn't be a bottleneck, so the redundancy/inefficiency is fine.
+        public static float get_compound_rotate()
         {
-            Vector2 result;
-            // traditional movement e.g. with a controller or keyboard
-            if (using_primative_axis())
+            if (!main_character || !main_controller)
             {
-                result = get_primative_axes();
-                if (result.sqrMagnitude < 0.01f)
-                {
-                    velocity = Mathf.Clamp01(velocity - acceleration*Time.deltaTime);
-                    return Vector2.zero;
-                }
-                velocity = Mathf.Clamp01(velocity + acceleration*Time.deltaTime);
-                return result.normalized * velocity;
+                main_character = GameObject.FindObjectOfType<Satellite>().gameObject.transform;
+                main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
             }
-            // movement with either neck control (virtual reality) or mouse
-            result = get_compound_axes();
-            if (result.magnitude < 0.03f/2) // hardcoded ship radius
+            Quaternion character_to_controller_rotation = Quaternion.Inverse(main_character.rotation) * main_controller.rotation;
+            if (character_to_controller_rotation.eulerAngles.y <= 5*2) // head rotation less than 5 degrees
             {
-                velocity = Mathf.Clamp01(velocity - acceleration*Time.deltaTime);
-                return Vector2.zero;
+                return 0; // make rotation continuous (with no explicit zero)
             }
-            velocity = Mathf.Clamp01(velocity + acceleration*Time.deltaTime);
-            return result.normalized * velocity;
+            else if (character_to_controller_rotation.eulerAngles.y >= 360 - 5*2)
+            {
+                return 0;
+            }
+            return character_to_controller_rotation.eulerAngles.y > 180 ? +1 : -1; 
         }
 
-        public static Vector2 get_direction()
+        // I had some thoughts on z, x, y unity rotations for Euler angles.
+        // I think this means that if the player's head is tilted, the directions are relative to that (e.g. if you were laying on your side).
+        // For large (or complex) rotations, you might want to remove the x rotation from the acceleration calculations using y Euler angles, but I really don't think it actually matters
+        // I don't think you can play this laying down (unless the Quaternion.Inverse(main_character.rotation) * main_controller.rotation magic works), but I'll try to fix that eventually.
+        public static float get_compound_accelerate()
         {
-            Vector2 result;
+            if (!main_character || !main_controller)
+            {
+                main_character = GameObject.FindObjectOfType<Satellite>().gameObject.transform;
+                main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
+            }
+            Quaternion character_to_controller_rotation = Quaternion.Inverse(main_character.rotation) * main_controller.rotation;
+            if (character_to_controller_rotation.eulerAngles.x <= 5*2) // head rotation less than 5 degrees
+            {
+                return 0;
+            }
+            else if (character_to_controller_rotation.eulerAngles.x >= 360 - 5*2)
+            {
+                return 0;
+            }
+            return +1; // acceleration is all or nothing, and inverted axes don't matter (-1 / reverse isn't possible)
+        }
+
+        public static float get_rotate()
+        {
+            if (time_since_primative_input <= seconds_until_head_control) // using_primative_axis() without accidental double counting (technically one runs in Update(), the other FixedUpdate())
+            {
+                return get_primative_rotate();
+            }
+            return get_compound_rotate();
+        }
+
+        public static float get_accelerate()
+        {
+            if (time_since_primative_input <= seconds_until_head_control) // using_primative_axis() without accidental double counting (technically one runs in Update(), the other FixedUpdate())
+            {
+                return get_primative_accelerate();
+            }
+            return get_compound_accelerate();
+        }
+
+        public static Vector2 get_axes() // NOTE: This shouldn't be a bottleneck, so the redundancy/inefficiency is fine.
+        {
             // traditional movement e.g. with a controller or keyboard
             if (using_primative_axis())
             {
-                result = get_primative_axes();
-                return result.normalized;
+                return get_primative_axes();
             }
             // movement with either neck control (virtual reality) or mouse
-            result = get_compound_axes();
-            return result.normalized;
+            return get_compound_axes();
         }
 
         /// <summary>
@@ -117,13 +165,11 @@ namespace DebrisNoirs
 
         private static Transform main_character;
         private static Transform main_controller;
-        private static float velocity = 0;
         private static float time_since_primative_input = 100;
         private static float time_until_bullet = 0;
 
         private const float bullet_interval = 0.5f/7; // kill debris and its spawn (1+2+4 total) in half second; almost 4x original fire rate (original: 4 bullets at 1.2s, but you could fire every frame (~0.0166666667f) in theory)
         private const float seconds_until_head_control = 20f;
-        private const float acceleration = 2; // derivative of acceleration
     }
 }
 

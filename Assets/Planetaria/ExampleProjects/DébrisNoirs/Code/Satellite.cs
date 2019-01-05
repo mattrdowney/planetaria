@@ -7,6 +7,7 @@ namespace DebrisNoirs
 {
     public class Satellite : MonoBehaviour // HACK: normally I would use PlanetariaMonoBehaviour, but this should drastically improve collision performance
     {
+
         // without aliens, the dominant strategy is mostly staying in place, but eh
         private void OnValidate()
         {
@@ -31,42 +32,92 @@ namespace DebrisNoirs
 
         private void FixedUpdate()
         {
-            if (!dead || dead_time < 0)
+            if (!dead)
             {
-                Vector2 input = DebrisNoirsInput.get_direction();
-                float real_acceleration = Mathf.Min(Mathf.Max(0, fuel - 1), Time.deltaTime) * acceleration;
-                fuel = Mathf.Clamp01(fuel);
-
-                // add velocity based on input
-                planetaria_rigidbody.relative_velocity += input * real_acceleration;
-                Vector2 velocity = planetaria_rigidbody.relative_velocity;
-
-                // drag in coincident direction varies from coefficient of 1->~0.8->~0.5
-                float similarity = Vector2.Dot(velocity.normalized, input);
-                float drag_modifier = Mathf.Lerp(0.6f, 1.0f, (similarity + 1f) / 2);
-                Vector2 coincident_velocity = input != Vector2.zero ? (Vector2)Vector3.Project(velocity, input) : velocity;
-                coincident_velocity *= Mathf.Pow(drag_modifier, Time.deltaTime);
-
-                // get perpendicular velocity (unmodified)
-                Vector2 perpendicular_velocity = input != Vector2.zero ? Vector3.ProjectOnPlane(velocity, input) : Vector3.zero;
-
-                // apply velocity changes
-                planetaria_rigidbody.relative_velocity = coincident_velocity + perpendicular_velocity;
-
-                // apply unusued drag
-                //planetaria_rigidbody.relative_velocity *= Mathf.Pow(0.8f, Time.deltaTime * (1f - input_direction.magnitude));
+                satellite_fixed_update();
+            }
+            else if (dead_time < 0)
+            {
+                ghost_fixed_update();
             }
             else if (dead && dead_time >= 0)
             {
-                planetaria_rigidbody.absolute_velocity *= Mathf.Pow(0.25f, Time.deltaTime);
-                dead_time -= Time.deltaTime;
+                dead_fixed_update();
             }
         }
 
-        private void Update()
+        private void satellite_fixed_update()
         {
-            // apply Sprite rotation (won't be seen unless visible)
-            Vector2 input_direction = DebrisNoirsInput.get_direction();
+            float bearing = (internal_transform.localEulerAngles.z + 90) * Mathf.Deg2Rad;
+            Vector2 input = new Vector2(Mathf.Cos(bearing), Mathf.Sin(bearing)) * DebrisNoirsInput.get_accelerate();
+
+            // add velocity based on input
+            planetaria_rigidbody.relative_velocity += input * Time.fixedDeltaTime;
+            Vector2 velocity = planetaria_rigidbody.relative_velocity;
+
+            // drag in coincident direction varies from coefficient of 1->~0.8->~0.5
+            float similarity = Vector2.Dot(velocity.normalized, input);
+            float drag_modifier = Mathf.Lerp(0.6f, 1.0f, (similarity + 1f) / 2);
+            Vector2 coincident_velocity = input != Vector2.zero ? (Vector2)Vector3.Project(velocity, input) : velocity;
+            coincident_velocity *= Mathf.Pow(drag_modifier, Time.deltaTime);
+
+            // get perpendicular velocity (unmodified)
+            Vector2 perpendicular_velocity = input != Vector2.zero ? Vector3.ProjectOnPlane(velocity, input) : Vector3.zero;
+
+            // apply velocity changes
+            planetaria_rigidbody.relative_velocity = coincident_velocity + perpendicular_velocity;
+
+            // apply unusued drag
+            //planetaria_rigidbody.relative_velocity *= Mathf.Pow(0.8f, Time.deltaTime * (1f - input_direction.magnitude));
+        }
+
+        private void dead_fixed_update()
+        {
+            planetaria_rigidbody.absolute_velocity *= Mathf.Pow(0.25f, Time.deltaTime);
+        }
+
+        private void ghost_fixed_update()
+        {
+            Vector2 input = DebrisNoirsInput.get_axes(); // HACK: double counting inside function call
+
+            // add velocity based on input
+            planetaria_rigidbody.relative_velocity += input;
+            Vector2 velocity = planetaria_rigidbody.relative_velocity;
+
+            // drag in coincident direction varies from coefficient of 1->~0.8->~0.5
+            float similarity = Vector2.Dot(velocity.normalized, input);
+            float drag_modifier = Mathf.Lerp(0.6f, 1.0f, (similarity + 1f) / 2);
+            Vector2 coincident_velocity = input != Vector2.zero ? (Vector2)Vector3.Project(velocity, input) : velocity;
+            coincident_velocity *= Mathf.Pow(drag_modifier, Time.deltaTime);
+
+            // get perpendicular velocity (unmodified)
+            Vector2 perpendicular_velocity = input != Vector2.zero ? Vector3.ProjectOnPlane(velocity, input) : Vector3.zero;
+
+            // apply velocity changes
+            planetaria_rigidbody.relative_velocity = coincident_velocity + perpendicular_velocity;
+
+            // apply unusued drag
+            //planetaria_rigidbody.relative_velocity *= Mathf.Pow(0.8f, Time.deltaTime * (1f - input_direction.magnitude));
+        }
+
+        private void satellite_update()
+        {
+            float rotation_input = DebrisNoirsInput.get_rotate();
+            if (rotation_input != 0)
+            {
+                float current_angle = internal_transform.localEulerAngles.z;
+                internal_transform.localEulerAngles = new Vector3(0, 0, current_angle + rotation_input*Time.deltaTime*180f);
+            }
+        }
+
+        private void dead_update()
+        {
+
+        }
+
+        private void ghost_update()
+        {
+            Vector2 input_direction = DebrisNoirsInput.get_axes();
             if (input_direction.sqrMagnitude > 0)
             {
                 float target_angle = Mathf.Atan2(input_direction.y, input_direction.x) - Mathf.PI/2;
@@ -75,6 +126,22 @@ namespace DebrisNoirs
                 float interpolator = 360 * 3 / delta_angle * Time.deltaTime;
                 float new_angle = Mathf.LerpAngle(current_angle, target_angle * Mathf.Rad2Deg, interpolator);
                 internal_transform.localEulerAngles = new Vector3(0, 0, new_angle);
+            }
+        }
+
+        private void Update()
+        {
+            if (!dead)
+            {
+                satellite_update();
+            }
+            else if (dead_time < 0)
+            {
+                ghost_update();
+            }
+            else if (dead_time >= 0)
+            {
+                dead_update();
             }
 
             if (dead)
@@ -98,7 +165,7 @@ namespace DebrisNoirs
 
         public void OnTriggerEnter(Collider collider)
         {
-            if (!dead) // There's technically a small bug here, where the player can collide with debris that has already collided (with a projectile)
+            if (!dead) // There's technically a small bug here, where the player can collide with debris that has already collided (with a projectile) - wraparound shots are basically impossible, so that would be for a shot on the ~ same frame
             {
                 die();
                 Debris debris = collider.GetComponent<Debris>();

@@ -38,7 +38,7 @@ namespace Planetaria
                     Debug.LogError("Not Implemented"); // TODO: implement
                     break;
                 // Motion controllers (e.g. virtual reality)
-                case InputDevice.Gyroscope:
+                case InputDevice.Gyroscope: // FIXME: the VR tracker goes twice as far as it should; while this is graphically appealing, it has the drawback of being a bug when you get to rotations greater than PI/2
                     internal_transform.rotation = camera_transform.rotation * InputTracking.GetLocalRotation(virtual_reality_tracker_type); // FIXME: HACK:
                     break;
                 // Computer mouse
