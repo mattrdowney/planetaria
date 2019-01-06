@@ -81,7 +81,7 @@ namespace DebrisNoirs
             Vector2 input = DebrisNoirsInput.get_axes(); // HACK: double counting inside function call
 
             // add velocity based on input
-            planetaria_rigidbody.relative_velocity += input;
+            planetaria_rigidbody.relative_velocity += input * Time.deltaTime;
             Vector2 velocity = planetaria_rigidbody.relative_velocity;
 
             // drag in coincident direction varies from coefficient of 1->~0.8->~0.5
@@ -150,10 +150,16 @@ namespace DebrisNoirs
                 {
                     satellite_renderer.enabled = true;
                 }
+                dead_time -= Time.deltaTime;
                 respawn_time += Time.deltaTime;
                 if (DebrisNoirsInput.get_axes().magnitude > 0.3f)
                 {
                     respawn_time = 0;
+                    satellite_renderer.sprite = ghost_sprite;
+                }
+                else
+                {
+                    satellite_renderer.sprite = satellite_sprite; // essentially an OnMouseHover() event where the ship looks like it is alive
                 }
                 loading_disc.fillAmount = respawn_time;
                 if (respawn_time >= 1)

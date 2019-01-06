@@ -23,12 +23,12 @@ namespace DebrisNoirs
             {
                 if (DebrisNoirs.empty())
                 {
-                    int round_difficulty = Mathf.Min(Mathf.CeilToInt(debris_to_spawn / 50f), 3); // give the player 0-5 second break, depending on last round's difficulty 
+                    int round_difficulty = Mathf.Min(Mathf.CeilToInt(debris_to_spawn / 20f), 5); // give the player 0-5 second break, depending on last round's difficulty 
                     for (int cooldown = round_difficulty; cooldown >= 1; cooldown -= 1) // let the player refresh
                     {
                         yield return second_delay; // give the player time to refresh
                     }
-                    debris_to_spawn += Mathf.Max(4 - round_difficulty, 1); // spawn 4, 3...3, 2...2, 1... debris 
+                    debris_to_spawn += 1; // spawn one more debris than last round 
                     for (int countdown = 3; countdown >= 1; countdown -= 1) // print countdown on user interface
                     {
                         text.text = countdown.ToString(); // display countdown

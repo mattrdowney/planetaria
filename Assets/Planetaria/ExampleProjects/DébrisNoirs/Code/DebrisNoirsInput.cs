@@ -37,17 +37,17 @@ namespace DebrisNoirs
 
         public static float get_primative_rotate()
         {
-            float horizontal = Input.GetAxisRaw("PlanetariaUniversalInputHorizontal");
-            if (Mathf.Abs(horizontal) < 0.3f)
+            float horizontal = Input.GetAxis("PlanetariaUniversalInputHorizontal");
+            if (horizontal > 0)
             {
-                return 0; // do not rotate
+                return +Mathf.Clamp01(Mathf.Pow(2*horizontal, 2));
             }
-            return horizontal > 0 ? +1 : -1;
+            return -Mathf.Clamp01(Mathf.Pow(2*Mathf.Abs(horizontal), 2)); // yeah, the Abs() call is unnecessary
         }
 
         public static float get_primative_accelerate()
         {
-            float vertical = Input.GetAxisRaw("PlanetariaUniversalInputVertical");
+            float vertical = Input.GetAxis("PlanetariaUniversalInputVertical");
             float acceleration = Mathf.Abs(vertical); // pressing up/down both accelerate ship (in part, so that inverted axis doesn't matter)
             return acceleration > 0.3f ? 1 : 0; // acceleration is all or nothing
         }
@@ -86,15 +86,11 @@ namespace DebrisNoirs
                 main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
             }
             Quaternion character_to_controller_rotation = Quaternion.Inverse(main_character.rotation) * main_controller.rotation;
-            if (character_to_controller_rotation.eulerAngles.y <= 5*2) // head rotation less than 5 degrees
+            if (character_to_controller_rotation.eulerAngles.y > 180) // positive rotation
             {
-                return 0; // make rotation continuous (with no explicit zero)
+                return +Mathf.Clamp01(Mathf.Pow((360 - character_to_controller_rotation.eulerAngles.y)/(2*5f), 2));
             }
-            else if (character_to_controller_rotation.eulerAngles.y >= 360 - 5*2)
-            {
-                return 0;
-            }
-            return character_to_controller_rotation.eulerAngles.y > 180 ? +1 : -1; 
+            return -Mathf.Clamp01(Mathf.Pow((character_to_controller_rotation.eulerAngles.y)/(2*5f), 2)); // negative rotation
         }
 
         // I had some thoughts on z, x, y unity rotations for Euler angles.
