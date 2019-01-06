@@ -25,13 +25,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6156207878381848887}
-  m_LocalRotation: {x: 1, y: -0, z: -0, w: 0}
+  m_LocalRotation: {x: -1, y: -0.0000001872535, z: -0.0000001872535, w: -3.5063874e-14}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -180, y: -0.000015258789, z: -0.000015258789}
 --- !u!114 &6156207878381848873
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -48,8 +48,10 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 0}
   round: 0
+  debris_to_spawn: 0
   large_debris: {fileID: 32, guid: 8627fecc27453de42ac3e4bedb216c9a, type: 3}
   text: {fileID: 0}
+  satellite: {fileID: 0}
 --- !u!114 &6156207878381848886
 MonoBehaviour:
   m_ObjectHideFlags: 0

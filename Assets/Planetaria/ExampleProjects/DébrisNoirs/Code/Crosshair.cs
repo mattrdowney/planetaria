@@ -31,7 +31,7 @@ namespace DebrisNoirs
             Vector3 crosshair_up = Bearing.repeller(controller_position, character_position);
 
             crosshair_renderer.angle = Vector3.SignedAngle(main_controller.up, crosshair_up, main_controller.forward) * Mathf.Deg2Rad;
-            crosshair_renderer.scale = Mathf.Lerp(crosshair_size/2, crosshair_size, satellite.get_fuel());
+            crosshair_renderer.scale = Mathf.Lerp(crosshair_size/2, crosshair_size, satellite.acceleration_direction().magnitude);
         }
 
         protected override void OnConstruction() { }

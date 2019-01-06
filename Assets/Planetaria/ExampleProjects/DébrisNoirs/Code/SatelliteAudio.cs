@@ -17,15 +17,15 @@ namespace DebrisNoirs
 
         private void Update()
         {
-            if (satellite.life() == 0)
+            if (!satellite.alive())
             {
                 //thruster_force = Mathf.Max(0, thruster_force - Time.deltaTime*2f);
                 thruster_force *= Mathf.Pow(0.1f, Time.deltaTime); // works better with logarithmically-perceived scale for hearing
                 return;
             }
-            player_life = satellite.life();
+            player_life = satellite.alive() ? 1 : 0;
             Vector2 player_velocity = satellite_rigidbody.relative_velocity;
-            Vector2 player_acceleration = DebrisNoirsInput.get_axes();
+            Vector2 player_acceleration = satellite.acceleration_direction();
             float next_thruster_force = Mathf.Lerp(minimum_volume_multiplier, 1, player_acceleration.magnitude);
             if (next_thruster_force > thruster_force)
             {
@@ -81,7 +81,7 @@ namespace DebrisNoirs
         private PlanetariaRigidbody satellite_rigidbody;
         private bool player_dead;
 
-        private const float volume = 0.025f;
+        private const float volume = 0.015f;
         private const float minimum_volume_multiplier = 0.5f;
         private const float thruster_variance_multiplier = 2f; // does not include original (1)
         private float thruster_force;

@@ -22,7 +22,7 @@ namespace DebrisNoirs
             Vector3 rail_position = turret.forward;
             Vector3 bullet_direction = turret.up;
             
-            if (DebrisNoirsInput.firing() && satellite.life() == 1) // if firing and not dead
+            if (DebrisNoirsInput.firing() && satellite.alive()) // if firing and not dead
             {
                 PlanetariaGameObject.Instantiate(projectile, rail_position, bullet_direction);
             }

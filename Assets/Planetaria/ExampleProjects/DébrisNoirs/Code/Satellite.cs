@@ -27,7 +27,7 @@ namespace DebrisNoirs
         {
             stopwatch = GameObject.FindObjectOfType<ScoreKeeper>();
             debris_spawner = GameObject.FindObjectOfType<DebrisSpawner>();
-            loading_disc = GameObject.FindObjectOfType<Image>();
+            loading_disc = GameObject.Find("LoadingDisc").GetComponent<Image>();
         }
 
         private void FixedUpdate()
@@ -151,7 +151,7 @@ namespace DebrisNoirs
                     satellite_renderer.enabled = true;
                 }
                 dead_time -= Time.deltaTime;
-                respawn_time += Time.deltaTime;
+                respawn_time += Time.deltaTime/2;
                 if (DebrisNoirsInput.get_axes().magnitude > 0.3f)
                 {
                     respawn_time = 0;
@@ -191,22 +191,25 @@ namespace DebrisNoirs
             satellite_renderer.sprite = ghost_sprite;
         }
 
-        public float get_fuel()
+        public bool alive()
         {
-            return fuel;
+            return !dead;
         }
 
-        public float life()
+        public Vector2 acceleration_direction()
         {
-            if (!dead)
+            float current_angle = internal_transform.localEulerAngles.z;
+            Vector2 direction = new Vector2(Mathf.Cos(current_angle*Mathf.Deg2Rad), Mathf.Sin(current_angle*Mathf.Deg2Rad));
+            if (DebrisNoirsInput.get_accelerate() == 1)
             {
-                return 1;
+                fuel += Time.deltaTime;
             }
-            else if (dead && dead_time >= 0)
+            else
             {
-                return 0;
+                fuel -= Time.deltaTime;
             }
-            return 0.25f;
+            fuel = Mathf.Clamp01(fuel);
+            return direction * fuel;
         }
 
         private void respawn()
@@ -238,8 +241,8 @@ namespace DebrisNoirs
 
         [NonSerialized] private float horizontal;
         [NonSerialized] private float vertical;
-        [NonSerialized] private float fuel;
 
+        float fuel = 0;
         [NonSerialized] private bool dead = false;
         [NonSerialized] private float dead_time = 0;
         [NonSerialized] private float respawn_time = 0;

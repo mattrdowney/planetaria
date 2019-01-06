@@ -44,23 +44,8 @@ namespace Planetaria
         [MenuItem("Planetaria/Generate Planetaria Input Manager Controls")]
         public static void setup_planetaria_inputs()
         {
-            // add common keyboard layouts
-            add_keyboard_axes(KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D);
-            add_keyboard_axes(KeyCode.T, KeyCode.F, KeyCode.G, KeyCode.H);
-            add_keyboard_axes(KeyCode.I, KeyCode.J, KeyCode.K, KeyCode.L);
-            add_keyboard_axes(KeyCode.UpArrow, KeyCode.LeftArrow, KeyCode.DownArrow, KeyCode.RightArrow);
-            add_keyboard_axes(KeyCode.Keypad8, KeyCode.Keypad4, KeyCode.Keypad2, KeyCode.Keypad6);
-
-             // add common controller buttons
-            add_keyboard_axes(KeyCode.JoystickButton3, KeyCode.JoystickButton2, KeyCode.JoystickButton0, KeyCode.JoystickButton1);
-            add_keyboard_axes(KeyCode.JoystickButton19, KeyCode.JoystickButton18, KeyCode.JoystickButton16, KeyCode.JoystickButton17);
-
-            // add common controller dpad
-            add_keyboard_axes(KeyCode.JoystickButton5, KeyCode.JoystickButton7, KeyCode.JoystickButton6, KeyCode.JoystickButton8);
-            add_keyboard_axes(KeyCode.JoystickButton13, KeyCode.JoystickButton11, KeyCode.JoystickButton14, KeyCode.JoystickButton12);
-
             // Add joystick axes
-            add_horizontal_joystick_axis(UnityAxisIdentity.XAxis);
+            /*add_horizontal_joystick_axis(UnityAxisIdentity.XAxis);
             add_vertical_joystick_axis(UnityAxisIdentity.YAxis);
             add_vertical_joystick_axis(UnityAxisIdentity.Axis3); // HACK: due to design constraints (certain controllers overlap) - add third axis (even if 3/4 are rotated on some controllers)
             add_horizontal_joystick_axis(UnityAxisIdentity.Axis4);
@@ -69,6 +54,22 @@ namespace Planetaria
             add_horizontal_joystick_axis(UnityAxisIdentity.Axis6);
             add_vertical_joystick_axis(UnityAxisIdentity.Axis7);
             add_horizontal_joystick_axis(UnityAxisIdentity.Axis8); // HACK: due to design constraints (certain controllers overlap) - add third axis (even if 7/8 are rotated on some controllers)
+            */
+             // add common keyboard layouts
+            add_keyboard_axes(KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D);
+            add_keyboard_axes(KeyCode.T, KeyCode.F, KeyCode.G, KeyCode.H);
+            add_keyboard_axes(KeyCode.I, KeyCode.J, KeyCode.K, KeyCode.L);
+            add_keyboard_axes(KeyCode.UpArrow, KeyCode.LeftArrow, KeyCode.DownArrow, KeyCode.RightArrow);
+            add_keyboard_axes(KeyCode.Keypad8, KeyCode.Keypad4, KeyCode.Keypad2, KeyCode.Keypad6);
+
+             // add common controller buttons
+            //add_keyboard_axes(KeyCode.JoystickButton3, KeyCode.JoystickButton2, KeyCode.JoystickButton0, KeyCode.JoystickButton1);
+            //add_keyboard_axes(KeyCode.JoystickButton19, KeyCode.JoystickButton18, KeyCode.JoystickButton16, KeyCode.JoystickButton17);
+
+            // add common controller dpad
+            //add_keyboard_axes(KeyCode.JoystickButton5, KeyCode.JoystickButton7, KeyCode.JoystickButton6, KeyCode.JoystickButton8);
+            //add_keyboard_axes(KeyCode.JoystickButton13, KeyCode.JoystickButton11, KeyCode.JoystickButton14, KeyCode.JoystickButton12);
+
         }
         private static SerializedProperty get_child_property(SerializedProperty parent, string name)
         {
