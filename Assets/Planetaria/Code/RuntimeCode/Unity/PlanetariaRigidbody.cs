@@ -104,7 +104,7 @@ namespace Planetaria
             transform.position = next_position;
             velocity = next_velocity.normalized * velocity.magnitude; // FIXME: I thought this was numerically stable, but it seems to create more energy.
             //velocity = Vector3.ProjectOnPlane(velocity, get_position()); // TODO: CONSIDER: ensure velocity and position are orthogonal - they seem to desynchronize
-            Debug.DrawRay(get_position(), velocity, Color.green); // draw new velocity (not old one)
+            //Debug.DrawRay(get_position(), velocity, Color.green); // draw new velocity (not old one)
         }
 
         private void grounded_position()

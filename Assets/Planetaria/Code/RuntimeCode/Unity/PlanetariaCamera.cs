@@ -33,7 +33,7 @@ namespace Planetaria
                 internal_camera = Miscellaneous.GetOrAddComponent<Camera>(camera_object);
             }
             XRDevice.SetTrackingSpaceType(TrackingSpaceType.Stationary);
-            dolly_transform.position = Vector3.forward * zoom;
+            dolly_transform.localPosition = Vector3.forward * zoom;
             dolly_transform.localScale = Vector3.zero; // sets interpupillary  distance (IPD) to zero so there is no eye distance and therefore no depth // TODO: I thought there was something wrong with this
             initialize_camera(internal_camera, new Rect(0, 0, 1, 1), 1);
         }
@@ -53,10 +53,23 @@ namespace Planetaria
             }
         }
 
+        public float zoom
+        {
+            get
+            {
+                return zoom_variable;
+            }
+            set
+            {
+                zoom_variable = value;
+                dolly_transform.localPosition = Vector3.forward * value;
+            }
+        }
+
         public const float near_clip_plane = 0.0078125f;
         public const float far_clip_plane = 2.0f;
         
-        [SerializeField] public float zoom = 0;
+        [SerializeField] private float zoom_variable = 0;
         [SerializeField] [HideInInspector] private Transform dolly_transform;
         [SerializeField] [HideInInspector] private Camera internal_camera;
     }

@@ -8,7 +8,7 @@ namespace Planetaria
     {
         public OctahedronPlanetarium(int resolution)
         {
-            material = new Material(Shader.Find("Planetaria/Transparent Always"));
+            material = new Material(Shader.Find("Sprites/Default"));
             texture = new Texture2D(resolution, resolution);
             material.SetTexture("_MainTex", texture);
             List<Vector2> uvs = get_texture_uvs(texture.width);

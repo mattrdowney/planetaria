@@ -23,17 +23,17 @@ namespace Planetaria
 
         private void OnGUI()
         {
-            if (GUILayout.Button("Image to convert"))
+            if (GUILayout.Button("Image(s) to convert"))
             {
-                from_file_name = EditorUtility.OpenFilePanel("PNG to convert", "Assets/Planetaria/ExampleProjects/DébrisNoirs/Art/Textures", "png,jpg,exr"); // TODO: multiple types
+                from_file_name = EditorUtility.OpenFilePanel("PNG to convert", "Assets/Planetaria/ExampleProjects/DébrisNoirs/Art/Textures", "mat"); // TODO: multiple types
                 from_file_name = from_file_name.Substring(0, from_file_name.Length-4);
                 // this is an editor tool, so the following is fine:
                 int clip_index = from_file_name.IndexOf("Assets/");
                 from_file_name = from_file_name.Substring(clip_index);
             }
-            if (GUILayout.Button("Generated PNG filename"))
+            if (GUILayout.Button("Generated PNG(s) filename"))
             {
-                to_file_name = EditorUtility.SaveFilePanel("Generated PNG filename", "Assets/Planetaria/ExampleProjects/DébrisNoirs/Art/Textures", "output_file", "png"); // TODO: multiple types and use output in conversion
+                to_file_name = EditorUtility.SaveFilePanel("Generated PNG filename", "Assets/Planetaria/ExampleProjects/DébrisNoirs/Art/Textures", "output_file", "png"); // TODO: multiple types and use output in conversion // FIXME: HACK: trying to make deadlines
                 to_file_name = to_file_name.Substring(0, to_file_name.Length-4);
                 // this is an editor tool, so the following is fine:
                 int clip_index = to_file_name.IndexOf("Assets/");

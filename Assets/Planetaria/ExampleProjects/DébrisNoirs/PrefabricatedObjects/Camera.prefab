@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7054274644999161774}
   - component: {fileID: 7054274644999161775}
-  - component: {fileID: 7054274644999161773}
   m_Layer: 0
   m_Name: __Camera
   m_TagString: Untagged
@@ -41,8 +40,8 @@ Camera:
   m_GameObject: {fileID: 7054274644999161776}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
@@ -56,7 +55,7 @@ Camera:
     height: 1
   near clip plane: 0.01
   far clip plane: 2
-  field of view: 131
+  field of view: 100
   orthographic: 0
   orthographic size: 5
   m_Depth: 1
@@ -74,15 +73,6 @@ Camera:
   m_OcclusionCulling: 0
   m_StereoConvergence: 0.01
   m_StereoSeparation: 0
---- !u!45 &7054274644999161773
-Skybox:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7054274644999161776}
-  m_Enabled: 1
-  m_CustomSkybox: {fileID: 2100000, guid: 2d056ac30ecc9e542b26e06133f23602, type: 2}
 --- !u!1 &7054274645701459783
 GameObject:
   m_ObjectHideFlags: 0
@@ -108,7 +98,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7054274645701459783}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.99}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 7054274644999161774}
@@ -222,6 +212,6 @@ MonoBehaviour:
   initialized: 0
   game_object_variable:
     game_object_variable: {fileID: 0}
-  zoom: 0
+  zoom_variable: -0.99
   dolly_transform: {fileID: 7054274645701459782}
   internal_camera: {fileID: 7054274644999161775}

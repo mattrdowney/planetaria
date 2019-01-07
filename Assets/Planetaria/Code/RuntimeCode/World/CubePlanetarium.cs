@@ -64,13 +64,13 @@ namespace Planetaria
             {
                 return new optional<CubePlanetarium>();
             }
-            Texture2D texture = WorldPlanetarium.load_texture(file_name);
-            CubePlanetarium result = new CubePlanetarium(texture.width);
+            int size = material.data.GetTexture(directions[0]).width;
+            CubePlanetarium result = new CubePlanetarium(size);
             result.material = material.data;
             for (int face = 0; face < directions.Length; ++face)
             {
+                Texture2D texture = (Texture2D) material.data.GetTexture(directions[face]);
                 result.textures[face] = texture;
-                result.material.SetTexture(directions[face], texture); // TODO: this step (including other files) should not be necessary in load, right?
             }
             return result;
         }
