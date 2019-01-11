@@ -69,7 +69,6 @@ namespace DebrisNoirs
         }
 
         private static WaitForSeconds second_delay = new WaitForSeconds(1f);
-        private static WaitForSeconds five_second_delay = new WaitForSeconds(5f);
 
         public int round = 0;
         public int debris_to_spawn = 0;

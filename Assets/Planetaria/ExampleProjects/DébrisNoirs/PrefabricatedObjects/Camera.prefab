@@ -24,7 +24,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7054274644999161776}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -55,7 +55,7 @@ Camera:
     height: 1
   near clip plane: 0.01
   far clip plane: 2
-  field of view: 100
+  field of view: 70
   orthographic: 0
   orthographic size: 5
   m_Depth: 1
@@ -125,7 +125,7 @@ GameObject:
   - component: {fileID: 7054274646531611478}
   - component: {fileID: 7054274646531611475}
   - component: {fileID: 7054274646531611477}
-  - component: {fileID: 7054274646531611479}
+  - component: {fileID: 3011443238135149587}
   m_Layer: 0
   m_Name: Camera
   m_TagString: MainCamera
@@ -197,7 +197,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 0}
   target: {fileID: 0}
---- !u!114 &7054274646531611479
+--- !u!114 &3011443238135149587
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

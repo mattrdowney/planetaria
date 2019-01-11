@@ -772,6 +772,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Camera
       objectReference: {fileID: 0}
+    - target: {fileID: 7054274644999161775, guid: 2eea8fc6477a5f94eaaf46194cc11d6e,
+        type: 3}
+      propertyPath: near clip plane
+      value: 0.01
+      objectReference: {fileID: 0}
     - target: {fileID: 7054274646531611476, guid: 2eea8fc6477a5f94eaaf46194cc11d6e,
         type: 3}
       propertyPath: m_LocalPosition.x
