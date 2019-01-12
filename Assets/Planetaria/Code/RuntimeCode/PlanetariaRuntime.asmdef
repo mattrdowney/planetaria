@@ -1,3 +1,14 @@
-﻿{
-	"name": "Planetaria"
+{
+    "name": "Planetaria",
+    "references": [
+        "Unity.Entities"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
 }
