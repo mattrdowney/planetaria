@@ -4,13 +4,18 @@ using UnityEngine;
 namespace Planetaria
 {
     [Serializable]
-    public class PlanetariaTransformData : MonoBehaviour // TODO: breakout into PlanetariaTransformPosition, PlanetariaTransformDirection, PlanetariaTransformScale
+    public class PlanetariaRigidbodyData : MonoBehaviour
     {
-        bool dirty;
-        [SerializeField] private Vector3 position;
-        [SerializeField] private Vector3 direction;
-        //[SerializeField] private Quaternion rotation; // implicitly held in UnityEngine.Transform and represents both PlanetariaTransform.position and PlanetariaTransform.direction but you can't efficiently change the Transform like that
-        [SerializeField] private float scale;
+        [SerializeField] public Vector3 previous_position; // magnitude = 1
+        [SerializeField] public Vector3 velocity; // magnitude in [0, infinity]
+        [SerializeField] public Vector3 acceleration; // magnitude in [0, infinity]
+
+        [SerializeField] public Vector3 gravity; // magnitude in [0, infinity]
+        
+        [SerializeField] public float horizontal_velocity;
+        [SerializeField] public float vertical_velocity;
+        [SerializeField] public float horizontal_acceleration;
+        [SerializeField] public float vertical_acceleration;
     }
 }
 

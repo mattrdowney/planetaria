@@ -161,11 +161,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4436393650129868}
-  - component: {fileID: 114619850148445896}
+  - component: {fileID: 903410360747864518}
+  - component: {fileID: 5461219452727760430}
   - component: {fileID: 114502162093895280}
-  - component: {fileID: 114556726867480252}
   - component: {fileID: 54852974177452380}
+  - component: {fileID: 9189657053456025267}
+  - component: {fileID: 114556726867480252}
   - component: {fileID: 7252158268403498653}
+  - component: {fileID: 114619850148445896}
   - component: {fileID: 2008140876}
   - component: {fileID: 2008140875}
   m_Layer: 8
@@ -190,6 +193,120 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &903410360747864518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1996407451135126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bf10cdea1344482e91a4f2b58506b77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5461219452727760430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1996407451135126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d97900649f3bb374aafb354fa4235789, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  position_dirty: 0
+  direction_dirty: 0
+  scale_dirty: 0
+  position: {x: 0, y: 0, z: 0}
+  direction: {x: 0, y: 0, z: 0}
+  scale: 0
+--- !u!114 &114502162093895280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1996407451135126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48d2cae72ee207743b9de842f4f0663d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialized: 0
+  game_object_variable:
+    game_object_variable: {fileID: 1996407451135126}
+  internal_transform: {fileID: 4436393650129868}
+  scale_variable: 0.03
+--- !u!54 &54852974177452380
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1996407451135126}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!114 &9189657053456025267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1996407451135126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56b6c21ceda27e74a9b26c57e1c049d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  previous_position: {x: 0, y: 0, z: 0}
+  velocity: {x: 0, y: 0, z: 0}
+  acceleration: {x: 0, y: 0, z: 0}
+  gravity: {x: 0, y: 0, z: 0}
+  horizontal_velocity: 0
+  vertical_velocity: 0
+  horizontal_acceleration: 0
+  vertical_acceleration: 0
+--- !u!114 &114556726867480252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1996407451135126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f906fac2cef965442b20471bfb3d9e14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialized: 0
+  game_object_variable:
+    game_object_variable: {fileID: 1996407451135126}
+  planetaria_rigidbody_data: {fileID: 0}
+  internal_transform: {fileID: 4436393650129868}
+  internal_rigidbody: {fileID: 54852974177452380}
+--- !u!135 &7252158268403498653
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1996407451135126}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.030004663
+  m_Center: {x: 0, y: 0.00000011795041, z: 1.00045}
 --- !u!114 &114619850148445896
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -214,70 +331,6 @@ MonoBehaviour:
   stopwatch: {fileID: 0}
   debris_spawner: {fileID: 0}
   loading_disc: {fileID: 0}
---- !u!114 &114502162093895280
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1996407451135126}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 48d2cae72ee207743b9de842f4f0663d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initialized: 0
-  game_object_variable:
-    game_object_variable: {fileID: 1996407451135126}
-  internal_transform: {fileID: 4436393650129868}
-  scale_variable: 0.03
---- !u!114 &114556726867480252
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1996407451135126}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f906fac2cef965442b20471bfb3d9e14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initialized: 0
-  game_object_variable:
-    game_object_variable: {fileID: 1996407451135126}
-  gravity: {x: 0, y: 0, z: 0}
-  internal_transform: {fileID: 4436393650129868}
-  internal_rigidbody: {fileID: 54852974177452380}
---- !u!54 &54852974177452380
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1996407451135126}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
---- !u!135 &7252158268403498653
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1996407451135126}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.030004663
-  m_Center: {x: 0, y: 0.00000011795041, z: 1.00045}
 --- !u!82 &2008140876
 AudioSource:
   m_ObjectHideFlags: 0

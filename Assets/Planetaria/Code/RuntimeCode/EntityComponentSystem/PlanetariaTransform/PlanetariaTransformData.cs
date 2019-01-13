@@ -1,17 +1,20 @@
-﻿using UnityEngine;
-using Unity.Entities;
+﻿using System;
+using UnityEngine;
 
 namespace Planetaria
 {
-    public class PlanetariaTransformSystem : ComponentSystem
+    [Serializable]
+    public class PlanetariaTransformData : MonoBehaviour // TODO: breakout into PlanetariaTransformPosition, PlanetariaTransformDirection, PlanetariaTransformScale
     {
-        protected override void OnUpdate()
-        {
-            foreach (PlanetariaTransformComponent component in GetEntities<PlanetariaTransformComponent>())
-            {
-                
-            }
-        }
+        //[SerializeField] private Quaternion rotation; // implicitly held in UnityEngine.Transform and represents both PlanetariaTransform.position and PlanetariaTransform.direction but you can't efficiently change the Transform like that
+        
+        [SerializeField] public bool position_dirty;
+        [SerializeField] public bool direction_dirty;
+        [SerializeField] public bool scale_dirty;
+
+        [SerializeField] public Vector3 position;
+        [SerializeField] public Vector3 direction;
+        [SerializeField] public float scale;
     }
 }
 
