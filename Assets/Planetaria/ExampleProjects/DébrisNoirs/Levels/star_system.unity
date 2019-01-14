@@ -265,6 +265,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 578224435}
   internal_transform: {fileID: 578224438}
+  planetaria_transform_data: {fileID: 0}
   scale_variable: 0
 --- !u!4 &578224438
 Transform:
@@ -398,11 +399,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4584826260821757503, guid: f92a169b5d70b8c448b25dacca9343c1,
-        type: 3}
-      propertyPath: m_Camera
-      value: 
-      objectReference: {fileID: 1497217505}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f92a169b5d70b8c448b25dacca9343c1, type: 3}
 --- !u!1001 &899376987
@@ -539,12 +535,6 @@ Transform:
   m_Father: {fileID: 578224438}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!20 &1497217505 stripped
-Camera:
-  m_CorrespondingSourceObject: {fileID: 7054274644999161775, guid: 2eea8fc6477a5f94eaaf46194cc11d6e,
-    type: 3}
-  m_PrefabInstance: {fileID: 2110940770}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1539007697
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -771,11 +761,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Camera
-      objectReference: {fileID: 0}
-    - target: {fileID: 7054274644999161775, guid: 2eea8fc6477a5f94eaaf46194cc11d6e,
-        type: 3}
-      propertyPath: near clip plane
-      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 7054274646531611476, guid: 2eea8fc6477a5f94eaaf46194cc11d6e,
         type: 3}

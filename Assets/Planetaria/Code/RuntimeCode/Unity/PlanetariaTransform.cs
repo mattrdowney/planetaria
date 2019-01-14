@@ -33,6 +33,11 @@ namespace Planetaria
             {
                 internal_renderer = internal_transform.GetComponent<PlanetariaRenderer>();
             }
+            if (planetaria_transform_data == null)
+            {
+                planetaria_transform_data = Miscellaneous.GetOrAddComponent<PlanetariaTransformData>(internal_transform);
+            }
+            planetaria_transform_data.position = internal_transform.forward;
         }
 
         // Properties
@@ -117,23 +122,11 @@ namespace Planetaria
         {
             get
             {
-                return internal_transform.forward;
+                return planetaria_transform_data.position;
             }
             set
             {
-                Vector3 current_position = internal_transform.forward;
-                Vector3 next_position = value;
-                if (current_position != next_position)
-                {
-                    Vector3 last_velocity = Bearing.attractor(current_position, next_position);
-                    Vector3 velocity = Bearing.repeller(next_position, current_position);
-                    Quaternion last_rotation = Quaternion.LookRotation(current_position, last_velocity);
-                    Quaternion rotation = Quaternion.LookRotation(next_position, velocity);
-                    Vector3 old_direction = gameObject.internal_game_object.transform.up;
-                    Vector3 relative_direction = Quaternion.Inverse(last_rotation) * old_direction;
-                    Vector3 next_direction = rotation * relative_direction;
-                    internal_transform.rotation = Quaternion.LookRotation(next_position, next_direction);
-                }
+                planetaria_transform_data.position = value;
             }
         }
 
@@ -254,6 +247,7 @@ namespace Planetaria
         // CONSIDER: implement Translate() ?
 
         [SerializeField] [HideInInspector] private Transform internal_transform;
+        [SerializeField] [HideInInspector] private PlanetariaTransformData planetaria_transform_data;
         [SerializeField] [HideInInspector] private optional<PlanetariaCollider> internal_collider; // Observer pattern would be more elegant but slower
         [SerializeField] [HideInInspector] private optional<PlanetariaRenderer> internal_renderer;
         [SerializeField] [HideInInspector] private optional<PlanetariaRigidbody> internal_rigidbody; // FIXME: implement
