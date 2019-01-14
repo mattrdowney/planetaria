@@ -5,7 +5,7 @@ namespace Planetaria
     struct PlanetariaRigidbodyComponent
     {
         public PlanetariaRigidbodyData planetaria_rigidbody_data;
-        public Transform transform;
+        public PlanetariaTransformData planetaria_transform_data;
     }
 }
 

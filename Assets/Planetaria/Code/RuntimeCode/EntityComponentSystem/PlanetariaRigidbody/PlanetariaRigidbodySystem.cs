@@ -13,7 +13,7 @@ namespace Planetaria
         {
             foreach (PlanetariaRigidbodyComponent component in GetEntities<PlanetariaRigidbodyComponent>())
             {
-                component.planetaria_rigidbody_data.previous_position = component.transform.position;
+                component.planetaria_rigidbody_data.previous_position = component.planetaria_transform_data.position;
                 /*
                 if (observer.exists && observer.data.colliding()) // grounded
                 {
@@ -49,14 +49,15 @@ namespace Planetaria
         private void aerial_move(PlanetariaRigidbodyComponent component, float delta)
         {
             //x_axis * Mathf.Cos(radians) + y_axis * Mathf.Sin(radians);
-            Vector3 current_position = component.transform.position;
+            Vector3 current_position = component.planetaria_transform_data.position;
             Vector3 current_velocity = component.planetaria_rigidbody_data.velocity;
             float x = Mathf.Cos(delta);
             float y = Mathf.Sin(delta);
             Vector3 next_position = current_position*x + current_velocity.normalized*y; // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
             Vector3 next_velocity = current_position*y + current_velocity.normalized*x; // inverse to get derivative; you want to compute the position at (delta + PI/2) not (delta) 
             
-            component.transform.position = next_position;
+            component.planetaria_transform_data.position = next_position;
+            component.planetaria_transform_data.position_dirty = true;
             component.planetaria_rigidbody_data.velocity = next_velocity.normalized * component.planetaria_rigidbody_data.velocity.magnitude; // FIXME: I thought this was numerically stable, but it seems to create more energy.
             //velocity = Vector3.ProjectOnPlane(velocity, get_position()); // TODO: CONSIDER: ensure velocity and position are orthogonal - they seem to desynchronize
             //Debug.DrawRay(get_position(), velocity, Color.green); // draw new velocity (not old one)
@@ -66,7 +67,7 @@ namespace Planetaria
         {
             if (component.planetaria_rigidbody_data.gravity != Vector3.zero)
             {
-                return Vector3.ProjectOnPlane(component.planetaria_rigidbody_data.gravity.normalized, component.transform.position) * component.planetaria_rigidbody_data.gravity.magnitude;
+                return Vector3.ProjectOnPlane(component.planetaria_rigidbody_data.gravity.normalized, component.planetaria_transform_data.position) * component.planetaria_rigidbody_data.gravity.magnitude;
             }
             return Vector3.zero;
         }

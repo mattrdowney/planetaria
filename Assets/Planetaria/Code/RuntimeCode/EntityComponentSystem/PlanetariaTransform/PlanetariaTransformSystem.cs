@@ -23,12 +23,12 @@ namespace Planetaria
                         Vector3 old_direction = component.transform.up;
                         Vector3 relative_direction = Quaternion.Inverse(last_rotation) * old_direction;
                         Vector3 next_direction = rotation * relative_direction;
-                        component.transform.rotation = Quaternion.LookRotation(next_position, next_direction);
+                        component.transform.localRotation = Quaternion.LookRotation(next_position, next_direction);
                     }
                     else
                     {
                         Vector3 next_direction = component.planetaria_transform_data.direction;
-                        component.transform.rotation = Quaternion.LookRotation(next_position, next_direction);
+                        component.transform.localRotation = Quaternion.LookRotation(next_position, next_direction);
                     }
                     component.planetaria_transform_data.position_dirty = false;
                     component.planetaria_transform_data.direction_dirty = false;
