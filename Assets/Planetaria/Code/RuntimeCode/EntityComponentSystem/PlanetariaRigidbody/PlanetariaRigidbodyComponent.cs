@@ -6,6 +6,7 @@ namespace Planetaria
     {
         public PlanetariaRigidbodyData planetaria_rigidbody_data;
         public PlanetariaTransformData planetaria_transform_data;
+        public Transform transform;
     }
 }
 
