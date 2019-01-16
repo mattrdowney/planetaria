@@ -7,6 +7,7 @@ namespace Planetaria
     [UpdateBefore(typeof(FixedUpdate))] // TODO: verify this compiles as intended
     [UpdateBefore(typeof(Rigidbody))]
     [UpdateBefore(typeof(PlanetariaTransform))]
+    [UpdateAfter(typeof(PlanetariaRigidbody))]
     public class PlanetariaRigidbodySystem : ComponentSystem
     {
         protected override void OnUpdate()

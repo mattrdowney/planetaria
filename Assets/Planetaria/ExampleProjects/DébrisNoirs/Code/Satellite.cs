@@ -226,7 +226,6 @@ namespace DebrisNoirs
 
         [SerializeField] public Sprite satellite_sprite;
         [SerializeField] public Sprite ghost_sprite;
-        [SerializeField] private float acceleration = 2f;
         
         [SerializeField] private Transform internal_transform;
         [SerializeField] private PlanetariaTransform planetaria_transform;

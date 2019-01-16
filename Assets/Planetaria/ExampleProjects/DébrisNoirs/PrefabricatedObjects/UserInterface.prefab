@@ -167,8 +167,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4584826260821757496}
-  - component: {fileID: 7794974674675939967}
-  - component: {fileID: 4584826260821757499}
   - component: {fileID: 4584826260821757503}
   - component: {fileID: 4584826260821757502}
   - component: {fileID: 4584826260821757501}
@@ -204,42 +202,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &7794974674675939967
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4584826260821757500}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d97900649f3bb374aafb354fa4235789, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  position_dirty: 0
-  direction_dirty: 0
-  scale_dirty: 0
-  position: {x: 0, y: 0, z: 0}
-  direction: {x: 0, y: 0, z: 0}
-  scale: 0
---- !u!114 &4584826260821757499
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4584826260821757500}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 48d2cae72ee207743b9de842f4f0663d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initialized: 0
-  game_object_variable:
-    game_object_variable: {fileID: 4584826260821757500}
-  internal_transform: {fileID: 4584826260821757496}
-  planetaria_transform_data: {fileID: 0}
-  scale_variable: 0
 --- !u!223 &4584826260821757503
 Canvas:
   m_ObjectHideFlags: 0
@@ -312,9 +274,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cef1459bd431fd45a6e9f2e3fef7afc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialized: 0
-  game_object_variable:
-    game_object_variable: {fileID: 4584826260821757500}
   player_score_text: {fileID: 4584826260323357255}
   highscore_text: {fileID: 4584826260864751629}
 --- !u!1 &4584826260864751619

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Planetaria
+﻿namespace Planetaria
 {
     public abstract class PlanetariaTracker : PlanetariaComponent
     {

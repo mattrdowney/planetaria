@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Planetaria
 {
-    [RequireComponent(typeof(PlanetariaTransform))] // TODO: CHECK: How does this work with PlanetariaTransform? Infinite loop?
+    //[RequireComponent(typeof(PlanetariaTransform))] // TODO: CHECK: How does this work with PlanetariaTransform? Infinite loop? // CONFIRED: you can never remove PlanetariaTransforms
     public abstract class PlanetariaComponent : MonoBehaviour
     {
         protected virtual void Awake() { }

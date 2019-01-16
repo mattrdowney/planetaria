@@ -64,12 +64,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d97900649f3bb374aafb354fa4235789, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  position_dirty: 0
-  direction_dirty: 0
-  scale_dirty: 0
-  position: {x: 0, y: 0, z: 0}
-  direction: {x: 0, y: 0, z: 0}
-  scale: 0
+  position_dirty: 1
+  direction_dirty: 1
+  scale_dirty: 1
+  position: {x: 0, y: 0, z: 1}
+  direction: {x: 0, y: 1, z: 0}
+  scale: 0.02
 --- !u!114 &100
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -86,7 +86,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 44}
   internal_transform: {fileID: 59}
-  scale_variable: 0.02
+  planetaria_transform_data: {fileID: 6707292485945809492}
 --- !u!54 &63
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -115,9 +115,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56b6c21ceda27e74a9b26c57e1c049d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  previous_position: {x: 0, y: 0, z: 0}
+  previous_position: {x: 0, y: 0, z: 1}
   velocity: {x: 0, y: 0, z: 0}
-  acceleration: {x: 0, y: 0, z: 0}
+  acceleration: {x: -0, y: 0, z: 0}
   gravity: {x: 0, y: 0, z: 0}
   horizontal_velocity: 0
   vertical_velocity: 0
@@ -138,7 +138,7 @@ MonoBehaviour:
   initialized: 0
   game_object_variable:
     game_object_variable: {fileID: 44}
-  planetaria_rigidbody_data: {fileID: 0}
+  planetaria_rigidbody_data: {fileID: 546821898505708324}
   internal_transform: {fileID: 59}
   internal_rigidbody: {fileID: 63}
 --- !u!114 &99

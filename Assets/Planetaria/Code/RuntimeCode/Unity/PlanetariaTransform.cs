@@ -90,10 +90,10 @@ namespace Planetaria
         /// </summary>
         public float localScale
         {
-            get { return scale_variable; }
+            get { return planetaria_transform_data.scale; }
             set
             {
-                scale_variable = value;
+                planetaria_transform_data.scale = value;
                 if (internal_renderer.exists)
                 {
                     internal_renderer.data.scale = scale; // TODO: check
@@ -141,9 +141,9 @@ namespace Planetaria
             {
                 if (parent == null) // base case
                 {
-                    return scale_variable;
+                    return planetaria_transform_data.scale;
                 }
-                return parent.scale * scale_variable; // recursive case
+                return parent.scale * planetaria_transform_data.scale; // recursive case
             }
             set
             {
@@ -251,9 +251,6 @@ namespace Planetaria
         [SerializeField] [HideInInspector] private optional<PlanetariaCollider> internal_collider; // Observer pattern would be more elegant but slower
         [SerializeField] [HideInInspector] private optional<PlanetariaRenderer> internal_renderer;
         [SerializeField] [HideInInspector] private optional<PlanetariaRigidbody> internal_rigidbody; // FIXME: implement
-
-        //private Planetarium planetarium_variable; // cartesian_transform's position
-        [SerializeField] private float scale_variable; // I thought this could be combined with transform.localScale/lossyScale, but it can't apparently
     }
 }
 

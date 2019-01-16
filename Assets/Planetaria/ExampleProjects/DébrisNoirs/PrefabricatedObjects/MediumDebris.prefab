@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 49}
-  - component: {fileID: 82}
   - component: {fileID: 86}
   m_Layer: 10
   m_Name: Silhouette
@@ -33,23 +32,6 @@ Transform:
   m_Father: {fileID: 51}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &82
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 34}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 48d2cae72ee207743b9de842f4f0663d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initialized: 0
-  game_object_variable:
-    game_object_variable: {fileID: 34}
-  internal_transform: {fileID: 49}
-  scale_variable: 0
 --- !u!114 &86
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -296,12 +278,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d97900649f3bb374aafb354fa4235789, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  position_dirty: 0
-  direction_dirty: 0
-  scale_dirty: 0
-  position: {x: 0, y: 0, z: 0}
-  direction: {x: 0, y: 0, z: 0}
-  scale: 0
+  position_dirty: 1
+  direction_dirty: 1
+  scale_dirty: 1
+  position: {x: 0, y: 0, z: 1}
+  direction: {x: 0, y: 1, z: 0}
+  scale: 0.04
 --- !u!114 &77
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -318,7 +300,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 39}
   internal_transform: {fileID: 51}
-  scale_variable: 0.04
+  planetaria_transform_data: {fileID: 2107044089862432289}
 --- !u!54 &57
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -347,9 +329,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56b6c21ceda27e74a9b26c57e1c049d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  previous_position: {x: 0, y: 0, z: 0}
+  previous_position: {x: 0, y: 0, z: 1}
   velocity: {x: 0, y: 0, z: 0}
-  acceleration: {x: 0, y: 0, z: 0}
+  acceleration: {x: -0, y: 0, z: 0}
   gravity: {x: 0, y: 0, z: 0}
   horizontal_velocity: 0
   vertical_velocity: 0
@@ -369,8 +351,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   initialized: 0
   game_object_variable:
-    game_object_variable: {fileID: 0}
-  planetaria_rigidbody_data: {fileID: 0}
+    game_object_variable: {fileID: 39}
+  planetaria_rigidbody_data: {fileID: 6527208334943406252}
   internal_transform: {fileID: 51}
   internal_rigidbody: {fileID: 57}
 --- !u!135 &61

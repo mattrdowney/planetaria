@@ -6,7 +6,7 @@ using Planetaria;
 
 namespace DebrisNoirs
 {
-    public class ScoreKeeper : PlanetariaMonoBehaviour
+    public class ScoreKeeper : MonoBehaviour
     {
         public void start_clock()
         {
@@ -35,8 +35,8 @@ namespace DebrisNoirs
 
         private void OnValidate()
         {
-            player_score_text = this.gameObject.internal_game_object.transform.Find("PlayerScore").GetComponent<Text>();
-            highscore_text = this.gameObject.internal_game_object.transform.Find("HighScore").GetComponent<Text>();
+            player_score_text = this.gameObject.transform.Find("PlayerScore").GetComponent<Text>();
+            highscore_text = this.gameObject.transform.Find("HighScore").GetComponent<Text>();
             score = 0;
         }
 
@@ -83,9 +83,6 @@ namespace DebrisNoirs
                 }
             }
         }
-
-        protected override void OnConstruction() { }
-        protected override void OnDestruction() { }
 
         private enum StopwatchState { Stopped = 0, Started = 1 }
 

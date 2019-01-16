@@ -6,7 +6,7 @@ namespace Planetaria
     [Serializable]
     public class PlanetariaRigidbodyData : MonoBehaviour
     {
-        [SerializeField] public Vector3 previous_position; // magnitude = 1
+        [SerializeField] public Vector3 previous_position = Vector3.forward; // magnitude = 1
         [SerializeField] public Vector3 velocity; // magnitude in [0, infinity]
         [SerializeField] public Vector3 acceleration; // magnitude in [0, infinity]
 

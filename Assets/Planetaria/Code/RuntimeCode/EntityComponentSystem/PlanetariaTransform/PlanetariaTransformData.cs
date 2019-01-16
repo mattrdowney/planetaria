@@ -8,13 +8,15 @@ namespace Planetaria
     {
         //[SerializeField] private Quaternion rotation; // implicitly held in UnityEngine.Transform and represents both PlanetariaTransform.position and PlanetariaTransform.direction but you can't efficiently change the Transform like that
         
-        [SerializeField] public bool position_dirty;
-        [SerializeField] public bool direction_dirty;
-        [SerializeField] public bool scale_dirty;
+        [SerializeField] public bool position_dirty = true;
+        [SerializeField] public bool direction_dirty = true;
+        [SerializeField] public bool scale_dirty = true;
 
-        [SerializeField] public Vector3 position;
-        [SerializeField] public Vector3 direction;
-        [SerializeField] public float scale;
+        [SerializeField] public Vector3 position = Vector3.forward;
+        [SerializeField] public Vector3 direction = Vector3.up;
+        [SerializeField] public float scale = 1;
+        
+        //private Planetarium planetarium_variable; // cartesian_transform's position
     }
 }
 

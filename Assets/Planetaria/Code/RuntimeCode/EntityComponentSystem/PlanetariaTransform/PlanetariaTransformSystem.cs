@@ -4,6 +4,7 @@ using Unity.Entities;
 namespace Planetaria
 {
     [UpdateBefore(typeof(Transform))] // TODO: verify this compiles as intended
+    [UpdateAfter(typeof(PlanetariaTransform))]
     public class PlanetariaTransformSystem : ComponentSystem
     {
         protected override void OnUpdate()
