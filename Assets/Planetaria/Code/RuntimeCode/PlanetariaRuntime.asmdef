@@ -1,7 +1,10 @@
 {
-    "name": "Planetaria",
+    "name": "PlanetariaRuntime",
     "references": [
-        "Unity.Entities"
+        "Unity.Entities",
+        "Unity.Entities.Editor",
+        "Unity.Entities.Hybrid",
+        "Unity.Entities.Properties"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

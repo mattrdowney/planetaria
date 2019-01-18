@@ -21,8 +21,8 @@ namespace DebrisNoirs
             planetaria_renderer_background = planetaria_transform.Find("Silhouette").GetComponent<AreaRenderer>();
 
             //planetaria_collider.shape = PlanetariaShape.Create(planetaria_transform.localScale);
-            planetaria_renderer_foreground.scale = planetaria_transform.localScale;
-            planetaria_renderer_background.scale = planetaria_transform.localScale;
+            planetaria_renderer_foreground.scale = planetaria_transform.local_scale;
+            planetaria_renderer_background.scale = planetaria_transform.local_scale;
         }
 
         private void Start()

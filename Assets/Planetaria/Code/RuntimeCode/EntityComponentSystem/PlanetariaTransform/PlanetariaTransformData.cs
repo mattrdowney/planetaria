@@ -1,23 +1,48 @@
 ﻿using System;
 using UnityEngine;
+using Unity.Entities;
 
 namespace Planetaria
 {
     [Serializable]
-    public class PlanetariaTransformData : MonoBehaviour // TODO: breakout into PlanetariaTransformPosition, PlanetariaTransformDirection, PlanetariaTransformScale
+    public struct PlanetariaTransformPosition : IComponentData
     {
-        //[SerializeField] private Quaternion rotation; // implicitly held in UnityEngine.Transform and represents both PlanetariaTransform.position and PlanetariaTransform.direction but you can't efficiently change the Transform like that
-        
-        [SerializeField] public bool position_dirty = true;
-        [SerializeField] public bool direction_dirty = true;
-        [SerializeField] public bool scale_dirty = true;
+        public PlanetariaTransformPosition(Vector3 position_data)
+        {
+            position = position_data;
+        }
 
-        [SerializeField] public Vector3 position = Vector3.forward;
-        [SerializeField] public Vector3 direction = Vector3.up;
-        [SerializeField] public float scale = 1;
-        
-        //private Planetarium planetarium_variable; // cartesian_transform's position
+        [SerializeField] public Vector3 position; // TODO: figure out how to safely populate this to Vector3.forward (or similar), because Vector3.zero is a problematic float for Planetaria's internal systems
+        //[SerializeField] public bool position_dirty = true; // I was thinking about using a dirty tag (component), but really updating every frame makes more sense (but there are issues with not having a dirty tag for directions, so I shall include it for everything). // To be fair, static objects are more common (for things that aren't Asteroids (1979))
     }
+
+    public struct PlanetariaTransformPositionDirty : IComponentData { } // Entity-Component System tag
+
+    [Serializable]
+    public struct PlanetariaTransformDirection : IComponentData
+    {
+        public PlanetariaTransformDirection(Vector3 direction_data)
+        {
+            direction = direction_data;
+        }
+
+        [SerializeField] public Vector3 direction; // TODO: figure out how to safely populate this to Vector3.up (or similar), because Vector3.zero is a problematic float for Planetaria's internal systems
+    }
+
+    public struct PlanetariaTransformDirectionDirty : IComponentData { } // Entity-Component System tag
+
+    [Serializable]
+    public struct PlanetariaTransformScale : IComponentData
+    {
+        public PlanetariaTransformScale(float scale_data)
+        {
+            scale = scale_data;
+        }
+
+        [SerializeField] public float scale; // TODO: figure out how to safely populate this to 1f (or similar), because you don't want everything to be zero-scaled (invisible, infinitessimal collider).
+    }
+
+    public struct PlanetariaTransformScaleDirty : IComponentData { } // Entity-Component System tag
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

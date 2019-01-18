@@ -4,7 +4,7 @@ namespace Planetaria
 {
     public class BlockCollision
     {
-        public static optional<BlockCollision> block_collision(CollisionObserver observer, Arc arc, PlanetariaCollider collider, PlanetariaTransform transformation, PlanetariaRigidbody rigidbody)
+        public static optional<BlockCollision> block_collision(CollisionObserver observer, Arc arc, PlanetariaCollider collider, PlanetariaTransform transform, PlanetariaRigidbody rigidbody)
         {
             optional<ArcVisitor> arc_visitor = collider.shape.arc_visitor(arc);
             if (!arc_visitor.exists)
@@ -19,7 +19,7 @@ namespace Planetaria
             Vector3 last_position = world_to_block * rigidbody.get_previous_position();
             Vector3 current_position = world_to_block * rigidbody.get_position();
 
-            float extrusion = transformation.scale/2;
+            float extrusion = transform.scale/2;
             optional<Vector3> intersection_point = PlanetariaIntersection.arc_path_intersection(arc, last_position, current_position, extrusion);
             if (!intersection_point.exists) // theoretically only happens with moving objects for discrete collision checks
             {

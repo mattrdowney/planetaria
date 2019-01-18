@@ -55,8 +55,8 @@ namespace Planetaria
             Vector3 next_position = PlanetariaMath.spherical_linear_interpolation(current_position, current_direction, delta); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
             Vector3 next_velocity = PlanetariaMath.spherical_linear_interpolation(current_position, current_direction, delta + Mathf.PI/2);
             
-            component.planetaria_transform_data.position = next_position;
-            component.planetaria_transform_data.position_dirty = true;
+            component.position.position = next_position;
+            //component.position.position_dirty = true;
             component.planetaria_rigidbody_data.velocity = next_velocity.normalized * current_speed; // FIXME: I thought this was numerically stable, but it seems to create more energy.
         }
 
@@ -64,7 +64,7 @@ namespace Planetaria
         {
             if (component.planetaria_rigidbody_data.gravity != Vector3.zero)
             {
-                return Vector3.ProjectOnPlane(component.planetaria_rigidbody_data.gravity, component.planetaria_transform_data.position).normalized * component.planetaria_rigidbody_data.gravity.magnitude;
+                return Vector3.ProjectOnPlane(component.planetaria_rigidbody_data.gravity, component.position.position).normalized * component.planetaria_rigidbody_data.gravity.magnitude;
             }
             return Vector3.zero;
         }

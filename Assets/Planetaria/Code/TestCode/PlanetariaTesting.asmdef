@@ -1,7 +1,7 @@
 {
-    "name": "Tests",
+    "name": "PlanetariaTesting",
     "references": [
-        "Planetaria",
+        "PlanetariaRuntime",
         "PlanetariaEditor"
     ],
     "optionalUnityReferences": [

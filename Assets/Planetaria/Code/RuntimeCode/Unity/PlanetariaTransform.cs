@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using Unity.Entities;
 
 namespace Planetaria
 {
@@ -33,11 +34,17 @@ namespace Planetaria
             {
                 internal_renderer = internal_transform.GetComponent<PlanetariaRenderer>();
             }
-            if (planetaria_transform_data == null)
-            {
-                planetaria_transform_data = Miscellaneous.GetOrAddComponent<PlanetariaTransformData>(internal_transform);
-            }
-            planetaria_transform_data.position = internal_transform.forward;
+            if (entity_manager == null)
+            {        
+                entity_manager = World.Active.GetOrCreateManager<EntityManager>();
+            }      
+            Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
+            entity_manager.AddComponent(entity, typeof(PlanetariaTransformDirection));
+            entity_manager.AddComponent(entity, typeof(PlanetariaTransformPosition));
+            entity_manager.AddComponent(entity, typeof(PlanetariaTransformScale));
+            local_position = internal_transform.forward;
+            local_direction = internal_transform.up;
+            local_scale = 1f;
         }
 
         // Properties
@@ -79,25 +86,48 @@ namespace Planetaria
             get { return internal_transform.hierarchyCount; }
         }
         
-        public NormalizedCartesianCoordinates localPosition // FIXME: really fix this...
+        public Vector3 local_direction
         {
-            get { return new NormalizedCartesianCoordinates(internal_transform.forward); }
-            set { internal_transform.rotation = Quaternion.LookRotation(internal_transform.forward, Vector3.up); }
+            get
+            {
+                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
+                return entity_manager.GetComponentData<PlanetariaTransformDirection>(entity).direction;
+            }
+            set
+            {
+                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
+                entity_manager.SetComponentData<PlanetariaTransformDirection>(entity, new PlanetariaTransformDirection(value));
+            }
         }
 
+        public Vector3 local_position
+        {
+            get
+            {
+                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
+                return entity_manager.GetComponentData<PlanetariaTransformPosition>(entity).position;
+            }
+            set
+            {
+                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
+                entity_manager.SetComponentData<PlanetariaTransformPosition>(entity, new PlanetariaTransformPosition(value));
+            }
+        }
+        
         /// <summary>
         /// The diameter of the player - divide by two when you need the radius/extrusion.
         /// </summary>
-        public float localScale
+        public float local_scale
         {
-            get { return planetaria_transform_data.scale; }
+            get
+            {
+                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
+                return entity_manager.GetComponentData<PlanetariaTransformScale>(entity).scale;
+            }
             set
             {
-                planetaria_transform_data.scale = value;
-                if (internal_renderer.exists)
-                {
-                    internal_renderer.data.scale = scale; // TODO: check
-                }
+                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
+                entity_manager.SetComponentData<PlanetariaTransformScale>(entity, new PlanetariaTransformScale(value));
             }
         }
 
@@ -114,7 +144,7 @@ namespace Planetaria
             }
             set { SetParent(value); }
         }
-
+        
         /// <summary>
         /// Property - position (on a unit sphere). Maintains old direction/"facing"/"forward"/"up" direction if set.
         /// </summary>
@@ -122,35 +152,46 @@ namespace Planetaria
         {
             get
             {
-                return planetaria_transform_data.position;
+                if (parent == null) // base case
+                {
+                    return local_position;
+                }
+                return parent.transform.internal_transform.rotation * local_position; // recursive case // FIXME: HACK:
             }
             set
             {
-                planetaria_transform_data.position = value;
+                if (internal_transform.parent == null)
+                {
+                    local_position = value;
+                }
+                else
+                {
+                    local_position = Quaternion.Inverse(parent.transform.internal_transform.rotation) * value; // recursive case // FIXME: HACK: // TODO: verify
+                }
             }
         }
-
+        
         public PlanetariaTransform root
         {
             get { return internal_transform.root.GetComponent<PlanetariaTransform>(); }
         }
 
-        public float scale
+        public float scale // TODO: scale is [0,2PI] or maybe [-2PI, +2PI] as intended, but maybe I should make it [0,1] or [-1, +1] (with larger multipliers possible, but that is the code's intention). 
         {
             get
             {
                 if (parent == null) // base case
                 {
-                    return planetaria_transform_data.scale;
+                    return local_scale;
                 }
-                return parent.scale * planetaria_transform_data.scale; // recursive case
+                return parent.scale * local_scale; // recursive case
             }
             set
             {
-                localScale = value;
+                local_scale = value;
                 if (internal_transform.parent != null)
                 {
-                    localScale /= parent.scale; // TODO: verify
+                    local_scale /= parent.scale; // TODO: verify
                 }
             }
         }
@@ -191,12 +232,11 @@ namespace Planetaria
         {
             return internal_transform.IsChildOf(transformation.internal_transform);
         }
-
+        
         public void LookAt(PlanetariaTransform target)
         {
             internal_transform.rotation = Quaternion.LookRotation(internal_transform.forward, target.position);
         }
-        
         // CONSIDER: implement RotateAround ?
 
         public void SetAsFirstSibling()
@@ -244,13 +284,13 @@ namespace Planetaria
             return (NormalizedCartesianCoordinates)internal_transform.TransformDirection(local_space.data);
         }
 
-        // CONSIDER: implement Translate() ?
-
+        // CONSIDER: implement Translate() ? - probably, relative to direction move Vector2 distance.
         [SerializeField] [HideInInspector] private Transform internal_transform;
-        [SerializeField] [HideInInspector] private PlanetariaTransformData planetaria_transform_data;
         [SerializeField] [HideInInspector] private optional<PlanetariaCollider> internal_collider; // Observer pattern would be more elegant but slower
         [SerializeField] [HideInInspector] private optional<PlanetariaRenderer> internal_renderer;
         [SerializeField] [HideInInspector] private optional<PlanetariaRigidbody> internal_rigidbody; // FIXME: implement
+
+        private static EntityManager entity_manager;
     }
 }
 

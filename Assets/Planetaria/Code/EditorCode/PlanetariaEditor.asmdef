@@ -1,7 +1,7 @@
 {
     "name": "PlanetariaEditor",
     "references": [
-        "Planetaria"
+        "PlanetariaRuntime"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

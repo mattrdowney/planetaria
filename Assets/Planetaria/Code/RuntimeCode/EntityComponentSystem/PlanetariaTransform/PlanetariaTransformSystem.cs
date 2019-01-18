@@ -11,11 +11,11 @@ namespace Planetaria
         {
             foreach (PlanetariaTransformComponent component in GetEntities<PlanetariaTransformComponent>())
             {
-                if (component.planetaria_transform_data.position_dirty || component.planetaria_transform_data.direction_dirty)
+                /*if (component.position.position_dirty || component.position.direction_dirty)
                 {
                     Vector3 current_position = component.transform.forward;
-                    Vector3 next_position = component.planetaria_transform_data.position;
-                    if (current_position != next_position && !component.planetaria_transform_data.direction_dirty)
+                    Vector3 next_position = component.position.position;
+                    if (current_position != next_position && !component.position.direction_dirty)
                     {
                         Vector3 last_velocity = -Vector3.ProjectOnPlane(current_position, next_position);
                         Vector3 velocity = Vector3.ProjectOnPlane(next_position, current_position);
@@ -28,14 +28,14 @@ namespace Planetaria
                     }
                     else
                     {
-                        Vector3 next_direction = component.planetaria_transform_data.direction;
+                        Vector3 next_direction = component.position.direction;
                         component.transform.localRotation = Quaternion.LookRotation(next_position, next_direction);
                     }
-                    component.planetaria_transform_data.position_dirty = false;
-                    component.planetaria_transform_data.direction_dirty = false;
+                    component.position.position_dirty = false;
+                    component.position.direction_dirty = false;
                     component.transform.position = Vector3.zero;
                 }
-                // TODO: scale
+                // TODO: scale*/
             }
         }
     }

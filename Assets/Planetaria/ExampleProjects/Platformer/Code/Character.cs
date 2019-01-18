@@ -22,7 +22,7 @@ namespace Platformer
             planetaria_collider = this.GetComponent<PlanetariaCollider>();
             planetaria_collider.material = material;
             transform.direction = Vector3.up;
-            transform.localScale = +0.1f;
+            transform.local_scale = +0.1f;
             planetaria_collider.shape = PlanetariaShape.Create(+0.1f / 2); // FIXME: cached
         }
 

@@ -4,7 +4,9 @@ namespace Planetaria
 {
     struct PlanetariaTransformComponent
     {
-        public PlanetariaTransformData planetaria_transform_data;
+        public PlanetariaTransformPosition position;
+        public PlanetariaTransformDirection direction;
+        public PlanetariaTransformScale scale;
         public Transform transform;
     }
 }
