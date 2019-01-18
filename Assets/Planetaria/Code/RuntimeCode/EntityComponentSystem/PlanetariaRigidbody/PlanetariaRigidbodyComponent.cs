@@ -4,7 +4,7 @@ namespace Planetaria
 {
     struct PlanetariaRigidbodyComponent
     {
-        public PlanetariaRigidbodyData planetaria_rigidbody_data;
+        public PlanetariaRigidbodyVelocity velocity; // TODO: figure out how to add acceleration, gravity, dirty flag later
         public PlanetariaTransformPosition position;
         public PlanetariaTransformDirection direction;
         public Transform transform;

@@ -6,6 +6,7 @@ namespace Planetaria
 {
     [DisallowMultipleComponent]
     [Serializable]
+    [RequireComponent(typeof(GameObjectEntity))]
     public sealed class PlanetariaTransform : PlanetariaComponent // CONSIDER: struct? Disadvantage(?): multiple references don't know of each other's existence and directions (broken?) : can't access parent's direction
     {
         protected override sealed void Awake()

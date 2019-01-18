@@ -1,22 +1,47 @@
 ﻿using System;
 using UnityEngine;
+using Unity.Entities;
 
 namespace Planetaria
 {
     [Serializable]
-    public class PlanetariaRigidbodyData : MonoBehaviour
+    public struct PlanetariaRigidbodyVelocity : IComponentData
     {
-        [SerializeField] public Vector3 previous_position = Vector3.forward; // magnitude = 1
+        public PlanetariaRigidbodyVelocity(Vector3 velocity_data)
+        {
+            velocity = velocity_data;
+        }
+
         [SerializeField] public Vector3 velocity; // magnitude in [0, infinity]
-        [SerializeField] public Vector3 acceleration; // magnitude in [0, infinity]
+        //[SerializeField] public float horizontal_velocity; // implicitly - through grounded state
+        //[SerializeField] public float vertical_velocity;
+    }
+
+    [Serializable]
+    public struct PlanetariaRigidbodyAcceleration : IComponentData // Implementation note: if PlanetariaRigidbodyGravity is Vector3.zero, the PlanetariaRigidbodyAcceleration tag/acceleration is removed
+    {
+        public PlanetariaRigidbodyAcceleration(Vector3 acceleration_data)
+        {
+            acceleration = acceleration_data;
+        }
+        
+        [SerializeField] public Vector3 acceleration; // magnitude in [0, infinity]        
+        //[SerializeField] public float horizontal_acceleration; // implicitly - through grounded state
+        //[SerializeField] public float vertical_acceleration;
+    }
+
+    [Serializable]
+    public struct PlanetariaRigidbodyGravity : IComponentData
+    {
+        public PlanetariaRigidbodyGravity(Vector3 gravity_data)
+        {
+            gravity = gravity_data;
+        }
 
         [SerializeField] public Vector3 gravity; // magnitude in [0, infinity]
-        
-        [SerializeField] public float horizontal_velocity;
-        [SerializeField] public float vertical_velocity;
-        [SerializeField] public float horizontal_acceleration;
-        [SerializeField] public float vertical_acceleration;
     }
+
+    public struct PlanetariaRigidbodyGravityDirty : IComponentData { } // tag
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

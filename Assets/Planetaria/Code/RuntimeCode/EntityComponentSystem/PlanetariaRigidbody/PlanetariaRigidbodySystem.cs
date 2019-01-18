@@ -46,7 +46,25 @@ namespace Planetaria
                 //}
             }
         }
-        
+
+        struct PlanetariaRigidbodyGroup
+        {
+            public ComponentArray<PlanetariaRigidbody> Component; //PlanetariaRigidbody is a PlanetariaMonoBehaviour component
+            public EntityArray Entity;
+            public int Length;
+        }
+ 
+        [Inject] PlanetariaRigidbodyGroup group;
+        protected override void OnCreateManager()
+        {
+            base.OnCreateManager();
+            //for add ECS components in one loop
+            for (int i = 0; i < group.Length; i++)
+            {
+                PostUpdateCommands.AddComponent(group.Entity[i], new PlanetariaRigidbodyData());
+            }
+        }
+
         private void aerial_move(PlanetariaRigidbodyComponent component, float delta)
         {
             Vector3 current_position = component.transform.forward;

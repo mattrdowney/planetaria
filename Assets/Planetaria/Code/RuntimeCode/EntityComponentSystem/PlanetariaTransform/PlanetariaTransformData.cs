@@ -13,7 +13,6 @@ namespace Planetaria
         }
 
         [SerializeField] public Vector3 position; // TODO: figure out how to safely populate this to Vector3.forward (or similar), because Vector3.zero is a problematic float for Planetaria's internal systems
-        //[SerializeField] public bool position_dirty = true; // I was thinking about using a dirty tag (component), but really updating every frame makes more sense (but there are issues with not having a dirty tag for directions, so I shall include it for everything). // To be fair, static objects are more common (for things that aren't Asteroids (1979))
     }
 
     public struct PlanetariaTransformPositionDirty : IComponentData { } // Entity-Component System tag

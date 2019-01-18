@@ -1,10 +1,12 @@
 ﻿using System;
 using UnityEngine;
+using Unity.Entities;
 
 namespace Planetaria
 {
     [DisallowMultipleComponent]
     [Serializable]
+    [RequireComponent(typeof(GameObjectEntity))]
     public sealed class PlanetariaRigidbody : PlanetariaComponent
     {
         protected override sealed void Awake()
@@ -30,14 +32,15 @@ namespace Planetaria
             {
                 internal_rigidbody = Miscellaneous.GetOrAddComponent<Rigidbody>(this);
             }
-            if (planetaria_rigidbody_data == null)
-            {
-                planetaria_rigidbody_data = gameObject.internal_game_object.GetComponent<PlanetariaRigidbodyData>();
+            if (entity_manager == null)
+            {        
+                entity_manager = World.Active.GetOrCreateManager<EntityManager>();
             }
+            Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
+            entity_manager.AddComponent(entity, typeof(PlanetariaRigidbodyVelocity));
+            entity_manager.AddComponent(entity, typeof(PlanetariaRigidbodyGravity));
             internal_rigidbody.isKinematic = true;
             internal_rigidbody.useGravity = false;
-            planetaria_rigidbody_data.previous_position = get_position();
-            planetaria_rigidbody_data.acceleration = get_acceleration();
         }
 
         /*
@@ -227,7 +230,8 @@ namespace Planetaria
             {
                 Vector3 x = Bearing.east(get_position()) * value.x;
                 Vector3 y = Bearing.north(get_position()) * value.y;
-                planetaria_rigidbody_data.velocity = x + y;
+                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
+                entity_manager.SetComponentData<PlanetariaRigidbodyVelocity>(entity, new PlanetariaRigidbodyVelocity(x + y));
                 synchronize_velocity_air_to_ground();
             }
         }
@@ -237,7 +241,8 @@ namespace Planetaria
             get
             {
                 synchronize_velocity_ground_to_air();
-                return planetaria_rigidbody_data.velocity;
+                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
+                return entity_manager.GetComponentData<PlanetariaRigidbodyVelocity>(entity).velocity;
             }
         }
 
@@ -257,11 +262,12 @@ namespace Planetaria
         /// public Vector3 position - set velocity based on relative values; begin attractor is south, end repeller is north
         /// </summary>
 
-        [SerializeField] [HideInInspector] private PlanetariaRigidbodyData planetaria_rigidbody_data;
         [SerializeField] [HideInInspector] private Transform internal_transform;
         [SerializeField] [HideInInspector] private Rigidbody internal_rigidbody;
         [SerializeField] [HideInInspector] private optional<CollisionObserver> observer;
         [SerializeField] [HideInInspector] private BlockCollision collision;
+        
+        private static EntityManager entity_manager;
     }
 }
 
