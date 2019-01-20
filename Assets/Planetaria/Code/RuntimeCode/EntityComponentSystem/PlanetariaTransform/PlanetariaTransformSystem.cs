@@ -13,134 +13,59 @@ namespace Planetaria
     {
         // order of operations are usually scale, then rotate, then transform
         [BurstCompile]
-        struct PlanetariaScale : IJobProcessComponentData<PlanetariaScaleComponent, PlanetariaPreviousScaleComponent>
+        struct PlanetariaScale : IJobProcessComponentData<PlanetariaScaleComponent, PlanetariaScaleDirtyComponent>
         {
-            public void Execute(ref PlanetariaScaleComponent scale, [ReadOnly] ref PlanetariaPreviousScaleComponent previous_scale)
+            public void Execute([ReadOnly] ref PlanetariaScaleComponent scale, ref PlanetariaScaleDirtyComponent dirty)
             {
-                if (scale.scale != previous_scale.previous_scale)
-                {
-                    // TODO: scale
-                }
+                // TODO: scale
             }
         }
 
         [BurstCompile]
-        struct PlanetariaRotate : IJobProcessComponentData<PlanetariaPositionComponent, PlanetariaDirectionComponent, PlanetariaPreviousDirectionComponent>
+        [RequireComponentTag(typeof(PlanetariaPositionDirtyComponent))]
+        [RequireSubtractiveComponent(typeof(PlanetariaDirectionDirtyComponent))]
+        struct PlanetariaTransformMoveOnly : IJobProcessComponentData<Rotation, PlanetariaPreviousPositionComponent, PlanetariaDirectionComponent, PlanetariaPositionComponent>
         {
-            public void Execute(ref PlanetariaPositionComponent position, ref PlanetariaDirectionComponent direction, [ReadOnly] ref PlanetariaPreviousDirectionComponent previous_direction)
+            public void Execute(ref Rotation rotation,
+                    ref PlanetariaPreviousPositionComponent previous_position,
+                    ref PlanetariaDirectionComponent direction,
+                    [ReadOnly] ref PlanetariaPositionComponent position)
             {
-                if (direction.direction != previous_direction.previous_direction)
-                {
-                    var rotat quaternion.LookRotationSafe(heading.Value, math.up());
-                    Vector3 last_velocity = -Vector3.ProjectOnPlane(current_position, next_position);
-                    Vector3 velocity = Vector3.ProjectOnPlane(next_position, current_position);
-                    Quaternion last_rotation = Quaternion.LookRotation(current_position, last_velocity); // TODO: optimize
-                    Quaternion rotation = Quaternion.LookRotation(next_position, velocity);
-                    Vector3 old_direction = component.transform.up;
-                    Vector3 relative_direction = Quaternion.Inverse(last_rotation) * old_direction;
-                    Vector3 next_direction = rotation * relative_direction;
-                    component.transform.localRotation = Quaternion.LookRotation(next_position, next_direction);
-                    var rotationFromHeading = quaternion.LookRotationSafe(heading.Value, math.up());
-                    rotation = new Rotation { Value = rotationFromHeading };
-                }
+                 // TODO: OPTIMIZE: and then optimize again
+                float3 last_velocity = -Vector3.ProjectOnPlane(previous_position.data, position.data);
+                float3 velocity = Vector3.ProjectOnPlane(position.data, previous_position.data);
+                quaternion last_rotation = quaternion.LookRotationSafe(previous_position.data, last_velocity);
+                quaternion current_rotation = quaternion.LookRotationSafe(position.data, velocity);
+                float3 relative_direction = Quaternion.Inverse(last_rotation) * direction.data;
+                float3 next_direction = (Quaternion)current_rotation * relative_direction;
+                direction = new PlanetariaDirectionComponent { data = next_direction };
+                previous_position = new PlanetariaPreviousPositionComponent { data = (Quaternion)rotation.Value * Vector3.forward };
+                rotation = new Rotation { Value = quaternion.LookRotationSafe(position.data, direction.data) };
             }
         }
 
         [BurstCompile]
-        struct PlanetariaMove : IJobProcessComponentData<PlanetariaPositionComponent, PlanetariaDirectionComponent, PlanetariaPreviousPositionComponent>
+        [RequireComponentTag(typeof(PlanetariaPositionDirtyComponent), typeof(PlanetariaDirectionDirtyComponent))]
+        struct PlanetariaTransformRotateAndMove : IJobProcessComponentData<Rotation, PlanetariaPreviousPositionComponent, PlanetariaDirectionComponent, PlanetariaPositionComponent>
         {
-            public void Execute(ref PlanetariaPositionComponent position, ref PlanetariaDirectionComponent direction, [ReadOnly] ref PlanetariaPreviousPositionComponent previous_position)
+            public void Execute(ref Rotation rotation,
+                    ref PlanetariaPreviousPositionComponent previous_position,
+                    [ReadOnly] ref PlanetariaDirectionComponent direction,
+                    [ReadOnly] ref PlanetariaPositionComponent position)
             {
-                if (position.position != previous_position.previous_position)
-                {
-                    Vector3 last_velocity = -Vector3.ProjectOnPlane(current_position, next_position);
-                    Vector3 velocity = Vector3.ProjectOnPlane(next_position, current_position);
-                    Quaternion last_rotation = Quaternion.LookRotation(current_position, last_velocity); // TODO: optimize
-                    Quaternion rotation = Quaternion.LookRotation(next_position, velocity);
-                    Vector3 old_direction = component.transform.up;
-                    Vector3 relative_direction = Quaternion.Inverse(last_rotation) * old_direction;
-                    Vector3 next_direction = rotation * relative_direction;
-                    component.transform.localRotation = Quaternion.LookRotation(next_position, next_direction);
-                    var rotationFromHeading = quaternion.LookRotationSafe(heading.Value, math.up());
-                    rotation = new Rotation { Value = rotationFromHeading };
-                }
+                previous_position = new PlanetariaPreviousPositionComponent { data = (Quaternion)rotation.Value * Vector3.forward };
+                rotation = new Rotation { Value = quaternion.LookRotationSafe(position.data, direction.data) };
             }
         }
 
         protected override JobHandle OnUpdate(JobHandle input_dependencies)
         {
-            var rotationFromHeadingJob = new PlanetariaRotate();
-            var rotationFromHeadingJobHandle = rotationFromHeadingJob.Schedule(this, input_dependencies);
-
-            return rotationFromHeadingJobHandle;
-        }
-
-        protected override void OnUpdate()
-        {
-            foreach (PlanetariaTransformComponent component in GetEntities<PlanetariaPositionComponent>())
-            {
-                /*if (component.position.position_dirty || component.position.direction_dirty)
-                {
-                    Vector3 current_position = component.transform.forward;
-                    Vector3 next_position = component.position.position;
-                    if (current_position != next_position && !component.position.direction_dirty)
-                    {
-                        Vector3 last_velocity = -Vector3.ProjectOnPlane(current_position, next_position);
-                        Vector3 velocity = Vector3.ProjectOnPlane(next_position, current_position);
-                        Quaternion last_rotation = Quaternion.LookRotation(current_position, last_velocity); // TODO: optimize
-                        Quaternion rotation = Quaternion.LookRotation(next_position, velocity);
-                        Vector3 old_direction = component.transform.up;
-                        Vector3 relative_direction = Quaternion.Inverse(last_rotation) * old_direction;
-                        Vector3 next_direction = rotation * relative_direction;
-                        component.transform.localRotation = Quaternion.LookRotation(next_position, next_direction);
-                    }
-                    else
-                    {
-                        Vector3 next_direction = component.position.direction;
-                        component.transform.localRotation = Quaternion.LookRotation(next_position, next_direction);
-                    }
-                    component.position.position_dirty = false;
-                    component.position.direction_dirty = false;
-                    component.transform.position = Vector3.zero;
-                }
-                // TODO: scale*/
-            }
-        }
-    }
-
-    [UpdateAfter(typeof(PlanetariaTransformRotationSystem))]
-    public class PlanetariaTransformRotationSystem : ComponentSystem
-    {
-        protected override void OnUpdate()
-        {
-            foreach (PlanetariaTransformComponent component in GetEntities<PlanetariaTransformComponent>())
-            {
-                /*if (component.position.position_dirty || component.position.direction_dirty)
-                {
-                    Vector3 current_position = component.transform.forward;
-                    Vector3 next_position = component.position.position;
-                    if (current_position != next_position && !component.position.direction_dirty)
-                    {
-                        Vector3 last_velocity = -Vector3.ProjectOnPlane(current_position, next_position);
-                        Vector3 velocity = Vector3.ProjectOnPlane(next_position, current_position);
-                        Quaternion last_rotation = Quaternion.LookRotation(current_position, last_velocity); // TODO: optimize
-                        Quaternion rotation = Quaternion.LookRotation(next_position, velocity);
-                        Vector3 old_direction = component.transform.up;
-                        Vector3 relative_direction = Quaternion.Inverse(last_rotation) * old_direction;
-                        Vector3 next_direction = rotation * relative_direction;
-                        component.transform.localRotation = Quaternion.LookRotation(next_position, next_direction);
-                    }
-                    else
-                    {
-                        Vector3 next_direction = component.position.direction;
-                        component.transform.localRotation = Quaternion.LookRotation(next_position, next_direction);
-                    }
-                    component.position.position_dirty = false;
-                    component.position.direction_dirty = false;
-                    component.transform.position = Vector3.zero;
-                }
-                // TODO: scale*/
-            }
+            var complex_case = new PlanetariaTransformMoveOnly();
+            var simple_case = new PlanetariaTransformRotateAndMove();
+            var handle = complex_case.Schedule<PlanetariaTransformMoveOnly>(this, input_dependencies); // NOTE: these should be scheduled simultaneously
+            handle = simple_case.Schedule<PlanetariaTransformRotateAndMove>(this, input_dependencies); // TODO: verify
+            // TODO: implement scale here
+            return handle;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using Unity.Entities;
+using Unity.Mathematics;
 
 namespace Planetaria
 {
@@ -9,68 +10,33 @@ namespace Planetaria
     [Serializable]
     public struct PlanetariaPositionComponent : IComponentData
     {
-        public PlanetariaPositionComponent(Vector3 position_data)
-        {
-            position = position_data;
-        }
-
-        [SerializeField] public Vector3 position;
+        [SerializeField] public float3 data; // CONSIDER: double3
     }
-
+    
     [Serializable]
-    public struct PlanetariaPreviousPositionComponent : IComponentData
+    public struct PlanetariaPreviousPositionComponent : IComponentData // CONSIDER: How do I remove this in the long run? Can I?
     {
-        public PlanetariaPreviousPositionComponent(Vector3 previous_position_data)
-        {
-            previous_position = previous_position_data;
-        }
-
-        [SerializeField] public Vector3 previous_position;
+        [SerializeField] public float3 data; // CONSIDER: double3
     }
+
+    // TODO: I have the sneaking suspicion that the barriers required for the dirty flags will cost more than they will save (also, I think I implicitly need a boolean just to add these dirty flags at the barrier, which basically defeats the point)
+    public struct PlanetariaPositionDirtyComponent : IComponentData { } // tag for when position needs to be updated.
 
     [Serializable]
     public struct PlanetariaDirectionComponent : IComponentData
     {
-        public PlanetariaDirectionComponent(Vector3 direction_data)
-        {
-            direction = direction_data;
-        }
-
-        [SerializeField] public Vector3 direction;
+        [SerializeField] public float3 data; // CONSIDER: double3
     }
-
-    [Serializable]
-    public struct PlanetariaPreviousDirectionComponent : IComponentData
-    {
-        public PlanetariaPreviousDirectionComponent(Vector3 previous_direction_data)
-        {
-            previous_direction = previous_direction_data;
-        }
-
-        [SerializeField] public Vector3 previous_direction;
-    }
+        
+    public struct PlanetariaDirectionDirtyComponent : IComponentData { } // tag for when direction needs to be updated.
 
     [Serializable]
     public struct PlanetariaScaleComponent : IComponentData
     {
-        public PlanetariaScaleComponent(float scale_data)
-        {
-            scale = scale_data;
-        }
-
-        [SerializeField] public float scale;
+        [SerializeField] public float data;
     }
-
-    [Serializable]
-    public struct PlanetariaPreviousScaleComponent : IComponentData
-    {
-        public PlanetariaPreviousScaleComponent(float previous_scale_data)
-        {
-            previous_scale = previous_scale_data;
-        }
-
-        [SerializeField] public float previous_scale;
-    }
+    
+    public struct PlanetariaScaleDirtyComponent : IComponentData { } // tag for when scale needs to be updated.
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
