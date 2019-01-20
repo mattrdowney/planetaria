@@ -14,7 +14,7 @@ namespace Planetaria
         {
             foreach (PlanetariaRigidbodyComponent component in GetEntities<PlanetariaRigidbodyComponent>())
             {
-                component.planetaria_rigidbody_data.previous_position = component.transform.position;
+                component.previous_position.position = component.transform.position;
                 /*
                 if (observer.exists && observer.data.colliding()) // grounded
                 {
@@ -42,7 +42,7 @@ namespace Planetaria
                 else // non-grounded / "aerial"
                 {
                 */
-                component.planetaria_rigidbody_data.velocity += component.planetaria_rigidbody_data.acceleration*(Time.fixedDeltaTime/2);
+                component.velocity.velocity += component.acceleration.acceleration*(Time.fixedDeltaTime/2);
                 //}
             }
         }
@@ -58,10 +58,13 @@ namespace Planetaria
         protected override void OnCreateManager()
         {
             base.OnCreateManager();
-            //for add ECS components in one loop
             for (int i = 0; i < group.Length; i++)
             {
-                PostUpdateCommands.AddComponent(group.Entity[i], new PlanetariaRigidbodyData());
+                PostUpdateCommands.AddComponent(group.Entity[i], new PlanetariaVelocityComponent());
+            }
+            for (int i = 0; i < group.Length; i++)
+            {
+                PostUpdateCommands.AddComponent(group.Entity[i], new PlanetariaGravityComponent());
             }
         }
 

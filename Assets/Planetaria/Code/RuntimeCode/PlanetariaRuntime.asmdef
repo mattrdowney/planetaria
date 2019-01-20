@@ -4,7 +4,16 @@
         "Unity.Entities",
         "Unity.Entities.Editor",
         "Unity.Entities.Hybrid",
-        "Unity.Entities.Properties"
+        "Unity.Entities.Properties",
+        "Unity.Burst",
+        "Unity.Burst.Editor",
+        "Unity.Jobs",
+        "Unity.Jobs.Editor",
+        "Unity.Transforms",
+        "Unity.Transforms.Editor",
+        "Unity.Transforms.Hybrid",
+        "Unity.Mathematics",
+        "Unity.Mathematics.Editor"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

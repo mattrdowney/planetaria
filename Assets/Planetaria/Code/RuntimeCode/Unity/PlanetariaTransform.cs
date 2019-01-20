@@ -40,9 +40,9 @@ namespace Planetaria
                 entity_manager = World.Active.GetOrCreateManager<EntityManager>();
             }      
             Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-            entity_manager.AddComponent(entity, typeof(PlanetariaTransformDirection));
-            entity_manager.AddComponent(entity, typeof(PlanetariaTransformPosition));
-            entity_manager.AddComponent(entity, typeof(PlanetariaTransformScale));
+            entity_manager.AddComponent(entity, typeof(PlanetariaDirectionComponent));
+            entity_manager.AddComponent(entity, typeof(PlanetariaPositionComponent));
+            entity_manager.AddComponent(entity, typeof(PlanetariaScaleComponent));
             local_position = internal_transform.forward;
             local_direction = internal_transform.up;
             local_scale = 1f;
@@ -92,12 +92,12 @@ namespace Planetaria
             get
             {
                 Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                return entity_manager.GetComponentData<PlanetariaTransformDirection>(entity).direction;
+                return entity_manager.GetComponentData<PlanetariaDirectionComponent>(entity).direction;
             }
             set
             {
                 Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                entity_manager.SetComponentData<PlanetariaTransformDirection>(entity, new PlanetariaTransformDirection(value));
+                entity_manager.SetComponentData<PlanetariaDirectionComponent>(entity, new PlanetariaDirectionComponent(value));
             }
         }
 
@@ -106,12 +106,12 @@ namespace Planetaria
             get
             {
                 Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                return entity_manager.GetComponentData<PlanetariaTransformPosition>(entity).position;
+                return entity_manager.GetComponentData<PlanetariaPositionComponent>(entity).position;
             }
             set
             {
                 Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                entity_manager.SetComponentData<PlanetariaTransformPosition>(entity, new PlanetariaTransformPosition(value));
+                entity_manager.SetComponentData<PlanetariaPositionComponent>(entity, new PlanetariaPositionComponent(value));
             }
         }
         
@@ -123,12 +123,12 @@ namespace Planetaria
             get
             {
                 Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                return entity_manager.GetComponentData<PlanetariaTransformScale>(entity).scale;
+                return entity_manager.GetComponentData<PlanetariaScaleComponent>(entity).scale;
             }
             set
             {
                 Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                entity_manager.SetComponentData<PlanetariaTransformScale>(entity, new PlanetariaTransformScale(value));
+                entity_manager.SetComponentData<PlanetariaScaleComponent>(entity, new PlanetariaScaleComponent(value));
             }
         }
 

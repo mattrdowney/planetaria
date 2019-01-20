@@ -5,9 +5,9 @@ using Unity.Entities;
 namespace Planetaria
 {
     [Serializable]
-    public struct PlanetariaRigidbodyVelocity : IComponentData
+    public struct PlanetariaVelocityComponent : IComponentData
     {
-        public PlanetariaRigidbodyVelocity(Vector3 velocity_data)
+        public PlanetariaVelocityComponent(Vector3 velocity_data)
         {
             velocity = velocity_data;
         }
@@ -18,9 +18,9 @@ namespace Planetaria
     }
 
     [Serializable]
-    public struct PlanetariaRigidbodyAcceleration : IComponentData // Implementation note: if PlanetariaRigidbodyGravity is Vector3.zero, the PlanetariaRigidbodyAcceleration tag/acceleration is removed
+    public struct PlanetariaAccelerationComponent : IComponentData // Implementation note: if PlanetariaRigidbodyGravity is Vector3.zero, the PlanetariaRigidbodyAcceleration tag/acceleration is removed
     {
-        public PlanetariaRigidbodyAcceleration(Vector3 acceleration_data)
+        public PlanetariaAccelerationComponent(Vector3 acceleration_data)
         {
             acceleration = acceleration_data;
         }
@@ -31,9 +31,9 @@ namespace Planetaria
     }
 
     [Serializable]
-    public struct PlanetariaRigidbodyGravity : IComponentData
+    public struct PlanetariaGravityComponent : IComponentData
     {
-        public PlanetariaRigidbodyGravity(Vector3 gravity_data)
+        public PlanetariaGravityComponent(Vector3 gravity_data)
         {
             gravity = gravity_data;
         }
@@ -41,7 +41,7 @@ namespace Planetaria
         [SerializeField] public Vector3 gravity; // magnitude in [0, infinity]
     }
 
-    public struct PlanetariaRigidbodyGravityDirty : IComponentData { } // tag
+    public struct PlanetariaGravityDirtyComponent : IComponentData { } // tag
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

@@ -37,8 +37,8 @@ namespace Planetaria
                 entity_manager = World.Active.GetOrCreateManager<EntityManager>();
             }
             Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-            entity_manager.AddComponent(entity, typeof(PlanetariaRigidbodyVelocity));
-            entity_manager.AddComponent(entity, typeof(PlanetariaRigidbodyGravity));
+            entity_manager.AddComponent(entity, typeof(PlanetariaVelocityComponent));
+            entity_manager.AddComponent(entity, typeof(PlanetariaGravityComponent));
             internal_rigidbody.isKinematic = true;
             internal_rigidbody.useGravity = false;
         }
@@ -100,7 +100,7 @@ namespace Planetaria
                 planetaria_rigidbody_data.vertical_velocity *= -collision.elasticity;
             }
 
-            grounded_accelerate(0);
+            grounded_accelerate(0); // FIXME: code smell
 
             return this.observer.exists;
         }
@@ -231,7 +231,7 @@ namespace Planetaria
                 Vector3 x = Bearing.east(get_position()) * value.x;
                 Vector3 y = Bearing.north(get_position()) * value.y;
                 Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                entity_manager.SetComponentData<PlanetariaRigidbodyVelocity>(entity, new PlanetariaRigidbodyVelocity(x + y));
+                entity_manager.SetComponentData<PlanetariaVelocityComponent>(entity, new PlanetariaVelocityComponent(x + y));
                 synchronize_velocity_air_to_ground();
             }
         }
@@ -242,7 +242,7 @@ namespace Planetaria
             {
                 synchronize_velocity_ground_to_air();
                 Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                return entity_manager.GetComponentData<PlanetariaRigidbodyVelocity>(entity).velocity;
+                return entity_manager.GetComponentData<PlanetariaVelocityComponent>(entity).velocity;
             }
         }
 
