@@ -10,7 +10,7 @@ namespace Planetaria
     [Serializable]
     public struct PlanetariaPositionComponent : IComponentData
     {
-        [SerializeField] public float3 data; // CONSIDER: double3
+        [SerializeField] public float3 data; // CONSIDER: double3, although without a double-precision quaternion this is less useful
     }
     
     [Serializable]
@@ -19,24 +19,23 @@ namespace Planetaria
         [SerializeField] public float3 data; // CONSIDER: double3
     }
 
-    // TODO: I have the sneaking suspicion that the barriers required for the dirty flags will cost more than they will save (also, I think I implicitly need a boolean just to add these dirty flags at the barrier, which basically defeats the point)
-    public struct PlanetariaPositionDirtyComponent : IComponentData { } // tag for when position needs to be updated.
-
     [Serializable]
     public struct PlanetariaDirectionComponent : IComponentData
     {
         [SerializeField] public float3 data; // CONSIDER: double3
     }
-        
-    public struct PlanetariaDirectionDirtyComponent : IComponentData { } // tag for when direction needs to be updated.
+
+    [Serializable]
+    public struct PlanetariaDirectionDirtyComponent : IComponentData // CONSIDER: How do I remove this in the long run? Can I?
+    {
+        [SerializeField] public bool data;
+    }
 
     [Serializable]
     public struct PlanetariaScaleComponent : IComponentData
     {
         [SerializeField] public float data;
     }
-    
-    public struct PlanetariaScaleDirtyComponent : IComponentData { } // tag for when scale needs to be updated.
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
