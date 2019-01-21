@@ -91,13 +91,14 @@ namespace Planetaria
         {
             get
             {
-                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                return entity_manager.GetComponentData<PlanetariaDirectionComponent>(entity).direction;
+                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity; // FIXME: different behaviour depending on grounded versus aerial
+                return entity_manager.GetComponentData<PlanetariaDirectionComponent>(entity).data;
             }
             set
             {
                 Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                entity_manager.SetComponentData<PlanetariaDirectionComponent>(entity, new PlanetariaDirectionComponent(value));
+                entity_manager.SetComponentData<PlanetariaDirectionComponent>(entity, new PlanetariaDirectionComponent { data = value });
+                entity_manager.SetComponentData<PlanetariaDirectionDirtyComponent>(entity, new PlanetariaDirectionDirtyComponent { data = true });
             }
         }
 
@@ -106,12 +107,12 @@ namespace Planetaria
             get
             {
                 Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                return entity_manager.GetComponentData<PlanetariaPositionComponent>(entity).position;
+                return entity_manager.GetComponentData<PlanetariaPositionComponent>(entity).data;
             }
             set
             {
                 Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                entity_manager.SetComponentData<PlanetariaPositionComponent>(entity, new PlanetariaPositionComponent(value));
+                entity_manager.SetComponentData<PlanetariaPositionComponent>(entity, new PlanetariaPositionComponent { data = value });
             }
         }
         
@@ -123,12 +124,12 @@ namespace Planetaria
             get
             {
                 Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                return entity_manager.GetComponentData<PlanetariaScaleComponent>(entity).scale;
+                return entity_manager.GetComponentData<PlanetariaScaleComponent>(entity).data;
             }
             set
             {
                 Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                entity_manager.SetComponentData<PlanetariaScaleComponent>(entity, new PlanetariaScaleComponent(value));
+                entity_manager.SetComponentData<PlanetariaScaleComponent>(entity, new PlanetariaScaleComponent { data = value });
             }
         }
 

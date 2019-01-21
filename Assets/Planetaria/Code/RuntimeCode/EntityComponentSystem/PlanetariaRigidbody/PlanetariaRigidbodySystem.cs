@@ -1,5 +1,9 @@
 ﻿using UnityEngine;
+using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
+using Unity.Jobs;
+using Unity.Mathematics;
 using UnityEngine.Experimental.PlayerLoop;
 
 namespace Planetaria
@@ -8,43 +12,107 @@ namespace Planetaria
     [UpdateBefore(typeof(Rigidbody))]
     [UpdateBefore(typeof(PlanetariaTransform))]
     [UpdateAfter(typeof(PlanetariaRigidbody))]
-    public class PlanetariaRigidbodySystem : ComponentSystem
+    public class PlanetariaRigidbodySystem : JobComponentSystem
     {
-        protected override void OnUpdate()
+        [BurstCompile]
+        [RequireComponentTag(typeof(PlanetariaRigidbodyAerial))]
+        struct PlanetariaRigidbodyAerialMove : IJobProcessComponentData<PlanetariaPositionComponent, PlanetariaVelocityComponent>
         {
-            foreach (PlanetariaRigidbodyComponent component in GetEntities<PlanetariaRigidbodyComponent>())
+            //public float radians; // Unless I feel like passing in a NativeArray<float>, I have to refactor this to velocity
+
+            public void Execute(ref PlanetariaPositionComponent position,
+                    ref PlanetariaVelocityComponent velocity) // NOTE: speed is [ReadOnly], direction is reevaluated for new position
             {
-                component.previous_position.position = component.transform.position;
-                /*
-                if (observer.exists && observer.data.colliding()) // grounded
-                {
-                    grounded_track(component, Time.fixedDeltaTime/2);
-                    grounded_position(component);
-                    grounded_accelerate(component, Time.fixedDeltaTime);
-                }
-                else // non-grounded / "aerial"
-                {
-                */
-                // I am making a bet this is relevant in spherical coordinates (it is Euler isn't it?): http://openarena.ws/board/index.php?topic=5100.0
-                // Wikipedia: https://en.wikipedia.org/wiki/Leapfrog_integration
-                // "This is especially useful when computing orbital dynamics, as many other integration schemes, such as the (order-4) Runge-Kutta method, do not conserve energy and allow the system to drift substantially over time." - Wikipedia
-                // http://lolengine.net/blog/2011/12/14/understanding-motion-in-games
-                // http://www.richardlord.net/presentations/physics-for-flash-games.html
-                component.planetaria_rigidbody_data.velocity += component.planetaria_rigidbody_data.acceleration*(Time.fixedDeltaTime/2);
-                aerial_move(component, component.planetaria_rigidbody_data.velocity.magnitude*Time.fixedDeltaTime);
-                component.planetaria_rigidbody_data.acceleration = get_acceleration(component);
-                //}
-                /*
-                if (observer.exists && observer.data.colliding()) // grounded
-                {
-                    grounded_track(component, Time.fixedDeltaTime/2);
-                }
-                else // non-grounded / "aerial"
-                {
-                */
-                component.velocity.velocity += component.acceleration.acceleration*(Time.fixedDeltaTime/2);
-                //}
+                float quarter_rotation = (float) math.PI/2;
+                float current_speed = math.length(velocity.data);
+                float3 current_direction = velocity.data / current_speed;
+                float3 next_position = position.data * math.cos(current_speed) + current_direction * math.sin(current_speed); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
+                float3 next_velocity = position.data * math.cos(current_speed + quarter_rotation) + current_direction * math.sin(current_speed + quarter_rotation);
+                position = new PlanetariaPositionComponent { data = next_position };
+                velocity = new PlanetariaVelocityComponent { data = math.normalizesafe(next_velocity) * current_speed }; // FIXME: I thought this was numerically stable, but it seems to create more energy.
             }
+        }
+
+        [BurstCompile]
+        [RequireComponentTag(typeof(PlanetariaRigidbodyAerial))]
+        struct PlanetariaRigidbodyAerialAccelerate : IJobProcessComponentData<PlanetariaVelocityComponent, PlanetariaAccelerationComponent>
+        {
+            public float delta_time; // intended for Time.fixedDeltaTime/2 (NOTE: division by two is related to integration strategy)
+
+            public void Execute(ref PlanetariaVelocityComponent velocity,
+                    [ReadOnly] ref PlanetariaAccelerationComponent acceleration)
+            {
+                velocity = new PlanetariaVelocityComponent { data = velocity.data + acceleration.data * (delta_time) };
+            }
+        }
+
+        [BurstCompile]
+        [RequireComponentTag(typeof(PlanetariaRigidbodyAerial))]
+        struct PlanetariaRigidbodyAerialGravitate : IJobProcessComponentData<PlanetariaAccelerationComponent, PlanetariaGravityComponent, PlanetariaPositionComponent>
+        {
+            public void Execute(ref PlanetariaAccelerationComponent acceleration,
+                    [ReadOnly] ref PlanetariaGravityComponent gravity,
+                    [ReadOnly] ref PlanetariaPositionComponent position)
+            {
+                float3 gradient = math.normalizesafe(Vector3.ProjectOnPlane(gravity.data, position.data));
+                float magnitude = math.length(gravity.data); // NOTE: you cannot combine normalize/length
+                acceleration = new PlanetariaAccelerationComponent { data = gradient * magnitude };
+            }
+        }
+
+        protected override JobHandle OnUpdate(JobHandle input_dependencies)
+        {
+            // On the highest level, just the following four steps are performed:
+            // velocity += acceleration * (delta_time/2)
+            // position += velocity * (delta_time)
+            // acceleration = f(n)
+            // velocity += acceleration * (delta_time/2)
+
+            // I am making a bet this is relevant in spherical coordinates (it is Euler isn't it?): http://openarena.ws/board/index.php?topic=5100.0
+            // Wikipedia: https://en.wikipedia.org/wiki/Leapfrog_integration
+            // "This is especially useful when computing orbital dynamics, as many other integration schemes, such as the (order-4) Runge-Kutta method, do not conserve energy and allow the system to drift substantially over time." - Wikipedia
+            // http://lolengine.net/blog/2011/12/14/understanding-motion-in-games
+            // http://www.richardlord.net/presentations/physics-for-flash-games.html
+
+            // AERIAL
+            var first_velocity_change = new PlanetariaRigidbodyAerialAccelerate
+            {
+                delta_time = Time.deltaTime/2,
+            };
+            JobHandle aerial = first_velocity_change.Schedule<PlanetariaRigidbodyAerialAccelerate>(this, input_dependencies);
+            var position_change = new PlanetariaRigidbodyAerialMove();
+            aerial = position_change.Schedule<PlanetariaRigidbodyAerialMove>(this, aerial);
+            var acceleration_change = new PlanetariaRigidbodyAerialGravitate();
+            aerial = acceleration_change.Schedule<PlanetariaRigidbodyAerialGravitate>(this, aerial);
+
+            // TODO: GROUNDED
+
+            /*
+            if (observer.exists && observer.data.colliding()) // grounded
+            {
+                JobHandle grounded = ABC.Schedule<T>(this, input_dependencies);
+                grounded_track(component, Time.fixedDeltaTime/2);
+                grounded = XYZ.Schedule<S>(this, grounded);
+                grounded_position(component);
+                grounded_accelerate(component, Time.fixedDeltaTime);
+            }
+            */
+
+            // TODO: barrier for aerial -> grounded (and grounded -> aerial)
+            
+            // AERIAL
+            
+            var second_velocity_change = new PlanetariaRigidbodyAerialAccelerate
+            {
+                delta_time = Time.deltaTime/2,
+            };
+            aerial = first_velocity_change.Schedule<PlanetariaRigidbodyAerialAccelerate>(this, aerial); // FIXME: barrier
+
+            // TODO: GROUNDED
+
+            // grounded_track(component, Time.fixedDeltaTime/2);
+
+            return aerial; // FIXME: JobHandle.CombineDependencies(aerial, grounded);
         }
 
         struct PlanetariaRigidbodyGroup
@@ -54,6 +122,7 @@ namespace Planetaria
             public int Length;
         }
  
+        /*
         [Inject] PlanetariaRigidbodyGroup group;
         protected override void OnCreateManager()
         {
@@ -66,29 +135,9 @@ namespace Planetaria
             {
                 PostUpdateCommands.AddComponent(group.Entity[i], new PlanetariaGravityComponent());
             }
+            // add Aerial tag as well
         }
-
-        private void aerial_move(PlanetariaRigidbodyComponent component, float delta)
-        {
-            Vector3 current_position = component.transform.forward;
-            float current_speed = component.planetaria_rigidbody_data.velocity.magnitude;
-            Vector3 current_direction = component.planetaria_rigidbody_data.velocity / current_speed;
-            Vector3 next_position = PlanetariaMath.spherical_linear_interpolation(current_position, current_direction, delta); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
-            Vector3 next_velocity = PlanetariaMath.spherical_linear_interpolation(current_position, current_direction, delta + Mathf.PI/2);
-            
-            component.position.position = next_position;
-            //component.position.position_dirty = true;
-            component.planetaria_rigidbody_data.velocity = next_velocity.normalized * current_speed; // FIXME: I thought this was numerically stable, but it seems to create more energy.
-        }
-
-        private Vector3 get_acceleration(PlanetariaRigidbodyComponent component)
-        {
-            if (component.planetaria_rigidbody_data.gravity != Vector3.zero)
-            {
-                return Vector3.ProjectOnPlane(component.planetaria_rigidbody_data.gravity, component.position.position).normalized * component.planetaria_rigidbody_data.gravity.magnitude;
-            }
-            return Vector3.zero;
-        }
+        */
 
         /*private void grounded_position(PlanetariaRigidbodyComponent component)
         {

@@ -76,11 +76,6 @@ namespace Planetaria
         }
         */
 
-        public Vector3 get_acceleration()
-        {
-            return Bearing.attractor(get_position(), planetaria_rigidbody_data.gravity.normalized)*planetaria_rigidbody_data.gravity.magnitude;
-        }
-
         public bool collide(BlockCollision collision, CollisionObserver observer)
         {
             if (this.observer.exists)

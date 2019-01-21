@@ -29,7 +29,7 @@ namespace Planetaria
                     [ReadOnly] ref PlanetariaPositionComponent position,
                     [ReadOnly] ref PlanetariaPreviousPositionComponent previous_position)
             {
-                if (direction_dirty.data)
+                if (!direction_dirty.data) // FIXME: TODO: verify: I think this will eventually lead to significant drift (since you aren't orthonormalizing occasionally)
                 {
                     Quaternion delta_rotation = Quaternion.FromToRotation(previous_position.data, position.data);
                     Vector3 adjusted_direction = delta_rotation * direction.data;
@@ -63,12 +63,12 @@ namespace Planetaria
         protected override JobHandle OnUpdate(JobHandle input_dependencies)
         {
             var modify_direction = new PlanetariaTransformRedirect();
-            var handle = modify_direction.Schedule<PlanetariaTransformRedirect>(this, input_dependencies); // NOTE: these should be scheduled simultaneously
+            JobHandle transformation = modify_direction.Schedule<PlanetariaTransformRedirect>(this, input_dependencies); // NOTE: these should be scheduled simultaneously
             var cache = new PlanetariaTransformSavePrevious();
-            handle = cache.Schedule<PlanetariaTransformSavePrevious>(this, input_dependencies); // TODO: verify
+            transformation = cache.Schedule<PlanetariaTransformSavePrevious>(this, transformation); // TODO: verify
             var translate = new PlanetariaTransformMove();
-            handle = translate.Schedule<PlanetariaTransformMove>(this, input_dependencies);
-            return handle;
+            transformation = translate.Schedule<PlanetariaTransformMove>(this, transformation);
+            return transformation;
         }
     }
 }
