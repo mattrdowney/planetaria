@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Planetaria
 {
+    /*
     public class RaycastSorter : IComparer<PlanetariaRaycastHit>
     {
         /// <summary>
@@ -95,6 +96,7 @@ namespace Planetaria
         /// <summary>A rotation that places points along the x-y plane.</summary>
         private Quaternion world_to_local;
     }
+    */
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

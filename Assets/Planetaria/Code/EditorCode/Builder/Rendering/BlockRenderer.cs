@@ -7,6 +7,7 @@ namespace Planetaria
     [ExecuteInEditMode]
     public static class BlockRenderer
     {
+        /*
         public static optional<TextAsset> render(PlanetariaCollider collider, float width)
         {
             VectorGraphicsWriter.begin_canvas();
@@ -22,6 +23,7 @@ namespace Planetaria
             VectorGraphicsWriter.end_shape(Color.black, width);
             return VectorGraphicsWriter.end_canvas();
         }
+        */
     }
 }
 

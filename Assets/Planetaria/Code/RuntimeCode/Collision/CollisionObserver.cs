@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Planetaria
 {
+    /*
     [Serializable]
     public class CollisionObserver // FIXME: remove this, it really confuses me (terrible architecture)
     {
@@ -237,6 +238,7 @@ namespace Planetaria
         [NonSerialized] private List<PlanetariaCollider> current_fields = new List<PlanetariaCollider>();
         [NonSerialized] private List<PlanetariaCollider> field_candidates = new List<PlanetariaCollider>();
     }
+    */
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

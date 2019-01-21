@@ -6,6 +6,9 @@ namespace Platformer
 {
     public class Character : PlanetariaMonoBehaviour
     {
+        protected override void OnConstruction() { }
+        protected override void OnDestruction() { }
+        /*
         protected override void OnConstruction()
         {
             OnBlockStay.data = on_block_stay;
@@ -51,7 +54,7 @@ namespace Platformer
                 planetaria_rigidbody.absolute_velocity += Vector2.right * horizontal * Time.deltaTime * transform.scale * acceleration;
             }
         }
-
+        
         private void on_block_stay(BlockCollision collision)
         {
             if (planetaria_rigidbody.colliding) // FIXME: GitHub issue #67
@@ -105,12 +108,13 @@ namespace Platformer
         [SerializeField] private const float acceleration = 5f;
 
         [NonSerialized] private PlanetariaRigidbody planetaria_rigidbody;
-        [NonSerialized] private PlanetariaCollider planetaria_collider;
+        //[NonSerialized] private PlanetariaCollider planetaria_collider;
         [NonSerialized] private float last_jump_attempt = -1;
         [NonSerialized] public bool magnet_floor = false;
         [NonSerialized] private bool jump_pressed;
         [NonSerialized] private float horizontal;
         [NonSerialized] private float vertical;
+        */
     }
 }
 

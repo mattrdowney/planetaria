@@ -3,6 +3,7 @@ using Planetaria;
 
 namespace Platformer
 {
+    /*
     public class Door : PlanetariaMonoBehaviour
     {
         public int target_level = 1;
@@ -22,6 +23,7 @@ namespace Platformer
             }
         }
     }
+    */
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

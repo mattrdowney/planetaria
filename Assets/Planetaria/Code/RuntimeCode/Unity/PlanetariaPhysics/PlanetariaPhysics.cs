@@ -27,6 +27,7 @@ namespace Planetaria
         private static PlanetariaCollider[] overlap_circle(Vector3 position, float radius, int layer_mask = Physics.DefaultRaycastLayers)
         */
 
+        /*
         /// <summary>
         /// Inspector - Finds the collision points between an arc extrapolated to be distance long (ordered by distance)
         /// </summary>
@@ -142,6 +143,7 @@ namespace Planetaria
             }
             return raycast_hits.ToArray();
         }
+        */
     }
 }
 

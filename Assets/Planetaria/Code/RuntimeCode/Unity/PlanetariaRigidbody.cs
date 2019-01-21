@@ -50,20 +50,23 @@ namespace Planetaria
         {
             get
             {
-                synchronize_velocity_ground_to_air();
-                //float x = Vector3.Dot(velocity, internal_transform.right);
-                //float y = Vector3.Dot(velocity, internal_transform.up);
-                // return new Vector2(x, y)
-                Vector2 result = internal_transform.InverseTransformDirection(planetaria_rigidbody_data.velocity); // z-component unused (should be ~ zero)
-                return result;
+                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
+                Vector3 position = entity_manager.GetComponentData<PlanetariaPositionComponent>(entity).data;
+                Vector3 up = entity_manager.GetComponentData<PlanetariaDirectionComponent>(entity).data;
+                Vector3 right = Vector3.Cross(up, position);
+                float x = Vector3.Dot(internal_velocity, internal_transform.right);
+                float y = Vector3.Dot(internal_velocity, internal_transform.up);
+                return new Vector2(x, y);
             }
             set
             {
-                //Vector3 x = internal_transform.right*value.x;
-                //Vector3 y = internal_transform.up*value.y;
-                //velocity = x + y;
-                planetaria_rigidbody_data.velocity = internal_transform.TransformDirection(value);
-                synchronize_velocity_air_to_ground();
+                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
+                Vector3 position = entity_manager.GetComponentData<PlanetariaPositionComponent>(entity).data;
+                Vector3 up = entity_manager.GetComponentData<PlanetariaDirectionComponent>(entity).data;
+                Vector3 right = Vector3.Cross(up, position);
+                Vector3 x = internal_transform.right*value.x;
+                Vector3 y = internal_transform.up*value.y;
+                internal_velocity = x + y;
             }
         }
 
@@ -74,18 +77,15 @@ namespace Planetaria
         {
             get
             {
-                synchronize_velocity_ground_to_air();
-                float x = Vector3.Dot(planetaria_rigidbody_data.velocity, Bearing.east(get_position()));
-                float y = Vector3.Dot(planetaria_rigidbody_data.velocity, Bearing.north(get_position()));
+                float x = Vector3.Dot(internal_velocity, Bearing.east(position));
+                float y = Vector3.Dot(internal_velocity, Bearing.north(position));
                 return new Vector2(x, y);
             }
             set
             {
-                Vector3 x = Bearing.east(get_position()) * value.x;
-                Vector3 y = Bearing.north(get_position()) * value.y;
-                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                entity_manager.SetComponentData<PlanetariaVelocityComponent>(entity, new PlanetariaVelocityComponent(x + y));
-                synchronize_velocity_air_to_ground();
+                Vector3 x = Bearing.east(position) * value.x;
+                Vector3 y = Bearing.north(position) * value.y;
+                internal_velocity = x + y;
             }
         }
 
@@ -93,27 +93,57 @@ namespace Planetaria
         {
             get
             {
-                synchronize_velocity_ground_to_air();
                 Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                return entity_manager.GetComponentData<PlanetariaVelocityComponent>(entity).velocity;
+                Vector3 velocity = entity_manager.GetComponentData<PlanetariaVelocityComponent>(entity).data;
+                if (!entity_manager.HasComponent<PlanetariaRigidbodyAerial>(entity))
+                {
+                    Vector3 position = entity_manager.GetComponentData<PlanetariaPositionComponent>(entity).data;
+                    Vector3 up = entity_manager.GetComponentData<PlanetariaDirectionComponent>(entity).data;
+                    Vector3 right = Vector3.Cross(up, position);
+                    velocity = velocity.x*right + velocity.y*up;
+                }
+                return velocity;
+            }
+            private set
+            {
+                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
+                Vector3 velocity = value;
+                if (!entity_manager.HasComponent<PlanetariaRigidbodyAerial>(entity))
+                {
+                    Vector3 position = entity_manager.GetComponentData<PlanetariaPositionComponent>(entity).data;
+                    Vector3 up = entity_manager.GetComponentData<PlanetariaDirectionComponent>(entity).data;
+                    Vector3 right = Vector3.Cross(up, position);
+                    velocity = new Vector3(Vector3.Dot(velocity, right), Vector3.Dot(velocity, up), 0);
+                }
+                entity_manager.SetComponentData<PlanetariaVelocityComponent>(entity, new PlanetariaVelocityComponent { data = velocity });
             }
         }
 
-        public Vector3 get_position()
+        public Vector3 position
         {
-            // FIXME: needs to modify velocity of rigidbody
-            return transform.position; // OPTIMIZE: this is crazy inefficient
+            get
+            {
+                return transform.position;
+            }
+            set
+            {
+                transform.position = value;
+            }
         }
 
-        public Vector3 get_previous_position()
+        public Vector3 previous_position
         {
-            return planetaria_rigidbody_data.previous_position;
+            get
+            {
+                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
+                return entity_manager.GetComponentData<PlanetariaPreviousPositionComponent>(entity).data;
+            }
         }
 
         [SerializeField] [HideInInspector] private Transform internal_transform;
         [SerializeField] [HideInInspector] private Rigidbody internal_rigidbody;
-        [SerializeField] [HideInInspector] private optional<CollisionObserver> observer;
-        [SerializeField] [HideInInspector] private BlockCollision collision;
+        //[SerializeField] [HideInInspector] private optional<CollisionObserver> observer;
+        //[SerializeField] [HideInInspector] private BlockCollision collision;
         
         private static EntityManager entity_manager;
     }

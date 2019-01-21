@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Planetaria // FIXME: PlanetariaCollider spawns a child, which must always be the same layer as the parent! This is tricky. Although I don't need more than one collider anymore, so the likely (best-ish) solution is the lazy one i.e. get rid of the child object altogether.
 {
+    /*
     [DisallowMultipleComponent]
     [Serializable]
     public sealed class PlanetariaCollider : PlanetariaComponent // FIXME: while not incredibly complicated, I think there might be a way to simplify this
@@ -188,6 +189,7 @@ namespace Planetaria // FIXME: PlanetariaCollider spawns a child, which must alw
         [SerializeField] [HideInInspector] public new optional<PlanetariaRigidbody> rigidbody;
         [SerializeField] public bool is_field_variable = false;
     }
+    */
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

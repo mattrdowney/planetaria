@@ -29,6 +29,7 @@ namespace Planetaria
             }
         }
 
+        /*
         /// <summary>
         /// Mutator - find all intersections along x=0 or z=0 arcs in southern hemisphere.
         /// </summary>
@@ -47,7 +48,9 @@ namespace Planetaria
                 }
             }
         }
+        */
 
+        /*
         public static void prepare(PlanetariaCollider collider)
         {
             discontinuities = new Dictionary<Arc, List<Discontinuity>>();
@@ -55,6 +58,7 @@ namespace Planetaria
             sort_discontinuities();
             collider_variable = collider;
         }
+        */
 
         /// <summary>
         /// Mutator - Sort the Discontinuity lists in non-decreasing order (with respect to angle)
@@ -67,6 +71,7 @@ namespace Planetaria
             }
         }
 
+        /*
         public static IEnumerable<ArcIterator> arc_iterator()
         {
             foreach (Arc arc in collider_variable.shape.arcs)
@@ -86,8 +91,9 @@ namespace Planetaria
                 yield return new ArcIterator(arc, begin_angle, +arc.angle()/2); // The last segment goes until the end (i.e. +arc.angle()/2)
             }
         }
+        */
 
-        private static PlanetariaCollider collider_variable;
+        //private static PlanetariaCollider collider_variable;
         private static Dictionary<Arc, List<Discontinuity>> discontinuities;
     }
 }

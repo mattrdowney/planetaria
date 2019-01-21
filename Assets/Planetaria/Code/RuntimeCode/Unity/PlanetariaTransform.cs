@@ -27,10 +27,12 @@ namespace Planetaria
             {
                 internal_transform = gameObject.internal_game_object.GetComponent<Transform>();
             }
+            /*
             if (!internal_collider.exists) // FIXME: components added at runtime won't link properly
             {
                 internal_collider = internal_transform.GetComponent<PlanetariaCollider>(); // TODO: better way to do this - observer pattern
             }
+            */
             if (!internal_renderer.exists)
             {
                 internal_renderer = internal_transform.GetComponent<PlanetariaRenderer>();
@@ -163,7 +165,7 @@ namespace Planetaria
             }
             set
             {
-                // FIXME: needs to modify velocity of rigidbody (if a rigidbody exists)
+                // FIXME: direction must change, and also needs to modify velocity of rigidbody (if a rigidbody exists) - if (PlanetariaVelocityComponent exists) get relative velocity before teleporting, teleport while modifying the direction to follow the attractor/repellor along velocity vector, then set relative velocity to the fetched value
                 if (internal_transform.parent == null)
                 {
                     local_position = value;
@@ -290,7 +292,7 @@ namespace Planetaria
 
         // CONSIDER: implement Translate() ? - probably, relative to direction move Vector2 distance.
         [SerializeField] [HideInInspector] private Transform internal_transform;
-        [SerializeField] [HideInInspector] private optional<PlanetariaCollider> internal_collider; // Observer pattern would be more elegant but slower
+        //[SerializeField] [HideInInspector] private optional<PlanetariaCollider> internal_collider; // Observer pattern would be more elegant but slower
         [SerializeField] [HideInInspector] private optional<PlanetariaRenderer> internal_renderer;
         [SerializeField] [HideInInspector] private optional<PlanetariaRigidbody> internal_rigidbody; // FIXME: implement
 

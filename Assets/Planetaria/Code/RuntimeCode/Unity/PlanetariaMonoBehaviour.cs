@@ -10,6 +10,7 @@ namespace Planetaria
         protected abstract void OnConstruction();
         protected abstract void OnDestruction();
 
+        /*
         protected delegate void CollisionDelegate(BlockCollision block_information);
         protected delegate void TriggerDelegate(PlanetariaCollider field_information);
 
@@ -20,15 +21,17 @@ namespace Planetaria
         protected optional<TriggerDelegate> OnFieldEnter = null;
         protected optional<TriggerDelegate> OnFieldExit = null;
         protected optional<TriggerDelegate> OnFieldStay = null;
-
+        */
         protected override sealed void Awake()
         {
             base.Awake();
+            /*
             foreach (PlanetariaCollider collider in this.GetComponentsInChildren<PlanetariaCollider>()) // FIXME:
             {
                 collider.register(this);
                 observers.Add(collider.get_observer());
             }
+            */
             // FIXME: still need to cache (properly)
             OnConstruction();
         }
@@ -37,12 +40,15 @@ namespace Planetaria
         {
             OnDestruction();
             // FIXME: still need to un-cache (properly)
+            /*
             foreach (PlanetariaCollider collider in this.GetComponentsInChildren<PlanetariaCollider>())
             {
                 collider.unregister(this);
             }
+            */
         }
 
+        /*
         public void enter_block(BlockCollision collision)
         {
             if (OnBlockEnter.exists)
@@ -92,6 +98,7 @@ namespace Planetaria
         }
         
         [NonSerialized] [HideInInspector] private List<CollisionObserver> observers = new List<CollisionObserver>();
+        */
     }
 }
 

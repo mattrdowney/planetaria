@@ -2,6 +2,7 @@
 
 namespace Planetaria
 {
+    /*
     public sealed class PlanetariaRaycastHit
     {
         /// <summary>
@@ -70,6 +71,7 @@ namespace Planetaria
         /// <summary>The PlanetariaTransform instance - similar to UnityEngine.Transform</summary>
         public readonly PlanetariaTransform transform;
     }
+    */
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

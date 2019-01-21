@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Planetaria
 {
+    /*
     // CONSIDER: Multiton Design Pattern for multiple levels?
     public static class PlanetariaCache
     {
@@ -29,6 +30,7 @@ namespace Planetaria
         
         private static Dictionary<SphereCollider, PlanetariaCollider> collider_cache = new Dictionary<SphereCollider, PlanetariaCollider>();
     }
+    */
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

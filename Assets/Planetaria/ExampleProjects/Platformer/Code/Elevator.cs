@@ -5,6 +5,11 @@ namespace Platformer
 {
     public class Elevator : PlanetariaTracker
     {
+        public override void setup() { }
+        public override void cleanup() { }
+        public override void teleport() { }
+        public override void step() { }
+        /*
         public override void cleanup() { }
 
         public override void setup()
@@ -28,6 +33,7 @@ namespace Platformer
         public override void teleport() { }
 
         private Quaternion rotator;
+        */
     }
 }
 

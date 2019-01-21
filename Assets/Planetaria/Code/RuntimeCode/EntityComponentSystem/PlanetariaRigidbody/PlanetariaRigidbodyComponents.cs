@@ -9,25 +9,20 @@ namespace Planetaria
     public struct PlanetariaVelocityComponent : IComponentData
     {
         [SerializeField] public float3 data; // magnitude in [0, infinity]
-        //[SerializeField] public float magnitude; // implicitly - magnitude in [0, infinity] (although negative values shouldn't break anything)
-        //[SerializeField] public float horizontal_velocity; // implicitly - through grounded state
-        //[SerializeField] public float vertical_velocity;
+        //[SerializeField] public float2 data; // implicitly shared - for grounded state
     }
 
     [Serializable]
     public struct PlanetariaAccelerationComponent : IComponentData // Implementation note: if PlanetariaRigidbodyGravity is Vector3.zero, the PlanetariaRigidbodyAcceleration tag/acceleration is removed
     {
         [SerializeField] public float3 data; // magnitude in [0, infinity]
-        //[SerializeField] public float magnitude; // implicitly - magnitude in [0, infinity] (although negative values shouldn't break anything)
-        //[SerializeField] public float horizontal_acceleration; // implicitly - through grounded state
-        //[SerializeField] public float vertical_acceleration;
+        //[SerializeField] public float2 data; // implicitly shared - for grounded state
     }
 
     [Serializable]
     public struct PlanetariaGravityComponent : IComponentData
     {
         [SerializeField] public float3 data; // magnitude in [0, infinity]
-        //[SerializeField] public float magnitude; // implicitly - magnitude in [0, infinity] (although negative values shouldn't break anything)
     }
 
     public struct PlanetariaRigidbodyAerial : IComponentData { } // tag for whether Rigidbody is grounded or in midair.

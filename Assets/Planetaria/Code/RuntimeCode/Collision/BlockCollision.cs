@@ -2,6 +2,7 @@
 
 namespace Planetaria
 {
+    /*
     public class BlockCollision
     {
         public static optional<BlockCollision> block_collision(CollisionObserver observer, Arc arc, PlanetariaCollider collider, PlanetariaTransform transform, PlanetariaRigidbody rigidbody)
@@ -16,8 +17,8 @@ namespace Planetaria
             Quaternion block_to_world = collider.gameObject.internal_game_object.transform.rotation;
             Quaternion world_to_block = Quaternion.Inverse(block_to_world);
 
-            Vector3 last_position = world_to_block * rigidbody.get_previous_position();
-            Vector3 current_position = world_to_block * rigidbody.get_position();
+            Vector3 last_position = world_to_block * rigidbody.previous_position();
+            Vector3 current_position = world_to_block * rigidbody.position();
 
             float extrusion = transform.scale/2;
             optional<Vector3> intersection_point = PlanetariaIntersection.arc_path_intersection(arc, last_position, current_position, extrusion);
@@ -39,8 +40,8 @@ namespace Planetaria
             float angle = arc.position_to_angle(intersection_point.data);
             result.geometry_visitor = ShapeVisitor.geometry_visitor(arc_visitor.data, angle, extrusion, collider.gameObject.internal_game_object.transform);
             intersection_point.data = block_to_world * intersection_point.data;
-            result.distance = Vector3.Angle(intersection_point.data, rigidbody.get_previous_position())*Mathf.Deg2Rad;
-            result.overshoot = Vector3.Angle(intersection_point.data, rigidbody.get_position())*Mathf.Deg2Rad;
+            result.distance = Vector3.Angle(intersection_point.data, rigidbody.previous_position())*Mathf.Deg2Rad;
+            result.overshoot = Vector3.Angle(intersection_point.data, rigidbody.position())*Mathf.Deg2Rad;
             result.observer = observer;
             result.self = observer.collider();
             result.other = collider;
@@ -81,7 +82,7 @@ namespace Planetaria
 
         private static bool platform_collision(Arc arc, PlanetariaCollider collider, PlanetariaTransform transformation, PlanetariaRigidbody rigidbody, optional<Vector3> intersection_point)
         {
-            Vector3 velocity = Bearing.attractor(rigidbody.get_previous_position(), rigidbody.get_position());
+            Vector3 velocity = Bearing.attractor(rigidbody.previous_position(), rigidbody.position());
 
             if (intersection_point.exists)
             {
@@ -100,6 +101,7 @@ namespace Planetaria
 
         private bool active_variable;
     }
+    */
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

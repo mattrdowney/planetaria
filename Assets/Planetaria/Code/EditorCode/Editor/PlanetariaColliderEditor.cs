@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Planetaria
 {
+    /*
     [CustomEditor(typeof(PlanetariaCollider))]
     public class PlanetariaColliderEditor : Editor
     {
@@ -29,7 +30,7 @@ namespace Planetaria
                 }
             }
             */
-        }
+        //}
         /*
         public override void OnInspectorGUI()
         {
@@ -68,7 +69,7 @@ namespace Planetaria
         private static bool[] mask = new bool[8*sizeof(int)];
         private static int arc_identifier = 0;
         */
-    }
+    //}
 }
 #endif
 
