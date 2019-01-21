@@ -111,6 +111,7 @@ namespace Planetaria
             }
             set
             {
+                // FIXME: needs to modify velocity of rigidbody (if a rigidbody exists)
                 Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
                 entity_manager.SetComponentData<PlanetariaPositionComponent>(entity, new PlanetariaPositionComponent { data = value });
             }
@@ -162,6 +163,7 @@ namespace Planetaria
             }
             set
             {
+                // FIXME: needs to modify velocity of rigidbody (if a rigidbody exists)
                 if (internal_transform.parent == null)
                 {
                     local_position = value;

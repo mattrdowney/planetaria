@@ -60,13 +60,43 @@ namespace Planetaria
             }
         }
 
+        [BurstCompile]
+        [RequireComponentTag(typeof(PlanetariaRigidbodyAerial))]
+        struct PlanetariaRigidbodyAirToGroundVelocity : IJobProcessComponentData<PlanetariaVelocityComponent, PlanetariaPositionComponent, PlanetariaDirectionComponent>
+        {
+            public void Execute(ref PlanetariaVelocityComponent velocity,
+                    [ReadOnly] ref PlanetariaPositionComponent position,
+                    [ReadOnly] ref PlanetariaDirectionComponent direction) // FIXME: use collision normal (e.g. better for top down games)
+            {
+                float3 right = math.cross(direction.data, position.data);
+                float horizontal_velocity = math.dot(velocity.data, right);
+                float vertical_velocity = math.dot(velocity.data, direction.data);
+                velocity = new PlanetariaVelocityComponent { data = new float3(horizontal_velocity, vertical_velocity, 0) };
+            }
+        }
+
+        [BurstCompile]
+        [RequireComponentTag(typeof(PlanetariaRigidbodyAerial))]
+        struct PlanetariaRigidbodyGroundToAirVelocity : IJobProcessComponentData<PlanetariaVelocityComponent, PlanetariaPositionComponent, PlanetariaDirectionComponent>
+        {
+            public void Execute(ref PlanetariaVelocityComponent velocity,
+                    [ReadOnly] ref PlanetariaPositionComponent position,
+                    [ReadOnly] ref PlanetariaDirectionComponent direction) // FIXME: use collision normal (e.g. better for top down games)
+            {
+                float3 right = math.cross(direction.data, position.data);
+                float3 horizontal_velocity = velocity.data.x * right;
+                float3 vertical_velocity = velocity.data.y * direction.data;
+                velocity = new PlanetariaVelocityComponent { data = horizontal_velocity + vertical_velocity };
+            }
+        }
+
         protected override JobHandle OnUpdate(JobHandle input_dependencies)
         {
             // On the highest level, just the following four steps are performed:
             // velocity += acceleration * (delta_time/2)
             // position += velocity * (delta_time)
             // acceleration = f(n)
-            // velocity += acceleration * (delta_time/2)
+            // velocity += acceleration * (delta_time/2) // FIXME: this has to be 1) implement incorrectly or 2) not useful for Planetaria (or at least useful enough to justify it's existence)
 
             // I am making a bet this is relevant in spherical coordinates (it is Euler isn't it?): http://openarena.ws/board/index.php?topic=5100.0
             // Wikipedia: https://en.wikipedia.org/wiki/Leapfrog_integration

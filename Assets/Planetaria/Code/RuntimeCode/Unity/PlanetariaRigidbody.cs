@@ -33,7 +33,7 @@ namespace Planetaria
                 internal_rigidbody = Miscellaneous.GetOrAddComponent<Rigidbody>(this);
             }
             if (entity_manager == null)
-            {        
+            {
                 entity_manager = World.Active.GetOrCreateManager<EntityManager>();
             }
             Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
@@ -43,154 +43,9 @@ namespace Planetaria
             internal_rigidbody.useGravity = false;
         }
 
-        /*
-        private void FixedUpdate()
-        {
-            planetaria_rigidbody_data.previous_position = get_position();
-            if (observer.exists && observer.data.colliding()) // grounded
-            {
-                grounded_track(Time.fixedDeltaTime/2);
-                grounded_position();
-                grounded_accelerate(Time.fixedDeltaTime);
-            }
-            else // non-grounded / "aerial"
-            {
-                // I am making a bet this is relevant in spherical coordinates (it is Euler isn't it?): http://openarena.ws/board/index.php?topic=5100.0
-                // Wikipedia: https://en.wikipedia.org/wiki/Leapfrog_integration
-                // "This is especially useful when computing orbital dynamics, as many other integration schemes, such as the (order-4) Runge-Kutta method, do not conserve energy and allow the system to drift substantially over time." - Wikipedia
-                // http://lolengine.net/blog/2011/12/14/understanding-motion-in-games
-                // http://www.richardlord.net/presentations/physics-for-flash-games.html
-                planetaria_rigidbody_data.velocity += planetaria_rigidbody_data.acceleration * (Time.fixedDeltaTime/2);
-                aerial_move(planetaria_rigidbody_data.velocity.magnitude * Time.fixedDeltaTime);
-                planetaria_rigidbody_data.acceleration = get_acceleration();
-            }
-
-            if (observer.exists && observer.data.colliding()) // grounded
-            {
-                grounded_track(Time.fixedDeltaTime/2);
-            }
-            else // non-grounded / "aerial"
-            {
-                planetaria_rigidbody_data.velocity += planetaria_rigidbody_data.acceleration * (Time.fixedDeltaTime/2);
-            }
-        }
-        */
-
-        public bool collide(BlockCollision collision, CollisionObserver observer)
-        {
-            if (this.observer.exists)
-            {
-                this.observer.data.clear_block_collision();
-            }
-
-            aerial_move(-collision.overshoot); // this only (truly) works with perpendicular vectors?
-
-            this.observer = observer;
-            this.collision = collision;
-            
-            planetaria_rigidbody_data.horizontal_velocity = Vector3.Dot(planetaria_rigidbody_data.velocity, Bearing.right(get_position(), collision.geometry_visitor.normal()));
-            planetaria_rigidbody_data.vertical_velocity = Vector3.Dot(planetaria_rigidbody_data.velocity, collision.geometry_visitor.normal());
-            if (planetaria_rigidbody_data.vertical_velocity < 0)
-            {
-                planetaria_rigidbody_data.vertical_velocity *= -collision.elasticity;
-            }
-
-            grounded_accelerate(0); // FIXME: code smell
-
-            return this.observer.exists;
-        }
-
-        private void aerial_move(float delta)
-        {
-            Vector3 next_position = PlanetariaMath.spherical_linear_interpolation(get_position(), planetaria_rigidbody_data.velocity.normalized, delta); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
-            Vector3 next_velocity = PlanetariaMath.spherical_linear_interpolation(get_position(), planetaria_rigidbody_data.velocity.normalized, delta + Mathf.PI/2);
-            
-            transform.position = next_position;
-            planetaria_rigidbody_data.velocity = next_velocity.normalized * planetaria_rigidbody_data.velocity.magnitude; // FIXME: I thought this was numerically stable, but it seems to create more energy.
-            //velocity = Vector3.ProjectOnPlane(velocity, get_position()); // TODO: CONSIDER: ensure velocity and position are orthogonal - they seem to desynchronize
-            //Debug.DrawRay(get_position(), velocity, Color.green); // draw new velocity (not old one)
-        }
-
-        private void grounded_position()
-        {
-            collision.geometry_visitor.move_position(planetaria_rigidbody_data.horizontal_velocity * Time.fixedDeltaTime);
-            transform.position = collision.geometry_visitor.position(); // NOTE: required so get_acceleration() functions
-            // project velocity
-        }
-
-        private void grounded_track(float delta_time)
-        {
-            planetaria_rigidbody_data.horizontal_velocity += planetaria_rigidbody_data.horizontal_acceleration * delta_time;
-            float friction = Mathf.Abs(collision.friction * -planetaria_rigidbody_data.vertical_velocity);
-            float speed = Mathf.Abs(planetaria_rigidbody_data.horizontal_velocity);
-            planetaria_rigidbody_data.horizontal_velocity -= Mathf.Sign(planetaria_rigidbody_data.horizontal_velocity)*Mathf.Min(speed, friction);
-            planetaria_rigidbody_data.vertical_velocity = 0;
-        }
-
-        private void grounded_accelerate(float delta)
-        {
-            Vector3 normal = collision.geometry_visitor.normal();
-            Vector3 right = Bearing.right(collision.geometry_visitor.position(), normal);
-
-            planetaria_rigidbody_data.acceleration = get_acceleration();
-            planetaria_rigidbody_data.horizontal_acceleration = Vector3.Dot(planetaria_rigidbody_data.acceleration, right);
-            planetaria_rigidbody_data.vertical_acceleration = Vector3.Dot(planetaria_rigidbody_data.acceleration, normal) - collision.magnetism;
-            planetaria_rigidbody_data.vertical_velocity += planetaria_rigidbody_data.vertical_acceleration*Time.fixedDeltaTime;
-            if (!collision.grounded(internal_velocity)) // TODO: check centripedal force
-            {
-                derail(0, planetaria_rigidbody_data.vertical_acceleration*delta); // Force OnCollisionExit, "un-collision" (and accelerate for a frame)
-            }
-        }
-        
-        public void derail(float x_velocity, float y_velocity)
-        {
-            if (observer.exists && observer.data.colliding())
-            {
-                BlockCollision collision = observer.data.collisions()[0];
-
-                collision.geometry_visitor.move_position(0, transform.scale/2 * (1 + 1e-3f)); // extrude the player so they do not accidentally re-collide (immediately) // FIXME: magic number, move to Precision.*
-                x_velocity += planetaria_rigidbody_data.horizontal_velocity;
-                //y_velocity += vertical_velocity;
-                transform.position = collision.geometry_visitor.position();
-                Vector3 normal = collision.geometry_visitor.normal();
-                Vector3 right = Bearing.right(get_position(), normal);
-                planetaria_rigidbody_data.velocity = right*x_velocity + normal*y_velocity;
-                Debug.DrawRay(get_position(), planetaria_rigidbody_data.velocity, Color.yellow, 1f);
-                planetaria_rigidbody_data.acceleration = get_acceleration();
-                // TODO: accelerate vertically
-                
-                observer.data.clear_block_collision();
-                observer = new optional<CollisionObserver>();
-            }
-        }
-
-        private void synchronize_velocity_ground_to_air()
-        {
-            if (observer.exists)
-            {
-                Vector3 x = planetaria_rigidbody_data.horizontal_velocity * Bearing.right(get_position(), collision.geometry_visitor.normal());
-                Vector3 y = planetaria_rigidbody_data.vertical_acceleration * Time.fixedDeltaTime * collision.geometry_visitor.normal();
-                planetaria_rigidbody_data.velocity = x + y;
-            }
-        }
-
-        private void synchronize_velocity_air_to_ground()
-        {
-            if (observer.exists)
-            {
-                planetaria_rigidbody_data.horizontal_velocity = Vector3.Dot(planetaria_rigidbody_data.velocity, Bearing.right(get_position(), collision.geometry_visitor.normal()));
-                planetaria_rigidbody_data.vertical_velocity = Vector3.Dot(planetaria_rigidbody_data.velocity, collision.geometry_visitor.normal());
-            }
-        }
-       
-        public bool colliding
-        {
-            get
-            {
-                return observer.exists;
-            }
-        }
-
+        /// <summary>
+        /// Mutator - view velocity based on relative values (positive y is local "up", positive x is local "right") with respect to the object
+        /// </summary>
         public Vector2 relative_velocity
         {
             get
@@ -212,6 +67,9 @@ namespace Planetaria
             }
         }
 
+        /// <summary>
+        /// Mutator - view velocity based on absolute values (positive y is "North"/"up", positive x is "East"/"right") with respect to the planetarium
+        /// </summary>
         public Vector2 absolute_velocity
         {
             get
@@ -243,19 +101,14 @@ namespace Planetaria
 
         public Vector3 get_position()
         {
-            // TODO: while this isn't useful now, I could use caching later
-            return transform.position;
+            // FIXME: needs to modify velocity of rigidbody
+            return transform.position; // OPTIMIZE: this is crazy inefficient
         }
 
         public Vector3 get_previous_position()
         {
             return planetaria_rigidbody_data.previous_position;
         }
-
-        /// <summary>
-        /// public Vector2 velocity - set velocity based on absolute values; up is north, right is east
-        /// public Vector3 position - set velocity based on relative values; begin attractor is south, end repeller is north
-        /// </summary>
 
         [SerializeField] [HideInInspector] private Transform internal_transform;
         [SerializeField] [HideInInspector] private Rigidbody internal_rigidbody;

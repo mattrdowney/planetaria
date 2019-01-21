@@ -29,6 +29,7 @@ namespace Planetaria
                     [ReadOnly] ref PlanetariaPositionComponent position,
                     [ReadOnly] ref PlanetariaPreviousPositionComponent previous_position)
             {
+                // FIXME: any time the user teleports the player, velocity is invalidated (need to distinguish between Rigidbody translations and user translations)
                 if (!direction_dirty.data) // FIXME: TODO: verify: I think this will eventually lead to significant drift (since you aren't orthonormalizing occasionally)
                 {
                     Quaternion delta_rotation = Quaternion.FromToRotation(previous_position.data, position.data);
