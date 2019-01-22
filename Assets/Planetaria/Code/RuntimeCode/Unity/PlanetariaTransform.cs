@@ -15,6 +15,20 @@ namespace Planetaria
             initialize();
         }
 
+        protected override sealed void OnDestroy()
+        {
+            base.OnDestroy();
+            Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
+            if (entity_manager.Exists(entity))
+            {
+                entity_manager.RemoveComponent(entity, typeof(PlanetariaPositionComponent));
+                entity_manager.RemoveComponent(entity, typeof(PlanetariaPreviousPositionComponent));
+                entity_manager.RemoveComponent(entity, typeof(PlanetariaDirectionComponent));
+                entity_manager.RemoveComponent(entity, typeof(PlanetariaDirectionDirtyComponent));
+                entity_manager.RemoveComponent(entity, typeof(PlanetariaScaleComponent));
+            }
+        }
+
         protected override sealed void Reset()
         {
             base.Reset();

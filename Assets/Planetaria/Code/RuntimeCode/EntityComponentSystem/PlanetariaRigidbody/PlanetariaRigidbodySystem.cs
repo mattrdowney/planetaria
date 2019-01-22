@@ -15,7 +15,7 @@ namespace Planetaria
     public class PlanetariaRigidbodySystem : JobComponentSystem
     {
         [BurstCompile]
-        [RequireComponentTag(typeof(PlanetariaRigidbodyAerial))]
+        [RequireComponentTag(typeof(PlanetariaRigidbodyAerialComponent))]
         struct PlanetariaRigidbodyAerialMove : IJobProcessComponentData<PlanetariaPositionComponent, PlanetariaVelocityComponent>
         {
             //public float radians; // Unless I feel like passing in a NativeArray<float>, I have to refactor this to velocity
@@ -34,7 +34,7 @@ namespace Planetaria
         }
 
         [BurstCompile]
-        [RequireComponentTag(typeof(PlanetariaRigidbodyAerial))]
+        [RequireComponentTag(typeof(PlanetariaRigidbodyAerialComponent))]
         struct PlanetariaRigidbodyAerialAccelerate : IJobProcessComponentData<PlanetariaVelocityComponent, PlanetariaAccelerationComponent>
         {
             public float delta_time; // intended for Time.fixedDeltaTime/2 (NOTE: division by two is related to integration strategy)
@@ -47,7 +47,7 @@ namespace Planetaria
         }
 
         [BurstCompile]
-        [RequireComponentTag(typeof(PlanetariaRigidbodyAerial))]
+        [RequireComponentTag(typeof(PlanetariaRigidbodyAerialComponent))]
         struct PlanetariaRigidbodyAerialGravitate : IJobProcessComponentData<PlanetariaAccelerationComponent, PlanetariaGravityComponent, PlanetariaPositionComponent>
         {
             public void Execute(ref PlanetariaAccelerationComponent acceleration,
@@ -61,7 +61,7 @@ namespace Planetaria
         }
 
         [BurstCompile]
-        [RequireComponentTag(typeof(PlanetariaRigidbodyAerial))]
+        [RequireComponentTag(typeof(PlanetariaRigidbodyAerialComponent))]
         struct PlanetariaRigidbodyAirToGroundVelocity : IJobProcessComponentData<PlanetariaVelocityComponent, PlanetariaPositionComponent, PlanetariaDirectionComponent>
         {
             public void Execute(ref PlanetariaVelocityComponent velocity,
@@ -76,7 +76,7 @@ namespace Planetaria
         }
 
         [BurstCompile]
-        [RequireComponentTag(typeof(PlanetariaRigidbodyAerial))]
+        [RequireComponentTag(typeof(PlanetariaRigidbodyAerialComponent))]
         struct PlanetariaRigidbodyGroundToAirVelocity : IJobProcessComponentData<PlanetariaVelocityComponent, PlanetariaPositionComponent, PlanetariaDirectionComponent>
         {
             public void Execute(ref PlanetariaVelocityComponent velocity,

@@ -15,6 +15,25 @@ namespace Planetaria
             initialize();
         }
 
+        protected override sealed void OnDestroy()
+        {
+            base.OnDestroy();
+            Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
+            if (entity_manager.Exists(entity))
+            {
+                entity_manager.RemoveComponent(entity, typeof(PlanetariaVelocityComponent));
+                entity_manager.RemoveComponent(entity, typeof(PlanetariaGravityComponent));
+                if (entity_manager.HasComponent<PlanetariaAccelerationComponent>(entity))
+                {
+                    entity_manager.RemoveComponent(entity, typeof(PlanetariaAccelerationComponent));
+                }
+                if (entity_manager.HasComponent<PlanetariaRigidbodyAerialComponent>(entity))
+                {
+                    entity_manager.RemoveComponent(entity, typeof(PlanetariaRigidbodyAerialComponent));
+                }
+            }
+        }
+
         protected override sealed void Reset()
         {
             base.Reset();
@@ -40,7 +59,7 @@ namespace Planetaria
             entity_manager.AddComponent(entity, typeof(PlanetariaVelocityComponent));
             //entity_manager.AddComponent(entity, typeof(PlanetariaAccelerationComponent)); // FIXME: only needs to be attached if there is non-zero gravity
             entity_manager.AddComponent(entity, typeof(PlanetariaGravityComponent));
-            entity_manager.AddComponent(entity, typeof(PlanetariaRigidbodyAerial));
+            entity_manager.AddComponent(entity, typeof(PlanetariaRigidbodyAerialComponent));
             internal_rigidbody.isKinematic = true;
             internal_rigidbody.useGravity = false;
         }
@@ -97,7 +116,7 @@ namespace Planetaria
             {
                 Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
                 Vector3 velocity = entity_manager.GetComponentData<PlanetariaVelocityComponent>(entity).data;
-                if (!entity_manager.HasComponent<PlanetariaRigidbodyAerial>(entity))
+                if (!entity_manager.HasComponent<PlanetariaRigidbodyAerialComponent>(entity))
                 {
                     Vector3 position = entity_manager.GetComponentData<PlanetariaPositionComponent>(entity).data;
                     Vector3 up = entity_manager.GetComponentData<PlanetariaDirectionComponent>(entity).data;
@@ -110,7 +129,7 @@ namespace Planetaria
             {
                 Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
                 Vector3 velocity = value;
-                if (!entity_manager.HasComponent<PlanetariaRigidbodyAerial>(entity))
+                if (!entity_manager.HasComponent<PlanetariaRigidbodyAerialComponent>(entity))
                 {
                     Vector3 position = entity_manager.GetComponentData<PlanetariaPositionComponent>(entity).data;
                     Vector3 up = entity_manager.GetComponentData<PlanetariaDirectionComponent>(entity).data;

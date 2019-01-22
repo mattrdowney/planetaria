@@ -25,7 +25,7 @@ namespace Planetaria
         [SerializeField] public float3 data; // magnitude in [0, infinity]
     }
 
-    public struct PlanetariaRigidbodyAerial : IComponentData { } // tag for whether Rigidbody is grounded or in midair.
+    public struct PlanetariaRigidbodyAerialComponent : IComponentData { } // tag for whether Rigidbody is grounded or in midair.
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
