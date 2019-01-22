@@ -38,7 +38,9 @@ namespace Planetaria
             }
             Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
             entity_manager.AddComponent(entity, typeof(PlanetariaVelocityComponent));
+            //entity_manager.AddComponent(entity, typeof(PlanetariaAccelerationComponent)); // FIXME: only needs to be attached if there is non-zero gravity
             entity_manager.AddComponent(entity, typeof(PlanetariaGravityComponent));
+            entity_manager.AddComponent(entity, typeof(PlanetariaRigidbodyAerial));
             internal_rigidbody.isKinematic = true;
             internal_rigidbody.useGravity = false;
         }

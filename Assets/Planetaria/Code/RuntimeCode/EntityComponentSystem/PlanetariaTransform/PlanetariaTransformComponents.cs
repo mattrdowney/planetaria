@@ -28,7 +28,7 @@ namespace Planetaria
     [Serializable]
     public struct PlanetariaDirectionDirtyComponent : IComponentData // CONSIDER: How do I remove this in the long run? Can I?
     {
-        [SerializeField] public bool data;
+        [SerializeField] public byte data; // FIXME: blittable bool / Unity.Mathematics.bool1
     }
 
     [Serializable]

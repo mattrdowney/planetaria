@@ -42,8 +42,10 @@ namespace Planetaria
                 entity_manager = World.Active.GetOrCreateManager<EntityManager>();
             }      
             Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-            entity_manager.AddComponent(entity, typeof(PlanetariaDirectionComponent));
             entity_manager.AddComponent(entity, typeof(PlanetariaPositionComponent));
+            entity_manager.AddComponent(entity, typeof(PlanetariaPreviousPositionComponent));
+            entity_manager.AddComponent(entity, typeof(PlanetariaDirectionComponent));
+            entity_manager.AddComponent(entity, typeof(PlanetariaDirectionDirtyComponent));
             entity_manager.AddComponent(entity, typeof(PlanetariaScaleComponent));
             local_position = internal_transform.forward;
             local_direction = internal_transform.up;
@@ -100,7 +102,7 @@ namespace Planetaria
             {
                 Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
                 entity_manager.SetComponentData<PlanetariaDirectionComponent>(entity, new PlanetariaDirectionComponent { data = value });
-                entity_manager.SetComponentData<PlanetariaDirectionDirtyComponent>(entity, new PlanetariaDirectionDirtyComponent { data = true });
+                entity_manager.SetComponentData<PlanetariaDirectionDirtyComponent>(entity, new PlanetariaDirectionDirtyComponent { data = 1 });
             }
         }
 

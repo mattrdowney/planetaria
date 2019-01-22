@@ -10,10 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 45}
   - component: {fileID: 1119677847718898142}
-  - component: {fileID: 4087433533342881793}
   - component: {fileID: 70}
   - component: {fileID: 56}
-  - component: {fileID: 1452597327385485613}
   - component: {fileID: 71}
   - component: {fileID: 60}
   - component: {fileID: 69}
@@ -53,24 +51,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bf10cdea1344482e91a4f2b58506b77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &4087433533342881793
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 32}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d97900649f3bb374aafb354fa4235789, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  position_dirty: 1
-  direction_dirty: 1
-  scale_dirty: 1
-  position: {x: 0, y: 0, z: 1}
-  direction: {x: 0, y: 1, z: 0}
-  scale: 0.06
 --- !u!114 &70
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -87,7 +67,6 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 32}
   internal_transform: {fileID: 45}
-  planetaria_transform_data: {fileID: 4087433533342881793}
 --- !u!54 &56
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -104,26 +83,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &1452597327385485613
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 32}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 56b6c21ceda27e74a9b26c57e1c049d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  previous_position: {x: 0, y: 0, z: 1}
-  velocity: {x: 0, y: 0, z: 0}
-  acceleration: {x: 0, y: 0, z: 0}
-  gravity: {x: 0, y: 0, z: 0}
-  horizontal_velocity: 0
-  vertical_velocity: 0
-  horizontal_acceleration: 0
-  vertical_acceleration: 0
 --- !u!114 &71
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -139,7 +98,6 @@ MonoBehaviour:
   initialized: 0
   game_object_variable:
     game_object_variable: {fileID: 32}
-  planetaria_rigidbody_data: {fileID: 1452597327385485613}
   internal_transform: {fileID: 45}
   internal_rigidbody: {fileID: 56}
 --- !u!135 &60
@@ -371,6 +329,8 @@ GameObject:
   m_Component:
   - component: {fileID: 48}
   - component: {fileID: 79}
+  - component: {fileID: 6909389442814733745}
+  - component: {fileID: 2048246246082960264}
   m_Layer: 10
   m_Name: Silhouette
   m_TagString: Untagged
@@ -416,3 +376,31 @@ MonoBehaviour:
   offset: 1
   sprite_variable: {fileID: 21300000, guid: 1fbbc0a081ad7d74dbc22546648c4cab, type: 3}
   sprite_renderer: {fileID: 0}
+--- !u!114 &6909389442814733745
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 41}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bf10cdea1344482e91a4f2b58506b77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2048246246082960264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 41}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48d2cae72ee207743b9de842f4f0663d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialized: 0
+  game_object_variable:
+    game_object_variable: {fileID: 41}
+  internal_transform: {fileID: 48}
