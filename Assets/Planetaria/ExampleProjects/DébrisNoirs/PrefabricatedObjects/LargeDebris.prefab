@@ -328,9 +328,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 48}
-  - component: {fileID: 79}
   - component: {fileID: 6909389442814733745}
   - component: {fileID: 2048246246082960264}
+  - component: {fileID: 79}
   m_Layer: 10
   m_Name: Silhouette
   m_TagString: Untagged
@@ -353,29 +353,6 @@ Transform:
   m_Father: {fileID: 45}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &79
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 41}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fcbcac2b27276b84398b2afea6e2bdb8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initialized: 0
-  game_object_variable:
-    game_object_variable: {fileID: 0}
-  angle_variable: 0
-  material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  scale_variable: 0.06
-  internal_transform: {fileID: 54}
-  internal_renderer: {fileID: 63}
-  offset: 1
-  sprite_variable: {fileID: 21300000, guid: 1fbbc0a081ad7d74dbc22546648c4cab, type: 3}
-  sprite_renderer: {fileID: 0}
 --- !u!114 &6909389442814733745
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -404,3 +381,26 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 41}
   internal_transform: {fileID: 48}
+--- !u!114 &79
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 41}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcbcac2b27276b84398b2afea6e2bdb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialized: 0
+  game_object_variable:
+    game_object_variable: {fileID: 0}
+  angle_variable: 0
+  material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  scale_variable: 0.06
+  internal_transform: {fileID: 54}
+  internal_renderer: {fileID: 63}
+  offset: 1
+  sprite_variable: {fileID: 21300000, guid: 1fbbc0a081ad7d74dbc22546648c4cab, type: 3}
+  sprite_renderer: {fileID: 0}

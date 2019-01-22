@@ -7,7 +7,7 @@ namespace Planetaria
     [DisallowMultipleComponent]
     [Serializable]
     [RequireComponent(typeof(GameObjectEntity))]
-    public sealed class PlanetariaTransform : PlanetariaComponent // CONSIDER: struct? Disadvantage(?): multiple references don't know of each other's existence and directions (broken?) : can't access parent's direction
+    public sealed class PlanetariaTransform : PlanetariaComponent
     {
         protected override sealed void Awake()
         {
@@ -54,7 +54,7 @@ namespace Planetaria
             if (entity_manager == null)
             {        
                 entity_manager = World.Active.GetOrCreateManager<EntityManager>();
-            }      
+            }
             Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
             entity_manager.AddComponent(entity, typeof(PlanetariaPositionComponent));
             entity_manager.AddComponent(entity, typeof(PlanetariaPreviousPositionComponent));

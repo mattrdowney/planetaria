@@ -56,7 +56,7 @@ namespace DebrisNoirs
             {
                 for (int space_rock = 0; space_rock < 2; ++space_rock)
                 {
-                    PlanetariaGameObject game_object = PlanetariaGameObject.Instantiate(spawned_debris, planetaria_transform.position, planetaria_transform.direction);
+                    PlanetariaGameObject game_object = PlanetariaGameObject.Instantiate(spawned_debris, planetaria_transform.local_position, planetaria_transform.local_direction);
                     Debris debris = game_object.GetComponent<Debris>();
                     debris.speed = this.speed;
                     DebrisNoirs.live(game_object);

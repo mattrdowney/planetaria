@@ -9,8 +9,7 @@ using UnityEngine.Experimental.PlayerLoop;
 namespace Planetaria
 {
     [UpdateBefore(typeof(FixedUpdate))] // TODO: verify this compiles as intended
-    [UpdateBefore(typeof(Rigidbody))]
-    [UpdateBefore(typeof(PlanetariaTransform))]
+    [UpdateBefore(typeof(PlanetariaTransformSystem))]
     [UpdateAfter(typeof(PlanetariaRigidbody))]
     public class PlanetariaRigidbodySystem : JobComponentSystem
     {
@@ -18,16 +17,17 @@ namespace Planetaria
         [RequireComponentTag(typeof(PlanetariaRigidbodyAerialComponent))]
         struct PlanetariaRigidbodyAerialMove : IJobProcessComponentData<PlanetariaPositionComponent, PlanetariaVelocityComponent>
         {
-            //public float radians; // Unless I feel like passing in a NativeArray<float>, I have to refactor this to velocity
+            public float delta_time;
 
             public void Execute(ref PlanetariaPositionComponent position,
                     ref PlanetariaVelocityComponent velocity) // NOTE: speed is [ReadOnly], direction is reevaluated for new position
             {
                 float quarter_rotation = (float) math.PI/2;
                 float current_speed = math.length(velocity.data);
+                float displacement = current_speed * delta_time;
                 float3 current_direction = velocity.data / current_speed;
-                float3 next_position = position.data * math.cos(current_speed) + current_direction * math.sin(current_speed); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
-                float3 next_velocity = position.data * math.cos(current_speed + quarter_rotation) + current_direction * math.sin(current_speed + quarter_rotation);
+                float3 next_position = position.data * math.cos(displacement) + current_direction * math.sin(displacement); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
+                float3 next_velocity = position.data * math.cos(displacement + quarter_rotation) + current_direction * math.sin(displacement + quarter_rotation);
                 position = new PlanetariaPositionComponent { data = next_position };
                 velocity = new PlanetariaVelocityComponent { data = math.normalizesafe(next_velocity) * current_speed }; // FIXME: I thought this was numerically stable, but it seems to create more energy.
             }
@@ -107,10 +107,13 @@ namespace Planetaria
             // AERIAL
             var first_velocity_change = new PlanetariaRigidbodyAerialAccelerate
             {
-                delta_time = Time.deltaTime/2,
+                delta_time = Time.deltaTime/2, // divided by two because this happens twice
             };
             JobHandle aerial = first_velocity_change.Schedule<PlanetariaRigidbodyAerialAccelerate>(this, input_dependencies);
-            var position_change = new PlanetariaRigidbodyAerialMove();
+            var position_change = new PlanetariaRigidbodyAerialMove()
+            {
+                delta_time = Time.deltaTime,
+            };
             aerial = position_change.Schedule<PlanetariaRigidbodyAerialMove>(this, aerial);
             var acceleration_change = new PlanetariaRigidbodyAerialGravitate();
             aerial = acceleration_change.Schedule<PlanetariaRigidbodyAerialGravitate>(this, aerial);

@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 49}
-  - component: {fileID: 86}
   - component: {fileID: 327364547443908855}
   - component: {fileID: 3102764994043577019}
+  - component: {fileID: 86}
   m_Layer: 10
   m_Name: Silhouette
   m_TagString: Untagged
@@ -34,29 +34,6 @@ Transform:
   m_Father: {fileID: 51}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &86
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 34}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fcbcac2b27276b84398b2afea6e2bdb8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initialized: 0
-  game_object_variable:
-    game_object_variable: {fileID: 0}
-  angle_variable: 0
-  material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  scale_variable: 0.04
-  internal_transform: {fileID: 53}
-  internal_renderer: {fileID: 66}
-  offset: 1
-  sprite_variable: {fileID: 21300000, guid: 91e7f5d938de8db47bb03089efe1f1a1, type: 3}
-  sprite_renderer: {fileID: 0}
 --- !u!114 &327364547443908855
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -85,6 +62,29 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 34}
   internal_transform: {fileID: 49}
+--- !u!114 &86
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 34}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcbcac2b27276b84398b2afea6e2bdb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialized: 0
+  game_object_variable:
+    game_object_variable: {fileID: 0}
+  angle_variable: 0
+  material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  scale_variable: 0.04
+  internal_transform: {fileID: 53}
+  internal_renderer: {fileID: 66}
+  offset: 1
+  sprite_variable: {fileID: 21300000, guid: 91e7f5d938de8db47bb03089efe1f1a1, type: 3}
+  sprite_renderer: {fileID: 0}
 --- !u!1 &35
 GameObject:
   m_ObjectHideFlags: 0

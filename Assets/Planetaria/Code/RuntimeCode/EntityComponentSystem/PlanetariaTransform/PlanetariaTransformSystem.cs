@@ -5,9 +5,11 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine.Experimental.PlayerLoop;
 
 namespace Planetaria
 {
+    [UpdateBefore(typeof(Update))]
     [UpdateAfter(typeof(PlanetariaTransform))]
     public class PlanetariaTransformSystem : JobComponentSystem
     {
@@ -35,7 +37,7 @@ namespace Planetaria
                     Quaternion delta_rotation = Quaternion.FromToRotation(previous_position.data, position.data);
                     Vector3 adjusted_direction = delta_rotation * direction.data;
                     direction = new PlanetariaDirectionComponent { data = adjusted_direction };
-                    direction_dirty = new PlanetariaDirectionDirtyComponent(); // struct default initialized to false
+                    direction_dirty = new PlanetariaDirectionDirtyComponent { data = 0 }; // struct default initialized to false
                 }
             }
         }
