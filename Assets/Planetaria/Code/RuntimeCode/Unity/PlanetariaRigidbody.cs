@@ -7,10 +7,6 @@ namespace Planetaria
     [DisallowMultipleComponent]
     [Serializable]
     [RequireComponent(typeof(GameObjectEntity))]
-    [RequireComponent(typeof(PlanetariaRigidbody1))] // this is so dumb
-    [RequireComponent(typeof(PlanetariaRigidbody2))]
-    [RequireComponent(typeof(PlanetariaRigidbody3))]
-    [RequireComponent(typeof(PlanetariaRigidbody4))]
     public sealed class PlanetariaRigidbody : PlanetariaComponent
     {
         protected override sealed void Awake()
@@ -76,8 +72,8 @@ namespace Planetaria
             get
             {
                 Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                Vector3 position = entity_manager.GetComponentData<PlanetariaPositionComponent>(entity).data;
-                Vector3 up = entity_manager.GetComponentData<PlanetariaDirectionComponent>(entity).data;
+                Vector3 position = entity_manager.GetComponentData<PlanetariaPosition>(entity).data;
+                Vector3 up = entity_manager.GetComponentData<PlanetariaDirection>(entity).data;
                 Vector3 right = Vector3.Cross(up, position);
                 float x = Vector3.Dot(internal_velocity, internal_transform.right);
                 float y = Vector3.Dot(internal_velocity, internal_transform.up);
@@ -86,8 +82,8 @@ namespace Planetaria
             set
             {
                 Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                Vector3 position = entity_manager.GetComponentData<PlanetariaPositionComponent>(entity).data;
-                Vector3 up = entity_manager.GetComponentData<PlanetariaDirectionComponent>(entity).data;
+                Vector3 position = entity_manager.GetComponentData<PlanetariaPosition>(entity).data;
+                Vector3 up = entity_manager.GetComponentData<PlanetariaDirection>(entity).data;
                 Vector3 right = Vector3.Cross(up, position);
                 Vector3 x = internal_transform.right*value.x;
                 Vector3 y = internal_transform.up*value.y;
@@ -119,11 +115,11 @@ namespace Planetaria
             get
             {
                 Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                Vector3 velocity = entity_manager.GetComponentData<PlanetariaVelocityComponent>(entity).data;
-                if (!entity_manager.HasComponent<PlanetariaRigidbodyAerialComponent>(entity))
+                Vector3 velocity = entity_manager.GetComponentData<PlanetariaVelocity>(entity).data;
+                if (!entity_manager.HasComponent<PlanetariaRigidbodyAerial>(entity))
                 {
-                    Vector3 position = entity_manager.GetComponentData<PlanetariaPositionComponent>(entity).data;
-                    Vector3 up = entity_manager.GetComponentData<PlanetariaDirectionComponent>(entity).data;
+                    Vector3 position = entity_manager.GetComponentData<PlanetariaPosition>(entity).data;
+                    Vector3 up = entity_manager.GetComponentData<PlanetariaDirection>(entity).data;
                     Vector3 right = Vector3.Cross(up, position);
                     velocity = velocity.x*right + velocity.y*up;
                 }
@@ -133,14 +129,14 @@ namespace Planetaria
             {
                 Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
                 Vector3 velocity = value;
-                if (!entity_manager.HasComponent<PlanetariaRigidbodyAerialComponent>(entity))
+                if (!entity_manager.HasComponent<PlanetariaRigidbodyAerial>(entity))
                 {
-                    Vector3 position = entity_manager.GetComponentData<PlanetariaPositionComponent>(entity).data;
-                    Vector3 up = entity_manager.GetComponentData<PlanetariaDirectionComponent>(entity).data;
+                    Vector3 position = entity_manager.GetComponentData<PlanetariaPosition>(entity).data;
+                    Vector3 up = entity_manager.GetComponentData<PlanetariaDirection>(entity).data;
                     Vector3 right = Vector3.Cross(up, position);
                     velocity = new Vector3(Vector3.Dot(velocity, right), Vector3.Dot(velocity, up), 0);
                 }
-                entity_manager.SetComponentData<PlanetariaVelocityComponent>(entity, new PlanetariaVelocityComponent { data = velocity });
+                entity_manager.SetComponentData<PlanetariaVelocity>(entity, new PlanetariaVelocity { data = velocity });
             }
         }
 
@@ -161,7 +157,7 @@ namespace Planetaria
             get
             {
                 Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                return entity_manager.GetComponentData<PlanetariaPreviousPositionComponent>(entity).data;
+                return entity_manager.GetComponentData<PlanetariaPreviousPosition>(entity).data;
             }
         }
 

@@ -14,13 +14,13 @@ namespace Planetaria
     public class PlanetariaRigidbodySystem : JobComponentSystem
     {
         [BurstCompile]
-        [RequireComponentTag(typeof(PlanetariaRigidbodyAerialComponent))]
-        struct PlanetariaRigidbodyAerialMove : IJobProcessComponentData<PlanetariaPositionComponent, PlanetariaVelocityComponent>
+        [RequireComponentTag(typeof(PlanetariaRigidbodyAerial))]
+        struct PlanetariaRigidbodyAerialMove : IJobProcessComponentData<PlanetariaPosition, PlanetariaVelocity>
         {
             public float delta_time;
 
-            public void Execute(ref PlanetariaPositionComponent position,
-                    ref PlanetariaVelocityComponent velocity) // NOTE: speed is [ReadOnly], direction is reevaluated for new position
+            public void Execute(ref PlanetariaPosition position,
+                    ref PlanetariaVelocity velocity) // NOTE: speed is [ReadOnly], direction is reevaluated for new position
             {
                 float quarter_rotation = (float) math.PI/2;
                 float current_speed = math.length(velocity.data);
@@ -28,65 +28,65 @@ namespace Planetaria
                 float3 current_direction = velocity.data / current_speed;
                 float3 next_position = position.data * math.cos(displacement) + current_direction * math.sin(displacement); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
                 float3 next_velocity = position.data * math.cos(displacement + quarter_rotation) + current_direction * math.sin(displacement + quarter_rotation);
-                position = new PlanetariaPositionComponent { data = next_position };
-                velocity = new PlanetariaVelocityComponent { data = math.normalizesafe(next_velocity) * current_speed }; // FIXME: I thought this was numerically stable, but it seems to create more energy.
+                position = new PlanetariaPosition { data = next_position };
+                velocity = new PlanetariaVelocity { data = math.normalizesafe(next_velocity) * current_speed }; // FIXME: I thought this was numerically stable, but it seems to create more energy.
             }
         }
 
         [BurstCompile]
-        [RequireComponentTag(typeof(PlanetariaRigidbodyAerialComponent))]
-        struct PlanetariaRigidbodyAerialAccelerate : IJobProcessComponentData<PlanetariaVelocityComponent, PlanetariaAccelerationComponent>
+        [RequireComponentTag(typeof(PlanetariaRigidbodyAerial))]
+        struct PlanetariaRigidbodyAerialAccelerate : IJobProcessComponentData<PlanetariaVelocity, PlanetariaAcceleration>
         {
             public float delta_time; // intended for Time.fixedDeltaTime/2 (NOTE: division by two is related to integration strategy)
 
-            public void Execute(ref PlanetariaVelocityComponent velocity,
-                    [ReadOnly] ref PlanetariaAccelerationComponent acceleration)
+            public void Execute(ref PlanetariaVelocity velocity,
+                    [ReadOnly] ref PlanetariaAcceleration acceleration)
             {
-                velocity = new PlanetariaVelocityComponent { data = velocity.data + acceleration.data * (delta_time) };
+                velocity = new PlanetariaVelocity { data = velocity.data + acceleration.data * (delta_time) };
             }
         }
 
         [BurstCompile]
-        [RequireComponentTag(typeof(PlanetariaRigidbodyAerialComponent))]
-        struct PlanetariaRigidbodyAerialGravitate : IJobProcessComponentData<PlanetariaAccelerationComponent, PlanetariaGravityComponent, PlanetariaPositionComponent>
+        [RequireComponentTag(typeof(PlanetariaRigidbodyAerial))]
+        struct PlanetariaRigidbodyAerialGravitate : IJobProcessComponentData<PlanetariaAcceleration, PlanetariaGravity, PlanetariaPosition>
         {
-            public void Execute(ref PlanetariaAccelerationComponent acceleration,
-                    [ReadOnly] ref PlanetariaGravityComponent gravity,
-                    [ReadOnly] ref PlanetariaPositionComponent position)
+            public void Execute(ref PlanetariaAcceleration acceleration,
+                    [ReadOnly] ref PlanetariaGravity gravity,
+                    [ReadOnly] ref PlanetariaPosition position)
             {
                 float3 gradient = math.normalizesafe(Vector3.ProjectOnPlane(gravity.data, position.data));
                 float magnitude = math.length(gravity.data); // NOTE: you cannot combine normalize/length
-                acceleration = new PlanetariaAccelerationComponent { data = gradient * magnitude };
+                acceleration = new PlanetariaAcceleration { data = gradient * magnitude };
             }
         }
 
         [BurstCompile]
-        [RequireComponentTag(typeof(PlanetariaRigidbodyAerialComponent))]
-        struct PlanetariaRigidbodyAirToGroundVelocity : IJobProcessComponentData<PlanetariaVelocityComponent, PlanetariaPositionComponent, PlanetariaDirectionComponent>
+        [RequireComponentTag(typeof(PlanetariaRigidbodyAerial))]
+        struct PlanetariaRigidbodyAirToGroundVelocity : IJobProcessComponentData<PlanetariaVelocity, PlanetariaPosition, PlanetariaDirection>
         {
-            public void Execute(ref PlanetariaVelocityComponent velocity,
-                    [ReadOnly] ref PlanetariaPositionComponent position,
-                    [ReadOnly] ref PlanetariaDirectionComponent direction) // FIXME: use collision normal (e.g. better for top down games)
+            public void Execute(ref PlanetariaVelocity velocity,
+                    [ReadOnly] ref PlanetariaPosition position,
+                    [ReadOnly] ref PlanetariaDirection direction) // FIXME: use collision normal (e.g. better for top down games)
             {
                 float3 right = math.cross(direction.data, position.data);
                 float horizontal_velocity = math.dot(velocity.data, right);
                 float vertical_velocity = math.dot(velocity.data, direction.data);
-                velocity = new PlanetariaVelocityComponent { data = new float3(horizontal_velocity, vertical_velocity, 0) };
+                velocity = new PlanetariaVelocity { data = new float3(horizontal_velocity, vertical_velocity, 0) };
             }
         }
 
         [BurstCompile]
-        [RequireComponentTag(typeof(PlanetariaRigidbodyAerialComponent))]
-        struct PlanetariaRigidbodyGroundToAirVelocity : IJobProcessComponentData<PlanetariaVelocityComponent, PlanetariaPositionComponent, PlanetariaDirectionComponent>
+        [RequireComponentTag(typeof(PlanetariaRigidbodyAerial))]
+        struct PlanetariaRigidbodyGroundToAirVelocity : IJobProcessComponentData<PlanetariaVelocity, PlanetariaPosition, PlanetariaDirection>
         {
-            public void Execute(ref PlanetariaVelocityComponent velocity,
-                    [ReadOnly] ref PlanetariaPositionComponent position,
-                    [ReadOnly] ref PlanetariaDirectionComponent direction) // FIXME: use collision normal (e.g. better for top down games)
+            public void Execute(ref PlanetariaVelocity velocity,
+                    [ReadOnly] ref PlanetariaPosition position,
+                    [ReadOnly] ref PlanetariaDirection direction) // FIXME: use collision normal (e.g. better for top down games)
             {
                 float3 right = math.cross(direction.data, position.data);
                 float3 horizontal_velocity = velocity.data.x * right;
                 float3 vertical_velocity = velocity.data.y * direction.data;
-                velocity = new PlanetariaVelocityComponent { data = horizontal_velocity + vertical_velocity };
+                velocity = new PlanetariaVelocity { data = horizontal_velocity + vertical_velocity };
             }
         }
 

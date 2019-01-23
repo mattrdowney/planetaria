@@ -24,40 +24,40 @@ namespace Planetaria
         }*/
 
         [BurstCompile]
-        struct PlanetariaTransformRedirect : IJobProcessComponentData<PlanetariaDirectionComponent, PlanetariaDirectionDirtyComponent, PlanetariaPositionComponent, PlanetariaPreviousPositionComponent>
+        struct PlanetariaTransformRedirect : IJobProcessComponentData<PlanetariaDirection, PlanetariaDirectionDirty, PlanetariaPosition, PlanetariaPreviousPosition>
         {
-            public void Execute(ref PlanetariaDirectionComponent direction,
-                    ref PlanetariaDirectionDirtyComponent direction_dirty,
-                    [ReadOnly] ref PlanetariaPositionComponent position,
-                    [ReadOnly] ref PlanetariaPreviousPositionComponent previous_position)
+            public void Execute(ref PlanetariaDirection direction,
+                    ref PlanetariaDirectionDirty direction_dirty,
+                    [ReadOnly] ref PlanetariaPosition position,
+                    [ReadOnly] ref PlanetariaPreviousPosition previous_position)
             {
                 // FIXME: any time the user teleports the player, velocity is invalidated (need to distinguish between Rigidbody translations and user translations)
                 if (direction_dirty.data == 0) // FIXME: TODO: verify: I think this will eventually lead to significant drift (since you aren't orthonormalizing occasionally)
                 {
                     Quaternion delta_rotation = Quaternion.FromToRotation(previous_position.data, position.data);
                     Vector3 adjusted_direction = delta_rotation * direction.data;
-                    direction = new PlanetariaDirectionComponent { data = adjusted_direction };
-                    direction_dirty = new PlanetariaDirectionDirtyComponent { data = 0 }; // struct default initialized to false
+                    direction = new PlanetariaDirection { data = adjusted_direction };
+                    direction_dirty = new PlanetariaDirectionDirty { data = 0 }; // struct default initialized to false
                 }
             }
         }
 
         [BurstCompile]
-        struct PlanetariaTransformSavePrevious : IJobProcessComponentData<PlanetariaPreviousPositionComponent, Rotation>
+        struct PlanetariaTransformSavePrevious : IJobProcessComponentData<PlanetariaPreviousPosition, Rotation>
         {
-            public void Execute(ref PlanetariaPreviousPositionComponent previous_position,
+            public void Execute(ref PlanetariaPreviousPosition previous_position,
                     [ReadOnly] ref Rotation rotation)
             {
-                previous_position = new PlanetariaPreviousPositionComponent { data = (Quaternion)rotation.Value * Vector3.forward };
+                previous_position = new PlanetariaPreviousPosition { data = (Quaternion)rotation.Value * Vector3.forward };
             }
         }
 
         [BurstCompile]
-        struct PlanetariaTransformMove : IJobProcessComponentData<Rotation, PlanetariaDirectionComponent, PlanetariaPositionComponent>
+        struct PlanetariaTransformMove : IJobProcessComponentData<Rotation, PlanetariaDirection, PlanetariaPosition>
         {
             public void Execute(ref Rotation rotation,
-                    [ReadOnly] ref PlanetariaDirectionComponent direction,
-                    [ReadOnly] ref PlanetariaPositionComponent position)
+                    [ReadOnly] ref PlanetariaDirection direction,
+                    [ReadOnly] ref PlanetariaPosition position)
             {
                 rotation = new Rotation { Value = quaternion.LookRotationSafe(position.data, direction.data) };
             }
