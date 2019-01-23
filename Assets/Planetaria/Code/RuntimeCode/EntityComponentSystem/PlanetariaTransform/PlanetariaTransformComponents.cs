@@ -36,6 +36,13 @@ namespace Planetaria
     {
         [SerializeField] public float data;
     }
+
+    
+    public class PlanetariaTransform1 : ComponentDataWrapper<PlanetariaPositionComponent> { }
+    public class PlanetariaTransform2 : ComponentDataWrapper<PlanetariaPreviousPositionComponent> { }
+    public class PlanetariaTransform3 : ComponentDataWrapper<PlanetariaDirectionComponent> { }
+    public class PlanetariaTransform4 : ComponentDataWrapper<PlanetariaDirectionDirtyComponent> { }
+    public class PlanetariaTransform5 : ComponentDataWrapper<PlanetariaScaleComponent> { }
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

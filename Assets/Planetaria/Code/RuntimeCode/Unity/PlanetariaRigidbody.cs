@@ -7,6 +7,10 @@ namespace Planetaria
     [DisallowMultipleComponent]
     [Serializable]
     [RequireComponent(typeof(GameObjectEntity))]
+    [RequireComponent(typeof(PlanetariaRigidbody1))] // this is so dumb
+    [RequireComponent(typeof(PlanetariaRigidbody2))]
+    [RequireComponent(typeof(PlanetariaRigidbody3))]
+    [RequireComponent(typeof(PlanetariaRigidbody4))]
     public sealed class PlanetariaRigidbody : PlanetariaComponent
     {
         protected override sealed void Awake()
@@ -57,7 +61,7 @@ namespace Planetaria
             }
             Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
             entity_manager.AddComponent(entity, typeof(PlanetariaVelocityComponent));
-            //entity_manager.AddComponent(entity, typeof(PlanetariaAccelerationComponent)); // FIXME: only needs to be attached if there is non-zero gravity
+            entity_manager.AddComponent(entity, typeof(PlanetariaAccelerationComponent)); // FIXME: only needs to be attached if there is non-zero gravity
             entity_manager.AddComponent(entity, typeof(PlanetariaGravityComponent));
             entity_manager.AddComponent(entity, typeof(PlanetariaRigidbodyAerialComponent));
             internal_rigidbody.isKinematic = true;

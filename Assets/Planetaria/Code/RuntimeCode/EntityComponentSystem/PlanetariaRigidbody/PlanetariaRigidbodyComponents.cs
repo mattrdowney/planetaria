@@ -26,6 +26,11 @@ namespace Planetaria
     }
 
     public struct PlanetariaRigidbodyAerialComponent : IComponentData { } // tag for whether Rigidbody is grounded or in midair.
+
+    public class PlanetariaRigidbody1 : ComponentDataWrapper<PlanetariaVelocityComponent> { }
+    public class PlanetariaRigidbody2 : ComponentDataWrapper<PlanetariaAccelerationComponent> { }
+    public class PlanetariaRigidbody3 : ComponentDataWrapper<PlanetariaGravityComponent> { }
+    public class PlanetariaRigidbody4 : ComponentDataWrapper<PlanetariaRigidbodyAerialComponent> { }
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

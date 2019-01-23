@@ -1,12 +1,18 @@
 ﻿using System;
 using UnityEngine;
 using Unity.Entities;
+using Unity.Transforms;
 
 namespace Planetaria
 {
     [DisallowMultipleComponent]
     [Serializable]
     [RequireComponent(typeof(GameObjectEntity))]
+    [RequireComponent(typeof(PlanetariaTransform1))] // this is so dumb
+    [RequireComponent(typeof(PlanetariaTransform2))]
+    [RequireComponent(typeof(PlanetariaTransform3))]
+    [RequireComponent(typeof(PlanetariaTransform4))]
+    [RequireComponent(typeof(PlanetariaTransform5))]
     public sealed class PlanetariaTransform : PlanetariaComponent
     {
         protected override sealed void Awake()
@@ -52,15 +58,23 @@ namespace Planetaria
                 internal_renderer = internal_transform.GetComponent<PlanetariaRenderer>();
             }
             if (entity_manager == null)
-            {        
+            {
                 entity_manager = World.Active.GetOrCreateManager<EntityManager>();
             }
             Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
+            //GameObjectEntity.AddToEntityManager()
             entity_manager.AddComponent(entity, typeof(PlanetariaPositionComponent));
+            /*
+            var data = something.AddComponent<ComponentDataType>();
+            data.data = new ComponentDataType { data = intialized value };
+            GameObjectEntity.AddToEntityManager(entity_manager, data);
+            */
             entity_manager.AddComponent(entity, typeof(PlanetariaPreviousPositionComponent));
             entity_manager.AddComponent(entity, typeof(PlanetariaDirectionComponent));
             entity_manager.AddComponent(entity, typeof(PlanetariaDirectionDirtyComponent));
             entity_manager.AddComponent(entity, typeof(PlanetariaScaleComponent));
+            entity_manager.RemoveComponent(entity, typeof(CopyTransformToGameObjectSystem));
+            entity_manager.RemoveComponent(entity, typeof(CopyTransformFromGameObjectSystem));
             local_position = internal_transform.forward;
             local_direction = internal_transform.up;
             local_scale = 1f;
