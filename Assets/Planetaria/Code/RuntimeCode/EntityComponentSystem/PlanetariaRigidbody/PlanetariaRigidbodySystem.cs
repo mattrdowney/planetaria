@@ -14,7 +14,7 @@ namespace Planetaria
     public class PlanetariaRigidbodySystem : JobComponentSystem
     {
         [BurstCompile]
-        [RequireComponentTag(typeof(PlanetariaRigidbodyAerial))]
+        [RequireComponentTag(typeof(PlanetariaRigidbodyUnrestrained))]
         struct PlanetariaRigidbodyAerialMove : IJobProcessComponentData<PlanetariaPosition, PlanetariaVelocity>
         {
             public float delta_time;
@@ -34,7 +34,7 @@ namespace Planetaria
         }
 
         [BurstCompile]
-        [RequireComponentTag(typeof(PlanetariaRigidbodyAerial))]
+        [RequireComponentTag(typeof(PlanetariaRigidbodyUnrestrained))]
         struct PlanetariaRigidbodyAerialAccelerate : IJobProcessComponentData<PlanetariaVelocity, PlanetariaAcceleration>
         {
             public float delta_time; // intended for Time.fixedDeltaTime/2 (NOTE: division by two is related to integration strategy)
@@ -47,7 +47,7 @@ namespace Planetaria
         }
 
         [BurstCompile]
-        [RequireComponentTag(typeof(PlanetariaRigidbodyAerial))]
+        [RequireComponentTag(typeof(PlanetariaRigidbodyUnrestrained))]
         struct PlanetariaRigidbodyAerialGravitate : IJobProcessComponentData<PlanetariaAcceleration, PlanetariaGravity, PlanetariaPosition>
         {
             public void Execute(ref PlanetariaAcceleration acceleration,
@@ -61,7 +61,7 @@ namespace Planetaria
         }
 
         [BurstCompile]
-        [RequireComponentTag(typeof(PlanetariaRigidbodyAerial))]
+        [RequireComponentTag(typeof(PlanetariaRigidbodyUnrestrained))]
         struct PlanetariaRigidbodyAirToGroundVelocity : IJobProcessComponentData<PlanetariaVelocity, PlanetariaPosition, PlanetariaDirection>
         {
             public void Execute(ref PlanetariaVelocity velocity,
@@ -76,7 +76,7 @@ namespace Planetaria
         }
 
         [BurstCompile]
-        [RequireComponentTag(typeof(PlanetariaRigidbodyAerial))]
+        [RequireComponentTag(typeof(PlanetariaRigidbodyUnrestrained))]
         struct PlanetariaRigidbodyGroundToAirVelocity : IJobProcessComponentData<PlanetariaVelocity, PlanetariaPosition, PlanetariaDirection>
         {
             public void Execute(ref PlanetariaVelocity velocity,

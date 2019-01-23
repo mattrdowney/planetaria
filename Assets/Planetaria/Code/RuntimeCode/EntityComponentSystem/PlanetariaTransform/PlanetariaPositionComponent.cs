@@ -11,7 +11,7 @@ namespace Planetaria
         [SerializeField] public float3 data; // CONSIDER: double3, although without a double-precision quaternion this is less useful
     }
 
-    [DisallowMultipleComponent] public class PlanetariaPositionComponent : ComponentDataWrapper<PlanetariaPosition> { } // NOTE: apparently this isn't needed either, so if I just named things properly I might have been done 2 days ago DX // or maybe this is required, I don't know why the component shows up twice in the editor
+    [DisallowMultipleComponent] public class PlanetariaPositionComponent : ComponentDataWrapper<PlanetariaPosition> { } // UHGH: this is required (deleting/readding takes forever)
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

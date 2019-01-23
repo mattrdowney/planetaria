@@ -10,7 +10,7 @@ namespace Planetaria
     {
         [SerializeField] public float3 data; // magnitude in [0, infinity]
     }
-    
+
     [DisallowMultipleComponent] public class PlanetariaGravityComponent : ComponentDataWrapper<PlanetariaGravity> { }
 }
 

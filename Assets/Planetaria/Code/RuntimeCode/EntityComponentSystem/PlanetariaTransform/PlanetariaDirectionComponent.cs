@@ -10,7 +10,7 @@ namespace Planetaria
     {
         [SerializeField] public float3 data; // CONSIDER: double3
     }
-
+    
     [DisallowMultipleComponent] public class PlanetariaDirectionComponent : ComponentDataWrapper<PlanetariaDirection> { }
 }
 

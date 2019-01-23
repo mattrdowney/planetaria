@@ -5,9 +5,9 @@ using Unity.Mathematics;
 
 namespace Planetaria
 {
-    public struct PlanetariaRigidbodyAerial : ISharedComponentData { } // tag for whether Rigidbody is grounded or in midair.
-    
-    [DisallowMultipleComponent] public class PlanetariaRigidbodyAerialComponent : SharedComponentDataWrapper<PlanetariaRigidbodyAerial> { }
+    public struct PlanetariaRigidbodyUnrestrained : ISharedComponentData { } // tag for whether Rigidbody is attached to and traversing a PlanetariaShape or unrestrained
+
+    public class PlanetariaRigidbodyUnrestrainedComponent : SharedComponentDataWrapper<PlanetariaRigidbodyUnrestrained> { }
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

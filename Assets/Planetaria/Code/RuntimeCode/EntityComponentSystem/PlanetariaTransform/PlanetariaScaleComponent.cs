@@ -10,7 +10,7 @@ namespace Planetaria
     {
         [SerializeField] public float data;
     }
-    
+
     [DisallowMultipleComponent] public class PlanetariaScaleComponent : ComponentDataWrapper<PlanetariaScale> { }
 }
 

@@ -22,11 +22,11 @@ namespace Planetaria
             Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
             if (entity_manager.Exists(entity))
             {
-                entity_manager.RemoveComponent(entity, typeof(PlanetariaPositionComponent));
-                entity_manager.RemoveComponent(entity, typeof(PlanetariaPreviousPositionComponent));
-                entity_manager.RemoveComponent(entity, typeof(PlanetariaDirectionComponent));
-                entity_manager.RemoveComponent(entity, typeof(PlanetariaDirectionDirtyComponent));
-                entity_manager.RemoveComponent(entity, typeof(PlanetariaScaleComponent));
+                entity_manager.RemoveComponent(entity, typeof(PlanetariaPosition));
+                entity_manager.RemoveComponent(entity, typeof(PlanetariaPreviousPosition));
+                entity_manager.RemoveComponent(entity, typeof(PlanetariaDirection));
+                entity_manager.RemoveComponent(entity, typeof(PlanetariaDirectionDirty));
+                entity_manager.RemoveComponent(entity, typeof(PlanetariaScale));
             }
         }
 
@@ -64,10 +64,10 @@ namespace Planetaria
             data.data = new ComponentDataType { data = intialized value };
             GameObjectEntity.AddToEntityManager(entity_manager, data);
             */
-            entity_manager.AddComponent(entity, typeof(PlanetariaPreviousPositionComponent));
-            entity_manager.AddComponent(entity, typeof(PlanetariaDirectionComponent));
-            entity_manager.AddComponent(entity, typeof(PlanetariaDirectionDirtyComponent));
-            entity_manager.AddComponent(entity, typeof(PlanetariaScaleComponent));
+            //entity_manager.AddComponent(entity, typeof(PlanetariaPreviousPosition));
+            //entity_manager.AddComponent(entity, typeof(PlanetariaDirection));
+            //entity_manager.AddComponent(entity, typeof(PlanetariaDirectionDirty));
+            //entity_manager.AddComponent(entity, typeof(PlanetariaScale));
             entity_manager.RemoveComponent(entity, typeof(CopyTransformToGameObjectComponent));
             entity_manager.RemoveComponent(entity, typeof(CopyTransformFromGameObjectComponent));
             local_position = internal_transform.forward;
