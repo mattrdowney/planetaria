@@ -16,7 +16,7 @@ namespace Planetaria
             for (int index = 0; index < directions.Length; ++index)
             {
                 List<Vector2> uvs = get_texture_uvs(texture.width);
-                positions.AddRange(uvs.Select(uv => (NormalizedCartesianCoordinates) new CubeUVCoordinates(uv.x, uv.y, index)));
+                positions.AddRange(uvs.Select(uv => (NormalizedCartesianCoordinates) new UnityCubemapCoordinates(uv.x, uv.y, index)));
             }
             pixel_centroids = positions.ToArray();
         }
