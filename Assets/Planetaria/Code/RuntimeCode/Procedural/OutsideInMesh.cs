@@ -1,18 +1,20 @@
-﻿using System;
+﻿using System.Linq;
+using UnityEngine;
 
 namespace Planetaria
 {
-    /// <summary>
-	/// An enumeration for the type of light (e.g. pole light (point light) or sector light (spot light))
-    /// </summary>
-    [Serializable]
-	public enum PlanetariaLightType
-	{
-        PoleLight,
-        SectorLight,
-        ArcLight,
-        RealSunlight,
-	}
+    public class OutsideInMesh // NOTE: Shaders must use CullOff due to the clockwise-to-counterclockwise alternation of backfaces
+    {
+        public static Mesh generate(Mesh original)
+        {
+            Mesh result = new Mesh();
+            result.vertices = original.vertices;
+            result.uv = original.uv;
+            result.triangles = original.triangles.Reverse().ToArray(); // FIXME: make this conditionally convert (when the normals are facing out).
+            result.RecalculateNormals();
+            return result;
+        }
+    }
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

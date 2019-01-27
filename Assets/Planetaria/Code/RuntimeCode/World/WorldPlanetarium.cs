@@ -10,7 +10,7 @@ namespace Planetaria
         public abstract void set_pixels(Color32[] colors);
         public abstract Color32[] get_pixels(NormalizedCartesianCoordinates[] positions);
 
-        public void convert(WorldPlanetarium other)
+        public void convert(WorldPlanetarium other) // FIXME: this is a terrible name
         {
             Color32[] colors = other.get_pixels(this.pixel_centroids);
             this.set_pixels(colors);
@@ -28,6 +28,17 @@ namespace Planetaria
         {
             AssetDatabase.CreateAsset(material, file_name + ".mat");
         }
+
+        /// <summary>
+        /// Serializer - Saves a cubemap texture to a ".cubemap" file.
+        /// </summary>
+        /// <param name="cubemap">The Cubemap to be saved.</param>
+        /// <param name="file_name">The path where the texture will be saved (relative to project folder) without file extension.</param>
+        /// <param name="texture_identifier">The file suffix (e.g. "_LeftTex").</param>
+        protected static void save_cubemap(Cubemap cubemap, string file_name)
+        {
+            AssetDatabase.CreateAsset(cubemap, file_name + ".cubemap");
+}
 
         /// <summary>
         /// Serializer - Saves a texture to a ".png" file.

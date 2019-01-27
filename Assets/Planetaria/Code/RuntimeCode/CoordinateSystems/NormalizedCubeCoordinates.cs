@@ -57,6 +57,31 @@ namespace Planetaria
         }
 
         /// <summary>
+        /// Inspector - Converts cube coordinates into Unity's cubemap UV coordinates.
+        /// </summary>
+        /// <param name="cube">The unit cube coordinates (|x,y,z| up to +1) that will be converted</param>
+        /// <returns>The UV coordinates of a Unity cube [0,1] and their skybox index [0,6).</returns> 
+        public static implicit operator UnityCubemapCoordinates(NormalizedCubeCoordinates cube)
+        {
+            int face_index = UnityCubemapCoordinates.face(cube.data);
+            switch (face_index)
+            {
+                case 0:
+                    return new UnityCubemapCoordinates(-cube.data.z/2 + 0.5f, -cube.data.y/2 + 0.5f, 0); // FIXME: VERIFY
+                case 1:
+                    return new UnityCubemapCoordinates(cube.data.z/2 + 0.5f, -cube.data.y/2 + 0.5f, 1); // FIXME:
+                case 2:
+                    return new UnityCubemapCoordinates(cube.data.x/2 + 0.5f, cube.data.z/2 + 0.5f, 2); // FIXME:
+                case 3:
+                    return new UnityCubemapCoordinates(cube.data.x/2 + 0.5f, cube.data.z/2 + 0.5f, 3); // FIXME:
+                case 4:
+                    return new UnityCubemapCoordinates(cube.data.x/2 + 0.5f, -cube.data.y/2 + 0.5f, 4); // FIXME:
+                case 5: default:
+                    return new UnityCubemapCoordinates(-cube.data.x/2 + 0.5f, -cube.data.y/2 + 0.5f, 5); // FIXME:
+            }
+}
+
+        /// <summary>
         /// Mutator - Normalizes Cube vector
         /// </summary>
         private void normalize()

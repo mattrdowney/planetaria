@@ -183,6 +183,7 @@ namespace Planetaria
                 on_pole_light_changed();
                 on_sector_light_changed();
                 on_arc_light_changed();
+                on_real_sunlight_changed();
             }
         }
 
@@ -299,6 +300,7 @@ namespace Planetaria
             on_pole_light_changed();
             on_sector_light_changed();
             on_arc_light_changed();
+            on_real_sunlight_changed();
         }
 
         private void initialize_pole_light(optional<float> angle = new optional<float>())
@@ -333,6 +335,19 @@ namespace Planetaria
             internal_transform.rotation = Quaternion.LookRotation(arc_light.begin()-arc_light.end(), arc_light.center_axis); // FIXME: the light should cutoff after the begin/end of arc (but it doesn't seem to)
         }
 
+        private void initialize_real_sunlight()
+        {
+            
+            internal_light.type = LightType.Point;
+
+            SunlightPlanetarium sunlight = new SunlightPlanetarium(Vector3.forward);
+            UnityCubemapPlanetarium unity_cubemap = new UnityCubemapPlanetarium(32);
+            unity_cubemap.convert(sunlight);
+            internal_light.cookie = unity_cubemap.get_cubemap();
+            internal_transform.position = Vector3.zero;
+            internal_transform.rotation = Quaternion.LookRotation(Vector3.forward);
+        }
+
         private void on_arc_light_changed()
         {
             if (type_variable == PlanetariaLightType.ArcLight)
@@ -346,6 +361,14 @@ namespace Planetaria
             if (type_variable == PlanetariaLightType.PoleLight)
             {
                 initialize_pole_light();
+            }
+        }
+
+        private void on_real_sunlight_changed()
+        {
+            if (type_variable == PlanetariaLightType.RealSunlight)
+            {
+                initialize_real_sunlight();
             }
         }
 

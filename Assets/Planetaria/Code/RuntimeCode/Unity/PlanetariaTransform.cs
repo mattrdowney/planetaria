@@ -68,8 +68,8 @@ namespace Planetaria
             //entity_manager.AddComponent(entity, typeof(PlanetariaDirection));
             //entity_manager.AddComponent(entity, typeof(PlanetariaDirectionDirty));
             //entity_manager.AddComponent(entity, typeof(PlanetariaScale));
-            entity_manager.RemoveComponent(entity, typeof(CopyTransformToGameObjectComponent));
-            entity_manager.RemoveComponent(entity, typeof(CopyTransformFromGameObjectComponent));
+            //entity_manager.RemoveComponent(entity, typeof(CopyTransformToGameObjectComponent));
+            //entity_manager.RemoveComponent(entity, typeof(CopyTransformFromGameObjectComponent));
             local_position = internal_transform.forward;
             local_direction = internal_transform.up;
             local_scale = 1f;

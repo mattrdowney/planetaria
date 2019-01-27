@@ -13,6 +13,7 @@ namespace Planetaria
             Octahedron,
             SphericalRectangle,
             SphericalCircle,
+            UnityCubemap,
         }
 
         [MenuItem("Planetaria/Level Converter")]
