@@ -11,7 +11,7 @@ namespace Planetaria
         [SerializeField] public float3 data; // CONSIDER: double3, although without a double-precision quaternion this is less useful
     }
 
-    //[DisallowMultipleComponent] public class PlanetariaPositionComponent : ComponentDataWrapper<PlanetariaPosition> { } // UHGH: this is required (deleting/readding takes forever)
+    [DisallowMultipleComponent] public class PlanetariaPositionComponent : ComponentDataWrapper<PlanetariaPosition> { } // UHGH: this is required (deleting/readding takes forever)
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

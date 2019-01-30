@@ -10,7 +10,7 @@ namespace Planetaria
         [SerializeField] public byte data; // FIXME: blittable bool / Unity.Mathematics.bool1
     }
 
-    //[DisallowMultipleComponent] public class PlanetariaDirectionDirtyComponent : ComponentDataWrapper<PlanetariaDirectionDirty> { }
+    [DisallowMultipleComponent] public class PlanetariaDirectionDirtyComponent : ComponentDataWrapper<PlanetariaDirectionDirty> { }
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
