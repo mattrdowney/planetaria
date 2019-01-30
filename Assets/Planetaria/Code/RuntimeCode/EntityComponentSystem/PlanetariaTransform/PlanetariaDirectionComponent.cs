@@ -11,7 +11,7 @@ namespace Planetaria
         [SerializeField] public float3 data; // CONSIDER: double3
     }
     
-    [DisallowMultipleComponent] public class PlanetariaDirectionComponent : ComponentDataWrapper<PlanetariaDirection> { }
+    //[DisallowMultipleComponent] public class PlanetariaDirectionComponent : ComponentDataWrapper<PlanetariaDirection> { }
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

@@ -7,7 +7,7 @@ namespace Planetaria
 {
     public struct PlanetariaRigidbodyUnrestrained : ISharedComponentData { } // tag for whether Rigidbody is attached to and traversing a PlanetariaShape or unrestrained
 
-    public class PlanetariaRigidbodyUnrestrainedComponent : SharedComponentDataWrapper<PlanetariaRigidbodyUnrestrained> { }
+    //public class PlanetariaRigidbodyUnrestrainedComponent : SharedComponentDataWrapper<PlanetariaRigidbodyUnrestrained> { }
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

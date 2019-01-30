@@ -18,6 +18,7 @@ namespace Planetaria
         protected override sealed void OnDestroy()
         {
             base.OnDestroy();
+            /*
             Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
             if (entity_manager.Exists(entity))
             {
@@ -32,6 +33,7 @@ namespace Planetaria
                     entity_manager.RemoveComponent(entity, typeof(PlanetariaRigidbodyUnrestrained));
                 }
             }
+            */
         }
 
         protected override sealed void Reset()
@@ -51,11 +53,11 @@ namespace Planetaria
             {
                 internal_rigidbody = Miscellaneous.GetOrAddComponent<Rigidbody>(this);
             }
-            if (entity_manager == null)
-            {
-                entity_manager = World.Active.GetOrCreateManager<EntityManager>();
-            }
-            Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
+            //if (entity_manager == null)
+            //{
+            //    entity_manager = World.Active.GetOrCreateManager<EntityManager>();
+            //}
+            //Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
             //entity_manager.AddComponent(entity, typeof(PlanetariaVelocity));
             //entity_manager.AddComponent(entity, typeof(PlanetariaAcceleration)); // FIXME: only needs to be attached if there is non-zero gravity
             //entity_manager.AddComponent(entity, typeof(PlanetariaGravity));
@@ -65,48 +67,78 @@ namespace Planetaria
         }
 
         /// <summary>
-        /// Mutator - view velocity based on relative values (positive y is local "up", positive x is local "right") with respect to the object
-        /// </summary>
-        public Vector2 relative_velocity
-        {
-            get
-            {
-                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                Vector3 position = entity_manager.GetComponentData<PlanetariaPosition>(entity).data;
-                Vector3 up = entity_manager.GetComponentData<PlanetariaDirection>(entity).data;
-                Vector3 right = Vector3.Cross(up, position);
-                float x = Vector3.Dot(internal_velocity, internal_transform.right);
-                float y = Vector3.Dot(internal_velocity, internal_transform.up);
-                return new Vector2(x, y);
-            }
-            set
-            {
-                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                Vector3 position = entity_manager.GetComponentData<PlanetariaPosition>(entity).data;
-                Vector3 up = entity_manager.GetComponentData<PlanetariaDirection>(entity).data;
-                Vector3 right = Vector3.Cross(up, position);
-                Vector3 x = internal_transform.right*value.x;
-                Vector3 y = internal_transform.up*value.y;
-                internal_velocity = x + y;
-            }
-        }
-
-        /// <summary>
         /// Mutator - view velocity based on absolute values (positive y is "North"/"up", positive x is "East"/"right") with respect to the planetarium
         /// </summary>
         public Vector2 absolute_velocity
         {
             get
             {
-                float x = Vector3.Dot(internal_velocity, Bearing.east(position));
-                float y = Vector3.Dot(internal_velocity, Bearing.north(position));
-                return new Vector2(x, y);
+                throw new Exception();
             }
             set
             {
-                Vector3 x = Bearing.east(position) * value.x;
-                Vector3 y = Bearing.north(position) * value.y;
-                internal_velocity = x + y;
+                velocity_variable = value;
+                velocity_dirty_variable = true;
+                dirty_variable = true;
+                velocity_type_variable = VelocityMode.Absolute;
+            }
+        }
+
+        public void clean()
+        {
+            dirty_variable = false;
+            gravity_dirty_variable = false;
+            velocity_dirty_variable = false;
+        }
+
+        public bool dirty
+        {
+            get
+            {
+                return dirty_variable;
+            }
+        }
+
+        /// <summary>
+        /// Mutator - sets the gravity well of the object. The direction (after normalization) is where the object will move towards; the magnitude is how quickly it will accelerate towards that position.
+        /// </summary>
+        public Vector3 gravity
+        {
+            get
+            {
+                return gravity_variable;
+            }
+            private set
+            {
+                gravity_variable = value;
+                gravity_dirty_variable = true;
+                dirty_variable = true;
+            }
+        }
+
+        public bool gravity_dirty
+        {
+            get
+            {
+                return gravity_dirty_variable;
+            }
+        }
+
+        /// <summary>
+        /// Mutator - view velocity based on relative values (positive y is local "up", positive x is local "right") with respect to the object
+        /// </summary>
+        public Vector2 relative_velocity
+        {
+            get
+            {
+                throw new Exception();
+            }
+            set
+            {
+                velocity_variable = value;
+                velocity_dirty_variable = true;
+                dirty_variable = true;
+                velocity_type_variable = VelocityMode.Relative;
             }
         }
 
@@ -114,29 +146,11 @@ namespace Planetaria
         {
             get
             {
-                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                Vector3 velocity = entity_manager.GetComponentData<PlanetariaVelocity>(entity).data;
-                if (!entity_manager.HasComponent<PlanetariaRigidbodyUnrestrained>(entity))
-                {
-                    Vector3 position = entity_manager.GetComponentData<PlanetariaPosition>(entity).data;
-                    Vector3 up = entity_manager.GetComponentData<PlanetariaDirection>(entity).data;
-                    Vector3 right = Vector3.Cross(up, position);
-                    velocity = velocity.x*right + velocity.y*up;
-                }
-                return velocity;
+                throw new Exception();
             }
             private set
             {
-                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                Vector3 velocity = value;
-                if (!entity_manager.HasComponent<PlanetariaRigidbodyUnrestrained>(entity))
-                {
-                    Vector3 position = entity_manager.GetComponentData<PlanetariaPosition>(entity).data;
-                    Vector3 up = entity_manager.GetComponentData<PlanetariaDirection>(entity).data;
-                    Vector3 right = Vector3.Cross(up, position);
-                    velocity = new Vector3(Vector3.Dot(velocity, right), Vector3.Dot(velocity, up), 0);
-                }
-                entity_manager.SetComponentData<PlanetariaVelocity>(entity, new PlanetariaVelocity { data = velocity });
+                throw new Exception();
             }
         }
 
@@ -156,17 +170,43 @@ namespace Planetaria
         {
             get
             {
-                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                return entity_manager.GetComponentData<PlanetariaPreviousPosition>(entity).data;
+                throw new Exception();
             }
         }
+
+        public bool velocity_dirty
+        {
+            get
+            {
+                return velocity_dirty_variable;
+            }
+        }
+
+        public VelocityMode velocity_type
+        {
+            get
+            {
+                return velocity_type_variable;
+            }
+        }
+
+        public enum VelocityMode { Relative, Absolute }
 
         [SerializeField] [HideInInspector] private Transform internal_transform;
         [SerializeField] [HideInInspector] private Rigidbody internal_rigidbody;
         //[SerializeField] [HideInInspector] private optional<CollisionObserver> observer;
         //[SerializeField] [HideInInspector] private BlockCollision collision;
+
+        [SerializeField] private Vector3 gravity_variable;
+        [SerializeField] private Vector2 velocity_variable;
+
+        [SerializeField] [HideInInspector] private VelocityMode velocity_type_variable;
+        [SerializeField] [HideInInspector] private bool dirty_variable;
+        [SerializeField] [HideInInspector] private bool gravity_dirty_variable;
+        [SerializeField] [HideInInspector] private bool velocity_dirty_variable;
+
         
-        private static EntityManager entity_manager;
+        //private static EntityManager entity_manager;
     }
 }
 

@@ -12,7 +12,7 @@ namespace Planetaria
         //[SerializeField] public float2 data; // implicitly shared - for grounded state
     }
 
-    [DisallowMultipleComponent] public class PlanetariaAccelerationComponent : ComponentDataWrapper<PlanetariaAcceleration> { }
+    //[DisallowMultipleComponent] public class PlanetariaAccelerationComponent : ComponentDataWrapper<PlanetariaAcceleration> { }
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

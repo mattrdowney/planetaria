@@ -11,7 +11,7 @@ namespace Planetaria
         [SerializeField] public float3 data; // CONSIDER: double3
     }
 
-    [DisallowMultipleComponent] public class PlanetariaPreviousPositionComponent : ComponentDataWrapper<PlanetariaPreviousPosition> { }
+    //[DisallowMultipleComponent] public class PlanetariaPreviousPositionComponent : ComponentDataWrapper<PlanetariaPreviousPosition> { }
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

@@ -19,6 +19,7 @@ namespace Planetaria
         protected override sealed void OnDestroy()
         {
             base.OnDestroy();
+            /*
             Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
             if (entity_manager.Exists(entity))
             {
@@ -28,6 +29,7 @@ namespace Planetaria
                 entity_manager.RemoveComponent(entity, typeof(PlanetariaDirectionDirty));
                 entity_manager.RemoveComponent(entity, typeof(PlanetariaScale));
             }
+            */
         }
 
         protected override sealed void Reset()
@@ -52,13 +54,15 @@ namespace Planetaria
             {
                 internal_renderer = internal_transform.GetComponent<PlanetariaRenderer>();
             }
+            /*
             if (entity_manager == null)
             {
                 entity_manager = World.Active.GetOrCreateManager<EntityManager>();
             }
             Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
+            */
             //GameObjectEntity.AddToEntityManager()
-            entity_manager.AddComponent(entity, typeof(PlanetariaPosition));
+            //entity_manager.AddComponent(entity, typeof(PlanetariaPosition));
             /*
             var data = something.AddComponent<ComponentDataType>();
             data.data = new ComponentDataType { data = intialized value };
@@ -82,6 +86,14 @@ namespace Planetaria
             get { return internal_transform.childCount; }
         }
 
+        public void clean()
+        {
+            dirty_variable = false;
+            position_dirty_variable = false;
+            direction_dirty_variable = false;
+            scale_dirty_variable = false;
+        }
+
         /// <summary>
         /// Property - direction/"facing"/"forward"/"up".
         /// </summary>
@@ -89,11 +101,27 @@ namespace Planetaria
         {
             get
             {
-                return internal_transform.up;
+                throw new Exception();
             }
             set
             {
-                internal_transform.rotation = Quaternion.LookRotation(position, value);
+                throw new Exception();
+            }
+        }
+
+        public bool direction_dirty
+        {
+            get
+            {
+                return direction_dirty_variable;
+            }
+        }
+
+        public bool dirty
+        {
+            get
+            {
+                return dirty_variable;
             }
         }
 
@@ -118,14 +146,13 @@ namespace Planetaria
         {
             get
             {
-                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity; // FIXME: different behaviour depending on grounded versus aerial
-                return entity_manager.GetComponentData<PlanetariaDirection>(entity).data;
+                throw new Exception();
             }
             set
             {
-                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                entity_manager.SetComponentData<PlanetariaDirection>(entity, new PlanetariaDirection { data = value });
-                entity_manager.SetComponentData<PlanetariaDirectionDirty>(entity, new PlanetariaDirectionDirty { data = 1 });
+                direction_variable = value;
+                direction_dirty_variable = true;
+                dirty_variable = true;
             }
         }
 
@@ -133,14 +160,14 @@ namespace Planetaria
         {
             get
             {
-                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                return entity_manager.GetComponentData<PlanetariaPosition>(entity).data;
+                throw new Exception();
             }
             set
             {
                 // FIXME: needs to modify velocity of rigidbody (if a rigidbody exists)
-                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                entity_manager.SetComponentData<PlanetariaPosition>(entity, new PlanetariaPosition { data = value });
+                position_variable = value;
+                position_dirty_variable = true;
+                dirty_variable = true;
             }
         }
         
@@ -151,13 +178,13 @@ namespace Planetaria
         {
             get
             {
-                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                return entity_manager.GetComponentData<PlanetariaScale>(entity).data;
+                throw new Exception();
             }
             set
             {
-                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                entity_manager.SetComponentData<PlanetariaScale>(entity, new PlanetariaScale { data = value });
+                scale_variable = value;
+                scale_dirty_variable = true;
+                dirty_variable = true;
             }
         }
 
@@ -182,23 +209,19 @@ namespace Planetaria
         {
             get
             {
-                if (parent == null) // base case
-                {
-                    return local_position;
-                }
-                return parent.transform.internal_transform.rotation * local_position; // recursive case // FIXME: HACK:
+                throw new Exception();
             }
             set
             {
-                // FIXME: direction must change, and also needs to modify velocity of rigidbody (if a rigidbody exists) - if (PlanetariaVelocityComponent exists) get relative velocity before teleporting, teleport while modifying the direction to follow the attractor/repellor along velocity vector, then set relative velocity to the fetched value
-                if (internal_transform.parent == null)
-                {
-                    local_position = value;
-                }
-                else
-                {
-                    local_position = Quaternion.Inverse(parent.transform.internal_transform.rotation) * value; // recursive case // FIXME: HACK: // TODO: verify
-                }
+                throw new Exception();
+            }
+        }
+
+        public bool position_dirty
+        {
+            get
+            {
+                return position_dirty_variable;
             }
         }
         
@@ -211,19 +234,19 @@ namespace Planetaria
         {
             get
             {
-                if (parent == null) // base case
-                {
-                    return local_scale;
-                }
-                return parent.scale * local_scale; // recursive case
+                throw new Exception();
             }
             set
             {
-                local_scale = value;
-                if (internal_transform.parent != null)
-                {
-                    local_scale /= parent.scale; // TODO: verify
-                }
+                throw new Exception();
+            }
+        }
+
+        public bool scale_dirty
+        {
+            get
+            {
+                return scale_dirty_variable;
             }
         }
 
@@ -320,6 +343,15 @@ namespace Planetaria
         //[SerializeField] [HideInInspector] private optional<PlanetariaCollider> internal_collider; // Observer pattern would be more elegant but slower
         [SerializeField] [HideInInspector] private optional<PlanetariaRenderer> internal_renderer;
         [SerializeField] [HideInInspector] private optional<PlanetariaRigidbody> internal_rigidbody; // FIXME: implement
+
+        [SerializeField] private Vector3 position_variable;
+        [SerializeField] private Vector3 direction_variable;
+        [SerializeField] private float scale_variable;
+        
+        [SerializeField] [HideInInspector] private bool dirty_variable;
+        [SerializeField] [HideInInspector] private bool position_dirty_variable;
+        [SerializeField] [HideInInspector] private bool direction_dirty_variable;
+        [SerializeField] [HideInInspector] private bool scale_dirty_variable;
 
         private static EntityManager entity_manager;
     }
