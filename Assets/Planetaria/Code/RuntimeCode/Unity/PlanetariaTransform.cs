@@ -19,11 +19,11 @@ namespace Planetaria
         protected override sealed void OnDestroy()
         {
             base.OnDestroy();
-            game_object_entity.remove_component_data<PlanetariaPosition>();
-            game_object_entity.remove_component_data<PlanetariaPreviousPosition>();
-            game_object_entity.remove_component_data<PlanetariaDirection>();
-            game_object_entity.remove_component_data<PlanetariaDirectionDirty>();
-            game_object_entity.remove_component_data<PlanetariaScale>();
+            game_object_entity.remove_component_data<PlanetariaPositionComponent>();
+            game_object_entity.remove_component_data<PlanetariaPreviousPositionComponent>();
+            game_object_entity.remove_component_data<PlanetariaDirectionComponent>();
+            game_object_entity.remove_component_data<PlanetariaDirectionDirtyComponent>();
+            game_object_entity.remove_component_data<PlanetariaScaleComponent>();
         }
 
         protected override sealed void Reset()
@@ -52,13 +52,13 @@ namespace Planetaria
             {
                 game_object_entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>();
             }
-            game_object_entity.add_component_data<PlanetariaPosition>();
-            game_object_entity.add_component_data<PlanetariaPreviousPosition>();
-            game_object_entity.add_component_data<PlanetariaDirection>();
-            game_object_entity.add_component_data<PlanetariaDirectionDirty>();
-            game_object_entity.add_component_data<PlanetariaScale>();
-            //game_object_entity.remove_component_data<CopyTransformToGameObjectComponent>();
-            //game_object_entity.remove_component_data<CopyTransformFromGameObjectComponent>();
+            game_object_entity.add_component_data<PlanetariaPositionComponent>();
+            game_object_entity.add_component_data<PlanetariaPreviousPositionComponent>();
+            game_object_entity.add_component_data<PlanetariaDirectionComponent>();
+            game_object_entity.add_component_data<PlanetariaDirectionDirtyComponent>();
+            game_object_entity.add_component_data<PlanetariaScaleComponent>();
+            game_object_entity.remove_component_data<CopyTransformToGameObjectComponent>();
+            game_object_entity.remove_component_data<CopyTransformFromGameObjectComponent>();
             local_position = internal_transform.forward;
             local_direction = internal_transform.up;
             local_scale = 1f;

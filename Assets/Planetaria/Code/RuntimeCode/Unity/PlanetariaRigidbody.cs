@@ -18,15 +18,15 @@ namespace Planetaria
         protected override sealed void OnDestroy()
         {
             base.OnDestroy();
-            game_object_entity.remove_component_data<PlanetariaVelocity>();
-            game_object_entity.remove_component_data<PlanetariaGravity>();
-            if (game_object_entity.has_component_data<PlanetariaAcceleration>())
+            game_object_entity.remove_component_data<PlanetariaVelocityComponent>();
+            game_object_entity.remove_component_data<PlanetariaGravityComponent>();
+            if (game_object_entity.has_component_data<PlanetariaAccelerationComponent>())
             {
-                game_object_entity.remove_component_data<PlanetariaAcceleration>();
+                game_object_entity.remove_component_data<PlanetariaAccelerationComponent>();
             }
-            if (game_object_entity.has_shared_component_data<PlanetariaRigidbodyUnrestrained>())
+            if (game_object_entity.has_component_data<PlanetariaRigidbodyUnrestrainedComponent>())
             {
-                game_object_entity.remove_shared_component_data<PlanetariaRigidbodyUnrestrained>();
+                game_object_entity.remove_component_data<PlanetariaRigidbodyUnrestrainedComponent>();
             }
         }
 
@@ -51,10 +51,10 @@ namespace Planetaria
             {
                 game_object_entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>();
             }
-            game_object_entity.add_component_data<PlanetariaVelocity>();
-            game_object_entity.add_component_data<PlanetariaAcceleration>(); // FIXME: only needs to be attached if there is non-zero gravity
-            game_object_entity.add_component_data<PlanetariaGravity>();
-            game_object_entity.add_shared_component_data<PlanetariaRigidbodyUnrestrained>();
+            game_object_entity.add_component_data<PlanetariaVelocityComponent>();
+            game_object_entity.add_component_data<PlanetariaAccelerationComponent>(); // FIXME: only needs to be attached if there is non-zero gravity
+            game_object_entity.add_component_data<PlanetariaGravityComponent>();
+            game_object_entity.add_component_data<PlanetariaRigidbodyUnrestrainedComponent>();
             internal_rigidbody.isKinematic = true;
             internal_rigidbody.useGravity = false;
         }
@@ -108,7 +108,7 @@ namespace Planetaria
             get
             {
                 Vector3 velocity = game_object_entity.get_component_data<PlanetariaVelocity>().data;
-                if (!game_object_entity.has_shared_component_data<PlanetariaRigidbodyUnrestrained>())
+                if (!game_object_entity.has_component_data<PlanetariaRigidbodyUnrestrainedComponent>())
                 {
                     Vector3 position = game_object_entity.get_component_data<PlanetariaPosition>().data;
                     Vector3 up = game_object_entity.get_component_data<PlanetariaDirection>().data;
@@ -120,7 +120,7 @@ namespace Planetaria
             private set
             {
                 Vector3 velocity = value;
-                if (!game_object_entity.has_shared_component_data<PlanetariaRigidbodyUnrestrained>())
+                if (!game_object_entity.has_component_data<PlanetariaRigidbodyUnrestrainedComponent>())
                 {
                     Vector3 position = game_object_entity.get_component_data<PlanetariaPosition>().data;
                     Vector3 up = game_object_entity.get_component_data<PlanetariaDirection>().data;

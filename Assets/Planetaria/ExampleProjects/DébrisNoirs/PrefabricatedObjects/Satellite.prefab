@@ -141,6 +141,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 1148063119}
   internal_transform: {fileID: 1148063120}
+  game_object_entity: {fileID: 0}
 --- !u!114 &1148063121
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -231,6 +232,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 1996407451135126}
   internal_transform: {fileID: 4436393650129868}
+  game_object_entity: {fileID: 0}
 --- !u!54 &54852974177452380
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -264,6 +266,7 @@ MonoBehaviour:
     game_object_variable: {fileID: 1996407451135126}
   internal_transform: {fileID: 4436393650129868}
   internal_rigidbody: {fileID: 54852974177452380}
+  game_object_entity: {fileID: 0}
 --- !u!135 &7252158268403498653
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -475,6 +478,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 881687125109618822}
   internal_transform: {fileID: 964485387257191906}
+  game_object_entity: {fileID: 0}
 --- !u!114 &4131315501585170602
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -559,6 +563,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 1404085499958901033}
   internal_transform: {fileID: 5739891510674920037}
+  game_object_entity: {fileID: 0}
 --- !u!114 &2224694441006923895
 MonoBehaviour:
   m_ObjectHideFlags: 0
