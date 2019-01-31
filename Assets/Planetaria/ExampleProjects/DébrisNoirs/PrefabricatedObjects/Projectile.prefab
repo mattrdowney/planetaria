@@ -66,6 +66,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 44}
   internal_transform: {fileID: 59}
+  game_object_entity: {fileID: 0}
 --- !u!54 &63
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -99,6 +100,7 @@ MonoBehaviour:
     game_object_variable: {fileID: 44}
   internal_transform: {fileID: 59}
   internal_rigidbody: {fileID: 63}
+  game_object_entity: {fileID: 0}
 --- !u!114 &99
 MonoBehaviour:
   m_ObjectHideFlags: 0

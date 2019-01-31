@@ -57,9 +57,8 @@ namespace Planetaria
             game_object_entity.add_component_data<PlanetariaDirectionComponent>();
             game_object_entity.add_component_data<PlanetariaDirectionDirtyComponent>();
             game_object_entity.add_component_data<PlanetariaScaleComponent>();
-            game_object_entity.add_component_data<PositionComponent>();
             game_object_entity.add_component_data<RotationComponent>();
-            game_object_entity.add_component_data<ScaleComponent>();
+            game_object_entity.add_component_data<LocalToWorldComponent>();
             game_object_entity.remove_component_data<CopyTransformToGameObjectComponent>();
             game_object_entity.remove_component_data<CopyTransformFromGameObjectComponent>();
             local_position = internal_transform.rotation * Vector3.forward;

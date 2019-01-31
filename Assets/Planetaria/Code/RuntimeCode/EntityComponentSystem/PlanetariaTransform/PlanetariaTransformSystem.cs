@@ -53,13 +53,13 @@ namespace Planetaria
         }
 
         [BurstCompile]
-        struct PlanetariaTransformMove : IJobProcessComponentData<Rotation, PlanetariaDirection, PlanetariaPosition>
+        struct PlanetariaTransformMove : IJobProcessComponentData<LocalToWorld, PlanetariaDirection, PlanetariaPosition>
         {
-            public void Execute(ref Rotation rotation,
+            public void Execute(ref LocalToWorld matrix,
                     [ReadOnly] ref PlanetariaDirection direction,
                     [ReadOnly] ref PlanetariaPosition position)
             {
-                rotation = new Rotation { Value = quaternion.LookRotationSafe(position.data, direction.data) };
+                matrix = new LocalToWorld { Value = float4x4.LookAt(float3.zero, position.data, direction.data) };
             }
         }
 
