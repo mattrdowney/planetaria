@@ -18,19 +18,15 @@ namespace Planetaria
         protected override sealed void OnDestroy()
         {
             base.OnDestroy();
-            Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-            if (entity_manager.Exists(entity))
+            game_object_entity.remove_component_data<PlanetariaVelocity>();
+            game_object_entity.remove_component_data<PlanetariaGravity>();
+            if (game_object_entity.has_component_data<PlanetariaAcceleration>())
             {
-                entity_manager.RemoveComponent(entity, typeof(PlanetariaVelocity));
-                entity_manager.RemoveComponent(entity, typeof(PlanetariaGravity));
-                if (entity_manager.HasComponent<PlanetariaAcceleration>(entity))
-                {
-                    entity_manager.RemoveComponent(entity, typeof(PlanetariaAcceleration));
-                }
-                if (entity_manager.HasComponent<PlanetariaRigidbodyUnrestrained>(entity))
-                {
-                    entity_manager.RemoveComponent(entity, typeof(PlanetariaRigidbodyUnrestrained));
-                }
+                game_object_entity.remove_component_data<PlanetariaAcceleration>();
+            }
+            if (game_object_entity.has_shared_component_data<PlanetariaRigidbodyUnrestrained>())
+            {
+                game_object_entity.remove_shared_component_data<PlanetariaRigidbodyUnrestrained>();
             }
         }
 
@@ -51,15 +47,14 @@ namespace Planetaria
             {
                 internal_rigidbody = Miscellaneous.GetOrAddComponent<Rigidbody>(this);
             }
-            if (entity_manager == null)
+            if (game_object_entity == null)
             {
-                entity_manager = World.Active.GetOrCreateManager<EntityManager>();
+                game_object_entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>();
             }
-            Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-            //entity_manager.AddComponent(entity, typeof(PlanetariaVelocity));
-            //entity_manager.AddComponent(entity, typeof(PlanetariaAcceleration)); // FIXME: only needs to be attached if there is non-zero gravity
-            //entity_manager.AddComponent(entity, typeof(PlanetariaGravity));
-            //entity_manager.AddComponent(entity, typeof(PlanetariaRigidbodyUnrestrained));
+            game_object_entity.add_component_data<PlanetariaVelocity>();
+            game_object_entity.add_component_data<PlanetariaAcceleration>(); // FIXME: only needs to be attached if there is non-zero gravity
+            game_object_entity.add_component_data<PlanetariaGravity>();
+            game_object_entity.add_shared_component_data<PlanetariaRigidbodyUnrestrained>();
             internal_rigidbody.isKinematic = true;
             internal_rigidbody.useGravity = false;
         }
@@ -71,9 +66,8 @@ namespace Planetaria
         {
             get
             {
-                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                Vector3 position = entity_manager.GetComponentData<PlanetariaPosition>(entity).data;
-                Vector3 up = entity_manager.GetComponentData<PlanetariaDirection>(entity).data;
+                Vector3 position = game_object_entity.get_component_data<PlanetariaPosition>().data;
+                Vector3 up = game_object_entity.get_component_data<PlanetariaDirection>().data;
                 Vector3 right = Vector3.Cross(up, position);
                 float x = Vector3.Dot(internal_velocity, internal_transform.right);
                 float y = Vector3.Dot(internal_velocity, internal_transform.up);
@@ -81,9 +75,8 @@ namespace Planetaria
             }
             set
             {
-                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                Vector3 position = entity_manager.GetComponentData<PlanetariaPosition>(entity).data;
-                Vector3 up = entity_manager.GetComponentData<PlanetariaDirection>(entity).data;
+                Vector3 position = game_object_entity.get_component_data<PlanetariaPosition>().data;
+                Vector3 up = game_object_entity.get_component_data<PlanetariaDirection>().data;
                 Vector3 right = Vector3.Cross(up, position);
                 Vector3 x = internal_transform.right*value.x;
                 Vector3 y = internal_transform.up*value.y;
@@ -114,12 +107,11 @@ namespace Planetaria
         {
             get
             {
-                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                Vector3 velocity = entity_manager.GetComponentData<PlanetariaVelocity>(entity).data;
-                if (!entity_manager.HasComponent<PlanetariaRigidbodyUnrestrained>(entity))
+                Vector3 velocity = game_object_entity.get_component_data<PlanetariaVelocity>().data;
+                if (!game_object_entity.has_shared_component_data<PlanetariaRigidbodyUnrestrained>())
                 {
-                    Vector3 position = entity_manager.GetComponentData<PlanetariaPosition>(entity).data;
-                    Vector3 up = entity_manager.GetComponentData<PlanetariaDirection>(entity).data;
+                    Vector3 position = game_object_entity.get_component_data<PlanetariaPosition>().data;
+                    Vector3 up = game_object_entity.get_component_data<PlanetariaDirection>().data;
                     Vector3 right = Vector3.Cross(up, position);
                     velocity = velocity.x*right + velocity.y*up;
                 }
@@ -127,16 +119,15 @@ namespace Planetaria
             }
             private set
             {
-                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
                 Vector3 velocity = value;
-                if (!entity_manager.HasComponent<PlanetariaRigidbodyUnrestrained>(entity))
+                if (!game_object_entity.has_shared_component_data<PlanetariaRigidbodyUnrestrained>())
                 {
-                    Vector3 position = entity_manager.GetComponentData<PlanetariaPosition>(entity).data;
-                    Vector3 up = entity_manager.GetComponentData<PlanetariaDirection>(entity).data;
+                    Vector3 position = game_object_entity.get_component_data<PlanetariaPosition>().data;
+                    Vector3 up = game_object_entity.get_component_data<PlanetariaDirection>().data;
                     Vector3 right = Vector3.Cross(up, position);
                     velocity = new Vector3(Vector3.Dot(velocity, right), Vector3.Dot(velocity, up), 0);
                 }
-                entity_manager.SetComponentData<PlanetariaVelocity>(entity, new PlanetariaVelocity { data = velocity });
+                game_object_entity.set_component_data<PlanetariaVelocity>(new PlanetariaVelocity { data = velocity });
             }
         }
 
@@ -156,17 +147,15 @@ namespace Planetaria
         {
             get
             {
-                Entity entity = this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity;
-                return entity_manager.GetComponentData<PlanetariaPreviousPosition>(entity).data;
+                return game_object_entity.get_component_data<PlanetariaPreviousPosition>().data;
             }
         }
 
         [SerializeField] [HideInInspector] private Transform internal_transform;
         [SerializeField] [HideInInspector] private Rigidbody internal_rigidbody;
+        [SerializeField] [HideInInspector] private GameObjectEntity game_object_entity;
         //[SerializeField] [HideInInspector] private optional<CollisionObserver> observer;
         //[SerializeField] [HideInInspector] private BlockCollision collision;
-        
-        private static EntityManager entity_manager;
     }
 }
 
