@@ -1,7 +1,9 @@
 {
     "name": "DebrisNoirs",
     "references": [
-        "PlanetariaRuntime"
+        "PlanetariaRuntime",
+        "Unity.Entities",
+        "Unity.Entities.Hybrid"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

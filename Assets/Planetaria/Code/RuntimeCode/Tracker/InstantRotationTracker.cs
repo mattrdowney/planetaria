@@ -8,7 +8,7 @@ namespace Planetaria
 
         public override void step()
         {
-            self.direction = target.direction;
+            self.local_direction = target.local_direction;
         }
 
         public override void cleanup() { }

@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using Unity.Entities;
 using Planetaria;
 
 namespace DebrisNoirs
@@ -23,6 +24,12 @@ namespace DebrisNoirs
             planetaria_rigidbody.relative_velocity = new Vector2(0, speed);
             PlanetariaGameObject.Destroy(this.gameObject, lifetime);
         }
+
+        /*private void OnDestroy()
+        {
+            EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
+            entity_manager.DestroyEntity(this.GetComponent<GameObjectEntity>().Entity);
+        }*/
 
         // while I do like the idea of raycasting in update, that would require PlanetariaColliders or hacking my current raycast implementation, so true-to-original it is
         // Also, raycasting would be broken with relative projectile velocities

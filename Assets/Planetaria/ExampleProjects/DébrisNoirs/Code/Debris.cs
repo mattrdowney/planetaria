@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using Unity.Entities;
 using Planetaria;
 
 namespace DebrisNoirs
@@ -67,6 +68,8 @@ namespace DebrisNoirs
                 }
             }
             DebrisNoirs.die(this.gameObject);
+            EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
+            entity_manager.DestroyEntity(this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity);
             PlanetariaGameObject.Destroy(this.gameObject);
             return true;
         }
