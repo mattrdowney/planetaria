@@ -58,12 +58,23 @@ namespace Planetaria
             game_object_entity.add_component_data<PlanetariaDirectionDirtyComponent>();
             game_object_entity.add_component_data<PlanetariaScaleComponent>();
             game_object_entity.add_component_data<RotationComponent>();
-            game_object_entity.add_component_data<LocalToWorldComponent>();
+            game_object_entity.add_component_data<AttachComponent>();
+            //game_object_entity.add_component_data<LocalToParent>();
             game_object_entity.remove_component_data<CopyTransformToGameObjectComponent>();
             game_object_entity.remove_component_data<CopyTransformFromGameObjectComponent>();
             local_position = internal_transform.rotation * Vector3.forward;
             local_direction = internal_transform.rotation * Vector3.up;
             local_scale = 1f;
+            if (parent != null)
+            {
+                GameObjectEntity parent_game_object_entity = parent.internal_transform.GetComponent<GameObjectEntity>();
+                if (!parent_game_object_entity)
+                {
+                    Debug.Log("Critical Error");
+                }
+                Entity parent_entity = parent_game_object_entity.Entity;
+                game_object_entity.set_component_data<Attach>(new Attach { Parent = parent_entity });
+            }
         }
 
         // Properties
