@@ -46,7 +46,7 @@ namespace DebrisNoirs
             planetaria_rigidbody.relative_velocity = new Vector2(0, speed);
         }
 
-        public bool destroy_asteroid()
+        public bool destroy_debris()
         {
             if (has_collided)
             {
@@ -61,15 +61,14 @@ namespace DebrisNoirs
                     Debris debris = game_object.GetComponent<Debris>();
                     debris.speed = this.speed;
                     DebrisNoirs.live(game_object);
-                    // while asteroid revenge velocity (targetting satellite) is an interesting idea,
-                    // I don't think it's necessary (or would fully work as intended for that matter - it might be exploitable).
-                    // The game will probably be hard enough head/joystick controls
-                    // (and pros will still make mistakes eventually, even if its because of sleep deprivation)
                 }
             }
             DebrisNoirs.die(this.gameObject);
-            EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
-            entity_manager.DestroyEntity(this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity);
+            if (World.Active != null)
+            {
+                EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
+                entity_manager.DestroyEntity(this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity);
+            }
             PlanetariaGameObject.Destroy(this.gameObject);
             return true;
         }

@@ -175,7 +175,7 @@ namespace DebrisNoirs
             {
                 die();
                 Debris debris = collider.GetComponent<Debris>();
-                debris.destroy_asteroid(); // should not assign points, since the player died.
+                debris.destroy_debris(); // should not assign points, since the player died.
             }
         }
 

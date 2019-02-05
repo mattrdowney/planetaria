@@ -16,8 +16,11 @@ public static class GameObjectEntityExtensions
     /// <typeparam name="Type">Type of Component to add.</typeparam>
     public static void add_component_data<Type>(this GameObjectEntity game_object_entity) where Type : Component
     {
-        Type component = game_object_entity.gameObject.AddComponent<Type>(); // FIXME: only add once
-        if (World.Active != null)
+        if (!game_object_entity.gameObject.GetComponent<Type>()) // runtime and editor time
+        {
+            game_object_entity.gameObject.AddComponent<Type>(); // Only add component once
+        }
+        if (World.Active != null) // runtime only
         {
             EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
             Entity entity = game_object_entity.Entity;
@@ -32,14 +35,19 @@ public static class GameObjectEntityExtensions
     /// <typeparam name="Type">Type of Component to get.</typeparam>
     public static Type get_component_data<Type>(this GameObjectEntity game_object_entity) where Type : struct, IComponentData
     {
-        if (World.Active != null)
+        if (World.Active != null) // runtime only
         {
             EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
             Entity entity = game_object_entity.Entity;
             return entity_manager.GetComponentData<Type>(entity);
         }
-        // TODO: GameObject GetComponent call
-        return default;
+        // editor time only
+        Type[] component = game_object_entity.gameObject.GetComponents<Type>();  // Note we are dealing with structs, not classes (and apparently this doesn't work anyway =/ )
+        if (component.Length != 0) // Figure out if the component is attached
+        {
+            return component[0];
+        }
+        return default; // otherwise return default
     }
 
     /// <summary>
@@ -49,14 +57,15 @@ public static class GameObjectEntityExtensions
     /// <typeparam name="Type">Type of Component to check for.</typeparam>
     public static bool has_component_data<Type>(this GameObjectEntity game_object_entity) where Type : Component
     {
-        if (World.Active != null)
+        if (World.Active != null) // runtime only
         {
             EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
             Entity entity = game_object_entity.Entity;
             return entity_manager.HasComponent<Type>(entity);
         }
-        // TODO: GameObject GetComponent call
-        return false;
+        // editor time only
+        Type[] component = game_object_entity.gameObject.GetComponents<Type>();  // Note we are dealing with structs, not classes
+        return component.Length != 0; // Determine if the component exists on the game object
     }
 
     /// <summary>
@@ -66,7 +75,7 @@ public static class GameObjectEntityExtensions
     /// <typeparam name="Type">Type of Component to remove.</typeparam>
     public static void remove_component_data<Type>(this GameObjectEntity game_object_entity) where Type : Component
     {
-        if (World.Active != null)
+        if (World.Active != null) // runtime only
         {
             EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
             Entity entity = game_object_entity.Entity;
@@ -75,6 +84,7 @@ public static class GameObjectEntityExtensions
                 entity_manager.RemoveComponent(entity, typeof(Type));
             }
         }
+        // editor time and runtime
         if (game_object_entity.GetComponent<Type>())
         {
             GameObject.Destroy(game_object_entity.GetComponent<Type>());
@@ -89,13 +99,20 @@ public static class GameObjectEntityExtensions
     /// <typeparam name="Type">Type of Component to set.</typeparam>
     public static void set_component_data<Type>(this GameObjectEntity game_object_entity, Type data) where Type : struct, IComponentData
     {
-        if (World.Active != null)
+        if (World.Active != null) // runtime only
         {
             EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
             Entity entity = game_object_entity.Entity;
             entity_manager.SetComponentData<Type>(entity, data);
         }
-        // else TODO: GameObject GetComponent call
+        else // editor time only
+        {
+            Type[] component = game_object_entity.gameObject.GetComponents<Type>();  // Note we are dealing with structs, not classes
+            if (component.Length != 0) // Figure out if the component is attached
+            {
+                // TODO: currently doing nothing (because I cannot figure out how to implement this)
+            }
+        }
     }
 }
 

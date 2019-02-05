@@ -25,11 +25,14 @@ namespace DebrisNoirs
             PlanetariaGameObject.Destroy(this.gameObject, lifetime);
         }
 
-        /*private void OnDestroy()
+        private void OnDestroy()
         {
-            EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
-            entity_manager.DestroyEntity(this.GetComponent<GameObjectEntity>().Entity);
-        }*/
+            if (World.Active != null)
+            {
+                EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
+                entity_manager.DestroyEntity(this.GetComponent<GameObjectEntity>().Entity);
+            }
+        }
 
         // while I do like the idea of raycasting in update, that would require PlanetariaColliders or hacking my current raycast implementation, so true-to-original it is
         // Also, raycasting would be broken with relative projectile velocities
@@ -39,7 +42,7 @@ namespace DebrisNoirs
             if (!has_collided) // make sure one projectile doesn't collide with 2+ debris.
             {
                 Debris debris = collider.GetComponent<Debris>();
-                if (debris.destroy_asteroid()) // make sure two projectiles don't collide with the same debris (wasting one of them).
+                if (debris.destroy_debris()) // make sure two projectiles don't collide with the same debris (wasting one of them).
                 {
                     PlanetariaGameObject.Destroy(this.gameObject);
                     has_collided = true;
