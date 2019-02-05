@@ -55,17 +55,17 @@ namespace Planetaria
         }
 
         [BurstCompile]
-        struct PlanetariaTransformMove : IJobProcessComponentData<LocalToParent, PlanetariaDirection, PlanetariaPosition>
+        struct PlanetariaTransformMove : IJobProcessComponentData<Rotation, PlanetariaDirection, PlanetariaPosition>
         {
             public void Execute(
-                    /*[ReadWrite]*/  ref LocalToParent internal_matrix,
+                    /*[ReadWrite]*/  ref Rotation rotation,
                     [ReadOnly] ref PlanetariaDirection direction,
                     [ReadOnly] ref PlanetariaPosition position)
             {
-                float3 internal_position = new float3(internal_matrix.Value.c0.w, internal_matrix.Value.c1.w, internal_matrix.Value.c2.w);
+                //float3 internal_position = new float3(internal_matrix.Value.c0.w, internal_matrix.Value.c1.w, internal_matrix.Value.c2.w);
                 quaternion next_rotation = quaternion.LookRotationSafe(position.data, direction.data);
-                float4x4 next_matrix = Matrix4x4.TRS(internal_position, next_rotation, Vector3.one);
-                internal_matrix = new LocalToParent { Value = next_matrix };
+                //float4x4 next_matrix = Matrix4x4.TRS(internal_position, next_rotation, Vector3.one);
+                rotation = new Rotation { Value = next_rotation };
             }
         }
 
@@ -90,6 +90,18 @@ namespace Planetaria
                 direction = new PlanetariaDirection { data = (Quaternion)rotation.Value * Vector3.up };
             }
         }
+
+        /*[BurstCompile]
+        struct PlanetariaTransformForReal : IJobProcessComponentData<Transform, PlanetariaPosition, PlanetariaDirection>
+        {
+            public void Execute(
+                    [WriteOnly] ref Transform transform,
+                    [ReadOnly] ref PlanetariaPosition position,
+                    [ReadOnly] ref PlanetariaDirection direction)
+            {
+                transform.rotation = quaternion.LookRotationSafe(position.data, direction.data);
+            }
+        }*/
 
         protected override JobHandle OnUpdate(JobHandle input_dependencies)
         {

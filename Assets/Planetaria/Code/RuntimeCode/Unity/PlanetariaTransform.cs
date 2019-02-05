@@ -61,7 +61,8 @@ namespace Planetaria
             game_object_entity.add_component_data<AttachComponent>(); // Double adding?
             game_object_entity.remove_component_data<LocalToWorldComponent>(); // Not removing?
             game_object_entity.add_component_data<LocalToParentComponent>();
-            game_object_entity.remove_component_data<CopyTransformToGameObjectComponent>();
+            //game_object_entity.remove_component_data<CopyTransformToGameObjectComponent>();
+            game_object_entity.add_component_data<CopyTransformToGameObjectComponent>();
             game_object_entity.remove_component_data<CopyTransformFromGameObjectComponent>();
             local_position = internal_transform.rotation * Vector3.forward;
             local_direction = internal_transform.rotation * Vector3.up;
@@ -75,6 +76,12 @@ namespace Planetaria
                 }
                 Entity parent_entity = parent_game_object_entity.Entity;
                 game_object_entity.set_component_data<Attach>(new Attach { Parent = parent_entity });
+            }
+            if (World.Active != null)
+            {
+                //game_object_entity.gameObject.AddComponent<Transform>(); // Only add component once
+                //EntityManager entity_manager = World.Active.GetOrCreateManager<EntityManager>();
+                //entity_manager.(game_object_entity.Entity, typeof(Transform)); // Will this really do it (this is so stupid)?
             }
         }
 
