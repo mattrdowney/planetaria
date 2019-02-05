@@ -17,16 +17,18 @@ namespace Planetaria
         /*[BurstCompile]
         struct PlanetariaScale : IJobProcessComponentData<PlanetariaScaleComponent>
         {
-            public void Execute([ReadOnly] ref PlanetariaScaleComponent scale)
+            public void Execute(
+                    [ReadOnly] ref PlanetariaScaleComponent scale)
             {
                 // TODO: scale
             }
         }*/
 
-        [BurstCompile]
+        //[BurstCompile]
         struct PlanetariaTransformRedirect : IJobProcessComponentData<PlanetariaDirection, PlanetariaDirectionDirty, PlanetariaPosition, PlanetariaPreviousPosition>
         {
-            public void Execute(/*[ReadWrite]*/ ref PlanetariaDirection direction,
+            public void Execute(
+                    /*[ReadWrite]*/ ref PlanetariaDirection direction,
                     [ReadOnly] ref PlanetariaDirectionDirty direction_dirty,
                     [ReadOnly] ref PlanetariaPosition position,
                     [ReadOnly] ref PlanetariaPreviousPosition previous_position)
@@ -44,7 +46,8 @@ namespace Planetaria
         [BurstCompile]
         struct PlanetariaTransformSavePrevious : IJobProcessComponentData<PlanetariaPreviousPosition, Rotation>
         {
-            public void Execute([WriteOnly] ref PlanetariaPreviousPosition previous_position,
+            public void Execute(
+                    [WriteOnly] ref PlanetariaPreviousPosition previous_position,
                     [ReadOnly] ref Rotation rotation)
             {
                 previous_position = new PlanetariaPreviousPosition { data = (Quaternion)rotation.Value * Vector3.forward };
@@ -52,43 +55,50 @@ namespace Planetaria
         }
 
         [BurstCompile]
-        struct PlanetariaTransformMove : IJobProcessComponentData<Rotation, PlanetariaDirection, PlanetariaPosition>
+        struct PlanetariaTransformMove : IJobProcessComponentData<LocalToParent, PlanetariaDirection, PlanetariaPosition>
         {
-            public void Execute([WriteOnly] ref Rotation rotation,
+            public void Execute(
+                    /*[ReadWrite]*/  ref LocalToParent internal_matrix,
                     [ReadOnly] ref PlanetariaDirection direction,
                     [ReadOnly] ref PlanetariaPosition position)
             {
-                rotation = new Rotation { Value = quaternion.LookRotationSafe(position.data, direction.data) };
+                float3 internal_position = new float3(internal_matrix.Value.c0.w, internal_matrix.Value.c1.w, internal_matrix.Value.c2.w);
+                quaternion next_rotation = quaternion.LookRotationSafe(position.data, direction.data);
+                float4x4 next_matrix = Matrix4x4.TRS(internal_position, next_rotation, Vector3.one);
+                internal_matrix = new LocalToParent { Value = next_matrix };
             }
         }
 
         [BurstCompile]
-        struct PlanetariaTransformOrthonormalize : IJobProcessComponentData<PlanetariaDirection, Rotation>
-        {
-            public void Execute([WriteOnly] ref PlanetariaDirection direction,
-                    [ReadOnly] ref Rotation rotation)
-            {
-                direction = new PlanetariaDirection { data = (Quaternion)rotation.Value * Vector3.up };
-            }
-        }
-
         struct PlanetariaTransformCleanDirtyBits : IJobProcessComponentData<PlanetariaDirectionDirty>
         {
-            public void Execute([WriteOnly] ref PlanetariaDirectionDirty direction_dirty)
+            public void Execute(
+                    [WriteOnly] ref PlanetariaDirectionDirty direction_dirty)
             {
                 // VALIDATE: This should be optimized to a memset (since you are setting all bits to zero)
                 direction_dirty = new PlanetariaDirectionDirty(); // struct default initialized to false
             }
         }
 
+        [BurstCompile]
+        struct PlanetariaTransformOrthonormalize : IJobProcessComponentData<PlanetariaDirection, Rotation>
+        {
+            public void Execute(
+                    [WriteOnly] ref PlanetariaDirection direction,
+                    [ReadOnly] ref Rotation rotation)
+            {
+                direction = new PlanetariaDirection { data = (Quaternion)rotation.Value * Vector3.up };
+            }
+        }
+
         protected override JobHandle OnUpdate(JobHandle input_dependencies)
         {
-            var modify_direction = new PlanetariaTransformRedirect();
-            JobHandle redirect_job = modify_direction.Schedule<PlanetariaTransformRedirect>(this, input_dependencies); // NOTE: these should be scheduled simultaneously
+            var redirect = new PlanetariaTransformRedirect();
+            JobHandle redirect_job = redirect.Schedule<PlanetariaTransformRedirect>(this, input_dependencies); // NOTE: these should be scheduled simultaneously
             var cache = new PlanetariaTransformSavePrevious();
-            JobHandle save_job = cache.Schedule<PlanetariaTransformSavePrevious>(this, redirect_job); // TODO: verify
-            var translate = new PlanetariaTransformMove();
-            JobHandle move_job = translate.Schedule<PlanetariaTransformMove>(this, save_job);
+            JobHandle cache_job = cache.Schedule<PlanetariaTransformSavePrevious>(this, redirect_job); // TODO: verify
+            var move = new PlanetariaTransformMove();
+            JobHandle move_job = move.Schedule<PlanetariaTransformMove>(this, cache_job);
             var clean = new PlanetariaTransformCleanDirtyBits();
             JobHandle clean_job = clean.Schedule<PlanetariaTransformCleanDirtyBits>(this, move_job); // this and next step are parallel
             var orthonormalize = new PlanetariaTransformOrthonormalize();
