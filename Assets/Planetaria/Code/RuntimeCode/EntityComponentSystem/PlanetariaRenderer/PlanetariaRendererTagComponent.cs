@@ -1,16 +1,13 @@
 ﻿using System;
 using UnityEngine;
 using Unity.Entities;
+using Unity.Mathematics;
 
 namespace Planetaria
 {
-    [Serializable]
-    public struct PlanetariaScale : IComponentData
-    {
-        [SerializeField] public float data;
-    }
+    public struct PlanetariaRendererTag : ISharedComponentData { } // tag for whether Rigidbody is attached to and traversing a PlanetariaShape or unrestrained
 
-    [DisallowMultipleComponent] public class PlanetariaScaleComponent : ComponentDataWrapper<PlanetariaScale> { }
+    public class PlanetariaRendererTagComponent : SharedComponentDataWrapper<PlanetariaRendererTag> { }
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

@@ -66,20 +66,22 @@ namespace Planetaria
         {
             get
             {
-                Vector3 position = game_object_entity.get_component_data<PlanetariaPosition>().data;
-                Vector3 up = game_object_entity.get_component_data<PlanetariaDirection>().data;
+                Vector3 position = game_object_entity.get_component_data<PlanetariaPosition, PlanetariaPositionComponent>().data;
+                Vector3 up = game_object_entity.get_component_data<PlanetariaDirection, PlanetariaDirectionComponent>().data;
                 Vector3 right = Vector3.Cross(up, position);
                 float x = Vector3.Dot(internal_velocity, internal_transform.right);
                 float y = Vector3.Dot(internal_velocity, internal_transform.up);
+                Debug.Log(x + " get " + y);
                 return new Vector2(x, y);
             }
             set
             {
-                Vector3 position = game_object_entity.get_component_data<PlanetariaPosition>().data;
-                Vector3 up = game_object_entity.get_component_data<PlanetariaDirection>().data;
+                Vector3 position = game_object_entity.get_component_data<PlanetariaPosition, PlanetariaPositionComponent>().data;
+                Vector3 up = game_object_entity.get_component_data<PlanetariaDirection, PlanetariaDirectionComponent>().data;
                 Vector3 right = Vector3.Cross(up, position);
                 Vector3 x = internal_transform.right*value.x;
                 Vector3 y = internal_transform.up*value.y;
+                Debug.Log(x + " set " + y);
                 internal_velocity = x + y;
             }
         }
@@ -107,11 +109,11 @@ namespace Planetaria
         {
             get
             {
-                Vector3 velocity = game_object_entity.get_component_data<PlanetariaVelocity>().data;
+                Vector3 velocity = game_object_entity.get_component_data<PlanetariaVelocity, PlanetariaVelocityComponent>().data;
                 if (!game_object_entity.has_component_data<PlanetariaRigidbodyUnrestrainedComponent>())
                 {
-                    Vector3 position = game_object_entity.get_component_data<PlanetariaPosition>().data;
-                    Vector3 up = game_object_entity.get_component_data<PlanetariaDirection>().data;
+                    Vector3 position = game_object_entity.get_component_data<PlanetariaPosition, PlanetariaPositionComponent>().data;
+                    Vector3 up = game_object_entity.get_component_data<PlanetariaDirection, PlanetariaDirectionComponent>().data;
                     Vector3 right = Vector3.Cross(up, position);
                     velocity = velocity.x*right + velocity.y*up;
                 }
@@ -122,12 +124,12 @@ namespace Planetaria
                 Vector3 velocity = value;
                 if (!game_object_entity.has_component_data<PlanetariaRigidbodyUnrestrainedComponent>())
                 {
-                    Vector3 position = game_object_entity.get_component_data<PlanetariaPosition>().data;
-                    Vector3 up = game_object_entity.get_component_data<PlanetariaDirection>().data;
+                    Vector3 position = game_object_entity.get_component_data<PlanetariaPosition, PlanetariaPositionComponent>().data;
+                    Vector3 up = game_object_entity.get_component_data<PlanetariaDirection, PlanetariaDirectionComponent>().data;
                     Vector3 right = Vector3.Cross(up, position);
                     velocity = new Vector3(Vector3.Dot(velocity, right), Vector3.Dot(velocity, up), 0);
                 }
-                game_object_entity.set_component_data<PlanetariaVelocity>(new PlanetariaVelocity { data = velocity });
+                game_object_entity.set_component_data<PlanetariaVelocity, PlanetariaVelocityComponent>(new PlanetariaVelocity { data = velocity });
             }
         }
 
@@ -147,7 +149,7 @@ namespace Planetaria
         {
             get
             {
-                return game_object_entity.get_component_data<PlanetariaPreviousPosition>().data;
+                return game_object_entity.get_component_data<PlanetariaPreviousPosition, PlanetariaPreviousPositionComponent>().data;
             }
         }
 

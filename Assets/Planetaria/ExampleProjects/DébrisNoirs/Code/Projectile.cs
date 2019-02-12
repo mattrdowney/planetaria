@@ -7,6 +7,8 @@ namespace DebrisNoirs
 {
     public class Projectile : MonoBehaviour // HACK: normally I would use PlanetariaMonoBehaviour, but this should drastically improve collision performance
     {
+        // FIXME: only instantiate on first life and destroy after death, otherwise use implicit object pooling (objects may need to be deactivated for a few frames when they collide)
+        
         private void OnValidate()
         {
             //planetaria_collider = this.GetComponent<PlanetariaCollider>();
@@ -22,15 +24,16 @@ namespace DebrisNoirs
         {
             // set velocity
             planetaria_rigidbody.relative_velocity = new Vector2(0, speed);
-            PlanetariaGameObject.Destroy(this.gameObject, lifetime);
         }
 
-        private void OnDestroy()
+        private void FixedUpdate()
         {
-            if (World.Active != null)
+            lifetime -= Time.fixedDeltaTime;
+            if (lifetime < 0)
             {
                 EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
                 entity_manager.DestroyEntity(this.GetComponent<GameObjectEntity>().Entity);
+                GameObject.Destroy(this.gameObject);
             }
         }
 
@@ -44,6 +47,8 @@ namespace DebrisNoirs
                 Debris debris = collider.GetComponent<Debris>();
                 if (debris.destroy_debris()) // make sure two projectiles don't collide with the same debris (wasting one of them).
                 {
+                    EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
+                    entity_manager.DestroyEntity(this.gameObject.GetComponent<GameObjectEntity>().Entity);
                     PlanetariaGameObject.Destroy(this.gameObject);
                     has_collided = true;
                 }

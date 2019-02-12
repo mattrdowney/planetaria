@@ -5,12 +5,12 @@ using Unity.Entities;
 namespace Planetaria
 {
     [Serializable]
-    public struct PlanetariaScale : IComponentData
+    public struct PlanetariaRendererOffset : IComponentData
     {
         [SerializeField] public float data;
     }
 
-    [DisallowMultipleComponent] public class PlanetariaScaleComponent : ComponentDataWrapper<PlanetariaScale> { }
+    [DisallowMultipleComponent] public class PlanetariaRendererOffsetComponent : ComponentDataWrapper<PlanetariaRendererOffset> { }
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

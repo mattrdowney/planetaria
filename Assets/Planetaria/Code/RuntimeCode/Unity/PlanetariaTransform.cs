@@ -58,25 +58,13 @@ namespace Planetaria
             game_object_entity.add_component_data<PlanetariaDirectionDirtyComponent>();
             game_object_entity.add_component_data<PlanetariaScaleComponent>();
             game_object_entity.add_component_data<RotationComponent>();
-            game_object_entity.add_component_data<AttachComponent>(); // Double adding?
-            game_object_entity.remove_component_data<LocalToWorldComponent>(); // Not removing?
-            game_object_entity.add_component_data<LocalToParentComponent>();
             //game_object_entity.remove_component_data<CopyTransformToGameObjectComponent>();
             game_object_entity.add_component_data<CopyTransformToGameObjectComponent>();
             game_object_entity.remove_component_data<CopyTransformFromGameObjectComponent>();
             local_position = internal_transform.rotation * Vector3.forward;
+            game_object_entity.set_component_data<PlanetariaPreviousPosition, PlanetariaPreviousPositionComponent>(new PlanetariaPreviousPosition { data = local_position });
             local_direction = internal_transform.rotation * Vector3.up;
             local_scale = 1f;
-            if (parent != null)
-            {
-                GameObjectEntity parent_game_object_entity = parent.internal_transform.GetComponent<GameObjectEntity>();
-                if (!parent_game_object_entity)
-                {
-                    Debug.Log("Critical Error");
-                }
-                Entity parent_entity = parent_game_object_entity.Entity;
-                game_object_entity.set_component_data<Attach>(new Attach { Parent = parent_entity });
-            }
             if (World.Active != null)
             {
                 //game_object_entity.gameObject.AddComponent<Transform>(); // Only add component once
@@ -129,12 +117,12 @@ namespace Planetaria
             get
             {
                 // FIXME: different behaviour depending on grounded versus aerial
-                return game_object_entity.get_component_data<PlanetariaDirection>().data;
+                return game_object_entity.get_component_data<PlanetariaDirection, PlanetariaDirectionComponent>().data;
             }
             set
             {
-                game_object_entity.set_component_data<PlanetariaDirection>(new PlanetariaDirection { data = value });
-                game_object_entity.set_component_data<PlanetariaDirectionDirty>(new PlanetariaDirectionDirty { data = 1 });
+                game_object_entity.set_component_data<PlanetariaDirection, PlanetariaDirectionComponent>(new PlanetariaDirection { data = value });
+                game_object_entity.set_component_data<PlanetariaDirectionDirty, PlanetariaDirectionDirtyComponent>(new PlanetariaDirectionDirty { data = 1 });
             }
         }
 
@@ -142,12 +130,12 @@ namespace Planetaria
         {
             get
             {
-                return game_object_entity.get_component_data<PlanetariaPosition>().data;
+                return game_object_entity.get_component_data<PlanetariaPosition, PlanetariaPositionComponent>().data;
             }
             set
             {
                 // FIXME: needs to modify velocity of rigidbody (if a rigidbody exists)
-                game_object_entity.set_component_data<PlanetariaPosition>(new PlanetariaPosition { data = value });
+                game_object_entity.set_component_data<PlanetariaPosition, PlanetariaPositionComponent>(new PlanetariaPosition { data = value });
             }
         }
         
@@ -158,11 +146,11 @@ namespace Planetaria
         {
             get
             {
-                return game_object_entity.get_component_data<PlanetariaScale>().data;
+                return game_object_entity.get_component_data<PlanetariaScale, PlanetariaScaleComponent>().data;
             }
             set
             {
-                game_object_entity.set_component_data<PlanetariaScale>(new PlanetariaScale { data = value });
+                game_object_entity.set_component_data<PlanetariaScale, PlanetariaScaleComponent>(new PlanetariaScale { data = value });
             }
         }
 

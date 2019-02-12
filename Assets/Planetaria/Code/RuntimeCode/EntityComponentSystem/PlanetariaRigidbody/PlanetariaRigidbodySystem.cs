@@ -13,7 +13,7 @@ namespace Planetaria
     [UpdateAfter(typeof(PlanetariaRigidbody))]
     public class PlanetariaRigidbodySystem : JobComponentSystem
     {
-        [BurstCompile]
+        //[BurstCompile]
         [RequireComponentTag(typeof(PlanetariaRigidbodyUnrestrained))]
         struct PlanetariaRigidbodyAerialMove : IJobProcessComponentData<PlanetariaPosition, PlanetariaVelocity>
         {
@@ -28,12 +28,12 @@ namespace Planetaria
                 float3 current_direction = velocity.data / current_speed;
                 float3 next_position = position.data * math.cos(displacement) + current_direction * math.sin(displacement); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
                 float3 next_velocity = position.data * math.cos(displacement + quarter_rotation) + current_direction * math.sin(displacement + quarter_rotation);
-                position = new PlanetariaPosition { data = next_position };
+                position = new PlanetariaPosition { data = math.normalize(next_position) };
                 velocity = new PlanetariaVelocity { data = math.normalizesafe(next_velocity) * current_speed }; // FIXME: I thought this was numerically stable, but it seems to create more energy.
             }
         }
 
-        [BurstCompile]
+        //[BurstCompile]
         [RequireComponentTag(typeof(PlanetariaRigidbodyUnrestrained))]
         struct PlanetariaRigidbodyAerialAccelerate : IJobProcessComponentData<PlanetariaVelocity, PlanetariaAcceleration>
         {
@@ -46,7 +46,7 @@ namespace Planetaria
             }
         }
 
-        [BurstCompile]
+        //[BurstCompile]
         [RequireComponentTag(typeof(PlanetariaRigidbodyUnrestrained))]
         struct PlanetariaRigidbodyAerialGravitate : IJobProcessComponentData<PlanetariaAcceleration, PlanetariaGravity, PlanetariaPosition>
         {
@@ -60,7 +60,7 @@ namespace Planetaria
             }
         }
 
-        [BurstCompile]
+        //[BurstCompile]
         [RequireComponentTag(typeof(PlanetariaRigidbodyUnrestrained))]
         struct PlanetariaRigidbodyAirToGroundVelocity : IJobProcessComponentData<PlanetariaVelocity, PlanetariaPosition, PlanetariaDirection>
         {
@@ -75,7 +75,7 @@ namespace Planetaria
             }
         }
 
-        [BurstCompile]
+        //[BurstCompile]
         [RequireComponentTag(typeof(PlanetariaRigidbodyUnrestrained))]
         struct PlanetariaRigidbodyGroundToAirVelocity : IJobProcessComponentData<PlanetariaVelocity, PlanetariaPosition, PlanetariaDirection>
         {

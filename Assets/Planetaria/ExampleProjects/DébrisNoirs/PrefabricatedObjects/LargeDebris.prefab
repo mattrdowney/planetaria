@@ -67,6 +67,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 32}
   internal_transform: {fileID: 45}
+  game_object_entity: {fileID: 0}
 --- !u!54 &56
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -100,6 +101,7 @@ MonoBehaviour:
     game_object_variable: {fileID: 32}
   internal_transform: {fileID: 45}
   internal_rigidbody: {fileID: 56}
+  game_object_entity: {fileID: 0}
 --- !u!135 &60
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -130,6 +132,7 @@ MonoBehaviour:
     game_object_variable: {fileID: 0}
   angle_variable: 0
   material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  sorting_order: 0
   scale_variable: 0.06
   internal_transform: {fileID: 44}
   internal_renderer: {fileID: 62}
@@ -328,8 +331,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 48}
-  - component: {fileID: 6909389442814733745}
-  - component: {fileID: 2048246246082960264}
   - component: {fileID: 79}
   m_Layer: 10
   m_Name: Silhouette
@@ -345,7 +346,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 41}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -353,34 +354,6 @@ Transform:
   m_Father: {fileID: 45}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6909389442814733745
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 41}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5bf10cdea1344482e91a4f2b58506b77, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &2048246246082960264
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 41}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 48d2cae72ee207743b9de842f4f0663d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initialized: 0
-  game_object_variable:
-    game_object_variable: {fileID: 41}
-  internal_transform: {fileID: 48}
 --- !u!114 &79
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -398,6 +371,7 @@ MonoBehaviour:
     game_object_variable: {fileID: 0}
   angle_variable: 0
   material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  sorting_order: 0
   scale_variable: 0.06
   internal_transform: {fileID: 54}
   internal_renderer: {fileID: 63}

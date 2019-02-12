@@ -1,7 +1,4 @@
-﻿using System;
-using UnityEngine;
-using Unity.Entities;
-using Unity.Mathematics;
+﻿using Unity.Entities;
 
 namespace Planetaria
 {

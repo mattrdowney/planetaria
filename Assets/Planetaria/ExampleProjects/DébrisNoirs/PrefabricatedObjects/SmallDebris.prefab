@@ -9,8 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 50}
-  - component: {fileID: 1237265014407896810}
-  - component: {fileID: 8399905102266124660}
   - component: {fileID: 76}
   m_Layer: 10
   m_Name: Silhouette
@@ -34,34 +32,6 @@ Transform:
   m_Father: {fileID: 55}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1237265014407896810
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 36}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5bf10cdea1344482e91a4f2b58506b77, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &8399905102266124660
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 36}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 48d2cae72ee207743b9de842f4f0663d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initialized: 0
-  game_object_variable:
-    game_object_variable: {fileID: 36}
-  internal_transform: {fileID: 50}
 --- !u!114 &76
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -152,6 +122,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 40}
   internal_transform: {fileID: 55}
+  game_object_entity: {fileID: 0}
 --- !u!54 &58
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -185,6 +156,7 @@ MonoBehaviour:
     game_object_variable: {fileID: 40}
   internal_transform: {fileID: 55}
   internal_rigidbody: {fileID: 58}
+  game_object_entity: {fileID: 0}
 --- !u!135 &59
 SphereCollider:
   m_ObjectHideFlags: 0

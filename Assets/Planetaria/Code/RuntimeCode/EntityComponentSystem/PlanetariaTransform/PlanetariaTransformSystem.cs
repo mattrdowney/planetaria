@@ -36,6 +36,12 @@ namespace Planetaria
                 // FIXME: any time the user teleports the player, velocity is invalidated (need to distinguish between Rigidbody translations and user translations)
                 if (direction_dirty.data == 0) // FIXME: TODO: verify: I think this will eventually lead to significant drift (since you aren't orthonormalizing occasionally)
                 {
+                    if (float.IsNaN(previous_position.data.x) ||
+                            float.IsNaN(position.data.x))
+                    {
+                        Debug.Log((Vector3)previous_position.data);
+                        Debug.Log((Vector3)position.data);
+                    }
                     Quaternion delta_rotation = Quaternion.FromToRotation(previous_position.data, position.data);
                     Vector3 adjusted_direction = delta_rotation * direction.data;
                     direction = new PlanetariaDirection { data = adjusted_direction };
@@ -43,7 +49,7 @@ namespace Planetaria
             }
         }
 
-        [BurstCompile]
+        //[BurstCompile]
         struct PlanetariaTransformSavePrevious : IJobProcessComponentData<PlanetariaPreviousPosition, Rotation>
         {
             public void Execute(
@@ -54,7 +60,7 @@ namespace Planetaria
             }
         }
 
-        [BurstCompile]
+        //[BurstCompile]
         struct PlanetariaTransformMove : IJobProcessComponentData<Rotation, PlanetariaDirection, PlanetariaPosition>
         {
             public void Execute(
@@ -69,7 +75,7 @@ namespace Planetaria
             }
         }
 
-        [BurstCompile]
+        //[BurstCompile]
         struct PlanetariaTransformCleanDirtyBits : IJobProcessComponentData<PlanetariaDirectionDirty>
         {
             public void Execute(
@@ -80,7 +86,7 @@ namespace Planetaria
             }
         }
 
-        [BurstCompile]
+        //[BurstCompile]
         struct PlanetariaTransformOrthonormalize : IJobProcessComponentData<PlanetariaDirection, Rotation>
         {
             public void Execute(
@@ -90,18 +96,6 @@ namespace Planetaria
                 direction = new PlanetariaDirection { data = (Quaternion)rotation.Value * Vector3.up };
             }
         }
-
-        /*[BurstCompile]
-        struct PlanetariaTransformForReal : IJobProcessComponentData<Transform, PlanetariaPosition, PlanetariaDirection>
-        {
-            public void Execute(
-                    [WriteOnly] ref Transform transform,
-                    [ReadOnly] ref PlanetariaPosition position,
-                    [ReadOnly] ref PlanetariaDirection direction)
-            {
-                transform.rotation = quaternion.LookRotationSafe(position.data, direction.data);
-            }
-        }*/
 
         protected override JobHandle OnUpdate(JobHandle input_dependencies)
         {

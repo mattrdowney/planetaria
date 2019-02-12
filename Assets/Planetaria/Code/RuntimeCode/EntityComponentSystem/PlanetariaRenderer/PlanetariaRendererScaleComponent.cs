@@ -1,23 +1,19 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using Unity.Entities;
+using Unity.Mathematics;
 
 namespace Planetaria
 {
-    public class PlanetariaTransformSystemForReal : MonoBehaviour
+    [Serializable]
+    public struct PlanetariaRendererScale : IComponentData // CONSIDER: combine with PlanetariaScale (from PlanetariaTransform)?
     {
-        /*
-        [BurstCompile]
-        struct PlanetariaTransformForReal : Process<Transform, PlanetariaPosition, PlanetariaDirection>
-        {
-            public void Execute(
-                    [WriteOnly] ref Transform transform,
-                    [ReadOnly] ref PlanetariaPosition position,
-                    [ReadOnly] ref PlanetariaDirection direction)
-            {
-                transform.rotation = quaternion.LookRotationSafe(position.data, direction.data);
-            }
-        }*/
+        [SerializeField] public float2 scale;
+        [SerializeField] public byte flip_horizontal; // FIXME: blittable bool / Unity.Mathematics.bool1 or (unlikely) bool2
+        [SerializeField] public byte flip_vertical; // FIXME: blittable bool / Unity.Mathematics.bool1 or (unlikely) bool2
     }
+
+    [DisallowMultipleComponent] public class PlanetariaRendererScaleComponent : ComponentDataWrapper<PlanetariaRendererScale> { }
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

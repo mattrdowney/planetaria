@@ -3,7 +3,7 @@ using UnityEngine;
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace Planetaria
+namespace Planetaria // CONSIDER: how easy is it to use the Entity-Component System Position instead? You add extra calculations in some places, but also remove others entirely.
 {
     [Serializable]
     public struct PlanetariaPosition : IComponentData // NOTE: it's undocumented behavior that the filename and wrapper need to have matching names

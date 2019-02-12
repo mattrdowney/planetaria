@@ -64,11 +64,8 @@ namespace DebrisNoirs
                 }
             }
             DebrisNoirs.die(this.gameObject);
-            if (World.Active != null)
-            {
-                EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
-                entity_manager.DestroyEntity(this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity);
-            }
+            EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
+            entity_manager.DestroyEntity(this.gameObject.internal_game_object.GetComponent<GameObjectEntity>().Entity);
             PlanetariaGameObject.Destroy(this.gameObject);
             return true;
         }

@@ -1,104 +1,55 @@
 ﻿using System;
 using UnityEngine;
+using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Transforms;
 
 namespace Planetaria
 {
     [DisallowMultipleComponent]
     [Serializable]
-    public abstract class PlanetariaRenderer : PlanetariaComponent // FIXME: There is a bug similar to PlanetariaCollider with layers. If the parent object changes layers, the generated internal child object won't match layers, creating renderer layer bugs (I don't use layers often with rendering, but it is a feature). This one cannot be fixed in the same way, so it's harder.
+    public abstract class PlanetariaRenderer : MonoBehaviour // FIXME: There is a bug similar to PlanetariaCollider with layers. If the parent object changes layers, the generated internal child object won't match layers, creating renderer layer bugs (I don't use layers often with rendering, but it is a feature). This one cannot be fixed in the same way, so it's harder.
     {
-        protected override sealed void Awake()
+#if UNITY_EDITOR
+        private void Awake()
         {
-            base.Awake();
-            initialize();
+            setup();
+        }
+#endif
+
+        private void OnDestroy()
+        {
+            cleanup();
         }
 
-        protected override void OnEnable()
+        private void Reset()
         {
-            this.transform.Find("__Renderer").gameObject.internal_game_object.SetActive(true);
+            cleanup();
+            setup();
         }
 
-        protected override void OnDisable()
+        private void cleanup()
         {
-            this.transform.Find("__Renderer").gameObject.internal_game_object.SetActive(false);
-        }
-
-        protected override sealed void Reset()
-        {
-            base.Reset();
-            initialize();
-        }
-
-        private void initialize()
-        {
-            set_transformation();
-            set_renderer();
-            set_renderer_values();
-            set_draw_order();
-        }
-
-        protected abstract void set_renderer();
-
-        protected void set_draw_order()
-        {
-            if (!drawing_order.exists)
+            if (spawned_object)
             {
-                drawing_order = next_available_order(sorting_layer.id);
-            }
-            //internal_renderer.sortingLayerID = sorting_layer.id;
-        }
-
-        protected void set_renderer_values()
-        {
-            internal_renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            internal_renderer.receiveShadows = false;
-            internal_renderer.motionVectorGenerationMode = MotionVectorGenerationMode.ForceNoMotion;
-        }
-
-        protected void set_transformation()
-        {
-            if (internal_transform == null)
-            {
-                GameObject child = this.GetOrAddChild("Renderer");
-                internal_transform = child.GetComponent<Transform>();
-            }
-            internal_transform.localPosition = offset * Vector3.forward;
-        }
-
-        /// <summary>
-        /// Property - A number [-32768, 32767] that determines drawing order (-32768 = background, 32767 = foreground).
-        /// Up to 65536 objects can be created on the same layer without z-fighting (but z-fighting might happen with fewer if objects are destroyed at runtime).
-        /// If undefined, it will be arbitrarily chosen.
-        /// </summary>
-        public optional<short> drawing_order
-        {
-            get
-            {
-                return sorting_order;
-            }
-            set
-            {
-                sorting_order = value;
-                if (sorting_order.exists)
+                if (Application.isPlaying)
                 {
-                    //internal_renderer.sortingOrder = sorting_order.data;
+                    World.Active.GetOrCreateManager<EntityManager>().DestroyEntity(game_object_entity.Entity);
+                    Destroy(spawned_object);
+                }
+                else
+                {
+                    DestroyImmediate(spawned_object);
                 }
             }
         }
 
-        /// <summary>
-        /// Property - the radius as an angle (in radians) along the surface of the sphere.
-        /// </summary>
-        public float scale
+        private void setup()
         {
-            get
+            if (spawned_object == null) // FIXME: The problem with this method is Unity always breaks references if the code cannot compile, which means objects cannot be destroyed later
             {
-                return scale_variable;
-            }
-            set
-            {
-                scale_variable = value;
-                internal_transform.localScale = Vector3.one * scale_variable;
+                GameObject child = this.GetOrAddChild("Renderer");
+                internal_transform = child.GetComponent<Transform>();
             }
         }
 
@@ -106,42 +57,79 @@ namespace Planetaria
         {
             get
             {
-                return angle_variable;
+                return ((Quaternion)game_object_entity.get_component_data<Rotation, RotationComponent>().Value).eulerAngles.z;
             }
             set
             {
-                angle_variable = value;
-                internal_transform.localRotation = Quaternion.Euler(0, 0, angle * Mathf.Rad2Deg);
+                game_object_entity.set_component_data<Rotation, RotationComponent>(new Rotation { Value = quaternion.EulerXYZ(0, 0, angle * Mathf.Rad2Deg) });
             }
         }
 
-        [SerializeField] private float angle_variable;
-        [SerializeField] public Material material;
-        [SerializeField] public SortingLayer sorting_layer;
-        [SerializeField] protected optional<short> sorting_order;
-        
-        [SerializeField] private float scale_variable;
-        
-        [SerializeField] [HideInInspector] protected Transform internal_transform;
-        [SerializeField] [HideInInspector] protected Renderer internal_renderer;
-
-        [SerializeField] public float offset = 1;
-
-        protected static short next_available_order(int layer_identifier) // TODO: remove this
+        public bool flip_horizontal
         {
-            short order = order_identifier;
-            if (order == short.MaxValue)
+            get
             {
-                order_identifier = short.MinValue;
+                return game_object_entity.get_component_data<PlanetariaRendererScale, PlanetariaRendererScaleComponent>().flip_horizontal == 1;
             }
-            else
+            set
             {
-                ++order_identifier;
+                game_object_entity.set_component_data<PlanetariaRendererScale, PlanetariaRendererScaleComponent>(new PlanetariaRendererScale
+                {
+                    scale = game_object_entity.get_component_data<PlanetariaRendererScale, PlanetariaRendererScaleComponent>().scale,
+                    flip_horizontal = value ? (byte)1 : (byte)0,
+                    flip_vertical = game_object_entity.get_component_data<PlanetariaRendererScale, PlanetariaRendererScaleComponent>().flip_vertical,
+                });
             }
-            return order;
         }
 
-        [SerializeField] [HideInInspector] private static short order_identifier = short.MinValue; // CONSIDER: use layer map again if convenient
+        public bool flip_vertical
+        {
+            get
+            {
+                return game_object_entity.get_component_data<PlanetariaRendererScale, PlanetariaRendererScaleComponent>().flip_vertical == 1;
+            }
+            set
+            {
+                game_object_entity.set_component_data<PlanetariaRendererScale, PlanetariaRendererScaleComponent>(new PlanetariaRendererScale
+                {
+                    scale = game_object_entity.get_component_data<PlanetariaRendererScale, PlanetariaRendererScaleComponent>().scale,
+                    flip_horizontal = game_object_entity.get_component_data<PlanetariaRendererScale, PlanetariaRendererScaleComponent>().flip_horizontal,
+                    flip_vertical = value ? (byte)1 : (byte)0,
+                });
+            }
+        }
+
+        public float offset // CONSIDER: FIXME: why make an PlanetariaRendererOffsetComponent if I'm not gonna use it?
+        {
+            get
+            {
+                return game_object_entity.get_component_data<Position, PositionComponent>().Value.z;
+            }
+            set
+            {
+                game_object_entity.set_component_data<Position, PositionComponent>(new Position { Value = new float3(0, 0, value) });
+            }
+        }
+
+        public float2 scale
+        {
+            get
+            {
+                return game_object_entity.get_component_data<PlanetariaRendererScale, PlanetariaRendererScaleComponent>().scale;
+            }
+            set
+            {
+                game_object_entity.set_component_data<PlanetariaRendererScale, PlanetariaRendererScaleComponent>(new PlanetariaRendererScale
+                {
+                    scale = value,
+                    flip_horizontal = game_object_entity.get_component_data<PlanetariaRendererScale, PlanetariaRendererScaleComponent>().flip_horizontal,
+                    flip_vertical = game_object_entity.get_component_data<PlanetariaRendererScale, PlanetariaRendererScaleComponent>().flip_vertical,
+                });
+            }
+        }
+        
+        [SerializeField] GameObject spawned_object;
+        [SerializeField] GameObjectEntity game_object_entity;
     }
 }
 
