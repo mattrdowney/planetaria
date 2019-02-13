@@ -14,7 +14,7 @@ namespace DebrisNoirs
             //planetaria_collider = this.GetComponent<PlanetariaCollider>();
             planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
             planetaria_transform = this.GetComponent<PlanetariaTransform>();
-            planetaria_renderer = this.GetComponent<AreaRenderer>();
+            planetaria_renderer = this.GetComponent<PlanetariaRenderer>();
 
             //planetaria_collider.shape = PlanetariaShape.Create(planetaria_transform.localScale);
             planetaria_renderer.scale = planetaria_transform.local_scale;
@@ -58,7 +58,7 @@ namespace DebrisNoirs
         [SerializeField] public float speed = Mathf.PI;
         [SerializeField] public float lifetime = 1;
         //[SerializeField] [HideInInspector] private PlanetariaCollider planetaria_collider;
-        [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer;
+        [SerializeField] [HideInInspector] private PlanetariaRenderer planetaria_renderer;
         [SerializeField] [HideInInspector] private PlanetariaRigidbody planetaria_rigidbody;
         [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;
         [NonSerialized] private bool has_collided = false;

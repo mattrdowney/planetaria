@@ -3,19 +3,26 @@ using UnityEngine;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using Unity.Rendering;
 
 namespace Planetaria
 {
     [DisallowMultipleComponent]
     [Serializable]
-    public abstract class PlanetariaRenderer : MonoBehaviour // FIXME: There is a bug similar to PlanetariaCollider with layers. If the parent object changes layers, the generated internal child object won't match layers, creating renderer layer bugs (I don't use layers often with rendering, but it is a feature). This one cannot be fixed in the same way, so it's harder.
+    public class PlanetariaRenderer : MonoBehaviour // FIXME: There is a bug similar to PlanetariaCollider with layers. If the parent object changes layers, the generated internal child object won't match layers, creating renderer layer bugs (I don't use layers often with rendering, but it is a feature). This one cannot be fixed in the same way, so it's harder.
     {
-#if UNITY_EDITOR
-        private void Awake()
+        private void OnValidate()
         {
             setup();
         }
+
+        private void Awake()
+        {
+            setup();
+#if UNITY_EDITOR
+            spawned_object.hideFlags = HideFlags.None;
 #endif
+        }
 
         private void OnDestroy()
         {
@@ -48,8 +55,20 @@ namespace Planetaria
         {
             if (spawned_object == null) // FIXME: The problem with this method is Unity always breaks references if the code cannot compile, which means objects cannot be destroyed later
             {
-                GameObject child = this.GetOrAddChild("Renderer");
-                internal_transform = child.GetComponent<Transform>();
+                spawned_object = this.add_child("Renderer");
+                game_object_entity = spawned_object.AddComponent<GameObjectEntity>();
+                //game_object_entity.add_component_data<UnityEngine.Rendering. MeshInstanceRenderer>()
+                game_object_entity.add_component_data<RenderMeshComponent>();
+                game_object_entity.add_component_data<PositionComponent>();
+                game_object_entity.add_component_data<RotationComponent>();
+                game_object_entity.add_component_data<ScaleComponent>();
+                game_object_entity.add_component_data<PlanetariaRendererScaleComponent>();
+                game_object_entity.add_component_data<PlanetariaRendererTagComponent>();
+                game_object_entity.add_component_data<AttachComponent>(); // TODO: verify attach is working (thanks to this tutorial: https://www.youtube.com/watch?v=cUrHcEA8azw )
+                game_object_entity.set_component_data<Attach, AttachComponent>(new Attach { Parent = this.gameObject.GetComponent<GameObjectEntity>().Entity, Child = game_object_entity.Entity });
+                angle = 0;
+                offset = 1;
+                scale = new float2(1,1);
             }
         }
 
@@ -57,11 +76,11 @@ namespace Planetaria
         {
             get
             {
-                return ((Quaternion)game_object_entity.get_component_data<Rotation, RotationComponent>().Value).eulerAngles.z;
+                return ((Quaternion)game_object_entity.get_component_data<Rotation, RotationComponent>().Value).eulerAngles.z * Mathf.Deg2Rad;
             }
             set
             {
-                game_object_entity.set_component_data<Rotation, RotationComponent>(new Rotation { Value = quaternion.EulerXYZ(0, 0, angle * Mathf.Rad2Deg) });
+                game_object_entity.set_component_data<Rotation, RotationComponent>(new Rotation { Value = quaternion.EulerXYZ(0, 0, value * Mathf.Rad2Deg) });
             }
         }
 
@@ -128,8 +147,8 @@ namespace Planetaria
             }
         }
         
-        [SerializeField] GameObject spawned_object;
-        [SerializeField] GameObjectEntity game_object_entity;
+        [SerializeField] [HideInInspector] GameObject spawned_object;
+        [SerializeField] [HideInInspector] GameObjectEntity game_object_entity;
     }
 }
 

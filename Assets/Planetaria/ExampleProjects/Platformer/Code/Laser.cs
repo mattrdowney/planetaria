@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿/*
+using System.Collections.Generic;
 using UnityEngine;
 using Planetaria;
 
@@ -44,7 +45,7 @@ namespace Platformer
                 arc_renderer.material.color = Color.blue;
             }
 
-            /*PlanetariaRaycastHit[] collision_info = PlanetariaPhysics.raycast_all(Arc.line(character_position, controller_position));
+            PlanetariaRaycastHit[] collision_info = PlanetariaPhysics.raycast_all(Arc.line(character_position, controller_position));
             Vector3 last_position = character_position;
             bool blue = true;
             Color color;
@@ -57,13 +58,13 @@ namespace Platformer
             }
             color = blue ? Color.blue : Color.red;
             Debug.DrawLine(last_position, controller_position, color);
-            arc_renderer.*/
+            arc_renderer.
 
-            /*if (Input.GetButtonDown("Jump"))
+            if (Input.GetButtonDown("Jump"))
             {
                 PlanetariaGameObject.Instantiate(prefabricated_object, controller_position);
                 //Destroy(new object, 3 seconds) + test Destroy for PlanetariaGameObject
-            }*/
+            }
         }
 
         private Transform main_character;
@@ -71,6 +72,7 @@ namespace Platformer
         private ArcRenderer arc_renderer;
     }
 }
+*/
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal

@@ -18,8 +18,8 @@ namespace DebrisNoirs
             //planetaria_collider = this.GetComponent<PlanetariaCollider>();
             planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
             planetaria_transform = this.GetComponent<PlanetariaTransform>();
-            planetaria_renderer_foreground = this.GetComponent<AreaRenderer>();
-            planetaria_renderer_background = planetaria_transform.Find("Silhouette").GetComponent<AreaRenderer>();
+            planetaria_renderer_foreground = this.gameObject.internal_game_object.GetComponent<PlanetariaRenderer>();
+            planetaria_renderer_background = planetaria_transform.Find("Silhouette").gameObject.internal_game_object.GetComponent<PlanetariaRenderer>();
 
             //planetaria_collider.shape = PlanetariaShape.Create(planetaria_transform.localScale);
             planetaria_renderer_foreground.scale = planetaria_transform.local_scale;
@@ -72,8 +72,8 @@ namespace DebrisNoirs
 
         
         [SerializeField] public ScoreKeeper score_keeper;
-        [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer_foreground;
-        [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer_background;
+        [SerializeField] [HideInInspector] private PlanetariaRenderer planetaria_renderer_foreground;
+        [SerializeField] [HideInInspector] private PlanetariaRenderer planetaria_renderer_background;
         //[SerializeField] [HideInInspector] private PlanetariaCollider planetaria_collider;
         [SerializeField] [HideInInspector] private PlanetariaRigidbody planetaria_rigidbody;
         [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;

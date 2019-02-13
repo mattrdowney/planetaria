@@ -10,17 +10,37 @@ namespace Planetaria
     /// </summary>
     public static class Miscellaneous
     {
+        public static GameObject add_child(this Component self, string name, bool hidden_internal = true) // TODO: should this return PlanetariaGameObject; this is an inadvertently exposed API, how should I fix this? Likely by making this a non-extension
+        {
+            if (hidden_internal)
+            {
+                name = "__" + name;
+            }
+            GameObject child_object = new GameObject(name);
+            child_object.transform.parent = self.transform;
+            child_object.transform.localPosition = Vector3.zero; // Ensure all children are on the same planetarium as their parent
+            child_object.layer = self.gameObject.layer;
+#if UNITY_EDITOR
+            if (hidden_internal && !Application.isPlaying)
+            {
+                //child_object.hideFlags = (HideFlags.HideInHierarchy | HideFlags.HideInInspector); // TODO: implement
+            }
+#endif
+            return child_object;
+        }
+
         /// <summary>
         /// Inspector - checks if two (normalized) directions are approximately equal. This should work for all positions in Planetaria.
         /// </summary>
-        /// <param name="left">The first vector (order does not matter).</param>
-        /// <param name="right">The second vector (order does not matter).</param>
+        /// <param name="left">The first normalized <see cref="Vector3"/> (order does not matter).</param>
+        /// <param name="right">The second normalized <see cref="Vector3"/> (order does not matter).</param>
         /// <returns>
         /// True if the two vectors approximately equal;
         /// False otherwise
         /// </returns>
         public static bool approximately(Vector3 left, Vector3 right)
         {
+            // TODO: how should this deal with Vector3.zero - if at all?
             return Vector3.Dot(left, right) > 1f - Precision.threshold;
         }
 
@@ -98,7 +118,7 @@ namespace Planetaria
 #if UNITY_EDITOR
             if (hidden_internal && !EditorGlobal.self.show_inspector)
             {
-                game_object.data.hideFlags = (HideFlags.HideInHierarchy | HideFlags.HideInInspector);
+                //game_object.data.hideFlags = (HideFlags.HideInHierarchy | HideFlags.HideInInspector); // TODO: implement
             }
 #endif
             return game_object.data;
@@ -111,27 +131,18 @@ namespace Planetaria
         /// <param name="name">The name of the object (without double leading underscores i.e. "__").</param>
         /// <param name="hidden_internal">Whether the GameObject should be hidden unless debugging.</param>
         /// <returns>The found or newly added child with given name.</returns>
-        public static GameObject GetOrAddChild(this Component self, string name, bool hidden_internal = true) // TODO: should this return PlanetariaGameObject; this is an inadvertently exposed API, how should I fix this? Likely by making this a non-extension
+        public static GameObject get_or_add_child(this Component self, string name, bool hidden_internal = true) // TODO: should this return PlanetariaGameObject; this is an inadvertently exposed API, how should I fix this? Likely by making this a non-extension
         {
+            string modified_name = name;
             if (hidden_internal)
             {
-                name = "__" + name;
+                modified_name = "__" + modified_name;
             }
-            optional<Transform> child = self.transform.Find(name);
+            optional<Transform> child = self.transform.Find(modified_name);
             if (!child.exists)
             {
-                GameObject child_object = new GameObject(name);
-                child_object.transform.parent = self.transform;
-                child_object.transform.localPosition = Vector3.zero; // Ensure all children are on the same planetarium as their parent
-                child = child_object.transform;
-                child_object.layer = self.gameObject.layer;
+                return self.add_child(name, hidden_internal);
             }
-#if UNITY_EDITOR
-            if (hidden_internal && EditorGlobal.self.show_inspector)
-            {
-                child.data.hideFlags = (HideFlags.HideInHierarchy | HideFlags.HideInInspector);
-            }
-#endif
             return child.data.gameObject;
         }
 

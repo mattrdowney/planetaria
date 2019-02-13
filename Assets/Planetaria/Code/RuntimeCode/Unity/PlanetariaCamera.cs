@@ -26,10 +26,10 @@ namespace Planetaria
         {
             if (internal_camera == null)
             {
-                GameObject dolly = this.GetOrAddChild("CameraDolly");
+                GameObject dolly = this.get_or_add_child("CameraDolly");
                 dolly_transform = dolly.GetComponent<Transform>();
                 Miscellaneous.GetOrAddComponent<AudioListener>(dolly);
-                GameObject camera_object = dolly.transform.GetOrAddChild("Camera");
+                GameObject camera_object = dolly.transform.get_or_add_child("Camera");
                 internal_camera = Miscellaneous.GetOrAddComponent<Camera>(camera_object);
             }
             XRDevice.SetTrackingSpaceType(TrackingSpaceType.Stationary);

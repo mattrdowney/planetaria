@@ -13,14 +13,14 @@ namespace DebrisNoirs
         {
             internal_collider = this.GetComponent<SphereCollider>();
             planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
-            satellite_renderer = this.transform.Find("Chasis").GetComponent<AreaRenderer>();
-            silhouette_renderer = this.transform.Find("Chasis").Find("Silhouette").GetComponent<AreaRenderer>();
+            satellite_renderer = this.transform.Find("Chasis").GetComponent<SpriteRenderer>();
+            silhouette_renderer = this.transform.Find("Chasis").Find("Silhouette").GetComponent<SpriteRenderer>();
             internal_transform = this.transform.Find("Chasis").gameObject.GetComponent<Transform>();
             planetaria_transform = this.GetComponent<PlanetariaTransform>();
 
             //internal_collider.shape = PlanetariaShape.Create(planetaria_transform.localScale);
-            satellite_renderer.scale = planetaria_transform.local_scale;
-            silhouette_renderer.scale = planetaria_transform.local_scale;
+            satellite_renderer.size = Vector2.one * planetaria_transform.local_scale;
+            silhouette_renderer.size = Vector2.one * planetaria_transform.local_scale;
         }
 
         private void Start()
@@ -230,8 +230,8 @@ namespace DebrisNoirs
         [SerializeField] private Transform internal_transform;
         [SerializeField] private PlanetariaTransform planetaria_transform;
         [SerializeField] private SphereCollider internal_collider;
-        [SerializeField] private AreaRenderer satellite_renderer;
-        [SerializeField] private AreaRenderer silhouette_renderer;
+        [SerializeField] private SpriteRenderer satellite_renderer; // Type intentially, since I will be switching sprites often
+        [SerializeField] private SpriteRenderer silhouette_renderer;
         [SerializeField] private PlanetariaRigidbody planetaria_rigidbody;
 
         [SerializeField] private ScoreKeeper stopwatch;

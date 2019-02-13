@@ -1,16 +1,15 @@
-﻿using System;
-using UnityEngine;
-using Unity.Entities;
+﻿using UnityEditor;
 
 namespace Planetaria
 {
-    [Serializable]
-    public struct PlanetariaRendererOffset : IComponentData
+    public class ToggleDebugGraphics
     {
-        [SerializeField] public float data;
+        [MenuItem("Planetaria/Toggle Debug Graphics")]
+        private static void toggle_debug_graphics()
+        {
+            EditorGlobal.self.hide_graphics = !EditorGlobal.self.hide_graphics; // toggle state
+        }
     }
-
-    [DisallowMultipleComponent] public class PlanetariaRendererOffsetComponent : ComponentDataWrapper<PlanetariaRendererOffset> { }
 }
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy

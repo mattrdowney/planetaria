@@ -215,35 +215,6 @@ namespace Planetaria
             }
         }
 
-        [MenuItem("Planetaria/Toggle Debug Graphics")]
-        private static void toggle_debug_graphics()
-        {
-            EditorGlobal.self.hide_graphics = !EditorGlobal.self.hide_graphics; // toggle state
-        }
-
-        [MenuItem("Planetaria/Toggle Hidden Inspector")]
-        private static void toggle_hidden_inspector()
-        {
-            EditorGlobal.self.show_inspector = !EditorGlobal.self.show_inspector; // toggle state
-            foreach (GameObject game_object in GameObject.FindObjectsOfType<GameObject>())
-            {
-                // Hide planetaria internals (GitHub Issue #43 and #75).
-                // Toggling the inspector shows these objects
-                if (game_object.name.Substring(0, 2) == "__") // double underscore indicates hidden object
-                {
-                    if (!EditorGlobal.self.show_inspector)
-                    {
-                        game_object.hideFlags |= (HideFlags.HideInHierarchy | HideFlags.HideInInspector); // set
-                    }
-                    else
-                    {
-                        game_object.hideFlags &= ~(HideFlags.HideInHierarchy | HideFlags.HideInInspector); // unset
-                    }
-                }
-                EditorUtility.SetDirty(game_object);
-            }
-        }
-
         [Tooltip("")]
         public static DrawMode draw_mode;
 

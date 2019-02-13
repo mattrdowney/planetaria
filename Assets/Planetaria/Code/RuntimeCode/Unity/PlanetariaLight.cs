@@ -286,7 +286,7 @@ namespace Planetaria
 
         private void initialize()
         {
-            GameObject game_object = this.GetOrAddChild("InternalLight");
+            GameObject game_object = this.get_or_add_child("InternalLight");
             if (internal_light == null)
             {
                 internal_light = Miscellaneous.GetOrAddComponent<Light>(game_object);
