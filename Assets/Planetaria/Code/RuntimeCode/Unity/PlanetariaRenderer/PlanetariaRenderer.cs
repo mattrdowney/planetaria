@@ -11,11 +11,6 @@ namespace Planetaria
     [Serializable]
     public class PlanetariaRenderer : MonoBehaviour // FIXME: There is a bug similar to PlanetariaCollider with layers. If the parent object changes layers, the generated internal child object won't match layers, creating renderer layer bugs (I don't use layers often with rendering, but it is a feature). This one cannot be fixed in the same way, so it's harder.
     {
-        private void OnValidate()
-        {
-            setup();
-        }
-
         private void Awake()
         {
             setup();
@@ -57,13 +52,19 @@ namespace Planetaria
             {
                 spawned_object = this.add_child("Renderer");
                 game_object_entity = spawned_object.AddComponent<GameObjectEntity>();
-                //game_object_entity.add_component_data<UnityEngine.Rendering. MeshInstanceRenderer>()
-                game_object_entity.add_component_data<RenderMeshComponent>();
                 game_object_entity.add_component_data<PositionComponent>();
                 game_object_entity.add_component_data<RotationComponent>();
                 game_object_entity.add_component_data<ScaleComponent>();
-                game_object_entity.add_component_data<PlanetariaRendererScaleComponent>();
                 game_object_entity.add_component_data<PlanetariaRendererTagComponent>();
+                game_object_entity.add_component_data<RenderMeshComponent>();
+                RenderMesh initialized_renderer = new RenderMesh();
+                initialized_renderer.castShadows = UnityEngine.Rendering.ShadowCastingMode.Off; // Intentionally redundant
+                initialized_renderer.receiveShadows = false; // Intentionally redundant
+                initialized_renderer.layer = 0; // Intentionally redundant
+                initialized_renderer.subMesh = 0; // Intentionally redundant
+                initialized_renderer.mesh = GameObject.CreatePrimitive(PrimitiveType.Quad).GetComponent<MeshFilter>().sharedMesh;
+                initialized_renderer.material = new Material(Shader.Find("Standard"));
+                game_object_entity.set_shared_component_data<RenderMesh, RenderMeshComponent>(initialized_renderer);
                 game_object_entity.add_component_data<AttachComponent>(); // TODO: verify attach is working (thanks to this tutorial: https://www.youtube.com/watch?v=cUrHcEA8azw )
                 game_object_entity.set_component_data<Attach, AttachComponent>(new Attach { Parent = this.gameObject.GetComponent<GameObjectEntity>().Entity, Child = game_object_entity.Entity });
                 angle = 0;
@@ -80,6 +81,8 @@ namespace Planetaria
             }
             set
             {
+                float3 intermediate_result = ((Quaternion)game_object_entity.get_component_data<Rotation, RotationComponent>().Value).eulerAngles;
+                intermediate_result.z = value * Mathf.Rad2Deg;
                 game_object_entity.set_component_data<Rotation, RotationComponent>(new Rotation { Value = quaternion.EulerXYZ(0, 0, value * Mathf.Rad2Deg) });
             }
         }
@@ -88,16 +91,13 @@ namespace Planetaria
         {
             get
             {
-                return game_object_entity.get_component_data<PlanetariaRendererScale, PlanetariaRendererScaleComponent>().flip_horizontal == 1;
+                return game_object_entity.get_component_data<Scale, ScaleComponent>().Value.x < 0;
             }
             set
             {
-                game_object_entity.set_component_data<PlanetariaRendererScale, PlanetariaRendererScaleComponent>(new PlanetariaRendererScale
-                {
-                    scale = game_object_entity.get_component_data<PlanetariaRendererScale, PlanetariaRendererScaleComponent>().scale,
-                    flip_horizontal = value ? (byte)1 : (byte)0,
-                    flip_vertical = game_object_entity.get_component_data<PlanetariaRendererScale, PlanetariaRendererScaleComponent>().flip_vertical,
-                });
+                float3 intermediate_result = game_object_entity.get_component_data<Scale, ScaleComponent>().Value;
+                intermediate_result.x = Mathf.Abs(intermediate_result.x) * (value ? -1 : +1);
+                game_object_entity.set_component_data<Scale, ScaleComponent>(new Scale { Value = intermediate_result });
             }
         }
 
@@ -105,16 +105,13 @@ namespace Planetaria
         {
             get
             {
-                return game_object_entity.get_component_data<PlanetariaRendererScale, PlanetariaRendererScaleComponent>().flip_vertical == 1;
+                return game_object_entity.get_component_data<Scale, ScaleComponent>().Value.y < 0;
             }
             set
             {
-                game_object_entity.set_component_data<PlanetariaRendererScale, PlanetariaRendererScaleComponent>(new PlanetariaRendererScale
-                {
-                    scale = game_object_entity.get_component_data<PlanetariaRendererScale, PlanetariaRendererScaleComponent>().scale,
-                    flip_horizontal = game_object_entity.get_component_data<PlanetariaRendererScale, PlanetariaRendererScaleComponent>().flip_horizontal,
-                    flip_vertical = value ? (byte)1 : (byte)0,
-                });
+                float3 intermediate_result = game_object_entity.get_component_data<Scale, ScaleComponent>().Value;
+                intermediate_result.y = Mathf.Abs(intermediate_result.y) * (value ? -1 : +1);
+                game_object_entity.set_component_data<Scale, ScaleComponent>(new Scale { Value = intermediate_result });
             }
         }
 
@@ -126,7 +123,9 @@ namespace Planetaria
             }
             set
             {
-                game_object_entity.set_component_data<Position, PositionComponent>(new Position { Value = new float3(0, 0, value) });
+                float3 intermediate_result = game_object_entity.get_component_data<Position, PositionComponent>().Value;
+                intermediate_result.z = value; // This is for consistency. (I don't know if anyone would ever have a use for this, though.)
+                game_object_entity.set_component_data<Position, PositionComponent>(new Position { Value = intermediate_result });
             }
         }
 
@@ -134,16 +133,15 @@ namespace Planetaria
         {
             get
             {
-                return game_object_entity.get_component_data<PlanetariaRendererScale, PlanetariaRendererScaleComponent>().scale;
+                float3 intermediate_result = game_object_entity.get_component_data<Scale, ScaleComponent>().Value;
+                return new float2(intermediate_result.x, intermediate_result.y);
             }
             set
             {
-                game_object_entity.set_component_data<PlanetariaRendererScale, PlanetariaRendererScaleComponent>(new PlanetariaRendererScale
-                {
-                    scale = value,
-                    flip_horizontal = game_object_entity.get_component_data<PlanetariaRendererScale, PlanetariaRendererScaleComponent>().flip_horizontal,
-                    flip_vertical = game_object_entity.get_component_data<PlanetariaRendererScale, PlanetariaRendererScaleComponent>().flip_vertical,
-                });
+                float3 intermediate_result = game_object_entity.get_component_data<Scale, ScaleComponent>().Value;
+                intermediate_result.x = value.x; // This is for consistency. I want the interface to ignore the z value (which means I have to get it so I don't overwrite it).
+                intermediate_result.y = value.y; // While this may seem useless, there are many renderers which have thickness (scale.z = 1) and others that don't (scale.z = 0)
+                game_object_entity.set_component_data<Scale, ScaleComponent>(new Scale { Value = intermediate_result });
             }
         }
         

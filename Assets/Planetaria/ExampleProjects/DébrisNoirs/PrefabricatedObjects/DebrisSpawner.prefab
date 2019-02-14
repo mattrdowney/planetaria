@@ -61,6 +61,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 6156207878381848887}
   internal_transform: {fileID: 6156207878381848872}
+  game_object_entity: {fileID: 0}
 --- !u!114 &6156207878381848873
 MonoBehaviour:
   m_ObjectHideFlags: 0

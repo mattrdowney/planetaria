@@ -52,6 +52,29 @@ public static class GameObjectEntityExtensions
     }
 
     /// <summary>
+    /// Inspector - Get a Component from a GameObjectEntity.
+    /// </summary>
+    /// <param name="game_object_entity"><see cref="GameObjectEntity"/></param>
+    /// <typeparam name="Data">Type of Data to get.</typeparam>
+    /// <typeparam name="EntityComponent">Type of Data's wrapper class.</typeparam>
+    public static Data get_shared_component_data<Data, EntityComponent>(this GameObjectEntity game_object_entity) where Data : struct, ISharedComponentData where EntityComponent : SharedComponentDataWrapper<Data>
+    {
+        if (World.Active != null) // runtime only
+        {
+            EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
+            Entity entity = game_object_entity.Entity;
+            return entity_manager.GetSharedComponentData<Data>(entity);
+        }
+        // editor time only
+        EntityComponent component = game_object_entity.gameObject.GetComponent<EntityComponent>();  // Note we are dealing with structs, not classes (and apparently this doesn't work anyway =/ )
+        if (component) // Figure out if the component is attached
+        {
+            return component.Value;
+        }
+        return default; // otherwise return default
+    }
+
+    /// <summary>
     /// Inspector - Check if a Component is attached to a GameObjectEntity.
     /// </summary>
     /// <param name="game_object_entity"><see cref="GameObjectEntity"/></param>
@@ -106,6 +129,31 @@ public static class GameObjectEntityExtensions
             EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
             Entity entity = game_object_entity.Entity;
             entity_manager.SetComponentData<Data>(entity, data);
+        }
+        else // editor time only
+        {
+            EntityComponent component = game_object_entity.gameObject.GetComponent<EntityComponent>();  // Note we are dealing with structs, not classes
+            if (component) // Figure out if the component is attached
+            {
+                component.Value = data; // Set the internal data
+            }
+        }
+    }
+
+    /// <summary>
+    /// Mutator - Set a Component from a GameObjectEntity.
+    /// </summary>
+    /// <param name="game_object_entity"><see cref="GameObjectEntity"/></param>
+    /// <param name="data">Component data to replace current data.</param>
+    /// <typeparam name="Data">Type of Data to get.</typeparam>
+    /// <typeparam name="EntityComponent">Type of Data's wrapper class.</typeparam>
+    public static void set_shared_component_data<Data, EntityComponent>(this GameObjectEntity game_object_entity, Data data) where Data : struct, ISharedComponentData where EntityComponent : SharedComponentDataWrapper<Data>
+    {
+        if (World.Active != null) // runtime only
+        {
+            EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
+            Entity entity = game_object_entity.Entity;
+            entity_manager.SetSharedComponentData<Data>(entity, data);
         }
         else // editor time only
         {

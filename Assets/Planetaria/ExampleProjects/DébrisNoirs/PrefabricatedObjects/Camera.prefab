@@ -177,6 +177,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 7054274646531611480}
   internal_transform: {fileID: 7054274646531611476}
+  game_object_entity: {fileID: 0}
 --- !u!114 &7054274646531611477
 MonoBehaviour:
   m_ObjectHideFlags: 0
