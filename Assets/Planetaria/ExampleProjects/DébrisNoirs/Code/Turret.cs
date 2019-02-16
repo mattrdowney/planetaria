@@ -4,12 +4,12 @@ using Planetaria;
 
 namespace DebrisNoirs
 {
-    public class Turret : PlanetariaMonoBehaviour
+    public class Turret : MonoBehaviour
     {
         private void Start()
         {
-            satellite = this.transform.parent.parent.gameObject.internal_game_object.GetComponent<Satellite>();
-            turret = this.gameObject.internal_game_object.transform;
+            satellite = this.transform.parent.parent.gameObject.GetComponent<Satellite>();
+            turret = this.gameObject.transform;
 #if UNITY_EDITOR
             GameObject.FindObjectOfType<PlanetariaActuator>().input_device_type = PlanetariaActuator.InputDevice.Mouse;
 #else
@@ -27,9 +27,6 @@ namespace DebrisNoirs
                 PlanetariaGameObject.Instantiate(projectile, rail_position, bullet_direction);
             }
         }
-
-        protected override void OnConstruction() { }
-        protected override void OnDestruction() { }
 
         [SerializeField] public Satellite satellite;
         [SerializeField] public GameObject projectile;

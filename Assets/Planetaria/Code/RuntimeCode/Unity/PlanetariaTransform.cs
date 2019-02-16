@@ -165,7 +165,10 @@ namespace Planetaria
             {
                 return internal_transform.parent ? internal_transform.parent.GetComponent<PlanetariaTransform>() : null;
             }
-            set { SetParent(value); }
+            set
+            {
+                SetParent(value);
+            }
         }
         
         /// <summary>

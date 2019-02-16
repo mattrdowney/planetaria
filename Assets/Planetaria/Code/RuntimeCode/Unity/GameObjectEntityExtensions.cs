@@ -20,7 +20,7 @@ public static class GameObjectEntityExtensions
         {
             game_object_entity.gameObject.AddComponent<Type>(); // Only add component once
         }
-        if (World.Active != null) // runtime only
+        if (World.Active != null && Application.isPlaying) // runtime only
         {
             EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
             Entity entity = game_object_entity.Entity;
@@ -28,6 +28,14 @@ public static class GameObjectEntityExtensions
         }
     }
     
+    //public delegate Data Getter<Data>(Entity entity);
+    //public delegate void Setter<Data>(Entity entity, Data data);
+    // TODO: isolate the behaviour that varies? (for get_component_data() and get_shared_component_data())
+    // Can I use a templated delegate function here for setter = SetComponent<Data> (default), or would that cause an error?
+    // Based on a preliminary attempt, the core issue is that you need to spawn an EntityManager instance,
+    // so it is not as easy as calling a static function - although you could just pass in the EntityManager
+    // NOTE: this will be obsolete soon so probably don't work on this
+
     /// <summary>
     /// Inspector - Get a Component from a GameObjectEntity.
     /// </summary>
@@ -36,7 +44,7 @@ public static class GameObjectEntityExtensions
     /// <typeparam name="EntityComponent">Type of Data's wrapper class.</typeparam>
     public static Data get_component_data<Data, EntityComponent>(this GameObjectEntity game_object_entity) where Data : struct, IComponentData where EntityComponent : ComponentDataWrapper<Data>
     {
-        if (World.Active != null) // runtime only
+        if (World.Active != null && Application.isPlaying) // runtime only
         {
             EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
             Entity entity = game_object_entity.Entity;
@@ -59,7 +67,7 @@ public static class GameObjectEntityExtensions
     /// <typeparam name="EntityComponent">Type of Data's wrapper class.</typeparam>
     public static Data get_shared_component_data<Data, EntityComponent>(this GameObjectEntity game_object_entity) where Data : struct, ISharedComponentData where EntityComponent : SharedComponentDataWrapper<Data>
     {
-        if (World.Active != null) // runtime only
+        if (World.Active != null && Application.isPlaying) // runtime only
         {
             EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
             Entity entity = game_object_entity.Entity;
@@ -81,15 +89,14 @@ public static class GameObjectEntityExtensions
     /// <typeparam name="Type">Type of Component to check for.</typeparam>
     public static bool has_component_data<Type>(this GameObjectEntity game_object_entity) where Type : Component
     {
-        if (World.Active != null) // runtime only
+        if (World.Active != null && Application.isPlaying) // runtime only
         {
             EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
             Entity entity = game_object_entity.Entity;
             return entity_manager.HasComponent<Type>(entity);
         }
         // editor time only
-        Type[] component = game_object_entity.gameObject.GetComponents<Type>();  // Note we are dealing with structs, not classes
-        return component.Length != 0; // Determine if the component exists on the game object
+        return game_object_entity.GetComponent<Type>() != null; // Determine if the component exists on the game object
     }
 
     /// <summary>
@@ -99,7 +106,7 @@ public static class GameObjectEntityExtensions
     /// <typeparam name="Type">Type of Component to remove.</typeparam>
     public static void remove_component_data<Type>(this GameObjectEntity game_object_entity) where Type : Component
     {
-        if (World.Active != null) // runtime only
+        if (World.Active != null && Application.isPlaying) // runtime only
         {
             EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
             Entity entity = game_object_entity.Entity;
@@ -124,7 +131,7 @@ public static class GameObjectEntityExtensions
     /// <typeparam name="EntityComponent">Type of Data's wrapper class.</typeparam>
     public static void set_component_data<Data, EntityComponent>(this GameObjectEntity game_object_entity, Data data) where Data : struct, IComponentData where EntityComponent : ComponentDataWrapper<Data>
     {
-        if (World.Active != null) // runtime only
+        if (World.Active != null && Application.isPlaying) // runtime only
         {
             EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
             Entity entity = game_object_entity.Entity;
@@ -149,7 +156,7 @@ public static class GameObjectEntityExtensions
     /// <typeparam name="EntityComponent">Type of Data's wrapper class.</typeparam>
     public static void set_shared_component_data<Data, EntityComponent>(this GameObjectEntity game_object_entity, Data data) where Data : struct, ISharedComponentData where EntityComponent : SharedComponentDataWrapper<Data>
     {
-        if (World.Active != null) // runtime only
+        if (World.Active != null && Application.isPlaying) // runtime only
         {
             EntityManager entity_manager = World.Active.GetExistingManager<EntityManager>();
             Entity entity = game_object_entity.Entity;

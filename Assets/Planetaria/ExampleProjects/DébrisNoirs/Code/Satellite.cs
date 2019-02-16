@@ -13,14 +13,14 @@ namespace DebrisNoirs
         {
             internal_collider = this.GetComponent<SphereCollider>();
             planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
-            satellite_renderer = this.transform.Find("Chasis").GetComponent<SpriteRenderer>();
-            silhouette_renderer = this.transform.Find("Chasis").Find("Silhouette").GetComponent<SpriteRenderer>();
+            satellite_renderer = this.transform.Find("Chasis").Find("PrimaryRenderer").GetComponent<SpriteRenderer>();
+            silhouette_renderer = this.transform.Find("Chasis").Find("SilhouetteRenderer").GetComponent<SpriteRenderer>();
             internal_transform = this.transform.Find("Chasis").gameObject.GetComponent<Transform>();
             planetaria_transform = this.GetComponent<PlanetariaTransform>();
 
             //internal_collider.shape = PlanetariaShape.Create(planetaria_transform.localScale);
-            satellite_renderer.size = Vector2.one * planetaria_transform.local_scale;
-            silhouette_renderer.size = Vector2.one * planetaria_transform.local_scale;
+            satellite_renderer.size = Vector2.one * 0.03f; // FIXME: lazy magic number
+            silhouette_renderer.size = Vector2.one * 0.03f;
         }
 
         private void Start()

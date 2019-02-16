@@ -1,4 +1,4 @@
 @EmilyClaire - virtually all best practices (e.g. testing, code etiquette, documentation, etc), several game design choices (e.g. truth to the original, lighting), fixed my GPU for a better trailer video, and many algorithm/architecture choices in Debris Noirs (e.g. debris spawning, user interface, projectiles) and Planetaria (e.g. PlanetariaAudioSource).
 Geoff Dallimore - Real Stars Skybox ( https://assetstore.unity.com/packages/3d/environments/sci-fi/real-stars-skybox-116333 )
-@mattrdowney - implementation (code, graphics, sound)
+@mattrdowney - implementation (code, graphics)
 Inspired by Asteroids (1979) - Atari, Ed Logg, Lyle Rains, Dominic Walsh

@@ -18,12 +18,12 @@ namespace DebrisNoirs
             //planetaria_collider = this.GetComponent<PlanetariaCollider>();
             planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
             planetaria_transform = this.GetComponent<PlanetariaTransform>();
-            planetaria_renderer_foreground = this.gameObject.internal_game_object.GetComponent<PlanetariaRenderer>();
-            planetaria_renderer_background = planetaria_transform.Find("Silhouette").gameObject.internal_game_object.GetComponent<PlanetariaRenderer>();
+            planetaria_renderer_foreground = planetaria_transform.Find("PrimaryRenderer").gameObject.internal_game_object.GetComponent<PlanetariaRenderer>();
+            planetaria_renderer_background = planetaria_transform.Find("SilhouetteRenderer").gameObject.internal_game_object.GetComponent<PlanetariaRenderer>();
 
             //planetaria_collider.shape = PlanetariaShape.Create(planetaria_transform.localScale);
-            planetaria_renderer_foreground.scale = planetaria_transform.local_scale;
-            planetaria_renderer_background.scale = planetaria_transform.local_scale;
+            planetaria_renderer_foreground.scale = size;
+            planetaria_renderer_background.scale = size;
         }
 
         private void Start()
@@ -83,6 +83,7 @@ namespace DebrisNoirs
         [SerializeField] private float speed = 1;
         [SerializeField] private float deviation_angle = Mathf.PI;
         [SerializeField] private float speed_deviation_multiplier = 1.25f;
+        [SerializeField] private float size = 0.06f;
         [SerializeField] private int points = 10;
         [NonSerialized] private bool has_collided = false;
     }

@@ -7,7 +7,6 @@ using Unity.Rendering;
 
 namespace Planetaria
 {
-    [DisallowMultipleComponent]
     [Serializable]
     public class PlanetariaRenderer : MonoBehaviour // FIXME: There is a bug similar to PlanetariaCollider with layers. If the parent object changes layers, the generated internal child object won't match layers, creating renderer layer bugs (I don't use layers often with rendering, but it is a feature). This one cannot be fixed in the same way, so it's harder.
     {
@@ -34,7 +33,7 @@ namespace Planetaria
         {
             if (spawned_object)
             {
-                if (Application.isPlaying)
+                if (World.Active != null && Application.isPlaying)
                 {
                     World.Active.GetOrCreateManager<EntityManager>().DestroyEntity(game_object_entity.Entity);
                     Destroy(spawned_object);
