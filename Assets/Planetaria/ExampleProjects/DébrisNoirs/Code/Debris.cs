@@ -18,8 +18,8 @@ namespace DebrisNoirs
             //planetaria_collider = this.GetComponent<PlanetariaCollider>();
             planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
             planetaria_transform = this.GetComponent<PlanetariaTransform>();
-            planetaria_renderer_foreground = planetaria_transform.Find("PrimaryRenderer").gameObject.internal_game_object.GetComponent<PlanetariaRenderer>();
-            planetaria_renderer_background = planetaria_transform.Find("SilhouetteRenderer").gameObject.internal_game_object.GetComponent<PlanetariaRenderer>();
+            planetaria_renderer_foreground = this.gameObject.internal_game_object.transform.Find("PrimaryRenderer").GetComponent<PlanetariaRenderer>();
+            planetaria_renderer_background = this.gameObject.internal_game_object.transform.Find("SilhouetteRenderer").GetComponent<PlanetariaRenderer>();
 
             //planetaria_collider.shape = PlanetariaShape.Create(planetaria_transform.localScale);
             planetaria_renderer_foreground.scale = size;

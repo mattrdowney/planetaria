@@ -56,15 +56,9 @@ namespace Planetaria
                 game_object_entity.add_component_data<ScaleComponent>();
                 game_object_entity.add_component_data<PlanetariaRendererTagComponent>();
                 game_object_entity.add_component_data<RenderMeshComponent>();
-                RenderMesh initialized_renderer = new RenderMesh();
-                initialized_renderer.castShadows = UnityEngine.Rendering.ShadowCastingMode.Off; // Intentionally redundant
-                initialized_renderer.receiveShadows = false; // Intentionally redundant
-                initialized_renderer.layer = 0; // Intentionally redundant
-                initialized_renderer.subMesh = 0; // Intentionally redundant
-                initialized_renderer.mesh = GameObject.CreatePrimitive(PrimitiveType.Quad).GetComponent<MeshFilter>().sharedMesh;
-                initialized_renderer.material = new Material(Shader.Find("Standard"));
-                game_object_entity.set_shared_component_data<RenderMesh, RenderMeshComponent>(initialized_renderer);
+                game_object_entity.set_shared_component_data<RenderMesh, RenderMeshComponent>(new RenderMesh()); // NOTE: all fields uninitialized
                 game_object_entity.add_component_data<AttachComponent>(); // TODO: verify attach is working (thanks to this tutorial: https://www.youtube.com/watch?v=cUrHcEA8azw )
+                // FIXME: if you move PlanetariaRigidbody to the child, change the following line:
                 game_object_entity.set_component_data<Attach, AttachComponent>(new Attach { Parent = this.gameObject.GetComponent<GameObjectEntity>().Entity, Child = game_object_entity.Entity });
                 angle = 0;
                 offset = 1;
