@@ -50,7 +50,7 @@ namespace DebrisNoirs
         public void spawn()
         {
             round = 0;
-            debris_to_spawn = 0;
+            debris_to_spawn = 256;
             StartCoroutine(spawn_debris_subroutine());
         }
 

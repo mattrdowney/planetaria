@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Planetaria;
 
@@ -6,10 +7,21 @@ namespace DebrisNoirs
 {
     public class Turret : PlanetariaMonoBehaviour
     {
+        public void die()
+        {
+            foreach (Projectile projectile in projectiles_on_screen)
+            {
+                PlanetariaGameObject.Destroy(projectile.gameObject);
+            }
+            projectiles_on_screen.Clear();
+            next_projectile_to_reuse = 0;
+        }
+
         private void Start()
         {
             satellite = this.transform.parent.parent.gameObject.internal_game_object.GetComponent<Satellite>();
             turret = this.gameObject.internal_game_object.transform;
+            projectiles_on_screen = new List<Projectile>();
 #if UNITY_EDITOR
             GameObject.FindObjectOfType<PlanetariaActuator>().input_device_type = PlanetariaActuator.InputDevice.Mouse;
 #else
@@ -24,7 +36,20 @@ namespace DebrisNoirs
             
             if (DebrisNoirsInput.firing() && satellite.alive()) // if firing and not dead
             {
-                PlanetariaGameObject.Instantiate(projectile, rail_position, bullet_direction);
+                if (projectiles_on_screen.Count < 14) // FIXME: MAGIC NUMBER - number of bullets spawned per second
+                {
+                    PlanetariaGameObject spawned_projectile = PlanetariaGameObject.Instantiate(projectile, rail_position, bullet_direction);
+                    projectiles_on_screen.Add(spawned_projectile.internal_game_object.GetComponent<Projectile>());
+                }
+                else
+                {
+                    projectiles_on_screen[next_projectile_to_reuse].respawn(rail_position, bullet_direction);
+                    next_projectile_to_reuse += 1;
+                    if (next_projectile_to_reuse >= 14)
+                    {
+                        next_projectile_to_reuse -= 14;
+                    }
+                }
             }
         }
 
@@ -34,6 +59,9 @@ namespace DebrisNoirs
         [SerializeField] public Satellite satellite;
         [SerializeField] public GameObject projectile;
         [SerializeField] private Transform turret;
+
+        [NonSerialized] private int next_projectile_to_reuse = 0;
+        [NonSerialized] private List<Projectile> projectiles_on_screen;
     }
 }
 

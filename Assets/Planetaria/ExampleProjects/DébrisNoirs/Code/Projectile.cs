@@ -6,22 +6,33 @@ namespace DebrisNoirs
 {
     public class Projectile : MonoBehaviour // HACK: normally I would use PlanetariaMonoBehaviour, but this should drastically improve collision performance
     {
+        public void respawn(Vector3 position, Vector3 direction)
+        {
+            planetaria_transform.position = position;
+            planetaria_transform.direction = direction;
+            planetaria_rigidbody.relative_velocity = new Vector2(0, speed);
+            has_collided = false;
+            sphere_collider.enabled = true;
+            sprite_renderer.enabled = true;
+        }
+
         private void OnValidate()
         {
-            //planetaria_collider = this.GetComponent<PlanetariaCollider>();
+            sphere_collider = this.GetComponent<SphereCollider>();
             planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
             planetaria_transform = this.GetComponent<PlanetariaTransform>();
             planetaria_renderer = this.GetComponent<AreaRenderer>();
+            sprite_renderer = this.GetComponentInChildren<SpriteRenderer>();
 
             //planetaria_collider.shape = PlanetariaShape.Create(planetaria_transform.localScale);
             planetaria_renderer.scale = planetaria_transform.localScale;
         }
         
-        void Start()
+        public void Start()
         {
             // set velocity
             planetaria_rigidbody.relative_velocity = new Vector2(0, speed);
-            PlanetariaGameObject.Destroy(this.gameObject, lifetime);
+            //PlanetariaGameObject.Destroy(this.gameObject, lifetime);
         }
 
         // while I do like the idea of raycasting in update, that would require PlanetariaColliders or hacking my current raycast implementation, so true-to-original it is
@@ -34,16 +45,19 @@ namespace DebrisNoirs
                 Debris debris = collider.GetComponent<Debris>();
                 if (debris.destroy_asteroid()) // make sure two projectiles don't collide with the same debris (wasting one of them).
                 {
-                    PlanetariaGameObject.Destroy(this.gameObject);
+                    //PlanetariaGameObject.Destroy(this.gameObject); -- the bullets are reused (as a form of object pooling)
                     has_collided = true;
+                    sprite_renderer.enabled = false;
+                    sphere_collider.enabled = false;
                 }
             }
         }
         
         [SerializeField] public float speed = Mathf.PI;
         [SerializeField] public float lifetime = 1;
-        //[SerializeField] [HideInInspector] private PlanetariaCollider planetaria_collider;
+        [SerializeField] [HideInInspector] private SphereCollider sphere_collider;
         [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer;
+        [SerializeField] [HideInInspector] private SpriteRenderer sprite_renderer;
         [SerializeField] [HideInInspector] private PlanetariaRigidbody planetaria_rigidbody;
         [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;
         [NonSerialized] private bool has_collided = false;

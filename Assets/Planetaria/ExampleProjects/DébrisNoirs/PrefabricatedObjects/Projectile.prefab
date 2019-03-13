@@ -68,7 +68,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!114 &101
 MonoBehaviour:
@@ -102,7 +102,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 3.1415927
   lifetime: 1
+  sphere_collider: {fileID: 67}
   planetaria_renderer: {fileID: 98}
+  sprite_renderer: {fileID: 74}
   planetaria_rigidbody: {fileID: 101}
   planetaria_transform: {fileID: 100}
 --- !u!114 &98

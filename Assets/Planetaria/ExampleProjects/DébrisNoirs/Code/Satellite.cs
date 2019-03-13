@@ -17,6 +17,7 @@ namespace DebrisNoirs
             silhouette_renderer = this.transform.Find("Chasis").Find("Silhouette").GetComponent<AreaRenderer>();
             internal_transform = this.transform.Find("Chasis").gameObject.GetComponent<Transform>();
             planetaria_transform = this.GetComponent<PlanetariaTransform>();
+            turret = this.transform.Find("Chasis").Find("Turret").GetComponent<Turret>();
 
             //internal_collider.shape = PlanetariaShape.Create(planetaria_transform.localScale);
             satellite_renderer.scale = planetaria_transform.localScale;
@@ -52,7 +53,7 @@ namespace DebrisNoirs
             Vector2 input = new Vector2(Mathf.Cos(bearing), Mathf.Sin(bearing)) * DebrisNoirsInput.get_accelerate();
 
             // add velocity based on input
-            planetaria_rigidbody.relative_velocity += input * Time.fixedDeltaTime;
+            planetaria_rigidbody.relative_velocity += input * acceleration * Time.fixedDeltaTime;
             Vector2 velocity = planetaria_rigidbody.relative_velocity;
 
             // drag in coincident direction varies from coefficient of 1->~0.8->~0.5
@@ -81,7 +82,7 @@ namespace DebrisNoirs
             Vector2 input = DebrisNoirsInput.get_axes(); // HACK: double counting inside function call
 
             // add velocity based on input
-            planetaria_rigidbody.relative_velocity += input * Time.deltaTime;
+            planetaria_rigidbody.relative_velocity += input * acceleration * Time.deltaTime;
             Vector2 velocity = planetaria_rigidbody.relative_velocity;
 
             // drag in coincident direction varies from coefficient of 1->~0.8->~0.5
@@ -189,6 +190,7 @@ namespace DebrisNoirs
             stopwatch.stop_clock();
             debris_spawner.stop();
             satellite_renderer.sprite = ghost_sprite;
+            turret.die();
         }
 
         public bool alive()
@@ -234,6 +236,7 @@ namespace DebrisNoirs
         [SerializeField] private AreaRenderer satellite_renderer;
         [SerializeField] private AreaRenderer silhouette_renderer;
         [SerializeField] private PlanetariaRigidbody planetaria_rigidbody;
+        [SerializeField] private Turret turret;
 
         [SerializeField] private ScoreKeeper stopwatch;
         [SerializeField] private DebrisSpawner debris_spawner;
