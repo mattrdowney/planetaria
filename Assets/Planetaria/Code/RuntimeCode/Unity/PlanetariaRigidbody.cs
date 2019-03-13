@@ -25,6 +25,10 @@ namespace Planetaria
             {
                 internal_transform = gameObject.internal_game_object.GetComponent<Transform>();
             }
+            if (planetaria_transform == null)
+            {
+                planetaria_transform = gameObject.GetComponent<PlanetariaTransform>();
+            }
             //collider = this.GetOrAddComponent<PlanetariaCollider>();
             if (internal_rigidbody == null)
             {
@@ -32,13 +36,13 @@ namespace Planetaria
             }
             internal_rigidbody.isKinematic = true;
             internal_rigidbody.useGravity = false;
-            previous_position = get_position();
+            previous_position = planetaria_transform.position;
             acceleration = get_acceleration();
         }
 
         private void FixedUpdate()
         {
-            previous_position = get_position();
+            previous_position = planetaria_transform.position;
             if (observer.exists && observer.data.colliding()) // grounded
             {
                 grounded_track(Time.fixedDeltaTime/2);
@@ -54,7 +58,10 @@ namespace Planetaria
                 // http://www.richardlord.net/presentations/physics-for-flash-games.html
                 velocity += acceleration * (Time.fixedDeltaTime/2);
                 aerial_move(velocity.magnitude * Time.fixedDeltaTime);
-                acceleration = get_acceleration();
+                if (gravity != Vector3.zero && acceleration != Vector3.zero)
+                {
+                    acceleration = get_acceleration();
+                }
             }
 
             if (observer.exists && observer.data.colliding()) // grounded
@@ -69,7 +76,9 @@ namespace Planetaria
 
         public Vector3 get_acceleration()
         {
-            return Bearing.attractor(get_position(), gravity.normalized)*gravity.magnitude;
+            Vector3 gradient = Vector3.ProjectOnPlane(gravity, planetaria_transform.position).normalized;
+            float magnitude = gravity.magnitude; // NOTE: you cannot combine normalize/magnitude
+            return gradient * magnitude;
         }
 
         public bool collide(BlockCollision collision, CollisionObserver observer)
@@ -84,7 +93,7 @@ namespace Planetaria
             this.observer = observer;
             this.collision = collision;
             
-            horizontal_velocity = Vector3.Dot(velocity, Bearing.right(get_position(), collision.geometry_visitor.normal()));
+            horizontal_velocity = Vector3.Dot(velocity, Bearing.right(planetaria_transform.position, collision.geometry_visitor.normal()));
             vertical_velocity = Vector3.Dot(velocity, collision.geometry_visitor.normal());
             if (vertical_velocity < 0)
             {
@@ -96,21 +105,21 @@ namespace Planetaria
             return this.observer.exists;
         }
 
-        private void aerial_move(float delta)
+        private void aerial_move(float displacement)
         {
-            Vector3 next_position = PlanetariaMath.spherical_linear_interpolation(get_position(), velocity.normalized, delta); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
-            Vector3 next_velocity = PlanetariaMath.spherical_linear_interpolation(get_position(), velocity.normalized, delta + Mathf.PI/2);
-            
-            transform.position = next_position;
-            velocity = next_velocity.normalized * velocity.magnitude; // FIXME: I thought this was numerically stable, but it seems to create more energy.
-            //velocity = Vector3.ProjectOnPlane(velocity, get_position()); // TODO: CONSIDER: ensure velocity and position are orthogonal - they seem to desynchronize
-            //Debug.DrawRay(get_position(), velocity, Color.green); // draw new velocity (not old one)
+            const float quarter_rotation = (float) Mathf.PI/2;
+            float current_speed = velocity.magnitude;
+            Vector3 current_direction = velocity / current_speed;
+            Vector3 next_position = planetaria_transform.position * Mathf.Cos(displacement) + current_direction * Mathf.Sin(displacement); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
+            Vector3 next_velocity = planetaria_transform.position * Mathf.Cos(displacement + quarter_rotation) + current_direction * Mathf.Sin(displacement + quarter_rotation);
+            planetaria_transform.position = next_position.normalized;
+            velocity = next_velocity.normalized * current_speed; // FIXME: I thought this was numerically stable, but it seems to create more energy.
         }
 
         private void grounded_position()
         {
             collision.geometry_visitor.move_position(horizontal_velocity * Time.fixedDeltaTime);
-            transform.position = collision.geometry_visitor.position(); // NOTE: required so get_acceleration() functions
+            planetaria_transform.position = collision.geometry_visitor.position(); // NOTE: required so get_acceleration() functions
             // project velocity
         }
 
@@ -147,11 +156,11 @@ namespace Planetaria
                 collision.geometry_visitor.move_position(0, transform.scale/2 * (1 + 1e-3f)); // extrude the player so they do not accidentally re-collide (immediately) // FIXME: magic number, move to Precision.*
                 x_velocity += horizontal_velocity;
                 //y_velocity += vertical_velocity;
-                transform.position = collision.geometry_visitor.position();
+                planetaria_transform.position = collision.geometry_visitor.position();
                 Vector3 normal = collision.geometry_visitor.normal();
-                Vector3 right = Bearing.right(get_position(), normal);
+                Vector3 right = Bearing.right(planetaria_transform.position, normal);
                 velocity = right*x_velocity + normal*y_velocity;
-                Debug.DrawRay(get_position(), velocity, Color.yellow, 1f);
+                Debug.DrawRay(planetaria_transform.position, velocity, Color.yellow, 1f);
                 acceleration = get_acceleration();
                 // TODO: accelerate vertically
                 
@@ -164,7 +173,7 @@ namespace Planetaria
         {
             if (observer.exists)
             {
-                Vector3 x = horizontal_velocity * Bearing.right(get_position(), collision.geometry_visitor.normal());
+                Vector3 x = horizontal_velocity * Bearing.right(planetaria_transform.position, collision.geometry_visitor.normal());
                 Vector3 y = vertical_acceleration * Time.fixedDeltaTime * collision.geometry_visitor.normal();
                 velocity = x + y;
             }
@@ -174,7 +183,7 @@ namespace Planetaria
         {
             if (observer.exists)
             {
-                horizontal_velocity = Vector3.Dot(velocity, Bearing.right(get_position(), collision.geometry_visitor.normal()));
+                horizontal_velocity = Vector3.Dot(velocity, Bearing.right(planetaria_transform.position, collision.geometry_visitor.normal()));
                 vertical_velocity = Vector3.Dot(velocity, collision.geometry_visitor.normal());
             }
         }
@@ -213,14 +222,14 @@ namespace Planetaria
             get
             {
                 synchronize_velocity_ground_to_air();
-                float x = Vector3.Dot(velocity, Bearing.east(get_position()));
-                float y = Vector3.Dot(velocity, Bearing.north(get_position()));
+                float x = Vector3.Dot(velocity, Bearing.east(planetaria_transform.position));
+                float y = Vector3.Dot(velocity, Bearing.north(planetaria_transform.position));
                 return new Vector2(x, y);
             }
             set
             {
-                Vector3 x = Bearing.east(get_position()) * value.x;
-                Vector3 y = Bearing.north(get_position()) * value.y;
+                Vector3 x = Bearing.east(planetaria_transform.position) * value.x;
+                Vector3 y = Bearing.north(planetaria_transform.position) * value.y;
                 velocity = x + y;
                 synchronize_velocity_air_to_ground();
             }
@@ -238,7 +247,7 @@ namespace Planetaria
         public Vector3 get_position()
         {
             // TODO: while this isn't useful now, I could use caching later
-            return transform.position;
+            return planetaria_transform.position;
         }
 
         public Vector3 get_previous_position()
@@ -260,6 +269,7 @@ namespace Planetaria
         [SerializeField] public Vector3 gravity;
         
         [SerializeField] [HideInInspector] private Transform internal_transform;
+        [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;
         [SerializeField] [HideInInspector] private Rigidbody internal_rigidbody;
         [SerializeField] [HideInInspector] private optional<CollisionObserver> observer;
         [SerializeField] [HideInInspector] private BlockCollision collision;
