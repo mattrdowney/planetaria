@@ -72,7 +72,7 @@ namespace DebrisNoirs
                     random_position *= -1;
                 }
                 Debris large_debris = DebrisNoirs.live();
-                large_debris.gameObject.transform.position = random_position;
+                large_debris.planetaria_transform.position = random_position;
                 large_debris.speed = 0.09f;
                 large_debris.initialize();
             }

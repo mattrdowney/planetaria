@@ -55,8 +55,14 @@ namespace DebrisNoirs
             if (left_debris != null)
             {
                 DebrisNoirs.live(left_debris);
+                left_debris.planetaria_transform.position = this.planetaria_transform.position;
+                left_debris.planetaria_transform.direction = this.planetaria_transform.direction;
+                left_debris.speed = this.speed;
                 left_debris.initialize();
                 DebrisNoirs.live(right_debris);
+                right_debris.planetaria_transform.position = this.planetaria_transform.position;
+                right_debris.planetaria_transform.direction = this.planetaria_transform.direction;
+                right_debris.speed = this.speed;
                 right_debris.initialize();
             }
             DebrisNoirs.die(this);
@@ -70,7 +76,7 @@ namespace DebrisNoirs
         [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer_background;
         //[SerializeField] [HideInInspector] private PlanetariaCollider planetaria_collider;
         [SerializeField] [HideInInspector] private PlanetariaRigidbody planetaria_rigidbody;
-        [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;
+        [SerializeField] [HideInInspector] public PlanetariaTransform planetaria_transform;
 
         [SerializeField] public Debris left_debris = null;
         [SerializeField] public Debris right_debris = null;
