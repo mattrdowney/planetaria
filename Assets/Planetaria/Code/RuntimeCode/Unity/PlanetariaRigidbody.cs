@@ -107,7 +107,7 @@ namespace Planetaria
 
         private void aerial_move(float displacement)
         {
-            const float quarter_rotation = (float) Mathf.PI/2;
+            const float quarter_rotation = Mathf.PI/2;
             float current_speed = velocity.magnitude;
             Vector3 current_direction = velocity / current_speed;
             Vector3 next_position = planetaria_transform.position * Mathf.Cos(displacement) + current_direction * Mathf.Sin(displacement); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.

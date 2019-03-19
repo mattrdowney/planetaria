@@ -11,7 +11,7 @@ namespace DebrisNoirs
         {
             foreach (Projectile projectile in projectiles_on_screen)
             {
-                PlanetariaGameObject.Destroy(projectile.gameObject);
+                PlanetariaGameObject.Destroy(projectile.gameObject, 1f);
             }
             projectiles_on_screen.Clear();
             next_projectile_to_reuse = 0;

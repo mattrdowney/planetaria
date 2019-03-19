@@ -50,6 +50,8 @@ MonoBehaviour:
   round: 0
   debris_to_spawn: 0
   large_debris: {fileID: 32, guid: 8627fecc27453de42ac3e4bedb216c9a, type: 3}
+  medium_debris: {fileID: 39, guid: 0f139500d8c235649aa7d844ed6fdae7, type: 3}
+  small_debris: {fileID: 40, guid: 2b0d67d6289766c4990a73ae4f38d694, type: 3}
   text: {fileID: 0}
   satellite: {fileID: 0}
 --- !u!114 &6156207878381848886

@@ -76,7 +76,7 @@ SpriteRenderer:
   m_Size: {x: 0.256, y: 0.256}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &6685837231128238669
@@ -91,7 +91,6 @@ GameObject:
   - component: {fileID: 6685837231128238666}
   - component: {fileID: 6685837231128238668}
   - component: {fileID: 6685837231128238664}
-  - component: {fileID: 6685837231128238665}
   m_Layer: 0
   m_Name: Controller
   m_TagString: Untagged
@@ -171,23 +170,3 @@ MonoBehaviour:
     game_object_variable: {fileID: 0}
   internal_transform: {fileID: 6685837231128238667}
   scale_variable: 1
---- !u!114 &6685837231128238665
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6685837231128238669}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6d5f8ec069185d4393eebdfabeac2ac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initialized: 0
-  game_object_variable:
-    game_object_variable: {fileID: 6685837231128238669}
-  satellite: {fileID: 0}
-  main_character: {fileID: 0}
-  main_controller: {fileID: 6685837231128238667}
-  planetaria_transform: {fileID: 6685837231128238664}
-  crosshair_renderer: {fileID: 6685837231128238668}

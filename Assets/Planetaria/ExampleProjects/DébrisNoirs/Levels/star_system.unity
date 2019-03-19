@@ -224,7 +224,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!114 &578224436
 MonoBehaviour:
@@ -470,7 +470,8 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2008140875, guid: aaa1349aadcd2114a9d661fa04abe0a0, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: aaa1349aadcd2114a9d661fa04abe0a0, type: 3}
 --- !u!1 &953875492
 GameObject:
@@ -488,7 +489,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!33 &953875493
 MeshFilter:
@@ -768,7 +769,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6685837231128238665, guid: 9e5c0d89b2a6c14449e7a8f7d97297de,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6685837231128238665, guid: 9e5c0d89b2a6c14449e7a8f7d97297de, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 9e5c0d89b2a6c14449e7a8f7d97297de, type: 3}
 --- !u!1001 &2110940770
 PrefabInstance:

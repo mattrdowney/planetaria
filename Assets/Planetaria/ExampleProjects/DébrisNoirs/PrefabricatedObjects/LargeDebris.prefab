@@ -72,6 +72,7 @@ MonoBehaviour:
     game_object_variable: {fileID: 0}
   gravity: {x: 0, y: 0, z: 0}
   internal_transform: {fileID: 45}
+  planetaria_transform: {fileID: 0}
   internal_rigidbody: {fileID: 56}
 --- !u!54 &56
 Rigidbody:
@@ -145,7 +146,9 @@ MonoBehaviour:
   planetaria_renderer_background: {fileID: 79}
   planetaria_rigidbody: {fileID: 71}
   planetaria_transform: {fileID: 70}
-  spawned_debris: {fileID: 39, guid: 0f139500d8c235649aa7d844ed6fdae7, type: 3}
+  left_debris: {fileID: 0}
+  right_debris: {fileID: 0}
+  base_speed: 0.09
   speed: 0.09
   deviation_angle: 3.1415927
   speed_deviation_multiplier: 1.5

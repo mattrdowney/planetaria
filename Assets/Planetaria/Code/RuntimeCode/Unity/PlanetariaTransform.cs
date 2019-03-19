@@ -123,20 +123,15 @@ namespace Planetaria
             {
                 Vector3 current_position = internal_transform.forward;
                 Vector3 next_position = value;
+                if (next_position == Vector3.zero)
+                {
+                    Debug.LogError("Critical Error");
+                }
                 if (current_position != next_position)
                 {
                     Quaternion delta_rotation = Quaternion.FromToRotation(current_position, next_position);
                     Vector3 adjusted_direction = delta_rotation * direction;
                     internal_transform.rotation = Quaternion.LookRotation(next_position, adjusted_direction);
-                    /*
-                    Vector3 last_velocity = Bearing.attractor(current_position, next_position);
-                    Vector3 velocity = Bearing.repeller(next_position, current_position);
-                    Quaternion last_rotation = Quaternion.LookRotation(current_position, last_velocity);
-                    Quaternion rotation = Quaternion.LookRotation(next_position, velocity);
-                    Vector3 old_direction = gameObject.internal_game_object.transform.up;
-                    Vector3 relative_direction = Quaternion.Inverse(last_rotation) * old_direction;
-                    Vector3 next_direction = rotation * relative_direction;
-                    internal_transform.rotation = Quaternion.LookRotation(next_position, next_direction);*/
                 }
             }
         }

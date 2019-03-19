@@ -8,6 +8,11 @@ namespace DebrisNoirs
     [Serializable]
     public class DebrisSpawner : PlanetariaMonoBehaviour
     {
+        public static DebrisSpawner self()
+        {
+            return GameObject.FindObjectOfType<DebrisSpawner>();
+        }
+
         protected override void OnConstruction() { }
         protected override void OnDestruction() { }
 
@@ -34,6 +39,8 @@ namespace DebrisNoirs
                         text.text = countdown.ToString(); // display countdown
                         yield return second_delay;
                     }
+                    int capacity = Mathf.CeilToInt(debris_to_spawn / 20f) * 20;
+                    DebrisNoirs.expand(capacity);
                     text.text = ""; // clear the screen
                     round += 1; // enter next round
                     spawn_debris();
@@ -64,7 +71,10 @@ namespace DebrisNoirs
                 {
                     random_position *= -1;
                 }
-                DebrisNoirs.live(PlanetariaGameObject.Instantiate(large_debris, random_position));
+                Debris large_debris = DebrisNoirs.live();
+                large_debris.gameObject.transform.position = random_position;
+                large_debris.speed = 0.09f;
+                large_debris.initialize();
             }
         }
 
@@ -73,6 +83,9 @@ namespace DebrisNoirs
         public int round = 0;
         public int debris_to_spawn = 0;
         [SerializeField] public GameObject large_debris;
+        [SerializeField] public GameObject medium_debris;
+        [SerializeField] public GameObject small_debris;
+
         [SerializeField] public UnityEngine.UI.Text text; 
         [SerializeField] private PlanetariaTransform satellite;
     }

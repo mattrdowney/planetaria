@@ -3,7 +3,10 @@ guid: a6008ba79b0ca4545a6eef14aaabe0ca
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - large_debris: {fileID: 32, guid: 8627fecc27453de42ac3e4bedb216c9a, type: 3}
+  - text: {instanceID: 0}
+  - satellite: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

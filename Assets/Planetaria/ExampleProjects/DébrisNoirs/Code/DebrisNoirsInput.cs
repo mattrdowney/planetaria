@@ -105,15 +105,15 @@ namespace DebrisNoirs
                 main_controller = GameObject.FindObjectOfType<PlanetariaActuator>().gameObject.internal_game_object.transform;
             }
             Quaternion character_to_controller_rotation = Quaternion.Inverse(main_character.rotation) * main_controller.rotation;
-            if (character_to_controller_rotation.eulerAngles.x <= 5f*2) // head rotation less than 5 degrees
+            if (character_to_controller_rotation.eulerAngles.x >= 360 - 2f)
             {
                 return 0;
             }
-            else if (character_to_controller_rotation.eulerAngles.x >= 360 - 5f*2)
+            else if (character_to_controller_rotation.eulerAngles.x >= 180) // looking up
             {
-                return 0;
+                return +Mathf.Clamp01(Mathf.Pow((360 - (2f) - character_to_controller_rotation.eulerAngles.y)/180, 2));
             }
-            return +1; // acceleration is all or nothing, and inverted axes don't matter (-1 / reverse isn't possible)
+            return 0; // no acceleration while looking down
         }
 
         public static float get_rotate()

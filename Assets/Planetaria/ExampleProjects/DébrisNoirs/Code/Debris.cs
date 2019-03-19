@@ -25,7 +25,7 @@ namespace DebrisNoirs
             planetaria_renderer_background.scale = planetaria_transform.localScale;
         }
 
-        private void Start()
+        public void initialize()
         {
             score_keeper = GameObject.FindObjectOfType<ScoreKeeper>(); // CONSIDER: how slow is this? (Could just make a singleton.)
             planetaria_renderer_foreground.angle = UnityEngine.Random.Range(0, 2*Mathf.PI); // this is random rotation for the sprite image.
@@ -52,21 +52,14 @@ namespace DebrisNoirs
                 return false;
             }
             score_keeper.add(points);
-            if (spawned_debris != null)
+            if (left_debris != null)
             {
-                for (int space_rock = 0; space_rock < 2; ++space_rock)
-                {
-                    PlanetariaGameObject game_object = PlanetariaGameObject.Instantiate(spawned_debris, planetaria_transform.position, planetaria_transform.direction);
-                    Debris debris = game_object.GetComponent<Debris>();
-                    debris.speed = this.speed;
-                    DebrisNoirs.live(game_object);
-                    // while asteroid revenge velocity (targetting satellite) is an interesting idea,
-                    // I don't think it's necessary (or would fully work as intended for that matter - it might be exploitable).
-                    // The game will probably be hard enough head/joystick controls
-                    // (and pros will still make mistakes eventually, even if its because of sleep deprivation)
-                }
+                DebrisNoirs.live(left_debris);
+                left_debris.initialize();
+                DebrisNoirs.live(right_debris);
+                right_debris.initialize();
             }
-            DebrisNoirs.die(this.gameObject);
+            DebrisNoirs.die(this);
             PlanetariaGameObject.Destroy(this.gameObject);
             return true;
         }
@@ -79,13 +72,13 @@ namespace DebrisNoirs
         [SerializeField] [HideInInspector] private PlanetariaRigidbody planetaria_rigidbody;
         [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;
 
-        [SerializeField] public /*static*/ GameObject spawned_debris;
-
-        [SerializeField] private float speed = 1;
+        [SerializeField] public Debris left_debris = null;
+        [SerializeField] public Debris right_debris = null;
+        [SerializeField] public float speed = 1;
         [SerializeField] private float deviation_angle = Mathf.PI;
         [SerializeField] private float speed_deviation_multiplier = 1.25f;
         [SerializeField] private int points = 10;
-        [NonSerialized] private bool has_collided = false;
+        [NonSerialized] public bool has_collided = false;
     }
 }
 
