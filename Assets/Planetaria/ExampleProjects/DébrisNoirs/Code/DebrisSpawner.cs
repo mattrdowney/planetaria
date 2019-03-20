@@ -39,8 +39,7 @@ namespace DebrisNoirs
                         text.text = countdown.ToString(); // display countdown
                         yield return second_delay;
                     }
-                    int capacity = Mathf.CeilToInt(debris_to_spawn / 20f) * 20;
-                    DebrisNoirs.expand(capacity);
+                    DebrisNoirs.expand(debris_to_spawn);
                     text.text = ""; // clear the screen
                     round += 1; // enter next round
                     spawn_debris();

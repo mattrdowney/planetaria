@@ -27,7 +27,6 @@ namespace DebrisNoirs
 
         public void initialize()
         {
-            score_keeper = GameObject.FindObjectOfType<ScoreKeeper>(); // CONSIDER: how slow is this? (Could just make a singleton.)
             planetaria_renderer_foreground.angle = UnityEngine.Random.Range(0, 2*Mathf.PI); // this is random rotation for the sprite image.
             planetaria_renderer_background.angle = planetaria_renderer_foreground.angle; // and the silhouette
 
@@ -51,7 +50,7 @@ namespace DebrisNoirs
             {
                 return false;
             }
-            score_keeper.add(points);
+            ScoreKeeper.instance.add(points);
             if (left_debris != null)
             {
                 DebrisNoirs.live(left_debris);
@@ -70,8 +69,6 @@ namespace DebrisNoirs
             return true;
         }
 
-        
-        [SerializeField] public ScoreKeeper score_keeper;
         [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer_foreground;
         [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer_background;
         //[SerializeField] [HideInInspector] private PlanetariaCollider planetaria_collider;

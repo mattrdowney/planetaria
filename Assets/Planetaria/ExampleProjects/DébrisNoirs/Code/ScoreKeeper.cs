@@ -8,6 +8,18 @@ namespace DebrisNoirs
 {
     public class ScoreKeeper : PlanetariaMonoBehaviour
     {
+        public static ScoreKeeper instance
+        {
+            get
+            {
+                if (!internal_instance)
+                {
+                    internal_instance = GameObject.FindObjectOfType<ScoreKeeper>();
+                }
+                return internal_instance;
+            }
+        }
+
         public void start_clock()
         {
             state = StopwatchState.Started;
@@ -97,6 +109,8 @@ namespace DebrisNoirs
         [NonSerialized] [HideInInspector] int highscore;
         [NonSerialized] [HideInInspector] float score_display_time;
         [NonSerialized] [HideInInspector] float last_autosave = 0;
+
+        public static ScoreKeeper internal_instance;
     }
 }
 
