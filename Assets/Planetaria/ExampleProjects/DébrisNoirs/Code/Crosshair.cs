@@ -31,7 +31,7 @@ namespace DebrisNoirs
             Vector3 crosshair_up = Bearing.repeller(controller_position, character_position);
 
             crosshair_renderer.angle = Vector3.SignedAngle(main_controller.up, crosshair_up, main_controller.forward) * Mathf.Deg2Rad;
-            crosshair_renderer.scale = Mathf.Lerp(crosshair_size/2, crosshair_size, satellite.acceleration_direction().magnitude);
+            crosshair_renderer.scale = Mathf.Lerp(0, crosshair_size, DebrisNoirsInput.get_axes().magnitude);
         }
 
         protected override void OnConstruction() { }
@@ -43,7 +43,7 @@ namespace DebrisNoirs
         [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;
         [SerializeField] [HideInInspector] private AreaRenderer crosshair_renderer;
 
-        private const float crosshair_size = 0.03f; // same as satellite size
+        private const float crosshair_size = 0.06f; // same as satellite size
     }
 }
 

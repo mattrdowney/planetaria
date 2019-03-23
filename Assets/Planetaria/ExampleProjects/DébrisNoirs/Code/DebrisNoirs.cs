@@ -22,7 +22,7 @@ namespace DebrisNoirs
             return debris.Count == 0;
         }
 
-        public static void expand(int capacity)
+        public static void expand(int capacity) // TODO: CONSIDER: For future versions, deleting an object and creating two for every object pool increment may get around the draw call dynamic batching "bug" (might be intended behaviour) -- where ~120 draw calls become ~20 (behaviour I personally expected) for the same number of objects but only after several destruction and instantiation calls.
         {
             int large_rocks_to_spawn = Mathf.Max(0, capacity - object_pool.Count);
             for (int spawned_root_node = 0; spawned_root_node < large_rocks_to_spawn; spawned_root_node += 1)

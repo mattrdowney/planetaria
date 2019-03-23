@@ -29,6 +29,8 @@ namespace DebrisNoirs
             stopwatch = GameObject.FindObjectOfType<ScoreKeeper>();
             debris_spawner = GameObject.FindObjectOfType<DebrisSpawner>();
             loading_disc = GameObject.Find("LoadingDisc").GetComponent<Image>();
+            crosshair_dot = GameObject.Find("CenterDot").GetComponent<Image>();
+            crosshair_arrow = GameObject.Find("Controller/__Renderer").GetComponent<SpriteRenderer>();
             planetaria_rigidbody.absolute_velocity = Vector2.zero;
         }
 
@@ -151,6 +153,8 @@ namespace DebrisNoirs
                 if (dead_time < 0)
                 {
                     satellite_renderer.enabled = true;
+                    crosshair_dot.enabled = false;
+                    crosshair_arrow.enabled = true;
                 }
                 dead_time -= Time.deltaTime;
                 respawn_time += Time.deltaTime/2;
@@ -221,6 +225,8 @@ namespace DebrisNoirs
             debris_spawner.spawn();
             stopwatch.start_clock();
             dead = false;
+            crosshair_dot.enabled = true;
+            crosshair_arrow.enabled = false;
             internal_collider.enabled = true;
             satellite_renderer.enabled = true;
             loading_disc.fillAmount = 0;
@@ -242,6 +248,8 @@ namespace DebrisNoirs
         [SerializeField] private ScoreKeeper stopwatch;
         [SerializeField] private DebrisSpawner debris_spawner;
         [SerializeField] private Image loading_disc;
+        [SerializeField] private Image crosshair_dot;
+        [SerializeField] private SpriteRenderer crosshair_arrow;
 
         [NonSerialized] private float horizontal;
         [NonSerialized] private float vertical;
