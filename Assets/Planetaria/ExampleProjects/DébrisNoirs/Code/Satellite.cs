@@ -29,6 +29,7 @@ namespace DebrisNoirs
             stopwatch = GameObject.FindObjectOfType<ScoreKeeper>();
             debris_spawner = GameObject.FindObjectOfType<DebrisSpawner>();
             loading_disc = GameObject.Find("LoadingDisc").GetComponent<Image>();
+            planetaria_rigidbody.absolute_velocity = Vector2.zero;
         }
 
         private void FixedUpdate()

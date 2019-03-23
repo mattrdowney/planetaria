@@ -79,13 +79,47 @@ namespace DebrisNoirs
         {
             foreach (Debris debris in object_pool)
             {
-                PlanetariaGameObject.Destroy(debris.left_debris.left_debris.gameObject);
-                PlanetariaGameObject.Destroy(debris.left_debris.right_debris.gameObject);
-                PlanetariaGameObject.Destroy(debris.left_debris.gameObject);
-                PlanetariaGameObject.Destroy(debris.right_debris.left_debris.gameObject);
-                PlanetariaGameObject.Destroy(debris.right_debris.right_debris.gameObject);
-                PlanetariaGameObject.Destroy(debris.right_debris.gameObject);
-                PlanetariaGameObject.Destroy(debris.gameObject);
+                PlanetariaGameObject.Destroy(debris
+                    .
+                    left_debris
+                    .
+                    left_debris
+                    .
+                    gameObject);
+                PlanetariaGameObject.Destroy(debris
+                    .
+                    left_debris
+                    .
+                    right_debris
+                    .
+                    gameObject);
+                PlanetariaGameObject.Destroy(debris
+                    .
+                    left_debris
+                    .
+                    gameObject);
+                PlanetariaGameObject.Destroy(debris
+                    .
+                    right_debris
+                    .
+                    left_debris
+                    .
+                    gameObject);
+                PlanetariaGameObject.Destroy(debris
+                    .
+                    right_debris
+                    .
+                    right_debris
+                    .
+                    gameObject);
+                PlanetariaGameObject.Destroy(debris
+                    .
+                    right_debris
+                    .
+                    gameObject);
+                PlanetariaGameObject.Destroy(debris
+                    .
+                    gameObject);
             }
             object_pool.Clear(); // The object pool stores the root objects (and medium/small debris implicitly)
             debris.Clear(); // Debris stores active debris on-screen
@@ -94,7 +128,7 @@ namespace DebrisNoirs
         public static Debris live()
         {
             Debris debris = object_pool[next_debris];
-            next_debris = next_debris >= object_pool.Count ? 0 : next_debris + 1;
+            next_debris = next_debris >= object_pool.Count - 1 ? 0 : next_debris + 1;
             live(debris);
             return debris;
         }

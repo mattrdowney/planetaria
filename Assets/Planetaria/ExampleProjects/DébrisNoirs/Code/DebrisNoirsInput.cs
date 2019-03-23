@@ -111,7 +111,7 @@ namespace DebrisNoirs
             }
             else if (character_to_controller_rotation.eulerAngles.x >= 180) // looking up
             {
-                return +Mathf.Clamp01(Mathf.Pow((360 - (2f) - character_to_controller_rotation.eulerAngles.y)/180, 2));
+                return +Mathf.Clamp01(Mathf.Pow((360 - character_to_controller_rotation.eulerAngles.x)/30, 2));
             }
             return 0; // no acceleration while looking down
         }

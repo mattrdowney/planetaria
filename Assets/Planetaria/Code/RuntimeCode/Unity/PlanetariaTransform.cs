@@ -125,7 +125,7 @@ namespace Planetaria
                 Vector3 next_position = value;
                 if (next_position == Vector3.zero)
                 {
-                    Debug.LogError("Critical Error");
+                    Debug.LogError("Critical Error" + this.gameObject.name + ":" + current_position);
                 }
                 if (current_position != next_position)
                 {

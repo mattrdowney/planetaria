@@ -109,7 +109,11 @@ namespace Planetaria
         {
             const float quarter_rotation = Mathf.PI/2;
             float current_speed = velocity.magnitude;
-            Vector3 current_direction = velocity / current_speed;
+            if (current_speed == 0) // Prevent division by zero at LOCATION 0x0
+            {
+                return;
+            }
+            Vector3 current_direction = velocity / current_speed; // LOCATION 0x0
             Vector3 next_position = planetaria_transform.position * Mathf.Cos(displacement) + current_direction * Mathf.Sin(displacement); // Note: when velocity = Vector3.zero, it luckily still returns "position" intact.
             Vector3 next_velocity = planetaria_transform.position * Mathf.Cos(displacement + quarter_rotation) + current_direction * Mathf.Sin(displacement + quarter_rotation);
             planetaria_transform.position = next_position.normalized;

@@ -65,7 +65,6 @@ namespace DebrisNoirs
                 right_debris.initialize();
             }
             DebrisNoirs.die(this);
-            PlanetariaGameObject.Destroy(this.gameObject);
             return true;
         }
 
