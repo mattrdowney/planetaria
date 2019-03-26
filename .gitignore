@@ -1,6 +1,5 @@
 *.jpg
 *.png
-*.keystore
 
 /Packages
 /Packages.meta
