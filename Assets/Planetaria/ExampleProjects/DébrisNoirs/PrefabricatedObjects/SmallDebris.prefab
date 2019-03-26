@@ -66,7 +66,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 0}
   angle_variable: 0
-  material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  material: {fileID: 2100000, guid: 84f1cdaf9dd246d42887a5ea84826ed4, type: 2}
   scale_variable: 0.02
   internal_transform: {fileID: 52}
   internal_renderer: {fileID: 64}
@@ -145,6 +145,7 @@ MonoBehaviour:
     game_object_variable: {fileID: 0}
   gravity: {x: 0, y: 0, z: 0}
   internal_transform: {fileID: 55}
+  planetaria_transform: {fileID: 0}
   internal_rigidbody: {fileID: 58}
 --- !u!54 &58
 Rigidbody:
@@ -191,7 +192,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 0}
   angle_variable: 0
-  material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  material: {fileID: 2100000, guid: 84f1cdaf9dd246d42887a5ea84826ed4, type: 2}
   scale_variable: 0.02
   internal_transform: {fileID: 46}
   internal_renderer: {fileID: 67}
@@ -213,12 +214,12 @@ MonoBehaviour:
   initialized: 0
   game_object_variable:
     game_object_variable: {fileID: 40}
-  score_keeper: {fileID: 0}
   planetaria_renderer_foreground: {fileID: 85}
   planetaria_renderer_background: {fileID: 76}
   planetaria_rigidbody: {fileID: 88}
   planetaria_transform: {fileID: 81}
-  spawned_debris: {fileID: 0}
+  left_debris: {fileID: 0}
+  right_debris: {fileID: 0}
   speed: 1
   deviation_angle: 0.34906584
   speed_deviation_multiplier: 1.5
@@ -271,7 +272,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 84f1cdaf9dd246d42887a5ea84826ed4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -350,7 +351,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 84f1cdaf9dd246d42887a5ea84826ed4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

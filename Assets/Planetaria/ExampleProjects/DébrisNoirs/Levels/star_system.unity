@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.018182911, g: 0.017548427, b: 0.017004123, a: 1}
+  m_IndirectSpecularColor: {r: 0.49780262, g: 0.49780262, b: 0.49780262, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -770,6 +770,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: Controller
       objectReference: {fileID: 0}
+    - target: {fileID: 6685837231128238668, guid: 9e5c0d89b2a6c14449e7a8f7d97297de,
+        type: 3}
+      propertyPath: sprite_variable
+      value: 
+      objectReference: {fileID: 21300000, guid: 869815baaeb9a5c4cad38030515a0c03,
+        type: 3}
+    - target: {fileID: 6685837231128238668, guid: 9e5c0d89b2a6c14449e7a8f7d97297de,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6685837231128238668, guid: 9e5c0d89b2a6c14449e7a8f7d97297de,
+        type: 3}
+      propertyPath: scale_variable
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6685837231128238667, guid: 9e5c0d89b2a6c14449e7a8f7d97297de,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -829,22 +845,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Enabled
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6685837231128238668, guid: 9e5c0d89b2a6c14449e7a8f7d97297de,
-        type: 3}
-      propertyPath: sprite_variable
-      value: 
-      objectReference: {fileID: 21300000, guid: 869815baaeb9a5c4cad38030515a0c03,
-        type: 3}
-    - target: {fileID: 6685837231128238668, guid: 9e5c0d89b2a6c14449e7a8f7d97297de,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6685837231128238668, guid: 9e5c0d89b2a6c14449e7a8f7d97297de,
-        type: 3}
-      propertyPath: scale_variable
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6685837230990681260, guid: 9e5c0d89b2a6c14449e7a8f7d97297de,
         type: 3}
@@ -906,6 +906,21 @@ PrefabInstance:
         type: 3}
       propertyPath: near clip plane
       value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 7054274644999161775, guid: 2eea8fc6477a5f94eaaf46194cc11d6e,
+        type: 3}
+      propertyPath: m_BackGroundColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7054274644999161775, guid: 2eea8fc6477a5f94eaaf46194cc11d6e,
+        type: 3}
+      propertyPath: m_BackGroundColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7054274644999161775, guid: 2eea8fc6477a5f94eaaf46194cc11d6e,
+        type: 3}
+      propertyPath: m_BackGroundColor.b
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7054274646531611476, guid: 2eea8fc6477a5f94eaaf46194cc11d6e,
         type: 3}

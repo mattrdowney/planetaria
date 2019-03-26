@@ -66,7 +66,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 0}
   angle_variable: 0
-  material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  material: {fileID: 2100000, guid: 84f1cdaf9dd246d42887a5ea84826ed4, type: 2}
   scale_variable: 0.04
   internal_transform: {fileID: 53}
   internal_renderer: {fileID: 66}
@@ -121,7 +121,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 84f1cdaf9dd246d42887a5ea84826ed4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -200,7 +200,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 84f1cdaf9dd246d42887a5ea84826ed4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -303,6 +303,7 @@ MonoBehaviour:
     game_object_variable: {fileID: 0}
   gravity: {x: 0, y: 0, z: 0}
   internal_transform: {fileID: 51}
+  planetaria_transform: {fileID: 0}
   internal_rigidbody: {fileID: 57}
 --- !u!54 &57
 Rigidbody:
@@ -349,7 +350,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 0}
   angle_variable: 0
-  material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  material: {fileID: 2100000, guid: 84f1cdaf9dd246d42887a5ea84826ed4, type: 2}
   scale_variable: 0.04
   internal_transform: {fileID: 47}
   internal_renderer: {fileID: 65}
@@ -371,12 +372,12 @@ MonoBehaviour:
   initialized: 0
   game_object_variable:
     game_object_variable: {fileID: 39}
-  score_keeper: {fileID: 0}
   planetaria_renderer_foreground: {fileID: 74}
   planetaria_renderer_background: {fileID: 86}
   planetaria_rigidbody: {fileID: 80}
   planetaria_transform: {fileID: 77}
-  spawned_debris: {fileID: 40, guid: 2b0d67d6289766c4990a73ae4f38d694, type: 3}
+  left_debris: {fileID: 0}
+  right_debris: {fileID: 0}
   speed: 1
   deviation_angle: 1.0471976
   speed_deviation_multiplier: 1.5

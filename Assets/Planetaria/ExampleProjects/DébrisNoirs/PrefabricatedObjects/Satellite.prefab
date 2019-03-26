@@ -48,7 +48,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 84f1cdaf9dd246d42887a5ea84826ed4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -145,7 +145,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 0}
   angle_variable: 0
-  material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  material: {fileID: 2100000, guid: 84f1cdaf9dd246d42887a5ea84826ed4, type: 2}
   scale_variable: 0.03
   internal_transform: {fileID: 335280298}
   internal_renderer: {fileID: 335280299}
@@ -167,7 +167,6 @@ GameObject:
   - component: {fileID: 54852974177452380}
   - component: {fileID: 7252158268403498653}
   - component: {fileID: 2008140876}
-  - component: {fileID: 2008140875}
   m_Layer: 8
   m_Name: Satellite
   m_TagString: Untagged
@@ -215,6 +214,8 @@ MonoBehaviour:
   stopwatch: {fileID: 0}
   debris_spawner: {fileID: 0}
   loading_disc: {fileID: 0}
+  crosshair_dot: {fileID: 0}
+  crosshair_arrow: {fileID: 0}
 --- !u!114 &114502162093895280
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -249,6 +250,7 @@ MonoBehaviour:
     game_object_variable: {fileID: 1996407451135126}
   gravity: {x: 0, y: 0, z: 0}
   internal_transform: {fileID: 4436393650129868}
+  planetaria_transform: {fileID: 0}
   internal_rigidbody: {fileID: 54852974177452380}
 --- !u!54 &54852974177452380
 Rigidbody:
@@ -375,21 +377,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &2008140875
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1996407451135126}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08fd27bbecf0c5e448275a5a3b1659df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initialized: 0
-  game_object_variable:
-    game_object_variable: {fileID: 0}
 --- !u!1 &881687125109618822
 GameObject:
   m_ObjectHideFlags: 0
@@ -458,7 +445,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 0}
   angle_variable: 1.570796
-  material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  material: {fileID: 2100000, guid: 84f1cdaf9dd246d42887a5ea84826ed4, type: 2}
   scale_variable: 0.03
   internal_transform: {fileID: 7070922776794768371}
   internal_renderer: {fileID: 6330501197553655529}
@@ -580,7 +567,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 84f1cdaf9dd246d42887a5ea84826ed4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

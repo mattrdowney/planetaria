@@ -87,6 +87,7 @@ MonoBehaviour:
     game_object_variable: {fileID: 44}
   gravity: {x: 0, y: 0, z: 0}
   internal_transform: {fileID: 59}
+  planetaria_transform: {fileID: 0}
   internal_rigidbody: {fileID: 63}
 --- !u!114 &99
 MonoBehaviour:
@@ -123,7 +124,7 @@ MonoBehaviour:
   game_object_variable:
     game_object_variable: {fileID: 0}
   angle_variable: 0
-  material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  material: {fileID: 2100000, guid: 84f1cdaf9dd246d42887a5ea84826ed4, type: 2}
   scale_variable: 0.02
   internal_transform: {fileID: 58}
   internal_renderer: {fileID: 74}
@@ -191,7 +192,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 84f1cdaf9dd246d42887a5ea84826ed4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
