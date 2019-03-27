@@ -13,7 +13,7 @@ namespace DebrisNoirs
             planetaria_rigidbody.relative_velocity = new Vector2(0, speed);
             has_collided = false;
             sphere_collider.enabled = true;
-            sprite_renderer.enabled = true;
+            mesh_renderer.enabled = true;
         }
 
         private void OnValidate()
@@ -22,7 +22,7 @@ namespace DebrisNoirs
             planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
             planetaria_transform = this.GetComponent<PlanetariaTransform>();
             planetaria_renderer = this.GetComponent<AreaRenderer>();
-            sprite_renderer = this.GetComponentInChildren<SpriteRenderer>();
+            mesh_renderer = this.GetComponentInChildren<MeshRenderer>();
 
             //planetaria_collider.shape = PlanetariaShape.Create(planetaria_transform.localScale);
             planetaria_renderer.scale = planetaria_transform.localScale;
@@ -47,7 +47,7 @@ namespace DebrisNoirs
                 {
                     //PlanetariaGameObject.Destroy(this.gameObject); -- the bullets are reused (as a form of object pooling)
                     has_collided = true;
-                    sprite_renderer.enabled = false;
+                    mesh_renderer.enabled = false;
                     sphere_collider.enabled = false;
                 }
             }
@@ -57,7 +57,7 @@ namespace DebrisNoirs
         [SerializeField] public float lifetime = 1;
         [SerializeField] [HideInInspector] private SphereCollider sphere_collider;
         [SerializeField] [HideInInspector] private AreaRenderer planetaria_renderer;
-        [SerializeField] [HideInInspector] private SpriteRenderer sprite_renderer;
+        [SerializeField] [HideInInspector] private MeshRenderer mesh_renderer;
         [SerializeField] [HideInInspector] private PlanetariaRigidbody planetaria_rigidbody;
         [SerializeField] [HideInInspector] private PlanetariaTransform planetaria_transform;
         [NonSerialized] private bool has_collided = false;

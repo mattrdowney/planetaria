@@ -105,7 +105,7 @@ MonoBehaviour:
   lifetime: 1
   sphere_collider: {fileID: 67}
   planetaria_renderer: {fileID: 98}
-  sprite_renderer: {fileID: 74}
+  mesh_renderer: {fileID: 6286334605271872886}
   planetaria_rigidbody: {fileID: 101}
   planetaria_transform: {fileID: 100}
 --- !u!114 &98

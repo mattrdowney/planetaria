@@ -13,15 +13,16 @@ namespace DebrisNoirs
         {
             internal_collider = this.GetComponent<SphereCollider>();
             planetaria_rigidbody = this.GetComponent<PlanetariaRigidbody>();
-            satellite_renderer = this.transform.Find("Chasis").GetComponent<AreaRenderer>();
-            silhouette_renderer = this.transform.Find("Chasis").Find("Silhouette").GetComponent<AreaRenderer>();
+            satellite_renderer = this.transform.Find("Chasis").Find("__Renderer").Find("GameObject").GetComponent<MeshRenderer>();
+            ghost_renderer = this.transform.Find("Chasis").Find("Ghost").Find("GameObject").GetComponent<MeshRenderer>();
+            silhouette_renderer = this.transform.Find("Chasis").Find("Silhouette").Find("__Renderer").Find("GameObject").GetComponent<MeshRenderer>();
             internal_transform = this.transform.Find("Chasis").gameObject.GetComponent<Transform>();
             planetaria_transform = this.GetComponent<PlanetariaTransform>();
             turret = this.transform.Find("Chasis").Find("Turret").GetComponent<Turret>();
 
             //internal_collider.shape = PlanetariaShape.Create(planetaria_transform.localScale);
-            satellite_renderer.scale = planetaria_transform.localScale;
-            silhouette_renderer.scale = planetaria_transform.localScale;
+            //satellite_renderer.scale = planetaria_transform.localScale;
+            //silhouette_renderer.scale = planetaria_transform.localScale;
         }
 
         private void Start()
@@ -30,7 +31,7 @@ namespace DebrisNoirs
             debris_spawner = GameObject.FindObjectOfType<DebrisSpawner>();
             loading_disc = GameObject.Find("LoadingDisc").GetComponent<Image>();
             crosshair_dot = GameObject.Find("CenterDot").GetComponent<Image>();
-            crosshair_arrow = GameObject.Find("Controller/__Renderer").GetComponent<SpriteRenderer>();
+            crosshair_arrow = GameObject.Find("Controller/__Renderer/GameObject").GetComponent<MeshRenderer>();
             planetaria_rigidbody.absolute_velocity = Vector2.zero;
         }
 
@@ -152,7 +153,7 @@ namespace DebrisNoirs
             {
                 if (dead_time < 0)
                 {
-                    satellite_renderer.enabled = true;
+                    ghost_renderer.enabled = true;
                     crosshair_dot.enabled = false;
                     crosshair_arrow.enabled = true;
                 }
@@ -161,11 +162,19 @@ namespace DebrisNoirs
                 if (DebrisNoirsInput.get_axes().magnitude > 0.3f)
                 {
                     respawn_time = 0;
-                    satellite_renderer.sprite = ghost_sprite;
                 }
-                else
+                if (dead_time < 0)
                 {
-                    satellite_renderer.sprite = satellite_sprite; // essentially an OnMouseHover() event where the ship looks like it is alive
+                    if (DebrisNoirsInput.get_axes().magnitude > 0.3f)
+                    {
+                        satellite_renderer.enabled = false;
+                        ghost_renderer.enabled = true;
+                    }
+                    else
+                    {
+                        satellite_renderer.enabled = true;
+                        ghost_renderer.enabled = false; // essentially an OnMouseHover() event where the ship looks like it is alive
+                    }
                 }
                 loading_disc.fillAmount = respawn_time;
                 if (respawn_time >= 1)
@@ -192,9 +201,9 @@ namespace DebrisNoirs
             respawn_time = 0;
             internal_collider.enabled = false;
             satellite_renderer.enabled = false;
+            ghost_renderer.enabled = false;
             stopwatch.stop_clock();
             debris_spawner.stop();
-            satellite_renderer.sprite = ghost_sprite;
             turret.die();
         }
 
@@ -230,18 +239,18 @@ namespace DebrisNoirs
             internal_collider.enabled = true;
             satellite_renderer.enabled = true;
             loading_disc.fillAmount = 0;
-            satellite_renderer.sprite = satellite_sprite;
+            satellite_renderer.enabled = true;
+            ghost_renderer.enabled = false;
         }
 
-        [SerializeField] public Sprite satellite_sprite;
-        [SerializeField] public Sprite ghost_sprite;
         [SerializeField] private float acceleration = 2f;
         
         [SerializeField] private Transform internal_transform;
         [SerializeField] private PlanetariaTransform planetaria_transform;
         [SerializeField] private SphereCollider internal_collider;
-        [SerializeField] private AreaRenderer satellite_renderer;
-        [SerializeField] private AreaRenderer silhouette_renderer;
+        [SerializeField] private MeshRenderer satellite_renderer;
+        [SerializeField] private MeshRenderer ghost_renderer;
+        [SerializeField] private MeshRenderer silhouette_renderer;
         [SerializeField] private PlanetariaRigidbody planetaria_rigidbody;
         [SerializeField] private Turret turret;
 
@@ -249,7 +258,7 @@ namespace DebrisNoirs
         [SerializeField] private DebrisSpawner debris_spawner;
         [SerializeField] private Image loading_disc;
         [SerializeField] private Image crosshair_dot;
-        [SerializeField] private SpriteRenderer crosshair_arrow;
+        [SerializeField] private MeshRenderer crosshair_arrow;
 
         [NonSerialized] private float horizontal;
         [NonSerialized] private float vertical;
