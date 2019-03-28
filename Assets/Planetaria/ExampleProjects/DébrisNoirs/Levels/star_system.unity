@@ -247,7 +247,7 @@ MonoBehaviour:
   internal_transform: {fileID: 953875495}
   internal_renderer: {fileID: 953875494}
   offset: 0
-  mesh: {fileID: 4300000, guid: 90e90e65ac16d5448b00dd25cd8f552a, type: 2}
+  mesh: {fileID: 4300000, guid: b325c90b3e5d3774c9aaab69a8cd4166, type: 2}
   internal_mesh_filter: {fileID: 953875493}
 --- !u!114 &578224437
 MonoBehaviour:
@@ -780,17 +780,17 @@ PrefabInstance:
     - target: {fileID: 7054274644999161775, guid: 2eea8fc6477a5f94eaaf46194cc11d6e,
         type: 3}
       propertyPath: m_BackGroundColor.r
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7054274644999161775, guid: 2eea8fc6477a5f94eaaf46194cc11d6e,
         type: 3}
       propertyPath: m_BackGroundColor.g
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7054274644999161775, guid: 2eea8fc6477a5f94eaaf46194cc11d6e,
         type: 3}
       propertyPath: m_BackGroundColor.b
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7054274646531611476, guid: 2eea8fc6477a5f94eaaf46194cc11d6e,
         type: 3}
