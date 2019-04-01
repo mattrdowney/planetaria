@@ -35,7 +35,7 @@ namespace DebrisNoirs
             state = StopwatchState.Stopped;
             if (score > highscore) // General commentary. Scores in this game are sort of bound by battery life, which is amusing.
             {
-                PlayerPrefs.SetInt("highscore", score);
+                //PlayerPrefs.SetInt("highscore", score);
                 highscore_text.text = score.ToString();
                 highscore = score;
             }
@@ -55,10 +55,10 @@ namespace DebrisNoirs
         private void Start()
         {
             highscore = 0;
-            if (PlayerPrefs.HasKey("highscore"))
-            {
-                highscore = PlayerPrefs.GetInt("highscore");
-            }
+            //if (PlayerPrefs.HasKey("highscore"))
+            //{
+            //    highscore = PlayerPrefs.GetInt("highscore");
+            //}
             highscore_text.text = highscore.ToString();
         }
 
@@ -72,12 +72,12 @@ namespace DebrisNoirs
                 {
                     highscore = score; // set the new highscore
                     highscore_text.text = highscore.ToString(); // and print it on screen
-                    last_autosave += Time.deltaTime;
-                    if (last_autosave >= 0) // TODO: see if this needs to be slower
-                    {
-                        PlayerPrefs.SetInt("highscore", score); // save the score (e.g. in case the user's battery dies)
-                        last_autosave = 0;
-                    }
+                    //last_autosave += Time.deltaTime;
+                    //if (last_autosave >= 0) // TODO: see if this needs to be slower
+                    //{
+                    //    PlayerPrefs.SetInt("highscore", score); // save the score (e.g. in case the user's battery dies)
+                    //    last_autosave = 0;
+                    //}
                 }
             }
         }
