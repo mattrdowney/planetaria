@@ -11,6 +11,7 @@ namespace Planetaria
         {
             Cube,
             Octahedron,
+            Planetarium,
             SphericalRectangle,
         }
 
@@ -32,15 +33,22 @@ namespace Planetaria
 
             if (GUILayout.Button("Generate"))
             {
+                int triangles;
                 switch (shape)
                 {
                     case Shape.Cube:
                         break;
                     case Shape.Octahedron:
                         Mesh tesselated_octahedron = OctahedronSphere.generate(triangle_budget);
-                        int triangles = tesselated_octahedron.triangles.Length/3;
+                        triangles = tesselated_octahedron.triangles.Length/3;
                         AssetDatabase.CreateAsset(tesselated_octahedron,
                                 "Assets/Planetaria/Procedural/Mesh/octahedron_" + triangles + ".asset");
+                        break;
+                    case Shape.Planetarium:
+                        Mesh planetarium = PlanetariumSphere.generate(triangle_budget);
+                        triangles = planetarium.triangles.Length/3;
+                        AssetDatabase.CreateAsset(planetarium,
+                                "Assets/Planetaria/Procedural/Mesh/planetarium_" + triangles + ".asset");
                         break;
                 }
                 AssetDatabase.SaveAssets();
