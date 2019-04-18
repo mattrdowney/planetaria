@@ -12,7 +12,7 @@ namespace Planetaria
             {
                 if (original_mesh.vertices[vertex] != Vector3.down) // almost every point uses polar coordinates from the underlying texture
                 {
-                    float angle = Vector3.SignedAngle(Vector3.right, original_mesh.vertices[vertex], Vector3.up) * Mathf.Deg2Rad;
+                    float angle = Vector3.SignedAngle(Vector3.right, Vector3.ProjectOnPlane(original_mesh.vertices[vertex], Vector3.up).normalized, Vector3.up) * Mathf.Deg2Rad;
                     float radius = Vector3.Angle(Vector3.up, original_mesh.vertices[vertex]) * Mathf.Deg2Rad;
                     Vector2 uv = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
                     uv *= (radius/Mathf.PI);
