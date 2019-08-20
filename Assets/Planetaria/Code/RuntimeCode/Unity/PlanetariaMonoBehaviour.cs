@@ -5,21 +5,21 @@ using UnityEngine;
 namespace Planetaria
 {
     [Serializable]
-    public abstract class PlanetariaMonoBehaviour : PlanetariaComponent
+    public abstract class PlanetariaActor : PlanetariaComponent
     {
-        protected abstract void OnConstruction();
-        protected abstract void OnDestruction();
+        protected abstract void on_construction(); // I can now transition to snake_case ^0^ libre
+        protected abstract void on_destruction();
 
         protected delegate void CollisionDelegate(BlockCollision block_information);
         protected delegate void TriggerDelegate(PlanetariaCollider field_information);
 
-        protected optional<CollisionDelegate> OnBlockEnter = null;
-        protected optional<CollisionDelegate> OnBlockExit = null;
-        protected optional<CollisionDelegate> OnBlockStay = null;
+        protected optional<CollisionDelegate> on_block_enter = null;
+        protected optional<CollisionDelegate> on_block_exit = null;
+        protected optional<CollisionDelegate> on_block_stay = null;
 
-        protected optional<TriggerDelegate> OnFieldEnter = null;
-        protected optional<TriggerDelegate> OnFieldExit = null;
-        protected optional<TriggerDelegate> OnFieldStay = null;
+        protected optional<TriggerDelegate> on_field_enter = null;
+        protected optional<TriggerDelegate> on_field_exit = null;
+        protected optional<TriggerDelegate> on_field_stay = null;
 
         protected override sealed void Awake()
         {
@@ -30,12 +30,12 @@ namespace Planetaria
                 observers.Add(collider.get_observer());
             }
             // FIXME: still need to cache (properly)
-            OnConstruction();
+            on_construction();
         }
 
         protected override sealed void OnDestroy()
         {
-            OnDestruction();
+            on_destruction();
             // FIXME: still need to un-cache (properly)
             foreach (PlanetariaCollider collider in this.GetComponentsInChildren<PlanetariaCollider>())
             {
@@ -45,49 +45,49 @@ namespace Planetaria
 
         public void enter_block(BlockCollision collision)
         {
-            if (OnBlockEnter.exists)
+            if (on_block_enter.exists)
             {
-                OnBlockEnter.data(collision);
+                on_block_enter.data(collision);
             }
         }
         
         public void stay_block(BlockCollision collision)
         {
-            if (OnBlockStay.exists)
+            if (on_block_stay.exists)
             {
-                OnBlockStay.data(collision);
+                on_block_stay.data(collision);
             }
         }
 
         public void exit_block(BlockCollision collision)
         {
-            if (OnBlockExit.exists)
+            if (on_block_exit.exists)
             {
-                OnBlockExit.data(collision);
+                on_block_exit.data(collision);
             }
         }
 
         public void enter_field(PlanetariaCollider field)
         {
-            if (OnFieldEnter.exists)
+            if (on_field_enter.exists)
             {
-                OnFieldEnter.data(field);
+                on_field_enter.data(field);
             }
         }
 
         public void stay_field(PlanetariaCollider field)
         {
-            if (OnFieldStay.exists)
+            if (on_field_stay.exists)
             {
-                OnFieldStay.data(field);
+                on_field_stay.data(field);
             }
         }
 
         public void exit_field(PlanetariaCollider field)
         {
-            if (OnFieldExit.exists)
+            if (on_field_exit.exists)
             {
-                OnFieldExit.data(field);
+                on_field_exit.data(field);
             }
         }
         

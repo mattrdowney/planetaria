@@ -5,7 +5,7 @@ using Planetaria;
 
 namespace DebrisNoirs
 {
-    public class Turret : PlanetariaMonoBehaviour
+    public class Turret : PlanetariaActor
     {
         public void die()
         {
@@ -53,8 +53,8 @@ namespace DebrisNoirs
             }
         }
 
-        protected override void OnConstruction() { }
-        protected override void OnDestruction() { }
+        protected override void on_construction() { }
+        protected override void on_destruction() { }
 
         [SerializeField] public Satellite satellite;
         [SerializeField] public GameObject projectile;

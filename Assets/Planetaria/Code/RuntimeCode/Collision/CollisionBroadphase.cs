@@ -1,26 +1,15 @@
 ﻿using UnityEngine;
-using Planetaria;
 
-namespace Platformer
+public class CollisionBroadphase : MonoBehaviour
 {
-    public class Door : PlanetariaActor
+    void Update()
     {
-        public int target_level = 1;
-
-        protected override void on_construction()
-        {
-            base.on_field_stay.data = on_field_stay;
-        }
-
-        protected override void on_destruction() { }
-
-        private void on_field_stay(PlanetariaCollider collider)
-        {
-            if (Input.GetAxis("Vertical") == 1)
-            {
-                LevelLoader.loader.activate_level(target_level);
-            }
-        }
+        // Ideally, there should be some space partitioning for dynamic objects and a reasonable solution for dynamic objects.
+        // Collision layers should be considered. Worlds/Levels could also be considered.
+        // (For both objects) If a callback exists, call it.
+        // Hopefully there's early return logic in a few places.
+        // Subscription/Observer pattern
+        // Blah, blah, blah
     }
 }
 

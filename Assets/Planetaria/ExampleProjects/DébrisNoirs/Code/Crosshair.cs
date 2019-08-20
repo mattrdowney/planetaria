@@ -3,7 +3,7 @@ using Planetaria;
 
 namespace DebrisNoirs
 {
-    public class Crosshair : PlanetariaMonoBehaviour
+    public class Crosshair : PlanetariaActor
     {
         private void OnValidate()
         {
@@ -34,8 +34,8 @@ namespace DebrisNoirs
             crosshair_renderer.scale = Mathf.Lerp(0, crosshair_size, DebrisNoirsInput.get_axes().magnitude);
         }
 
-        protected override void OnConstruction() { }
-        protected override void OnDestruction() { }
+        protected override void on_construction() { }
+        protected override void on_destruction() { }
 
         [SerializeField] [HideInInspector] private Satellite satellite;
         [SerializeField] [HideInInspector] private Transform main_character;

@@ -6,15 +6,15 @@ using Planetaria;
 namespace DebrisNoirs
 {
     [Serializable]
-    public class DebrisSpawner : PlanetariaMonoBehaviour
+    public class DebrisSpawner : PlanetariaActor
     {
         public static DebrisSpawner self()
         {
             return GameObject.FindObjectOfType<DebrisSpawner>();
         }
 
-        protected override void OnConstruction() { }
-        protected override void OnDestruction() { }
+        protected override void on_construction() { }
+        protected override void on_destruction() { }
 
         void Start()
         {

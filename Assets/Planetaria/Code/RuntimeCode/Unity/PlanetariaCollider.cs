@@ -14,7 +14,7 @@ namespace Planetaria // FIXME: PlanetariaCollider spawns a child, which must alw
             initialize();
             StartCoroutine(wait_for_fixed_update());
             observer = new CollisionObserver();
-            observer.initialize(this, this.GetComponentsInParent<PlanetariaMonoBehaviour>());
+            observer.initialize(this, this.GetComponentsInParent<PlanetariaActor>());
         }
 
         protected override sealed void Reset()
@@ -92,12 +92,12 @@ namespace Planetaria // FIXME: PlanetariaCollider spawns a child, which must alw
             internal_collider.isTrigger = true; // Rigidbody must be added for collisions to be detected.
         }
 
-        public void register(PlanetariaMonoBehaviour listener)
+        public void register(PlanetariaActor listener)
         {
             observer.register(listener);
         }
 
-        public void unregister(PlanetariaMonoBehaviour listener)
+        public void unregister(PlanetariaActor listener)
         {
             observer.unregister(listener);
         }

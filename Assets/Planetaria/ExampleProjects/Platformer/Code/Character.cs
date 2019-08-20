@@ -4,17 +4,17 @@ using Planetaria;
 
 namespace Platformer
 {
-    public class Character : PlanetariaMonoBehaviour
+    public class Character : PlanetariaActor
     {
-        protected override void OnConstruction()
+        protected override void on_construction()
         {
-            OnBlockStay.data = on_block_stay;
-            OnBlockEnter.data = on_block_enter;
-            OnBlockExit.data = on_block_exit;
-            OnFieldStay.data = on_field_stay;
+            base.on_block_stay.data = on_block_stay;
+            base.on_block_enter.data = on_block_enter;
+            base.on_block_exit.data = on_block_exit;
+            base.on_field_stay.data = on_field_stay;
         }
 
-        protected override void OnDestruction() { }
+        protected override void on_destruction() { }
 
         private void Start()
         {

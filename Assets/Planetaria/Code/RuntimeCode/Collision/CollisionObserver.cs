@@ -10,12 +10,12 @@ namespace Planetaria
     {
         public CollisionObserver() { }
 
-        public void initialize (PlanetariaCollider observed, PlanetariaMonoBehaviour[] observers)
+        public void initialize (PlanetariaCollider observed, PlanetariaActor[] observers)
         {
             this.planetaria_collider = observed;
             this.planetaria_rigidbody = observed.GetComponent<PlanetariaRigidbody>();
             this.planetaria_transformation = observed.GetComponent<PlanetariaTransform>();
-            foreach (PlanetariaMonoBehaviour observer in observers)
+            foreach (PlanetariaActor observer in observers)
             {
                 if (!this.observers.Contains(observer))
                 {
@@ -24,7 +24,7 @@ namespace Planetaria
             }
         }
 
-        public void register(PlanetariaMonoBehaviour observer)
+        public void register(PlanetariaActor observer)
         {
             if (!this.observers.Contains(observer))
             {
@@ -40,7 +40,7 @@ namespace Planetaria
             }
         }
 
-        public void unregister(PlanetariaMonoBehaviour observer)
+        public void unregister(PlanetariaActor observer)
         {
             if (this.observers.Contains(observer))
             {
@@ -144,7 +144,7 @@ namespace Planetaria
         internal void notify_enter_block(BlockCollision collision)
         {
             current_collisions.Add(collision);
-            foreach (PlanetariaMonoBehaviour observer in observers)
+            foreach (PlanetariaActor observer in observers)
             {
                 observer.enter_block(collision);
             }
@@ -152,7 +152,7 @@ namespace Planetaria
 
         internal void notify_stay_block()
         {
-            foreach (PlanetariaMonoBehaviour observer in observers)
+            foreach (PlanetariaActor observer in observers)
             {
                 foreach (BlockCollision collision in new List<BlockCollision>(current_collisions))
                 {
@@ -163,7 +163,7 @@ namespace Planetaria
 
         internal void notify_exit_block(BlockCollision collision)
         {
-            foreach (PlanetariaMonoBehaviour observer in observers)
+            foreach (PlanetariaActor observer in observers)
             {
                 observer.exit_block(collision);
             }
@@ -200,7 +200,7 @@ namespace Planetaria
 
         internal void notify_enter_field(PlanetariaCollider field)
         {
-            foreach (PlanetariaMonoBehaviour observer in observers)
+            foreach (PlanetariaActor observer in observers)
             {
                 observer.enter_field(field);
             }
@@ -208,7 +208,7 @@ namespace Planetaria
 
         internal void notify_stay_field()
         {
-            foreach (PlanetariaMonoBehaviour observer in observers)
+            foreach (PlanetariaActor observer in observers)
             {
                 foreach (PlanetariaCollider field in current_fields)
                 {
@@ -219,7 +219,7 @@ namespace Planetaria
 
         internal void notify_exit_field(PlanetariaCollider field)
         {
-            foreach (PlanetariaMonoBehaviour observer in observers)
+            foreach (PlanetariaActor observer in observers)
             {
                 observer.exit_field(field);
             }
@@ -229,7 +229,7 @@ namespace Planetaria
         [SerializeField] private PlanetariaTransform planetaria_transformation;
         [SerializeField] private PlanetariaCollider planetaria_collider;
         [SerializeField] private optional<PlanetariaRigidbody> planetaria_rigidbody;
-        [SerializeField] private List<PlanetariaMonoBehaviour> observers = new List<PlanetariaMonoBehaviour>();
+        [SerializeField] private List<PlanetariaActor> observers = new List<PlanetariaActor>();
 
         [NonSerialized] private List<BlockCollision> current_collisions = new List<BlockCollision>();
         [NonSerialized] private List<BlockCollision> collision_candidates = new List<BlockCollision>();

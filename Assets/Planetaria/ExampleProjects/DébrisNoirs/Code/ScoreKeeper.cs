@@ -6,7 +6,7 @@ using Planetaria;
 
 namespace DebrisNoirs
 {
-    public class ScoreKeeper : PlanetariaMonoBehaviour
+    public class ScoreKeeper : PlanetariaActor
     {
         public static ScoreKeeper instance
         {
@@ -93,8 +93,8 @@ namespace DebrisNoirs
             }
         }
 
-        protected override void OnConstruction() { }
-        protected override void OnDestruction() { }
+        protected override void on_construction() { }
+        protected override void on_destruction() { }
 
         private enum StopwatchState { Stopped = 0, Started = 1 }
 
