@@ -10,6 +10,21 @@ public class CollisionBroadphase : MonoBehaviour
         // Hopefully there's early return logic in a few places.
         // Subscription/Observer pattern
         // Blah, blah, blah
+        // I might just be lazy and do an InsertionSort based on k partitioning dimensions. The obvious one being k=3 and x,y,z.
+        // There can be a lot of optimizations here.
+        // Essentially you do the following:
+        //    Take old sorted list with marked nodes where they changed.
+        //    Scan left to right, if a marked node can be trivially reinserted into the sequence unmark it (unless it was marked for deletion)
+        //    Take the marked and unmarked sequences as two new lists
+        //    Sort the unmarked sequence
+        //    Merge the lists
+
+        // While this may seem like a good idea, you still have to do more work to detect collisions
+        // Oh hey, essentially I've been describing a worse version of https://en.wikipedia.org/wiki/Sweep_and_prune
+        // If you apply the optimizations of "sweep and prune" you can make the performance a lot better.
+
+        // Bounding cone hierarchy is definitely useful for static geometry
+        // Dynamic geometry:
     }
 }
 
